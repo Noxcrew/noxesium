@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.noxcrew.noxesium.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "client.beacon.BeaconRenderingMixin",
+    "client.beacon.PreventDoubleBeaconRenderingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

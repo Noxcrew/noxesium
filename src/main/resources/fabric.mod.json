@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "noxesium",
+  "version": "${version}",
+  "name": "Noxesium",
+  "description": "A client-side mod with various changes and performance improvements.",
+  "authors": [
+    "Noxcrew"
+  ],
+  "contact": {
+    "repo": "https://github.com/Noxcrew/noxesium"
+  },
+  "license": "",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+    ],
+    "main": [
+    ]
+  },
+  "accessWidener": "noxesium.accesswidener",
+  "mixins": [
+    "noxesium.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "minecraft": "1.18.2"
+  }
+}
