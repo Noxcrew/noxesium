@@ -27,9 +27,9 @@ dependencies {
 
     // Compatibility with other mods
     modCompileOnly("com.github.CaffeineMC:sodium-fabric:${project.sodium}")
-    modCompileOnly("com.github.IrisShaders:Iris:${project.iris}") {
-        transitive = false
-    }
+    // modCompileOnly("com.github.IrisShaders:Iris:${project.iris}") {
+    //     transitive = false
+    // }
     modLocalRuntime(modCompileOnly("com.terraformersmc:modmenu:${project.modmenu}"))
 }
 

@@ -7,9 +7,9 @@
   "mixins": [
   ],
   "client": [
-    "client.beacon.SodiumWorldRendererMixin",
     "client.beacon.BeaconRenderingMixin",
-    "client.beacon.PreventDoubleBeaconRenderingMixin"
+    "client.beacon.PreventDoubleBeaconRenderingMixin",
+    "client.beacon.SodiumWorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

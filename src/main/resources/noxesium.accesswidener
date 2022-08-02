@@ -1,3 +1,4 @@
 accessWidener v1 named
 
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask
+accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask$CompileResults

@@ -21,14 +21,14 @@ import java.util.Set;
 public class PreventDoubleBeaconRenderingMixin {
 
     @Inject(method = "handleBlockEntity", at = @At("HEAD"), cancellable = true)
-    public <E extends BlockEntity> void render(ChunkRenderDispatcher.CompiledChunk compiledChunk, Set<BlockEntity> set, E blockEntity, CallbackInfo ci) {
+    public <E extends BlockEntity> void render(ChunkRenderDispatcher.RenderChunk.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
         if (blockEntity instanceof BeaconBlockEntity) {
             ci.cancel();
 
             // Only add the beacon to the global entities
             BlockEntityRenderer<E> blockEntityRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity);
             if (blockEntityRenderer != null) {
-                set.add(blockEntity);
+                compileResults.globalBlockEntities.add(blockEntity);
             }
         }
     }
