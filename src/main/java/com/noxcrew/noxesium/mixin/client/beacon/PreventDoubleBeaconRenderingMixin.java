@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Set;
-
 /**
  * Prevents beacons from being added to the renderable chunk entities. This is so we can do the
  * entirety of beacon rendering custom for all beacons at once. We do add them to global entities and

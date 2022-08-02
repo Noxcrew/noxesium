@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Syncs up with the server whenever the GUI scale is updated.
  */
 @Mixin(Minecraft.class)
-public class MinecraftExt {
+public class MinecraftMixin {
 
     @Inject(method = "resizeDisplay", at = @At(value = "TAIL"))
     private void resizeDisplay(CallbackInfo ci) {
