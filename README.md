@@ -1,9 +1,13 @@
 Noxesium
 ---
-A fabric mod with bugfixes and various performance improvements.
+A fabric mod with feature additions, bugfixes and various performance improvements.
+
+### Additions
+
 
 ### Performance
 - Optimized Beacon block entity rendering (disabled when using Iris Shaders)
 
 
-## Bugfixes
+### Bugfixes
+- Always display head layer in TAB menu
