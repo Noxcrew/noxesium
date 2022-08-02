@@ -9,4 +9,16 @@ public class ServerRules {
      * useful for non-pvp mini-games where the trident is used as a movement tool.
      */
     public static ServerRule<Boolean> DISABLE_AUTO_SPIN_ATTACK = new BooleanServerRule(0, false);
+
+    /**
+     * A global value for the "CanPlaceOn" item tag that applies to players in adventure mode,
+     * allowing the server to define which blocks are placable globally regardless of tool.
+     */
+    public static ServerRule<CustomAdventureModeCheck> GLOBAL_CAN_PLACE_ON = new AdventureModeCheckServerRule(1);
+
+    /**
+     * A global value for the "CanDestroy" item tag that applies to players in adventure mode,
+     * allowing the server to define which blocks are breakable globally regardless of tool.
+     */
+    public static ServerRule<CustomAdventureModeCheck> GLOBAL_CAN_DESTROY = new AdventureModeCheckServerRule(2);
 }
