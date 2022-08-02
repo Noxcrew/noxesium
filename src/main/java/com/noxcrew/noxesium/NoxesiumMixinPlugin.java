@@ -18,7 +18,7 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
         return switch (mixinClassName) {
             // Enable custom sodium compatibility for the beacon performance changes, but disable when
             // using iris as it makes changes that provide better performance
-            case "com.noxcrew.noxesium.mixin.client.beacon.SodiumMixin" ->
+            case "com.noxcrew.noxesium.mixin.client.beacon.SodiumWorldRendererMixin" ->
                     FabricLoader.getInstance().isModLoaded("sodium") && !FabricLoader.getInstance().isModLoaded("iris");
             default -> true;
         };
