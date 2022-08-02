@@ -3,7 +3,7 @@
   "id": "noxesium",
   "version": "${version}",
   "name": "Noxesium",
-  "description": "A client-side mod with various changes and performance improvements.",
+  "description": "A client-side mod with various additions, changes and performance improvements.",
   "authors": [
     "Noxcrew"
   ],
@@ -14,6 +14,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
+      "com.noxcrew.noxesium.NoxesiumMod"
     ],
     "main": [
     ]
