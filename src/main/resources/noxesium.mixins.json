@@ -7,8 +7,9 @@
   "mixins": [
   ],
   "client": [
-    "client.MinecraftMixin",
     "client.ClientPacketListenerMixin",
+    "client.LivingEntityMixin",
+    "client.MinecraftMixin",
     "client.PlayerTabOverlayMixin",
     "client.beacon.BeaconRenderingMixin",
     "client.beacon.PreventDoubleBeaconRenderingMixin",
