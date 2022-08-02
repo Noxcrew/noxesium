@@ -11,6 +11,9 @@
     "client.LivingEntityMixin",
     "client.MinecraftMixin",
     "client.PlayerTabOverlayMixin",
+    "client.adventure.ItemStackMixin",
+    "client.adventure.GameRendererMixin",
+    "client.adventure.PlayerMixin",
     "client.beacon.BeaconRenderingMixin",
     "client.beacon.PreventDoubleBeaconRenderingMixin",
     "client.beacon.SodiumWorldRendererMixin"
