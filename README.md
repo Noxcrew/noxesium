@@ -4,10 +4,12 @@ A fabric mod with feature additions, bugfixes and various performance improvemen
 
 ### Additions
 - Sends information about GUI scale to connected servers to allow better server-side UI design
+- Allow servers to disable riptide trident collisions
+- Allow servers to define a global CanDestroy and CanPlaceOn tag that applies to all items
+- Allow servers to show player heads in chat messages
 
 ### Performance
 - Optimized Beacon block entity rendering (disabled when using Iris Shaders)
-
 
 ### Bugfixes
 - Always display head layer in TAB menu

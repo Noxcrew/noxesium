@@ -1,7 +1,9 @@
 package com.noxcrew.noxesium;
 
 import com.noxcrew.noxesium.rule.ServerRule;
+import com.noxcrew.noxesium.skull.CustomSkullFont;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -27,6 +29,11 @@ public class NoxesiumMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
+            // Create the custom skull font if it's not already created
+            CustomSkullFont.createIfNeccesary();
+        });
+
         // Every time the client joins a server we send over information on the version being used
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             // Send a packet containing information about the client version of Noxesium
@@ -54,6 +61,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
             // Clear all stored server rules
             ServerRule.clearAll();
+            CustomSkullFont.clear();
         });
     }
 

@@ -11,12 +11,17 @@
     "client.LivingEntityMixin",
     "client.MinecraftMixin",
     "client.PlayerTabOverlayMixin",
-    "client.adventure.ItemStackMixin",
     "client.adventure.GameRendererMixin",
+    "client.adventure.ItemStackMixin",
     "client.adventure.PlayerMixin",
     "client.beacon.BeaconRenderingMixin",
     "client.beacon.PreventDoubleBeaconRenderingMixin",
-    "client.beacon.SodiumWorldRendererMixin"
+    "client.beacon.SodiumWorldRendererMixin",
+    "client.component.ComponentSerializerMixin",
+    "client.component.FontManagerExt",
+    "client.component.FontSetExt",
+    "client.component.MinecraftExt",
+    "client.component.SkinManagerExt"
   ],
   "injectors": {
     "defaultRequire": 1
