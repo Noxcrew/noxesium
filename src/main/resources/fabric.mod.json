@@ -8,9 +8,11 @@
     "Noxcrew"
   ],
   "contact": {
-    "repo": "https://github.com/Noxcrew/noxesium"
+    "repo": "https://github.com/Noxcrew/noxesium",
+    "homepage": "https://github.com/Noxcrew/noxesium",
+    "issues": "https://github.com/Noxcrew/noxesium/issues"
   },
-  "license": "",
+  "license": "GPL-3.0-only",
   "environment": "client",
   "entrypoints": {
     "client": [
