@@ -13,6 +13,7 @@
     "issues": "https://github.com/Noxcrew/noxesium/issues"
   },
   "license": "GPL-3.0-only",
+  "icon": "assets/noxesium/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
@@ -28,7 +29,7 @@
   "depends": {
     "fabricloader": ">=0.14.8",
     "fabric": "*",
-    "minecraft": "1.19.1",
+    "minecraft": ">=1.19.1",
     "java": ">=17"
   }
 }
