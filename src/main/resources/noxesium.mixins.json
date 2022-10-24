@@ -10,7 +10,7 @@
     "client.ClientPacketListenerMixin",
     "client.LivingEntityMixin",
     "client.MinecraftMixin",
-    "client.PistonRenderingMixin",
+    "client.BlockStateBaseMixin",
     "client.PlayerTabOverlayMixin",
     "client.adventure.GameRendererMixin",
     "client.adventure.ItemStackMixin",
