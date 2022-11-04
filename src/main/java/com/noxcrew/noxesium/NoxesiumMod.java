@@ -25,8 +25,6 @@ public class NoxesiumMod implements ClientModInitializer {
     public static final ResourceLocation CLIENT_SETTINGS_CHANNEL = new ResourceLocation("noxesium", "client_settings");
     public static final ResourceLocation SERVER_RULE_CHANNEL = new ResourceLocation("noxesium", "server_rules");
 
-    public static boolean connected = false;
-
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
@@ -43,9 +41,6 @@ public class NoxesiumMod implements ClientModInitializer {
                 ClientPlayNetworking.send(CLIENT_INFORMATION_CHANNEL, outBuffer);
             }
 
-            // Store that we've connected and are able to send more information
-            connected = true;
-
             // Set up a receiver for any server rules
             ClientPlayNetworking.registerReceiver(SERVER_RULE_CHANNEL, (client, handler, buffer, responseSender) -> {
                 ServerRule.readAll(buffer);
@@ -57,8 +52,6 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Break the connection again on disconnection
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
-            connected = false;
-
             // Clear all stored server rules
             ServerRule.clearAll();
             CustomSkullFont.clear();
@@ -70,7 +63,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * allows servers to more accurately adapt their UI to clients.
      */
     public static void syncGuiScale() {
-        if (!connected) return;
+        if (Minecraft.getInstance().getConnection() == null) return;
         var outBuffer = PacketByteBufs.create();
         outBuffer.writeInt(Minecraft.getInstance().options.guiScale().get());
         outBuffer.writeBoolean(Minecraft.getInstance().isEnforceUnicode());
