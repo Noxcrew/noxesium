@@ -36,9 +36,11 @@ public class NoxesiumMod implements ClientModInitializer {
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             // Send a packet containing information about the client version of Noxesium
             {
-                var outBuffer = PacketByteBufs.create();
-                outBuffer.writeInt(VERSION);
-                ClientPlayNetworking.send(CLIENT_INFORMATION_CHANNEL, outBuffer);
+                if (Minecraft.getInstance().getConnection() != null) {
+                    var outBuffer = PacketByteBufs.create();
+                    outBuffer.writeInt(VERSION);
+                    ClientPlayNetworking.send(CLIENT_INFORMATION_CHANNEL, outBuffer);
+                }
             }
 
             // Set up a receiver for any server rules
