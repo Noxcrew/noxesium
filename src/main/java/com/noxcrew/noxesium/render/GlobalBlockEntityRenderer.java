@@ -2,9 +2,7 @@ package com.noxcrew.noxesium.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,6 +15,9 @@ import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.List;
@@ -118,7 +119,7 @@ public class GlobalBlockEntityRenderer {
             float r = fs[1];
             float s = fs[2];
             poseStack.pushPose();
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(n * 2.25f - 45.0f));
+            poseStack.mulPose(Axis.YP.rotationDegrees(n * 2.25f - 45.0f));
             float ad = -1.0f + p;
             float ae = (float) j * g * (0.5f / h) + ad;
             renderPart(poseStack, buffer, q, r, s, 1.0f, i, m, 0.0f, h, h, 0.0f, -h, 0.0f, 0.0f, -h, 0.0f, 1.0f, ae, ad);

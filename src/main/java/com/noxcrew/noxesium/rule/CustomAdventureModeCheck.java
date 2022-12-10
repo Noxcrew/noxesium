@@ -53,7 +53,7 @@ public class CustomAdventureModeCheck {
         this.checksBlockEntity = false;
         for (String string : input) {
             try {
-                BlockPredicateArgument.Result result = BlockPredicateArgument.parse(HolderLookup.forRegistry(registry), new StringReader(string));
+                BlockPredicateArgument.Result result = BlockPredicateArgument.parse(registry.asLookup(), new StringReader(string));
                 this.checksBlockEntity |= result.requiresNbt();
                 if (result.test(blockInWorld)) {
                     this.lastResult = true;

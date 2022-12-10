@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
@@ -52,7 +53,7 @@ public class GameRendererMixin {
                 BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
                 if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
                     BlockInWorld blockInWorld = new BlockInWorld(this.minecraft.level, blockPos, false);
-                    Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY);
+                    Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registries.BLOCK);
 
                     // Allow global can destroy or can place on to override and render the outline anyways
                     if (ServerRules.GLOBAL_CAN_DESTROY.get().test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.get().test(registry, blockInWorld)) {
