@@ -15,3 +15,4 @@ A fabric mod with feature additions, bugfixes and various performance improvemen
 - Always display head layer in TAB menu
 - Change teleport packets to teleport vehicle passengers to their vehicle
 - Fixes lighting issues with moving piston walls
+- Fixes custom models sometimes disappearing when not looking at the center
