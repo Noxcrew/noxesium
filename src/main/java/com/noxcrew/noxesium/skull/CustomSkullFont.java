@@ -24,6 +24,7 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -193,15 +194,40 @@ public class CustomSkullFont extends FontSet {
      */
     private static void saveGlyph(NativeImage input, SkullConfig config, int next) {
         // Copy the image so we can modify it freely
+        var mapping = new HashMap<Integer, Integer>();
         NativeImage image = new NativeImage(NativeImage.Format.RGBA, 64, 64, false);
         image.copyFrom(input);
+
+        // If the image is grayscale we grayscale the head
+        if (config.grayscale()) {
+            for (int x = 8; x < 16; x++) {
+                for (int y = 8; y < 16; y++) {
+                    var pixel = image.getPixelRGBA(x, y);
+                    if (pixel != 0) {
+                        image.setPixelRGBA(x, y, mapping.computeIfAbsent(pixel, (inp) -> {
+                            var color = new Color(inp);
+                            var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
+                            return new Color(val, val, val, color.getAlpha()).getRGB();
+                        }));
+                    }
+                }
+            }
+        }
 
         // Copy the hat layer on top of the main layer
         for (int x = 40; x < 48; x++) {
             for (int y = 8; y < 16; y++) {
                 var pixel = image.getPixelRGBA(x, y);
                 if (pixel != 0) {
-                    image.setPixelRGBA(x - 32, y, pixel);
+                    if (config.grayscale()) {
+                        image.setPixelRGBA(x - 32, y, mapping.computeIfAbsent(pixel, (inp) -> {
+                            var color = new Color(inp);
+                            var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
+                            return new Color(val, val, val, color.getAlpha()).getRGB();
+                        }));
+                    } else {
+                        image.setPixelRGBA(x - 32, y, pixel);
+                    }
                 }
             }
         }

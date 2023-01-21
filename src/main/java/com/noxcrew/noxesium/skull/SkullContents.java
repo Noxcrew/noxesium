@@ -15,21 +15,27 @@ import org.jetbrains.annotations.Nullable;
 public class SkullContents implements ComponentContents {
 
     private final String texture;
+    private final boolean grayscale;
     private final int advance;
     private final int ascent;
     private final float scale;
     private final SkullConfig config;
 
-    public SkullContents(String texture, int advance, int ascent, float scale) {
+    public SkullContents(String texture, boolean grayscale, int advance, int ascent, float scale) {
         this.texture = texture;
+        this.grayscale = grayscale;
         this.advance = advance;
         this.ascent = ascent;
         this.scale = scale;
-        this.config = new SkullConfig(texture, advance, ascent, scale);
+        this.config = new SkullConfig(texture, grayscale, advance, ascent, scale);
     }
 
     public String getTexture() {
         return texture;
+    }
+
+    public boolean isGrayscale() {
+        return grayscale;
     }
 
     public int getAdvance() {
@@ -51,6 +57,6 @@ public class SkullContents implements ComponentContents {
 
     @Override
     public String toString() {
-        return "skull{texture='" + texture + "', advance='" + advance + "', ascent='" + ascent + "', scale='" + scale + "'}";
+        return "skull{texture='" + texture + "', grayscale='" + grayscale + "', advance='" + advance + "', ascent='" + ascent + "', scale='" + scale + "'}";
     }
 }
