@@ -205,7 +205,7 @@ public class CustomSkullFont extends FontSet {
     private static int toGrayscale(int input) {
         try {
             return grayscaleMappings.get(input, () -> {
-                var color = new Color(input);
+                var color = new Color(input, true);
                 var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
                 return new Color(val, val, val, color.getAlpha()).getRGB();
             });
