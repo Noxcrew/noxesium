@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "mixins": [
+    "client.component.SkullBlockEntityExt",
     "client.entity.LivingEntityMixin"
   ],
   "client": [

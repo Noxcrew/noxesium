@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.skull;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
@@ -11,6 +13,7 @@ import com.noxcrew.noxesium.mixin.client.component.FontManagerExt;
 import com.noxcrew.noxesium.mixin.client.component.FontSetExt;
 import com.noxcrew.noxesium.mixin.client.component.MinecraftExt;
 import com.noxcrew.noxesium.mixin.client.component.SkinManagerExt;
+import com.noxcrew.noxesium.mixin.client.component.SkullBlockEntityExt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -18,7 +21,6 @@ import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.gui.font.glyphs.SpecialGlyphs;
 import net.minecraft.client.renderer.texture.HttpTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
@@ -32,6 +34,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -43,8 +48,12 @@ public class CustomSkullFont extends FontSet {
     private static final Map<SkullConfig, Character> claims = new HashMap<>();
     private static final Map<Integer, GlyphInfo> glyphs = new HashMap<>();
     private static final Map<Integer, BakedGlyph> bakedGlyphs = new HashMap<>();
+    private static final Cache<Integer, Integer> grayscaleMappings = CacheBuilder.newBuilder()
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build();
     private static int nextCharacter = 32;
     private static boolean created = false;
+    private static UUID instance = UUID.randomUUID();
 
     public CustomSkullFont(TextureManager textureManager, ResourceLocation resourceLocation) {
         super(textureManager, resourceLocation);
@@ -88,7 +97,7 @@ public class CustomSkullFont extends FontSet {
         }
         if (glyphs.containsKey(i)) {
             // If we haven't baked a glyph yet we do so on the fly, vanilla
-            // does the same in exterme cases.
+            // does the same in extreme cases.
             var cast = (FontSetExt) this;
             var baked = glyphs.get(i).bake(cast::invokeStitch);
             bakedGlyphs.put(i, baked);
@@ -115,6 +124,7 @@ public class CustomSkullFont extends FontSet {
         glyphs.clear();
         bakedGlyphs.clear();
         nextCharacter = 32;
+        instance = UUID.randomUUID();
     }
 
     /**
@@ -131,15 +141,21 @@ public class CustomSkullFont extends FontSet {
         claims.put(config, (char) next);
 
         // Create the glyph for this skull
-        try {
-            var texture = config.texture();
-            if (texture != null && !texture.equals("")) {
+        var future = config.texture();
+        if (future == null) return (char) next;
+
+        // Await the completion of the future before baking the glyph
+        var oldInstance = instance;
+        future.whenComplete((texture, t) -> {
+            // Stop waiting on old completables
+            if (!Objects.equals(instance, oldInstance)) return;
+
+            try {
                 var gameProfile = new GameProfile(null, "dummy_mcdummyface");
                 gameProfile.getProperties().put(SkinManager.PROPERTY_TEXTURES, new Property(SkinManager.PROPERTY_TEXTURES, texture, ""));
 
-                // Try to ask the session servers for this skin and resolve it to a file
-                var skinManager = Minecraft.getInstance().getSkinManager();
-                var information = skinManager.getInsecureSkinInformation(gameProfile).get(MinecraftProfileTexture.Type.SKIN);
+                // Let the session servers extract the texture, don't check the signature
+                var information = SkullBlockEntityExt.getSessionService().getTextures(gameProfile, false).get(MinecraftProfileTexture.Type.SKIN);
                 if (information != null) {
                     String string = Hashing.sha1().hashUnencodedChars(information.getHash()).toString();
                     File file = new File(((SkinManagerExt) (Minecraft.getInstance().getSkinManager())).getSkinsDirectory(), string.length() > 2 ? string.substring(0, 2) : "xx");
@@ -152,7 +168,7 @@ public class CustomSkullFont extends FontSet {
                             try (InputStream inputStream = new FileInputStream(file2)) {
                                 nativeImage = NativeImage.read(inputStream);
                             }
-                            saveGlyph(nativeImage, config, next);
+                            buildGlyph(nativeImage, config, next);
                         } catch (IOException x) {
                             x.printStackTrace();
                         }
@@ -166,7 +182,7 @@ public class CustomSkullFont extends FontSet {
                                 try (InputStream inputStream = new FileInputStream(file2)) {
                                     nativeImage = NativeImage.read(inputStream);
                                 }
-                                saveGlyph(nativeImage, config, next);
+                                buildGlyph(nativeImage, config, next);
                             } catch (IOException x) {
                                 x.printStackTrace();
                             }
@@ -175,72 +191,64 @@ public class CustomSkullFont extends FontSet {
                         // Let the texture manager register the skin and do the downloading for us
                         Minecraft.getInstance().getTextureManager().register(resourceLocation, httpTexture);
                     }
-                } else {
-                    // If there is no skin data we simply show the default skin which can be loaded from a resource
-                    ResourceLocation location = DefaultPlayerSkin.getDefaultSkin();
-                    var simpleTexture = SimpleTexture.TextureImage.load(Minecraft.getInstance().getResourceManager(), location);
-                    var image = simpleTexture.getImage();
-                    saveGlyph(image, config, next);
                 }
+            } catch (Exception x) {
+                x.printStackTrace();
             }
-        } catch (Exception x) {
-            x.printStackTrace();
-        }
+        });
         return (char) next;
     }
 
     /**
-     * Saves the glyph with the given config and next based on the given input.
+     * Converts the input RGB value into a grayscale RGG value.
      */
-    private static void saveGlyph(NativeImage input, SkullConfig config, int next) {
-        // Copy the image so we can modify it freely
-        var mapping = new HashMap<Integer, Integer>();
-        NativeImage image = new NativeImage(NativeImage.Format.RGBA, 64, 64, false);
-        image.copyFrom(input);
+    private static int toGrayscale(int input) {
+        try {
+            return grayscaleMappings.get(input, () -> {
+                var color = new Color(input);
+                var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
+                return new Color(val, val, val, color.getAlpha()).getRGB();
+            });
+        } catch (Exception x) {
+            x.printStackTrace();
+            return input;
+        }
+    }
 
-        // If the image is grayscale we grayscale the head
-        if (config.grayscale()) {
-            for (int x = 8; x < 16; x++) {
-                for (int y = 8; y < 16; y++) {
-                    var pixel = image.getPixelRGBA(x, y);
-                    if (pixel != 0) {
-                        image.setPixelRGBA(x, y, mapping.computeIfAbsent(pixel, (inp) -> {
-                            var color = new Color(inp);
-                            var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
-                            return new Color(val, val, val, color.getAlpha()).getRGB();
-                        }));
-                    }
-                }
+    /**
+     * Builds the given image with the given config into a glyph.
+     */
+    private static void buildGlyph(NativeImage input, SkullConfig config, int next) {
+        var target = new NativeImage(NativeImage.Format.RGBA, 8, 8, false);
+        var grayscale = config.grayscale();
+
+        // Copy over the base layer
+        for (int x = 8; x < 16; x++) {
+            for (int y = 8; y < 16; y++) {
+                var pixel = input.getPixelRGBA(x, y);
+                target.setPixelRGBA(x - 8, y - 8, grayscale ? toGrayscale(pixel) : pixel);
             }
         }
 
-        // Copy the hat layer on top of the main layer
+        // Copy the hat layer into the image using the blend function
         for (int x = 40; x < 48; x++) {
             for (int y = 8; y < 16; y++) {
-                var pixel = image.getPixelRGBA(x, y);
+                var pixel = input.getPixelRGBA(x, y);
                 if (pixel != 0) {
-                    if (config.grayscale()) {
-                        image.setPixelRGBA(x - 32, y, mapping.computeIfAbsent(pixel, (inp) -> {
-                            var color = new Color(inp);
-                            var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
-                            return new Color(val, val, val, color.getAlpha()).getRGB();
-                        }));
-                    } else {
-                        image.setPixelRGBA(x - 32, y, pixel);
-                    }
+                    target.blendPixel(x - 40, y - 8, grayscale ? toGrayscale(pixel) : pixel);
                 }
             }
         }
 
-        var glyph = new Glyph(image, config.scale(), config.advance(), config.ascent());
-        glyphs.put(next, glyph);
+        glyphs.put(next, new Glyph(target, config.scale(), config.advance(), config.ascent()));
     }
 
     @Environment(value = EnvType.CLIENT)
     public record Glyph(NativeImage image, float scale, int advance, int ascent) implements GlyphInfo {
         @Override
         public float getAdvance() {
-            return this.advance;
+            // The skull has a width of 8, and we need to return size + 1
+            return 9 + this.advance;
         }
 
         @Override
@@ -269,7 +277,7 @@ public class CustomSkullFont extends FontSet {
 
                 @Override
                 public void upload(int i, int j) {
-                    image.upload(0, i, j, 8, 8, 8, 8, false, false);
+                    image.upload(0, i, j, 0, 0, 8, 8, false, false);
                 }
 
                 @Override
