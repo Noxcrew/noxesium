@@ -21,6 +21,7 @@ import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.gui.font.glyphs.SpecialGlyphs;
 import net.minecraft.client.renderer.texture.HttpTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -46,8 +48,9 @@ public class CustomSkullFont extends FontSet {
 
     public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation("noxesium", "skulls");
     private static final Map<SkullConfig, Character> claims = new HashMap<>();
-    private static final Map<Integer, GlyphInfo> glyphs = new HashMap<>();
+    private static final Map<Integer, Glyph> glyphs = new HashMap<>();
     private static final Map<Integer, BakedGlyph> bakedGlyphs = new HashMap<>();
+    private static final Map<GlyphProperties, BakedGlyph> fallbackBakedGlyphs = new HashMap<>();
     private static final Cache<Integer, Integer> grayscaleMappings = CacheBuilder.newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
             .build();
@@ -55,8 +58,22 @@ public class CustomSkullFont extends FontSet {
     private static boolean created = false;
     private static UUID instance = UUID.randomUUID();
 
+    private NativeImage fallbackGlyph;
+    private NativeImage grayscaleFallbackGlyph;
+
     public CustomSkullFont(TextureManager textureManager, ResourceLocation resourceLocation) {
         super(textureManager, resourceLocation);
+
+        try {
+            ResourceLocation location = DefaultPlayerSkin.getDefaultSkin();
+            var simpleTexture = SimpleTexture.TextureImage.load(Minecraft.getInstance().getResourceManager(), location);
+            var image = simpleTexture.getImage();
+
+            fallbackGlyph = processImage(image, false);
+            grayscaleFallbackGlyph = processImage(image, true);
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
     }
 
     /**
@@ -99,9 +116,28 @@ public class CustomSkullFont extends FontSet {
             // If we haven't baked a glyph yet we do so on the fly, vanilla
             // does the same in extreme cases.
             var cast = (FontSetExt) this;
-            var baked = glyphs.get(i).bake(cast::invokeStitch);
-            bakedGlyphs.put(i, baked);
-            return baked;
+            var info = glyphs.get(i);
+
+            // If the image finished loading we bake and stitch it
+            if (info.image.isDone()) {
+                var baked = info.bake(cast::invokeStitch);
+                bakedGlyphs.put(i, baked);
+                return baked;
+            } else {
+                // If we already calculated the fallback we re-use it, we do this re-use per
+                // properties object so we don't stitch copies of the same fallback image with
+                // the same offset and advance.
+                var properties = new GlyphProperties(info);
+                if (fallbackBakedGlyphs.containsKey(properties)) {
+                    return fallbackBakedGlyphs.get(properties);
+                }
+
+                // Create a new glyph that uses the fallback glyph image and bake/stitch it.
+                var fallGlyph = new Glyph(properties.grayscale ? grayscaleFallbackGlyph : fallbackGlyph, properties);
+                var baked = fallGlyph.bake(cast::invokeStitch);
+                fallbackBakedGlyphs.put(properties, baked);
+                return baked;
+            }
         }
         return super.getGlyph(i);
     }
@@ -146,6 +182,12 @@ public class CustomSkullFont extends FontSet {
 
         // Await the completion of the future before baking the glyph
         var oldInstance = instance;
+
+        // We immediately store the glyph data with a future promise to get the image
+        var imageFuture = new CompletableFuture<NativeImage>();
+        var glyph = new Glyph(imageFuture, config);
+        glyphs.put(next, glyph);
+
         future.whenComplete((texture, t) -> {
             // Stop waiting on old completables
             if (!Objects.equals(instance, oldInstance)) return;
@@ -168,7 +210,7 @@ public class CustomSkullFont extends FontSet {
                             try (InputStream inputStream = new FileInputStream(file2)) {
                                 nativeImage = NativeImage.read(inputStream);
                             }
-                            buildGlyph(nativeImage, config, next);
+                            imageFuture.complete(processImage(nativeImage, config.grayscale()));
                         } catch (IOException x) {
                             x.printStackTrace();
                         }
@@ -182,7 +224,7 @@ public class CustomSkullFont extends FontSet {
                                 try (InputStream inputStream = new FileInputStream(file2)) {
                                     nativeImage = NativeImage.read(inputStream);
                                 }
-                                buildGlyph(nativeImage, config, next);
+                                imageFuture.complete(processImage(nativeImage, config.grayscale()));
                             } catch (IOException x) {
                                 x.printStackTrace();
                             }
@@ -216,11 +258,10 @@ public class CustomSkullFont extends FontSet {
     }
 
     /**
-     * Builds the given image with the given config into a glyph.
+     * Processes the given input image.
      */
-    private static void buildGlyph(NativeImage input, SkullConfig config, int next) {
+    private static NativeImage processImage(NativeImage input, boolean grayscale) {
         var target = new NativeImage(NativeImage.Format.RGBA, 8, 8, false);
-        var grayscale = config.grayscale();
 
         // Copy over the base layer
         for (int x = 8; x < 16; x++) {
@@ -239,12 +280,27 @@ public class CustomSkullFont extends FontSet {
                 }
             }
         }
+        return target;
+    }
 
-        glyphs.put(next, new Glyph(target, config.scale(), config.advance(), config.ascent()));
+    public record GlyphProperties(boolean grayscale, float scale, int advance, int ascent) {
+
+        public GlyphProperties(Glyph glyph) {
+            this(glyph.grayscale(), glyph.scale(), glyph.advance(), glyph.ascent());
+        }
     }
 
     @Environment(value = EnvType.CLIENT)
-    public record Glyph(NativeImage image, float scale, int advance, int ascent) implements GlyphInfo {
+    public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance, int ascent) implements GlyphInfo {
+
+        public Glyph(CompletableFuture<NativeImage> image, SkullConfig config) {
+            this(image, config.grayscale(), config.scale(), config.advance(), config.ascent());
+        }
+
+        public Glyph(NativeImage image, GlyphProperties properties) {
+            this(CompletableFuture.completedFuture(image), properties.grayscale(), properties.scale(), properties.advance(), properties.ascent());
+        }
+
         @Override
         public float getAdvance() {
             // The skull has a width of 8, and we need to return size + 1
@@ -253,6 +309,8 @@ public class CustomSkullFont extends FontSet {
 
         @Override
         public BakedGlyph bake(Function<SheetGlyphInfo, BakedGlyph> function) {
+            // We require the image to be present by baking time.
+            var image = this.image.getNow(null);
             return function.apply(new SheetGlyphInfo() {
 
                 @Override
