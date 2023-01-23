@@ -47,7 +47,7 @@ import java.util.function.Function;
 public class CustomSkullFont extends FontSet {
 
     public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation("noxesium", "skulls");
-    private static final Map<SkullConfig, Character> claims = new HashMap<>();
+    private static final Map<SkullProperties, Character> claims = new HashMap<>();
     private static final Map<Integer, Glyph> glyphs = new HashMap<>();
     private static final Map<Integer, BakedGlyph> bakedGlyphs = new HashMap<>();
     private static final Map<GlyphProperties, BakedGlyph> fallbackBakedGlyphs = new HashMap<>();
@@ -168,13 +168,14 @@ public class CustomSkullFont extends FontSet {
      */
     public static char claim(SkullConfig config) {
         // Use an existing claim if possible
-        if (claims.containsKey(config)) {
-            return claims.get(config);
+        var properties = config.properties();
+        if (claims.containsKey(properties)) {
+            return claims.get(properties);
         }
 
         // Otherwise make a new claim
         var next = nextCharacter++;
-        claims.put(config, (char) next);
+        claims.put(properties, (char) next);
 
         // Create the glyph for this skull
         var future = config.texture();
@@ -185,7 +186,7 @@ public class CustomSkullFont extends FontSet {
 
         // We immediately store the glyph data with a future promise to get the image
         var imageFuture = new CompletableFuture<NativeImage>();
-        var glyph = new Glyph(imageFuture, config);
+        var glyph = new Glyph(imageFuture, properties);
         glyphs.put(next, glyph);
 
         future.whenComplete((texture, t) -> {
@@ -210,7 +211,7 @@ public class CustomSkullFont extends FontSet {
                             try (InputStream inputStream = new FileInputStream(file2)) {
                                 nativeImage = NativeImage.read(inputStream);
                             }
-                            imageFuture.complete(processImage(nativeImage, config.grayscale()));
+                            imageFuture.complete(processImage(nativeImage, properties.grayscale()));
                         } catch (IOException x) {
                             x.printStackTrace();
                         }
@@ -224,7 +225,7 @@ public class CustomSkullFont extends FontSet {
                                 try (InputStream inputStream = new FileInputStream(file2)) {
                                     nativeImage = NativeImage.read(inputStream);
                                 }
-                                imageFuture.complete(processImage(nativeImage, config.grayscale()));
+                                imageFuture.complete(processImage(nativeImage, properties.grayscale()));
                             } catch (IOException x) {
                                 x.printStackTrace();
                             }
@@ -293,8 +294,8 @@ public class CustomSkullFont extends FontSet {
     @Environment(value = EnvType.CLIENT)
     public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance, int ascent) implements GlyphInfo {
 
-        public Glyph(CompletableFuture<NativeImage> image, SkullConfig config) {
-            this(image, config.grayscale(), config.scale(), config.advance(), config.ascent());
+        public Glyph(CompletableFuture<NativeImage> image, SkullProperties properties) {
+            this(image, properties.grayscale(), properties.scale(), properties.advance(), properties.ascent());
         }
 
         public Glyph(NativeImage image, GlyphProperties properties) {

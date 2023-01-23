@@ -35,7 +35,7 @@ public class SkullContents implements ComponentContents {
         this.advance = advance;
         this.ascent = ascent;
         this.scale = scale;
-        this.config = new SkullConfig(texture, grayscale, advance, ascent, scale);
+        this.config = new SkullConfig(texture, new SkullProperties(this));
     }
 
     @Nullable
@@ -70,6 +70,14 @@ public class SkullContents implements ComponentContents {
      */
     public String getText() {
         return Character.toString(CustomSkullFont.claim(config));
+    }
+
+    public SkullConfig getConfig() {
+        return config;
+    }
+
+    public SkullProperties getProperties() {
+        return config.properties();
     }
 
     @Override
