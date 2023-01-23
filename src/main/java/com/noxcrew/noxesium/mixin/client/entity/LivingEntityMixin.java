@@ -121,14 +121,19 @@ public abstract class LivingEntityMixin {
                 itemModel = itemRenderer.getModel(item, armorStand.level, armorStand, 0);
 
                 // Rotate the bounding box following the rotation of the entity
-                var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(armorStand);
-                if (renderer instanceof LivingEntityRenderer<?, ?>) {
-                    var model = ((LivingEntityRenderer<?, ?>) renderer).getModel();
-                    if (model instanceof HumanoidModel<?> humanoidModel) {
-                        humanoidModel.getHead().translateAndRotate(poseStack);
-                    }
+                var pose = armorStand.getEntityData().get(ArmorStand.DATA_HEAD_POSE);
+                var xRot = ((float)Math.PI / 180F) * pose.getX();
+                var yRot = ((float)Math.PI / 180F) * pose.getY();
+                var zRot = ((float)Math.PI / 180F) * pose.getZ();
+                if (zRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.ZP.rotation(zRot));
                 }
-
+                if (yRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.YP.rotation(yRot));
+                }
+                if (xRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.XP.rotation(xRot));
+                }
                 CustomHeadLayer.translateToHead(poseStack, false);
                 itemModel.getTransforms().getTransform(ItemTransforms.TransformType.HEAD).apply(false, poseStack);
                 poseStack.translate(-0.5D, -0.5D, -0.5D);
@@ -138,12 +143,23 @@ public abstract class LivingEntityMixin {
             else if (!leftItem.isEmpty() || !rightItem.isEmpty()) {
                 // Rotate the bounding box following the rotation of the entity
                 var flag2 = rightItem.isEmpty();
-                var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(armorStand);
-                if (renderer instanceof LivingEntityRenderer<?, ?>) {
-                    var model = ((LivingEntityRenderer<?, ?>) renderer).getModel();
-                    if (model instanceof HumanoidModel<?> humanoidModel) {
-                        humanoidModel.translateToHand(flag2 ? HumanoidArm.LEFT : HumanoidArm.RIGHT, poseStack);
-                    }
+                var pose = armorStand.getEntityData().get(flag2 ? ArmorStand.DATA_LEFT_ARM_POSE : ArmorStand.DATA_RIGHT_ARM_POSE);
+                if (flag2) {
+                    poseStack.translate(5.0 / 16.0, 0.0, 0.0);
+                } else {
+                    poseStack.translate(-5.0 / 16.0, 0.0, 0.0);
+                }
+                var xRot = ((float)Math.PI / 180F) * pose.getX();
+                var yRot = ((float)Math.PI / 180F) * pose.getY();
+                var zRot = ((float)Math.PI / 180F) * pose.getZ();
+                if (zRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.ZP.rotation(zRot));
+                }
+                if (yRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.YP.rotation(yRot));
+                }
+                if (xRot != 0.0F) {
+                    poseStack.mulPose(Vector3f.XP.rotation(xRot));
                 }
 
                 poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
