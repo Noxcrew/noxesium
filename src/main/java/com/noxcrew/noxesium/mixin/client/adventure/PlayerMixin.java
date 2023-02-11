@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.mixin.client.adventure;
 import com.noxcrew.noxesium.rule.ServerRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -35,7 +36,7 @@ public abstract class PlayerMixin {
 
         // Only override it if you're being denied the block modification
         if (cir.getReturnValue()) {
-            cir.setReturnValue(!ServerRules.GLOBAL_CAN_DESTROY.get().test(level.registryAccess().registryOrThrow(Registry.BLOCK_REGISTRY), new BlockInWorld(level, blockPos, false)));
+            cir.setReturnValue(!ServerRules.GLOBAL_CAN_DESTROY.get().test(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, blockPos, false)));
         }
     }
 
