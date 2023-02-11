@@ -3,10 +3,15 @@ package com.noxcrew.noxesium.skull;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A custom chat component that renders a player's face at its location. The
@@ -14,22 +19,38 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SkullContents implements ComponentContents {
 
-    private final String texture;
+    @Nullable
+    private final UUID uuid;
+    private final CompletableFuture<String> texture;
+    private final boolean grayscale;
     private final int advance;
     private final int ascent;
     private final float scale;
     private final SkullConfig config;
 
-    public SkullContents(String texture, int advance, int ascent, float scale) {
+    public SkullContents(@Nullable UUID uuid, CompletableFuture<String> texture, boolean grayscale, int advance, int ascent, float scale) {
+        this.uuid = uuid;
         this.texture = texture;
+        this.grayscale = grayscale;
         this.advance = advance;
         this.ascent = ascent;
         this.scale = scale;
-        this.config = new SkullConfig(texture, advance, ascent, scale);
+        this.config = new SkullConfig(texture, new SkullProperties(this));
     }
 
+    @Nullable
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    @Nullable
     public String getTexture() {
-        return texture;
+        // We simply use whatever texture we currently have, otherwise we lose the data.
+        return texture.getNow(null);
+    }
+
+    public boolean isGrayscale() {
+        return grayscale;
     }
 
     public int getAdvance() {
@@ -44,13 +65,38 @@ public class SkullContents implements ComponentContents {
         return scale;
     }
 
+    /**
+     * Returns the plain-text representation of this skull in the skull font.
+     */
+    public String getText() {
+        return Character.toString(CustomSkullFont.claim(config));
+    }
+
+    public SkullConfig getConfig() {
+        return config;
+    }
+
+    public SkullProperties getProperties() {
+        return config.properties();
+    }
+
+    @Override
+    public <T> Optional<T> visit(FormattedText.ContentConsumer<T> contentConsumer) {
+        return contentConsumer.accept(getText());
+    }
+
+    @Override
+    public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> styledContentConsumer, Style style) {
+        return styledContentConsumer.accept(style.withFont(CustomSkullFont.RESOURCE_LOCATION), getText());
+    }
+
     @Override
     public MutableComponent resolve(@Nullable CommandSourceStack commandSourceStack, @Nullable Entity entity, int i) {
-        return Component.literal(Character.toString(CustomSkullFont.claim(config))).setStyle(Style.EMPTY.withFont(CustomSkullFont.RESOURCE_LOCATION));
+        return Component.literal(getText()).setStyle(Style.EMPTY.withFont(CustomSkullFont.RESOURCE_LOCATION));
     }
 
     @Override
     public String toString() {
-        return "skull{texture='" + texture + "', advance='" + advance + "', ascent='" + ascent + "', scale='" + scale + "'}";
+        return "skull{texture='" + texture + "', grayscale='" + grayscale + "', advance='" + advance + "', ascent='" + ascent + "', scale='" + scale + "'}";
     }
 }

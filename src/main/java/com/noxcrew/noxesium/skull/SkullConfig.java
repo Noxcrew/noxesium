@@ -1,7 +1,10 @@
 package com.noxcrew.noxesium.skull;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
- * Defines the properties of a skull.
+ * A holding object for the texture to show for a skull and its properties.
  */
-public record SkullConfig(String texture, int advance, int ascent, float scale) {
+public record SkullConfig(CompletableFuture<String> texture, SkullProperties properties) {
+
 }
