@@ -6,8 +6,8 @@ import com.mojang.authlib.properties.Property;
 import com.noxcrew.noxesium.mixin.client.component.SkullBlockEntityExt;
 import net.minecraft.Util;
 import net.minecraft.client.resources.SkinManager;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 

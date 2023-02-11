@@ -13,7 +13,6 @@
     "client.ClientPacketListenerMixin",
     "client.LivingEntityMixin",
     "client.MinecraftMixin",
-    "client.ModelBakeryMixin",
     "client.PlayerTabOverlayMixin",
     "client.adventure.GameRendererMixin",
     "client.adventure.ItemStackMixin",

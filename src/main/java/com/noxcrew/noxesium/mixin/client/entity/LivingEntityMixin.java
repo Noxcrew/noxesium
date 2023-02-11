@@ -2,17 +2,13 @@ package com.noxcrew.noxesium.mixin.client.entity;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -23,9 +19,9 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -102,7 +98,7 @@ public abstract class LivingEntityMixin {
             var poseStack = new PoseStack();
 
             // Set up the pose stack
-            poseStack.mulPose(Vector3f.YP.rotationDegrees(180f - armorStand.yBodyRot));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180f - armorStand.yBodyRot));
             poseStack.scale(-1.0F, -1.0F, 1.0F);
             poseStack.translate(0.0D, (double) -1.501F, 0.0D);
 
@@ -126,13 +122,13 @@ public abstract class LivingEntityMixin {
                 var yRot = ((float)Math.PI / 180F) * pose.getY();
                 var zRot = ((float)Math.PI / 180F) * pose.getZ();
                 if (zRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.ZP.rotation(zRot));
+                    poseStack.mulPose(Axis.ZP.rotation(zRot));
                 }
                 if (yRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.YP.rotation(yRot));
+                    poseStack.mulPose(Axis.YP.rotation(yRot));
                 }
                 if (xRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.XP.rotation(xRot));
+                    poseStack.mulPose(Axis.XP.rotation(xRot));
                 }
                 CustomHeadLayer.translateToHead(poseStack, false);
                 itemModel.getTransforms().getTransform(ItemTransforms.TransformType.HEAD).apply(false, poseStack);
@@ -153,17 +149,17 @@ public abstract class LivingEntityMixin {
                 var yRot = ((float)Math.PI / 180F) * pose.getY();
                 var zRot = ((float)Math.PI / 180F) * pose.getZ();
                 if (zRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.ZP.rotation(zRot));
+                    poseStack.mulPose(Axis.ZP.rotation(zRot));
                 }
                 if (yRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.YP.rotation(yRot));
+                    poseStack.mulPose(Axis.YP.rotation(yRot));
                 }
                 if (xRot != 0.0F) {
-                    poseStack.mulPose(Vector3f.XP.rotation(xRot));
+                    poseStack.mulPose(Axis.XP.rotation(xRot));
                 }
 
-                poseStack.mulPose(Vector3f.XP.rotationDegrees(-90.0F));
-                poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 poseStack.translate((double) ((float) (flag2 ? -1 : 1) / 16.0F), 0.125D, -0.625D);
                 itemModel = itemRenderer.getModel(flag2 ? leftItem : rightItem, armorStand.level, armorStand, 0);
             }
@@ -202,9 +198,7 @@ public abstract class LivingEntityMixin {
                 float f = bytebuffer.getFloat(0);
                 float f1 = bytebuffer.getFloat(4);
                 float f2 = bytebuffer.getFloat(8);
-                Vector4f vector4f = new Vector4f(f, f1, f2, 1.0F);
-                vector4f.transform(matrix4f);
-                boundingBox = expandToInclude(boundingBox, vector4f);
+                boundingBox = expandToInclude(boundingBox, matrix4f.transform(new Vector4f(f, f1, f2, 1.0F)));
             }
         }
         return boundingBox;

@@ -19,4 +19,3 @@ A fabric mod with feature additions, bugfixes and various performance improvemen
 
 ### MCC Island-only Features
 - Adds a setting to show player heads in UIs
-- Removes client log spam from resource pack loading
