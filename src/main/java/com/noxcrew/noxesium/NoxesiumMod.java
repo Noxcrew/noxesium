@@ -19,7 +19,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * The current protocol version of the mod. Servers can use this version to determine which functionality
      * of Noxesium is available on the client.
      */
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
 
     public static final ResourceLocation CLIENT_INFORMATION_CHANNEL = new ResourceLocation("noxesium", "client_information");
     public static final ResourceLocation CLIENT_SETTINGS_CHANNEL = new ResourceLocation("noxesium", "client_settings");

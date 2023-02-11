@@ -82,6 +82,7 @@ public class CustomSkullFont extends FontSet {
     public static void createIfNeccesary() {
         if (created) return;
         created = true;
+        clear();
 
         try {
             var instance = Minecraft.getInstance();
@@ -331,7 +332,7 @@ public class CustomSkullFont extends FontSet {
 
                 @Override
                 public float getBearingY() {
-                    return SheetGlyphInfo.super.getBearingY() - (float) ascent;
+                    return SheetGlyphInfo.super.getBearingY() + (float) ascent;
                 }
 
                 @Override
