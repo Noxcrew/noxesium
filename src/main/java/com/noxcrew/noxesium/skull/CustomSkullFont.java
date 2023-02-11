@@ -79,7 +79,7 @@ public class CustomSkullFont extends FontSet {
     /**
      * Sets up a new custom skull font.
      */
-    public static void createIfNeccesary() {
+    public static void createIfNecessary() {
         if (created) return;
         created = true;
         clear();

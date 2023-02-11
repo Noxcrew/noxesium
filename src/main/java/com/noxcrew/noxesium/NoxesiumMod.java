@@ -29,7 +29,7 @@ public class NoxesiumMod implements ClientModInitializer {
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
             // Create the custom skull font if it's not already created
-            CustomSkullFont.createIfNeccesary();
+            CustomSkullFont.createIfNecessary();
         });
 
         // Every time the client joins a server we send over information on the version being used
