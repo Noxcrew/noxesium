@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "mixins": [
+    "client.InventorySlotMixin",
+    "client.InventoryMixin",
     "client.component.SkullBlockEntityExt",
     "client.entity.LivingEntityMixin"
   ],

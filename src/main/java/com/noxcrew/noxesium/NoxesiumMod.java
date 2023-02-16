@@ -25,6 +25,9 @@ public class NoxesiumMod implements ClientModInitializer {
     public static final ResourceLocation CLIENT_SETTINGS_CHANNEL = new ResourceLocation("noxesium", "client_settings");
     public static final ResourceLocation SERVER_RULE_CHANNEL = new ResourceLocation("noxesium", "server_rules");
 
+    public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
+    public static final String IMMOVABLE_TAG = "mcc:immovable";
+
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
