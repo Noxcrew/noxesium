@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.rule;
+package com.noxcrew.noxesium.rule.impl;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

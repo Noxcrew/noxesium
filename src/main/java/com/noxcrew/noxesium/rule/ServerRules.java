@@ -1,5 +1,9 @@
 package com.noxcrew.noxesium.rule;
 
+import com.noxcrew.noxesium.rule.impl.AdventureModeCheckServerRule;
+import com.noxcrew.noxesium.rule.impl.CameraLockedRule;
+import com.noxcrew.noxesium.rule.impl.CustomAdventureModeCheck;
+
 /**
  * A class that stores all known server rules.
  */
@@ -27,4 +31,9 @@ public class ServerRules {
      * useful for avoiding overlapping faction icons. Positive values move the text up.
      */
     public static ServerRule<Integer> HELD_ITEM_NAME_OFFSET = new IntegerServerRule(3, 0);
+
+    /**
+     * Whether the player should currently prevent any mouse inputs from moving their camera.
+     */
+    public static ServerRule<Boolean> CAMERA_LOCKED = new CameraLockedRule(4);
 }

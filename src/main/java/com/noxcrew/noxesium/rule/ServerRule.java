@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A generic object whose value is filled in by a server.
@@ -39,14 +40,30 @@ public abstract class ServerRule<T> {
      * Resets the value of this rule.
      */
     private void reset() {
+        var oldValue = value;
         value = getDefault();
+
+        if (!Objects.equals(oldValue, value)) {
+            onValueChanged(oldValue, value);
+        }
     }
 
     /**
      * Reads the value of this rule from the given [buffer].
      */
     private void set(FriendlyByteBuf buffer) {
+        var oldValue = value;
         value = read(buffer);
+
+        if (!Objects.equals(oldValue, value)) {
+            onValueChanged(oldValue, value);
+        }
+    }
+
+    /**
+     * Called when the value changes from [oldValue] to [newValue].
+     */
+    protected void onValueChanged(T oldValue, T newValue) {
     }
 
     /**

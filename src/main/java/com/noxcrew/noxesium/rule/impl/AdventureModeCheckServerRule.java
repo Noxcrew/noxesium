@@ -1,5 +1,6 @@
-package com.noxcrew.noxesium.rule;
+package com.noxcrew.noxesium.rule.impl;
 
+import com.noxcrew.noxesium.rule.ServerRule;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
