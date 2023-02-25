@@ -26,7 +26,7 @@ public class NoxesiumMod implements ClientModInitializer {
     public static final ResourceLocation SERVER_RULE_CHANNEL = new ResourceLocation("noxesium", "server_rules");
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-    public static final String IMMOVABLE_TAG = "mcc:immovable";
+    public static final String IMMOVABLE_TAG = "noxesium:immovable";
 
     @Override
     public void onInitializeClient() {
