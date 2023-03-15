@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -131,7 +130,7 @@ public abstract class LivingEntityMixin {
                     poseStack.mulPose(Axis.XP.rotation(xRot));
                 }
                 CustomHeadLayer.translateToHead(poseStack, false);
-                itemModel.getTransforms().getTransform(ItemTransforms.TransformType.HEAD).apply(false, poseStack);
+                itemModel.getTransforms().head.apply(false, poseStack);
                 poseStack.translate(-0.5D, -0.5D, -0.5D);
             }
 
