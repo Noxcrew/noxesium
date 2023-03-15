@@ -15,6 +15,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -130,7 +131,7 @@ public abstract class LivingEntityMixin {
                     poseStack.mulPose(Axis.XP.rotation(xRot));
                 }
                 CustomHeadLayer.translateToHead(poseStack, false);
-                itemModel.getTransforms().head.apply(false, poseStack);
+                itemModel.getTransforms().getTransform(ItemDisplayContext.HEAD).apply(false, poseStack);
                 poseStack.translate(-0.5D, -0.5D, -0.5D);
             }
 
