@@ -1,5 +1,9 @@
 accessWidener v1 named
 
+accessible method com/mojang/blaze3d/platform/NativeImage isOutsideBounds (II)Z
+accessible method com/mojang/blaze3d/platform/NativeImage checkAllocated ()V
+accessible field com/mojang/blaze3d/platform/NativeImage pixels J
+
 accessible class net/minecraft/client/renderer/texture/SimpleTexture$TextureImage
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask
 accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask$CompileResults

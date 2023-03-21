@@ -10,6 +10,7 @@ A fabric mod with feature additions, bugfixes and various performance improvemen
 
 ### Performance
 - Optimized Beacon block entity rendering (disabled when using Iris Shaders)
+- Adds support for generating mipmaps for resource packs with oddly sized textures
 
 ### Bugfixes
 - Always display head layer in TAB menu
