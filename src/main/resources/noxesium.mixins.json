@@ -29,8 +29,6 @@
     "client.component.SkullBlockEntityExt",
     "client.entity.LevelRendererMixin",
     "client.entity.LivingEntityMixin",
-    "client.mipmap.MipmapGeneratorMixin",
-    "client.mipmap.SpriteLoaderMixin",
     "client.mouse.MouseHandlerAccessor",
     "client.mouse.MouseHandlerMixin"
   ],
