@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.skull;
+package com.noxcrew.noxesium.feature.skull;
 
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;

@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.skull;
+package com.noxcrew.noxesium.feature.skull;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;

@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.rule;
+package com.noxcrew.noxesium.feature.rule;
 
 import net.minecraft.network.FriendlyByteBuf;
 

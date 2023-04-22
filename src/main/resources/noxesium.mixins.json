@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "mixins": [
+    "client.music.SoundSourceMixin"
   ],
   "client": [
     "client.BlockStateBaseMixin",
@@ -30,7 +31,10 @@
     "client.entity.LevelRendererMixin",
     "client.entity.LivingEntityMixin",
     "client.mouse.MouseHandlerAccessor",
-    "client.mouse.MouseHandlerMixin"
+    "client.mouse.MouseHandlerMixin",
+    "client.music.MusicManagerMixin",
+    "client.music.SoundOptionsMixin",
+    "client.sound.SoundEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1

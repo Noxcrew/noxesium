@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.client.mouse;
 
-import com.noxcrew.noxesium.rule.ServerRules;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.util.SmoothDouble;
 import org.spongepowered.asm.mixin.Final;

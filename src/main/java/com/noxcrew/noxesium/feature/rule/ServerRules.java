@@ -1,8 +1,9 @@
-package com.noxcrew.noxesium.rule;
+package com.noxcrew.noxesium.feature.rule;
 
-import com.noxcrew.noxesium.rule.impl.AdventureModeCheckServerRule;
-import com.noxcrew.noxesium.rule.impl.CameraLockedRule;
-import com.noxcrew.noxesium.rule.impl.CustomAdventureModeCheck;
+import com.noxcrew.noxesium.feature.rule.impl.AdventureModeCheckServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
+import com.noxcrew.noxesium.feature.rule.impl.CustomAdventureModeCheck;
+import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 
 /**
  * A class that stores all known server rules.
@@ -36,4 +37,13 @@ public class ServerRules {
      * Whether the player should currently prevent any mouse inputs from moving their camera.
      */
     public static ServerRule<Boolean> CAMERA_LOCKED = new CameraLockedRule(4);
+
+    /**
+     * Whether the custom music system should be enabled. When enabled vanilla background music is fully disabled and
+     * additional music sliders become available to configure.
+     *
+     * @deprecated System is not yet finished.
+     */
+    @Deprecated
+    public static ServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(5);
 }

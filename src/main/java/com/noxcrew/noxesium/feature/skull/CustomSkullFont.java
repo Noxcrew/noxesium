@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.skull;
+package com.noxcrew.noxesium.feature.skull;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

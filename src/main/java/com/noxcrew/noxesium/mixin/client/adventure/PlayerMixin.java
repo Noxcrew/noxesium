@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.client.adventure;
 
-import com.noxcrew.noxesium.rule.ServerRules;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;

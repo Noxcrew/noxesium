@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.client;
 
-import com.noxcrew.noxesium.rule.ServerRules;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

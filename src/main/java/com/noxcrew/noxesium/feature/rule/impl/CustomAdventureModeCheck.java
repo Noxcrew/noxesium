@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.rule.impl;
+package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -6,11 +6,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import java.util.Objects;
 import net.minecraft.commands.arguments.blocks.BlockPredicateArgument;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import org.jetbrains.annotations.Nullable;

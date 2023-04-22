@@ -11,6 +11,7 @@ Server developers are welcome to submit additional patches they need, however al
 - Allow servers to disable riptide trident collisions
 - Allow servers to define a global CanDestroy and CanPlaceOn tag that applies to all items
 - Allow servers to show player heads in chat messages
+- Allow servers to play custom background music
 
 ### Performance
 - Optimized Beacon block entity rendering (disabled when using Iris Shaders)
@@ -20,6 +21,7 @@ Server developers are welcome to submit additional patches they need, however al
 - Change teleport packets to teleport vehicle passengers to their vehicle
 - Fixes lighting issues with moving piston walls
 - Fixes custom models sometimes disappearing when not looking at the center
+- Music properly resumes playing when setting the volume to 0% and back up
 
 ### MCC Island-specific Features
 - Adds a setting to show player heads in UIs

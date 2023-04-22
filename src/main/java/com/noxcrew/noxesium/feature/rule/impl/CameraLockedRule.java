@@ -1,7 +1,7 @@
-package com.noxcrew.noxesium.rule.impl;
+package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.mixin.client.mouse.MouseHandlerAccessor;
-import com.noxcrew.noxesium.rule.BooleanServerRule;
+import com.noxcrew.noxesium.feature.rule.BooleanServerRule;
 import net.minecraft.client.Minecraft;
 
 import java.util.Objects;

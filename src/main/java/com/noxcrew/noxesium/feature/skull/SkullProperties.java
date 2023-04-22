@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.skull;
+package com.noxcrew.noxesium.feature.skull;
 
 
 import java.util.UUID;

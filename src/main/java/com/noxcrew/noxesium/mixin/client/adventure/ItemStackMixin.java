@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.client.adventure;
 
-import com.noxcrew.noxesium.rule.ServerRules;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
