@@ -55,7 +55,7 @@ public class GameRendererMixin {
                     BlockInWorld blockInWorld = new BlockInWorld(this.minecraft.level, blockPos, false);
                     Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registries.BLOCK);
 
-                    // Allow global can destroy or can place on to override and render the outline anyways
+                    // Allow global can destroy or can place on to override and render the outline anyway
                     if (ServerRules.GLOBAL_CAN_DESTROY.get().test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.get().test(registry, blockInWorld)) {
                         cir.setReturnValue(true);
                     }

@@ -28,7 +28,7 @@ public class ServerRules {
 
     /**
      * An integer pixel amount to vertically offset the HUD held item name.
-     * useful for avoiding overlapping faction icons. Positive values move the text up.
+     * Useful for avoiding overlapping faction icons. Positive values move the text up.
      */
     public static ServerRule<Integer> HELD_ITEM_NAME_OFFSET = new IntegerServerRule(3, 0);
 
