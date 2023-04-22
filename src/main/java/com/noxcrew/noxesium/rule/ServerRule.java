@@ -79,9 +79,9 @@ public abstract class ServerRule<T> {
         }
 
         // Second we let each value read the data from the buffer
-        var amount = buffer.readInt();
+        var amount = buffer.readVarInt();
         for (int i = 0; i < amount; i++) {
-            var index = buffer.readInt();
+            var index = buffer.readVarInt();
             var rule = rules.get(index);
             if (rule == null) continue;
             rule.set(buffer);

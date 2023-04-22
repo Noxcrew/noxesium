@@ -19,11 +19,15 @@ public class NoxesiumMod implements ClientModInitializer {
      * The current protocol version of the mod. Servers can use this version to determine which functionality
      * of Noxesium is available on the client.
      */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
-    public static final ResourceLocation CLIENT_INFORMATION_CHANNEL = new ResourceLocation("noxesium", "client_information");
-    public static final ResourceLocation CLIENT_SETTINGS_CHANNEL = new ResourceLocation("noxesium", "client_settings");
-    public static final ResourceLocation SERVER_RULE_CHANNEL = new ResourceLocation("noxesium", "server_rules");
+    public static final String API_VERSION = "v1";
+    public static final String API_NAMESPACE = "noxesium-" + API_VERSION;
+
+    public static final ResourceLocation CLIENT_INFORMATION_CHANNEL = new ResourceLocation(API_NAMESPACE, "client_information");
+    public static final ResourceLocation CLIENT_SETTINGS_CHANNEL = new ResourceLocation(API_NAMESPACE, "client_settings");
+    public static final ResourceLocation SERVER_RULE_CHANNEL = new ResourceLocation(API_NAMESPACE, "server_rules");
+    public static final ResourceLocation RESET_CHANNEL = new ResourceLocation(API_NAMESPACE, "reset");
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String IMMOVABLE_TAG = "noxesium:immovable";
@@ -41,7 +45,7 @@ public class NoxesiumMod implements ClientModInitializer {
             {
                 if (Minecraft.getInstance().getConnection() != null) {
                     var outBuffer = PacketByteBufs.create();
-                    outBuffer.writeInt(VERSION);
+                    outBuffer.writeVarInt(VERSION);
                     ClientPlayNetworking.send(CLIENT_INFORMATION_CHANNEL, outBuffer);
                 }
             }
@@ -49,6 +53,18 @@ public class NoxesiumMod implements ClientModInitializer {
             // Set up a receiver for any server rules
             ClientPlayNetworking.registerReceiver(SERVER_RULE_CHANNEL, (client, handler, buffer, responseSender) -> {
                 ServerRule.readAll(buffer);
+            });
+
+            // Set up a receiver for clearing client cached data
+            ClientPlayNetworking.registerReceiver(RESET_CHANNEL, (client, handler, buffer, responseSender) -> {
+                var command = buffer.readByte();
+
+                if (hasFlag(command, 0)) {
+                    ServerRule.clearAll();
+                }
+                if (hasFlag(command, 1)) {
+                    CustomSkullFont.clear();
+                }
             });
 
             // Inform the player about the GUI scale of the client
@@ -64,15 +80,30 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     /**
+     * Returns whether the flag at index in command is enabled.
+     */
+    private boolean hasFlag(byte command, int index) {
+        return (command & (1 << index)) != 0;
+    }
+
+    /**
      * Sends a packet to the server containing the GUI scale of the client which
      * allows servers to more accurately adapt their UI to clients.
      */
     public static void syncGuiScale() {
         if (Minecraft.getInstance().getConnection() == null) return;
         var outBuffer = PacketByteBufs.create();
-        outBuffer.writeInt(Minecraft.getInstance().options.guiScale().get());
+        var window = Minecraft.getInstance().getWindow();
+        var options = Minecraft.getInstance().options;
+
+        outBuffer.writeVarInt(options.guiScale().get());
+        outBuffer.writeDouble(window.getGuiScale());
+        outBuffer.writeVarInt(window.getGuiScaledWidth());
+        outBuffer.writeVarInt(window.getGuiScaledHeight());
         outBuffer.writeBoolean(Minecraft.getInstance().isEnforceUnicode());
-        // TODO Consider sending the aspect ratio of the game window as well
+        outBuffer.writeBoolean(options.touchscreen().get());
+        outBuffer.writeDouble(options.notificationDisplayTime().get());
+
         ClientPlayNetworking.send(CLIENT_SETTINGS_CHANNEL, outBuffer);
     }
 }
