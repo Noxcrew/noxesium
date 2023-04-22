@@ -76,6 +76,7 @@ public class NoxesiumMod implements ClientModInitializer {
         var outBuffer = PacketByteBufs.create();
         outBuffer.writeInt(Minecraft.getInstance().options.guiScale().get());
         outBuffer.writeBoolean(Minecraft.getInstance().isEnforceUnicode());
+        // TODO Consider sending the aspect ratio of the game window as well
         ClientPlayNetworking.send(CLIENT_SETTINGS_CHANNEL, outBuffer);
     }
 }
