@@ -26,6 +26,40 @@ Server developers are welcome to submit additional patches they need, however al
 
 
 # For developers
+## Player Heads
+Noxesium uses a feature of [Scoreboard Values in Raw JSON text format](https://minecraft.fandom.com/wiki/Raw_JSON_text_format#Scoreboard_Value) to display the player heads. If a player doesn't have Noxesium installed, they will not see the player head. 
+
+### Format
+You have to place a string into the score/name section of the JSON object prefixed with `%NCPH%` and followed by a comma-seperated list of properties:
+|Field Name   |Field Type   |Notes                                                |
+|-------------|-------------|-----------------------------------------------------|
+|Player UUID  |UUID         |UUID of a player, whose skull is displayed.          |
+|Grayscale    |Boolean      |If true, the skull will be gray.                     |
+|Advance      |Integer      |Moves the skull horizontally (doesn't work in chat). |
+|Ascent       |Integer      |Moves the skull vertically.                          |
+|Scale        |Float        |Scales the skull. The anchor is top-left.            |
+
+### Example
+```
+%NCPH%d4b87174-1a8b-40a9-b32d-d352508916ba,false,0,0,1.0
+```
+
+### Usages
+**Minecraft Commands**
+```
+/tellraw @a {"score":{"name":"%NCPH%d4b87174-1a8b-40a9-b32d-d352508916ba,false,0,0,1.0","objective":""}}
+```
+
+**Paper Java Plugin**
+```java
+player.sendMessage(Component.score("%NCPH%d4b87174-1a8b-40a9-b32d-d352508916ba,false,0,0,1.0", ""));
+```
+
+**Spigot Java Plugin**
+```java
+player.spigot().sendMessage(new ScoreComponent("%NCPH%d4b87174-1a8b-40a9-b32d-d352508916ba,false,0,0,1.0", ""));
+```
+
 ## Message Channels
 Noxesium communicates with the server over plugin messaging channels. The namespace of these channels matches the current API version of Noxesium, which is currently `v1`. Currently, there are 4 messaging channels available.
 
@@ -33,27 +67,27 @@ Noxesium communicates with the server over plugin messaging channels. The namesp
 
 |Field Name       |Field Type       |Notes            |
 |-----------------|-----------------|-----------------|
-|Protocol Version |VarInt          |Currently 2      |
+|Protocol Version |VarInt           |Currently 2      |
 
 `noxesium-v1:client_settings` (client -> server); Contains information about the settings used by the client. Sent when a player joins a server or whenever the player changes their settings.
 
-| Field Name         | Field Type | Notes                                       |
-|--------------------|------------|---------------------------------------------|
-| GUI Scale          | VarInt     | The value set in the video settings screen. |
-| Internal GUI Scale | Double | The internal GUI scale value.               |
-| Scaled Width       | VarInt | The scaled width of the window.             |
-| Scaled Height    | VarInt | The scaled height of the window.          |
-| Enforce Unicode    | Boolean    | Whether the enforce unicode setting is on.  |
-| Touchscreen Mode   | Boolean    | Whether touchscreen mode is on.             |
-| Notification Display Time | Double | The value of the notification display time setting. |
+| Field Name                | Field Type | Notes                                                |
+|---------------------------|------------|------------------------------------------------------|
+| GUI Scale                 | VarInt     | The value set in the video settings screen.          |
+| Internal GUI Scale        | Double     | The internal GUI scale value.                        |
+| Scaled Width              | VarInt     | The scaled width of the window.                      |
+| Scaled Height             | VarInt     | The scaled height of the window.                     |
+| Enforce Unicode           | Boolean    | Whether the enforce unicode setting is on.           |
+| Touchscreen Mode          | Boolean    | Whether touchscreen mode is on.                      |
+| Notification Display Time | Double     | The value of the notification display time setting.  |
 
 `noxesium-v1:server_rules` (server -> client); Can be used to modify the current values of server rules known to this client. You should not mark rules being changed for reset, the client avoids triggering changes if a rule's value did not change.
 
 | Field Name      |Field Type       | Notes                                                                                                                                                             |
 |-----------------|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Rules to reset  |VarInt Array     | An array of rule ids to reset to their default value.                                                                                                             |
-| Amount of rules |VarInt          | Size of the rules array.                                                                                                                                          |
-| Rules to change |ServerRule Array | An array of server rules to change, each rule has their own data format. This object always starts with a VarInt of the rule index before each rule's own data. |
+| Amount of rules |VarInt           | Size of the rules array.                                                                                                                                          |
+| Rules to change |ServerRule Array | An array of server rules to change, each rule has their own data format. This object always starts with a VarInt of the rule index before each rule's own data.   |
 
 `noxesium-v1:reset` (server -> client); Allows the server to reset specific parts of client data.
 
@@ -68,33 +102,33 @@ Server Rules are a system similar to Game Rules but able to be modified whenever
 
 |Field Name       |Field Type       |Notes                                            |
 |-----------------|-----------------|-------------------------------------------------|
-|Index            |VarInt          |0                                                |
-|Value            |Boolean          |`false` by default.|
+|Index            |VarInt           |0                                                |
+|Value            |Boolean          |`false` by default.                              |
 
 **Global Can Place On**. Makes client in adventure able to build on blocks provided. Similar to the per-item Place On but applies to all items including the empty hand.
 
-|Field Name       |Field Type         |Notes            |
-|-----------------|-------------------|-----------------|
-|Index            |VarInt            |1                |
+|Field Name       |Field Type         |Notes                                                                                                        |
+|-----------------|-------------------|-------------------------------------------------------------------------------------------------------------|
+|Index            |VarInt             |1                                                                                                            |
 |List             |List of Blocks     |Example: `minecraft:grass_block` will make the client think it can place blocks on grass blocks in adventure.|
 
 **Global Can Destroy**. Makes client in adventure able to break blocks provided. Similar to the per-item Can Destroy but applies to all items including the empty hand.
 
-|Field Name       |Field Type         |Notes            |
-|-----------------|-------------------|-----------------|
-|Index            |VarInt            |2                |
+|Field Name       |Field Type         |Notes                                                                                              |
+|-----------------|-------------------|---------------------------------------------------------------------------------------------------|
+|Index            |VarInt             |2                                                                                                  |
 |Blocks           |List of Blocks     |Example: `minecraft:grass_block` will make the client think it can break grass blocks in adventure.|
 
 **Held Item Name Offset**. Moves the item tooltip text in the action bar vertically. Positive values move it up.
 
 |Field Name       | Field Type |Notes            |
 |-----------------|------------|-----------------|
-|Index            | VarInt    |3                |
-|Offset           | VarInt     |`0` by default   |
+|Index            | VarInt     |3                |
+|Offset           | VarInt     |`0` by default.  |
 
 **Camera Lock**. Makes the client unable to move their camera.
 
 |Field Name       |Field Type         |Notes              |
 |-----------------|-------------------|-------------------|
-|Index            |VarInt            |4                  |
+|Index            |VarInt             |4                  |
 |Locked           |Boolean            |`false` by default.|
