@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class GuiMixin {
 
     @ModifyConstant(
-            method = "renderSelectedItemName(Lcom/mojang/blaze3d/vertex/PoseStack;)V",
+            method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",
             constant = @Constant(intValue = 59)
     )
     public int modify(int constant) {

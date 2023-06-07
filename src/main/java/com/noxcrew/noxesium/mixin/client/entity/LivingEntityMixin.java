@@ -114,7 +114,7 @@ public abstract class LivingEntityMixin {
             if (armorStand.hasItemInSlot(EquipmentSlot.HEAD)) {
                 // Set up the pose stack for drawing the model
                 var item = armorStand.getItemBySlot(EquipmentSlot.HEAD);
-                itemModel = itemRenderer.getModel(item, armorStand.level, armorStand, 0);
+                itemModel = itemRenderer.getModel(item, armorStand.level(), armorStand, 0);
 
                 // Rotate the bounding box following the rotation of the entity
                 var pose = armorStand.getEntityData().get(ArmorStand.DATA_HEAD_POSE);
@@ -161,7 +161,7 @@ public abstract class LivingEntityMixin {
                 poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 poseStack.translate((double) ((float) (flag2 ? -1 : 1) / 16.0F), 0.125D, -0.625D);
-                itemModel = itemRenderer.getModel(flag2 ? leftItem : rightItem, armorStand.level, armorStand, 0);
+                itemModel = itemRenderer.getModel(flag2 ? leftItem : rightItem, armorStand.level(), armorStand, 0);
             }
 
             // If there is no item model we return
