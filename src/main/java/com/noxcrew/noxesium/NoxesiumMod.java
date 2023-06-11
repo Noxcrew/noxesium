@@ -64,7 +64,7 @@ public class NoxesiumMod implements ClientModInitializer {
                     ServerRule.clearAll();
                 }
                 if (hasFlag(command, 1)) {
-                    CustomSkullFont.clear();
+                    CustomSkullFont.resetCaches();
                 }
             });
 
