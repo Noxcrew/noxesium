@@ -18,6 +18,5 @@ public class PlayerTabOverlayMixin {
     @ModifyArgs(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;IIIZZ)V"))
     private void modifyArguments(Args args) {
         args.set(5, true);
-        args.set(6, false);
     }
 }

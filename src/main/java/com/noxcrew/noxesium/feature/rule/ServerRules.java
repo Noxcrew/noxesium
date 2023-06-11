@@ -40,10 +40,8 @@ public class ServerRules {
 
     /**
      * Whether the custom music system should be enabled. When enabled vanilla background music is fully disabled and
-     * additional music sliders become available to configure.
-     *
-     * @deprecated System is not yet finished.
+     * additional music sliders become available to play music in. This can be used by servers that wish to play their
+     * own music.
      */
-    @Deprecated
     public static ServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(5);
 }

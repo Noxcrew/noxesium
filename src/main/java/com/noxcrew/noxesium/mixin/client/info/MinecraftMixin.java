@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.client;
+package com.noxcrew.noxesium.mixin.client.info;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.client.Minecraft;

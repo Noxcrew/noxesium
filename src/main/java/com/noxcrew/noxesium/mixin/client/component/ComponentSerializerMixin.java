@@ -46,51 +46,62 @@ public abstract class ComponentSerializerMixin {
     private void injected(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<MutableComponent> cir) {
         if (!jsonElement.isJsonObject()) return;
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        if (jsonObject.has("score")) {
-            // We allow custom servers to use a custom score component since it renders as empty if the value is not found.
-            var jsonObject2 = GsonHelper.getAsJsonObject(jsonObject, "score");
-            if (jsonObject2.has("name")) {
-                var jsonString = GsonHelper.getAsString(jsonObject2, "name");
+        if (jsonObject.has("translate")) {
+            // We allow custom servers to use a custom translate component since it renders as the fallback if the value is not found.
+            var jsonString = GsonHelper.getAsString(jsonObject, "translate");
 
-                // We check for a string that starts with %NCPH% for Noxesium Custom Player Head.
-                if (jsonString.startsWith("%NCPH%")) {
-                    var values = jsonString.substring("%NCPH%".length()).split(",");
+            // We check for a string that starts with our custom syntax.
+            boolean raw = false;
+            String[] values;
+            if (jsonString.startsWith("%nox_uuid%")) {
+                values = jsonString.substring("%nox_uuid%".length()).split(",");
+            } else if (jsonString.startsWith("%nox_raw%")) {
+                values = jsonString.substring("%nox_raw%".length()).split(",");
+                raw = true;
+            } else {
+                return;
+            }
+
+            try {
+                var grayscale = Boolean.parseBoolean(values[1]);
+                var advance = Integer.parseInt(values[2]);
+                var ascent = Integer.parseInt(values[3]);
+                var scale = Float.parseFloat(values[4]);
+
+                UUID uuid = null;
+                CompletableFuture<String> texture = new CompletableFuture<>();
+                if (raw) {
+                    // If raw we load the texture directly
+                    texture.complete(values[0]);
+                } else {
+                    // If it's a uuid we create a task to fetch it and complete later
+                    var stringUuid = values[0];
                     try {
-                        UUID uuid = null;
-                        var stringUuid = values[0];
-                        var grayscale = Boolean.parseBoolean(values[1]);
-                        var advance = Integer.parseInt(values[2]);
-                        var ascent = Integer.parseInt(values[3]);
-                        var scale = Float.parseFloat(values[4]);
-
-                        CompletableFuture<String> texture = new CompletableFuture<>();
-                        try {
-                            uuid = UUID.fromString(stringUuid);
-                            GameProfile gameprofile = new GameProfile(uuid, null);
-                            GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
-                                var property = Iterables.getFirst(profile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
-                                if (property != null) {
-                                    texture.complete(property.getValue());
-                                }
-                            });
-                        } catch (Exception x) {
-                            // We ignore any errors from fetching the player data.
-                        }
-
-                        MutableComponent mutableComponent = MutableComponent.create(new SkullContents(uuid, texture, grayscale, advance, ascent, scale));
-                        if (jsonObject.has("extra")) {
-                            JsonArray jsonArray2 = GsonHelper.getAsJsonArray(jsonObject, "extra");
-                            if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");
-                            for (int j = 0; j < jsonArray2.size(); ++j) {
-                                mutableComponent.append(deserialize(jsonArray2.get(j), type, jsonDeserializationContext));
+                        uuid = UUID.fromString(stringUuid);
+                        GameProfile gameprofile = new GameProfile(uuid, null);
+                        GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
+                            var property = Iterables.getFirst(profile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
+                            if (property != null) {
+                                texture.complete(property.getValue());
                             }
-                        }
-                        mutableComponent.setStyle(jsonDeserializationContext.deserialize(jsonElement, Style.class));
-                        cir.setReturnValue(mutableComponent);
+                        });
                     } catch (Exception x) {
-                        // Ignore exceptions while loading
+                        // We ignore any errors from fetching the player data.
                     }
                 }
+
+                MutableComponent mutableComponent = MutableComponent.create(new SkullContents(uuid, texture, grayscale, advance, ascent, scale));
+                if (jsonObject.has("extra")) {
+                    JsonArray jsonArray2 = GsonHelper.getAsJsonArray(jsonObject, "extra");
+                    if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");
+                    for (int j = 0; j < jsonArray2.size(); ++j) {
+                        mutableComponent.append(deserialize(jsonArray2.get(j), type, jsonDeserializationContext));
+                    }
+                }
+                mutableComponent.setStyle(jsonDeserializationContext.deserialize(jsonElement, Style.class));
+                cir.setReturnValue(mutableComponent);
+            } catch (Exception x) {
+                // Ignore exceptions while loading
             }
         } else if (jsonObject.has("skull")) {
             var jsonObject2 = GsonHelper.getAsJsonObject(jsonObject, "skull");

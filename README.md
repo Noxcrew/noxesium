@@ -14,6 +14,7 @@ Server developers are welcome to submit additional patches they need, however al
 - Allow servers to show player heads in chat messages
 - Allow servers to prevent picking up items in GUIs
 - Allow servers to prevent camera movement temporarily
+- Allow servers to disable vanilla Minecraft music
 
 ### Performance
 
@@ -77,7 +78,10 @@ Alternatively, if you cannot provide the uuid and wish to provide a texture dire
 
 ```java
 player.sendMessage(Component.translatable("%nox_uuid%3e7a89ee-c4e2-4392-a317-444b861b0794,false,0,0,1.0","This is shown for non-Noxesium clients"));
-        player.sendMessage(Component.translatable("%nox_raw%ewogICJ0aW1lc3RhbXAiIDogMTYxMjA1MTQxNDA4NywKICAicHJvZmlsZUlkIiA6ICJhNzdkNmQ2YmFjOWE0NzY3YTFhNzU1NjYxOTllYmY5MiIsCiAgInByb2ZpbGVOYW1lIiA6ICIwOEJFRDUiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyNjZiYThiY2Q4ZmE2NGE0NjgyOGY1NjEwZDk5MGE1MzEzMzVmNjQzZWYzOWYzZDA1ZDdmZTFjMWVkYjg4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=,false,0,0,1.0","This is shown for non-Noxesium clients"));
+```
+or
+```java
+player.sendMessage(Component.translatable("%nox_raw%ewogICJ0aW1lc3RhbXAiIDogMTYxMjA1MTQxNDA4NywKICAicHJvZmlsZUlkIiA6ICJhNzdkNmQ2YmFjOWE0NzY3YTFhNzU1NjYxOTllYmY5MiIsCiAgInByb2ZpbGVOYW1lIiA6ICIwOEJFRDUiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyNjZiYThiY2Q4ZmE2NGE0NjgyOGY1NjEwZDk5MGE1MzEzMzVmNjQzZWYzOWYzZDA1ZDdmZTFjMWVkYjg4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=,false,0,0,1.0","This is shown for non-Noxesium clients"));
 ```
 
 ## Message Channels
@@ -158,3 +162,10 @@ is a list of every server rule currently available and their data format in the 
 |------------|------------|---------------------|
 | Index      | VarInt     | 4                   |
 | Locked     | Boolean    | `false` by default. |
+
+**Custom Music**. Disables vanilla music and adds two new sound categories: Core Music and Game Music.
+
+| Field Name | Field Type | Notes               |
+|------------|------------|---------------------|
+| Index      | VarInt     | 5                   |
+| Enabled    | Boolean    | `false` by default. |
