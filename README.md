@@ -36,26 +36,26 @@ Server developers are welcome to submit additional patches they need, however al
 
 Noxesium supports rendering player heads into text through a custom skull component. The details of which can be found by looking into the contents
 of [the ComponentSerializerMixin file](https://github.com/Noxcrew/noxesium/blob/main/src/main/java/com/noxcrew/noxesium/mixin/client/component/ComponentSerializerMixin.java). However, since servers are often not able to introduce a new
-component type the recommended syntax to learn uses a variant based on the syntax for [translated text](https://minecraft.fandom.com/wiki/Raw_JSON_text_format#Translated_Text). With this syntax, if a player doesn't have Noxesium
+component type the recommended syntax to use is an optional syntax based on the [translated text component](https://minecraft.fandom.com/wiki/Raw_JSON_text_format#Translated_Text). With this syntax, if a player doesn't have Noxesium
 installed, the provided fallback will render instead. This allows servers to easily support Noxesium.
 
 ### Format
 
 You have to place a string into the translate section of the JSON object prefixed with `%nox_uuid%` and followed by a comma-seperated list of properties:
 
-|Field Name |Field Type |Notes |
-|-------------|-------------|-----------------------------------------------------|
-|Player UUID |UUID |UUID of a player, whose skull is displayed. |
-|Grayscale |Boolean |If true, the skull will be gray. |
-|Advance |Integer |Moves the skull horizontally (doesn't work in chat). |
-|Ascent |Integer |Moves the skull vertically. |
-|Scale |Float |Scales the skull. The anchor is top-left. |
+| Field Name  | Field Type | Notes                                                |
+|-------------|------------|------------------------------------------------------|
+| Player UUID | UUID       | UUID of a player, whose skull is displayed.          |
+| Grayscale   | Boolean    | If true, the skull will be gray.                     |
+| Advance     | Integer    | Moves the skull horizontally (doesn't work in chat). |
+| Ascent      | Integer    | Moves the skull vertically.                          |
+| Scale       | Float      | Scales the skull. The anchor is top-left.            |
 
 Alternatively, if you cannot provide the uuid and wish to provide a texture directly you can use the prefix `%nox_raw%` and replace the UUID with the following field:
 
-|Field Name |Field Type |Notes |
-|-------------|-------------|-----------------------------------------------------|
-|Texture Data |String |Raw texture data for a skin to display. |
+| Field Name   | Field Type | Notes                                   |
+|--------------|------------|-----------------------------------------|
+| Texture Data | String     | Raw texture data for a skin to display. |
 
 ### Example
 
@@ -76,8 +76,8 @@ Alternatively, if you cannot provide the uuid and wish to provide a texture dire
 **Paper Plugin**
 
 ```java
-player.sendMessage(Component.translatable("%nox_uuid%3e7a89ee-c4e2-4392-a317-444b861b0794,false,0,0,1.0", "This is shown for non-Noxesium clients"));
-player.sendMessage(Component.translatable("%nox_raw%ewogICJ0aW1lc3RhbXAiIDogMTYxMjA1MTQxNDA4NywKICAicHJvZmlsZUlkIiA6ICJhNzdkNmQ2YmFjOWE0NzY3YTFhNzU1NjYxOTllYmY5MiIsCiAgInByb2ZpbGVOYW1lIiA6ICIwOEJFRDUiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyNjZiYThiY2Q4ZmE2NGE0NjgyOGY1NjEwZDk5MGE1MzEzMzVmNjQzZWYzOWYzZDA1ZDdmZTFjMWVkYjg4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=,false,0,0,1.0", "This is shown for non-Noxesium clients"));
+player.sendMessage(Component.translatable("%nox_uuid%3e7a89ee-c4e2-4392-a317-444b861b0794,false,0,0,1.0","This is shown for non-Noxesium clients"));
+        player.sendMessage(Component.translatable("%nox_raw%ewogICJ0aW1lc3RhbXAiIDogMTYxMjA1MTQxNDA4NywKICAicHJvZmlsZUlkIiA6ICJhNzdkNmQ2YmFjOWE0NzY3YTFhNzU1NjYxOTllYmY5MiIsCiAgInByb2ZpbGVOYW1lIiA6ICIwOEJFRDUiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyNjZiYThiY2Q4ZmE2NGE0NjgyOGY1NjEwZDk5MGE1MzEzMzVmNjQzZWYzOWYzZDA1ZDdmZTFjMWVkYjg4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=,false,0,0,1.0","This is shown for non-Noxesium clients"));
 ```
 
 ## Message Channels
