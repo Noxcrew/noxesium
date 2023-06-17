@@ -2,6 +2,8 @@ package com.noxcrew.noxesium.skull;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
@@ -47,7 +49,9 @@ import java.util.function.Function;
 public class CustomSkullFont extends FontSet {
 
     public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation("noxesium", "skulls");
-    private static final Map<SkullProperties, Character> claims = new HashMap<>();
+
+    private static final BiMap<SkullProperties, Character> claims = HashBiMap.create();
+    private static final Map<SkullProperties, SkullConfig> lastConfig = new HashMap<>();
     private static final Map<Integer, Glyph> glyphs = new HashMap<>();
     private static final Map<Integer, BakedGlyph> bakedGlyphs = new HashMap<>();
     private static final Map<GlyphProperties, BakedGlyph> fallbackBakedGlyphs = new HashMap<>();
@@ -82,7 +86,6 @@ public class CustomSkullFont extends FontSet {
     public static void createIfNecessary() {
         if (created) return;
         created = true;
-        clear();
 
         try {
             var instance = Minecraft.getInstance();
@@ -140,6 +143,15 @@ public class CustomSkullFont extends FontSet {
                 return baked;
             }
         }
+
+        // Try to figure out which claim this was and rebuild it
+        if (claims.inverse().containsKey((char) i)) {
+            var properties = claims.inverse().get((char) i);
+            var config = lastConfig.get(properties);
+            if (config != null) {
+                loadGlyph(i, config);
+            }
+        }
         return super.getGlyph(i);
     }
 
@@ -151,17 +163,26 @@ public class CustomSkullFont extends FontSet {
         // be a mixin but the FontManager stores fonts in a local anonymous class which can't be
         // accessed through mixins. :/
         created = false;
+        resetCaches();
+    }
+
+    /**
+     * Resets cached values on pack switch, persisting claims but invalidating cached sprites.
+     */
+    public static void resetCaches() {
+        glyphs.clear();
+        bakedGlyphs.clear();
+        instance = UUID.randomUUID();
     }
 
     /**
      * Clear cached values on disconnection as it clears the chat history so we don't need the skulls anymore.
      */
-    public static void clear() {
+    public static void clearCaches() {
+        resetCaches();
         claims.clear();
-        glyphs.clear();
-        bakedGlyphs.clear();
+        lastConfig.clear();
         nextCharacter = 32;
-        instance = UUID.randomUUID();
     }
 
     /**
@@ -170,6 +191,7 @@ public class CustomSkullFont extends FontSet {
     public static char claim(SkullConfig config) {
         // Use an existing claim if possible
         var properties = config.properties();
+        lastConfig.put(properties, config);
         if (claims.containsKey(properties)) {
             return claims.get(properties);
         }
@@ -178,15 +200,26 @@ public class CustomSkullFont extends FontSet {
         var next = nextCharacter++;
         claims.put(properties, (char) next);
 
+        // Start loading this glyph
+        loadGlyph(next, config);
+
+        return (char) next;
+    }
+
+    /**
+     * Loads in a glyph into character [next] based on config [config].
+     */
+    private static void loadGlyph(int next, SkullConfig config) {
         // Create the glyph for this skull
         var future = config.texture();
-        if (future == null) return (char) next;
+        if (future == null) return;
 
         // Await the completion of the future before baking the glyph
         var oldInstance = instance;
 
         // We immediately store the glyph data with a future promise to get the image
         var imageFuture = new CompletableFuture<NativeImage>();
+        var properties = config.properties();
         var glyph = new Glyph(imageFuture, properties);
         glyphs.put(next, glyph);
 
@@ -240,7 +273,6 @@ public class CustomSkullFont extends FontSet {
                 x.printStackTrace();
             }
         });
-        return (char) next;
     }
 
     /**
