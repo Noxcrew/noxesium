@@ -28,6 +28,8 @@ import java.util.Set;
  */
 public class GlobalBlockEntityRenderer {
     public static void render(Set<BlockEntity> globalBlockEntities, Camera camera, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, float tickDelta) {
+        if (globalBlockEntities.isEmpty()) return;
+
         var blockEntityRenderDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
         var cameraX = cameraPosition.x;
         var cameraY = cameraPosition.y;

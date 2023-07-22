@@ -16,11 +16,10 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         return switch (mixinClassName) {
-            // Enable custom sodium compatibility for the beacon performance changes. Iris does already have
-            // changes that are comparable in performance but we still enable the patch so it gets noticed
-            // when it breaks. Otherwise, just non-Iris Sodium clients would be a very small group.
+            // Enable custom sodium compatibility for the beacon performance changes, but disable when
+            // using iris as it makes changes that provide better performance
             case "com.noxcrew.noxesium.mixin.client.beacon.SodiumWorldRendererMixin" ->
-                    FabricLoader.getInstance().isModLoaded("sodium");
+                    FabricLoader.getInstance().isModLoaded("sodium") && !FabricLoader.getInstance().isModLoaded("iris");
             // We don't disable the other beacon patches as they simply get made useless by Sodium removing
             // all default global block entities.
             default -> true;
