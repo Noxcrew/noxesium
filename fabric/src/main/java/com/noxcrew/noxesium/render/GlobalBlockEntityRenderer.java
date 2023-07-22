@@ -53,7 +53,7 @@ public class GlobalBlockEntityRenderer {
                 continue;
             }
 
-            // Otherwise render it like normal
+            // Otherwise render it like normal (this is only ever used for structure blocks)
             var outlineBufferSource = blockEntity.getBlockPos();
             poseStack.pushPose();
             poseStack.translate(outlineBufferSource.getX() - cameraX, outlineBufferSource.getY() - cameraY, outlineBufferSource.getZ() - cameraZ);

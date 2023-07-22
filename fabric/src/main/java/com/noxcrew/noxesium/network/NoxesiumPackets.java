@@ -33,7 +33,8 @@ public class NoxesiumPackets {
     private static final Map<String, String> serverboundPackets = new HashMap<>();
     private static final Set<String> registeredGroups = new HashSet<>();
 
-    public static final String NAMESPACE = NoxesiumMod.NOXESIUM_PREFIX + "-v1";
+    /** The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium. */
+    public static final String PACKET_NAMESPACE = NoxesiumMod.NAMESPACE + "-v1";
 
     public static final PacketType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES = client("change_server_rules", ClientboundChangeServerRulesPacket::new);
     public static final PacketType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES = client("reset_server_rules", ClientboundResetServerRulesPacket::new);
@@ -66,7 +67,7 @@ public class NoxesiumPackets {
     public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, String group, Function<FriendlyByteBuf, T> constructor) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = PacketType.create(new ResourceLocation(NAMESPACE, id), constructor);
+        var type = PacketType.create(new ResourceLocation(PACKET_NAMESPACE, id), constructor);
         clientboundPackets.put(id, Pair.of(group, type));
         return type;
     }
@@ -93,7 +94,7 @@ public class NoxesiumPackets {
     public static <T extends ServerboundNoxesiumPacket> PacketType<T> server(String id, String group) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = PacketType.<T>create(new ResourceLocation(NAMESPACE, id), (buffer) -> {
+        var type = PacketType.<T>create(new ResourceLocation(PACKET_NAMESPACE, id), (buffer) -> {
             throw new UnsupportedOperationException("Serverbound Noxesium packets cannot be de-serialized!");
         });
         serverboundPackets.put(type.getId().toString(), group);

@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Prevents beacons from being added to the renderable chunk entities. This is so we can do the
  * entirety of beacon rendering custom for all beacons at once. We do add them to global entities and
  * we catch them from there later.
+ *
+ * This patch never triggers when Sodium is used.
  */
 @Mixin(ChunkRenderDispatcher.RenderChunk.RebuildTask.class)
 public class PreventDoubleBeaconRenderingMixin {

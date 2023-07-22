@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium;
 
-import com.noxcrew.noxesium.feature.rule.ServerRule;
+import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.CustomSkullFont;
+import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
@@ -9,6 +10,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The main file for the client-side implementation of Noxesium.
@@ -23,16 +28,27 @@ public class NoxesiumMod implements ClientModInitializer {
     public static final int VERSION = 3;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-    public static final String NOXESIUM_PREFIX = "noxesium";
-    public static final String IMMOVABLE_TAG = NOXESIUM_PREFIX + ":immovable";
+    public static final String NAMESPACE = "noxesium";
+    public static final String IMMOVABLE_TAG = new ResourceLocation(NAMESPACE, "immovable").toString();
+
+    /**
+     * All modules known to Noxesium that need to be registered.
+     */
+    private static final Set<NoxesiumModule> modules = new HashSet<>(Set.of(
+            ServerRuleModule.getInstance(),
+            SkullFontModule.getInstance()
+    ));
+
+    /**
+     * Adds a new module to the list of modules that should have
+     * their hooks called. Available for other mods to use.
+     */
+    public static void registerModule(NoxesiumModule module) {
+        modules.add(module);
+    }
 
     @Override
     public void onInitializeClient() {
-        ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
-            // Create the custom skull font if it's not already created
-            CustomSkullFont.createIfNecessary();
-        });
-
         // Every time the client joins a server we send over information on the version being used
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             // Send a packet containing information about the client version of Noxesium
@@ -42,21 +58,21 @@ public class NoxesiumMod implements ClientModInitializer {
 
             // Inform the player about the GUI scale of the client
             syncGuiScale();
+
+            // Call connection hooks
+            modules.forEach(NoxesiumModule::onJoinServer);
         });
 
-        // Break the connection again on disconnection
+        // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
-            // Clear all stored server rules
-            ServerRule.clearAll();
-
-            // Clear out all font claims as we can now safely assume
-            // we don't need the old ones anymore and there won't be
-            // any components that persist between before/after this point
-            CustomSkullFont.clearCaches();
+            modules.forEach(NoxesiumModule::onQuitServer);
         });
 
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
+
+        // Call initialisation on all modules
+        modules.forEach(NoxesiumModule::onStartup);
     }
 
     /**

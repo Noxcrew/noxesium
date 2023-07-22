@@ -69,7 +69,7 @@ public class SkullContents implements ComponentContents {
      * Returns the plain-text representation of this skull in the skull font.
      */
     public String getText() {
-        return Character.toString(CustomSkullFont.claim(config));
+        return Character.toString(SkullFontModule.getInstance().claim(config));
     }
 
     public SkullConfig getConfig() {
@@ -87,12 +87,12 @@ public class SkullContents implements ComponentContents {
 
     @Override
     public <T> Optional<T> visit(FormattedText.StyledContentConsumer<T> styledContentConsumer, Style style) {
-        return styledContentConsumer.accept(style.withFont(CustomSkullFont.RESOURCE_LOCATION), getText());
+        return styledContentConsumer.accept(style.withFont(SkullFontModule.RESOURCE_LOCATION), getText());
     }
 
     @Override
     public MutableComponent resolve(@Nullable CommandSourceStack commandSourceStack, @Nullable Entity entity, int i) {
-        return Component.literal(getText()).setStyle(Style.EMPTY.withFont(CustomSkullFont.RESOURCE_LOCATION));
+        return Component.literal(getText()).setStyle(Style.EMPTY.withFont(SkullFontModule.RESOURCE_LOCATION));
     }
 
     @Override
