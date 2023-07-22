@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.feature.skull;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.noxcrew.noxesium.mixin.client.component.SkullBlockEntityExt;
+import com.noxcrew.noxesium.mixin.component.SkullBlockEntityExt;
 import net.minecraft.Util;
 import net.minecraft.client.resources.SkinManager;
 import org.jetbrains.annotations.Nullable;

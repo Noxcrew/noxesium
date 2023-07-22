@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.BooleanServerRule;
-import com.noxcrew.noxesium.mixin.client.mouse.MouseHandlerAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.SoundOptionsScreen;
 

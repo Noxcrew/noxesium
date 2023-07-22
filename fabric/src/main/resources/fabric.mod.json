@@ -35,5 +35,8 @@
   "suggests": {
     "sodium": ">=0.4.10",
     "iris": ">=1.6.4"
+  },
+  "breaks": {
+    "optifabric": "*"
   }
 }
