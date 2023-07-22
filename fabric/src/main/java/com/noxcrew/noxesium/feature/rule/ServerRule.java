@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.rule;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public abstract class ServerRule<T> {
 
     public ServerRule(int index) {
         // Add any created server rule to the global list
-        rules.put(index, this);
+        register(index, this);
     }
 
     /**
@@ -39,7 +40,7 @@ public abstract class ServerRule<T> {
     /**
      * Resets the value of this rule.
      */
-    private void reset() {
+    public void reset() {
         var oldValue = value;
         value = getDefault();
 
@@ -51,7 +52,7 @@ public abstract class ServerRule<T> {
     /**
      * Reads the value of this rule from the given [buffer].
      */
-    private void set(FriendlyByteBuf buffer) {
+    public void set(FriendlyByteBuf buffer) {
         var oldValue = value;
         value = read(buffer);
 
@@ -66,26 +67,23 @@ public abstract class ServerRule<T> {
     protected void onValueChanged(T oldValue, T newValue) {
     }
 
-    /**
-     * Reads the data for all rules from the server.
-     */
-    public static void readAll(FriendlyByteBuf buffer) {
-        // First we get a list of ints to clear the data for
-        var clear = buffer.readVarIntArray();
-        for (var index : clear) {
-            var rule = rules.get(index);
-            if (rule == null) continue;
-            rule.reset();
-        }
 
-        // Second we let each value read the data from the buffer
-        var amount = buffer.readVarInt();
-        for (int i = 0; i < amount; i++) {
-            var index = buffer.readVarInt();
-            var rule = rules.get(index);
-            if (rule == null) continue;
-            rule.set(buffer);
-        }
+    /**
+     * Registers a new server rule with the given index and data.
+     *
+     * @param index The index of this rule, must be unique.
+     * @param rule  The object with the data for this rule.
+     */
+    public static void register(int index, ServerRule<?> rule) {
+        Preconditions.checkArgument(!rules.containsKey(index), "Index " + index + " was used by multiple server rules");
+        rules.put(index, rule);
+    }
+
+    /**
+     * Returns the rule saved under the given index.
+     */
+    public static ServerRule<?> getIndex(int index) {
+        return rules.get(index);
     }
 
     /**

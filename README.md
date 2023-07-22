@@ -79,54 +79,29 @@ Alternatively, if you cannot provide the uuid and wish to provide a texture dire
 ```java
 player.sendMessage(Component.translatable("%nox_uuid%3e7a89ee-c4e2-4392-a317-444b861b0794,false,0,0,1.0","This is shown for non-Noxesium clients"));
 ```
+
 or
+
 ```java
 player.sendMessage(Component.translatable("%nox_raw%ewogICJ0aW1lc3RhbXAiIDogMTYxMjA1MTQxNDA4NywKICAicHJvZmlsZUlkIiA6ICJhNzdkNmQ2YmFjOWE0NzY3YTFhNzU1NjYxOTllYmY5MiIsCiAgInByb2ZpbGVOYW1lIiA6ICIwOEJFRDUiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTkyNjZiYThiY2Q4ZmE2NGE0NjgyOGY1NjEwZDk5MGE1MzEzMzVmNjQzZWYzOWYzZDA1ZDdmZTFjMWVkYjg4IiwKICAgICAgIm1ldGFkYXRhIiA6IHsKICAgICAgICAibW9kZWwiIDogInNsaW0iCiAgICAgIH0KICAgIH0KICB9Cn0=,false,0,0,1.0","This is shown for non-Noxesium clients"));
 ```
 
 ## Message Channels
 
-Noxesium communicates with the server over plugin messaging channels. The namespace of these channels matches the current API version of Noxesium, which is currently `v1`. Currently, there are 4 messaging channels available.
+Noxesium communicates with the server over the plugin messaging channel, but through the use of Fabric Packets. This implementation means packets are defined in Noxesium's code as they would be in Minecrafts source code. Clientbound and
+serverbound packets are implemented separately since both only need to be handled on the client-side. Noxesium sends and receives all packets on the `noxesium-v1` namespace. This version identifier is not intended to change, it has changed
+once for Noxesium 1.0.0 but should not change again unless the entire packet system is redone. Instead, each packet starts with its own version integer. This version integer can be used to change individual packets. As Noxesium is intended
+to be used between clients on servers on both different Minecraft versions and different Noxesium versions it is necessary to strongly support backwards compatibility. For this purpose the version integer in each packet can be
+individually tweaked. Packets will both attempt to send in an older format and parse from an older format if the server is outdated. It is left up to the developer to build similar compatibility on the server-side.
 
-`noxesium-v1:client_information` (client -> server); Contains the Protocol version of the mod version used by the client. This is sent right after a client joins the server. If a proxy server is used it's recommended to cache this value per
-session on the server-side. Protocol versions are bumped when major new capabilities are introduced so servers can disable features for outdated mod users. E.g. the introduction of player head components caused a protocol bump so MCC Island
-can disable the setting for users with an older mod version.
-
-| Field Name       | Field Type | Notes       |
-|------------------|------------|-------------|
-| Protocol Version | VarInt     | Currently 2 |
-
-`noxesium-v1:client_settings` (client -> server); Contains information about the settings used by the client. Sent when a player joins a server or whenever the player changes their settings.
-
-| Field Name                | Field Type | Notes                                               |
-|---------------------------|------------|-----------------------------------------------------|
-| GUI Scale                 | VarInt     | The value set in the video settings screen.         |
-| Internal GUI Scale        | Double     | The internal GUI scale value.                       |
-| Scaled Width              | VarInt     | The scaled width of the window.                     |
-| Scaled Height             | VarInt     | The scaled height of the window.                    |
-| Enforce Unicode           | Boolean    | Whether the enforce unicode setting is on.          |
-| Touchscreen Mode          | Boolean    | Whether touchscreen mode is on.                     |
-| Notification Display Time | Double     | The value of the notification display time setting. |
-
-`noxesium-v1:server_rules` (server -> client); Can be used to modify the current values of server rules known to this client. You should not mark rules being changed for reset, the client avoids triggering changes if a rule's value did not
-change.
-
-| Field Name      | Field Type       | Notes                                                                                                                                                           |
-|-----------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Rules to reset  | VarInt Array     | An array of rule ids to reset to their default value.                                                                                                           |
-| Amount of rules | VarInt           | Size of the rules array.                                                                                                                                        |
-| Rules to change | ServerRule Array | An array of server rules to change, each rule has their own data format. This object always starts with a VarInt of the rule index before each rule's own data. |
-
-`noxesium-v1:reset` (server -> client); Allows the server to reset specific parts of client data.
-
-| Field Name | Field Type | Notes                                                                                                      |
-|------------|------------|------------------------------------------------------------------------------------------------------------|
-| Command    | Byte       | Bitmasked command byte. 0x01 clears all server rule settings. 0x02 clears all cached custom player skulls. |
+If you are interested in understanding what packets Noxesium can receive and which it can send, feel free to look through the `network.clientbound` and `network.serverbound` packages. Packets are documented in their respective classes and
+should offer insights into their capabilities through the variable names and constructor arguments.
 
 ## Server Rules
 
-Server Rules are a system similar to Game Rules but able to be modified whenever desired. Server Rule settings are cleared whenever a player disconnects from a server. These values allow a server to affect the client's state easily. Below
-is a list of every server rule currently available and their data format in the plugin message:
+Server Rules are a special system similar to Game Rules but able to be modified whenever desired. Server Rule settings are cleared whenever a player disconnects from a server. These values allow a server to affect the client's state easily.
+Below is a list of every server rule currently available and their data format. While server rules have packets for setting each individual server rule can decide how the packet is decoded. As such, a detailed breakdown is provided for each
+individual rule and how it interprets the incoming packet.
 
 **Disable Auto Spin Attack**. Disables colliding with other entities while riptiding. This also prevents the spin attack from dealing any damage to entities moved through.
 
