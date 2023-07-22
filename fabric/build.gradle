@@ -17,7 +17,18 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven { url "https://maven.terraformersmc.com/releases/" }
-    maven { url 'https://jitpack.io' }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -30,11 +41,12 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // Compatibility with other mods
-    modCompileOnly("com.github.CaffeineMC:sodium-fabric:${project.sodium}")
-    // modCompileOnly("com.github.IrisShaders:Iris:${project.iris}") {
-    //     transitive = false
-    // }
-    // modLocalRuntime(modCompileOnly("com.terraformersmc:modmenu:${project.modmenu}"))
+    api(project(":api"))
+    modImplementation("maven.modrinth:sodium:${project.sodium}")
+    modImplementation("maven.modrinth:iris:${project.iris}") {
+         transitive = false
+    }
+    modLocalRuntime(modCompileOnly("com.terraformersmc:modmenu:${project.modmenu}"))
 }
 
 processResources {

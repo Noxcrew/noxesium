@@ -7,3 +7,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+include 'api'
+include 'fabric'
+

@@ -17,7 +17,8 @@ public class NoxesiumMod implements ClientModInitializer {
 
     /**
      * The current protocol version of the mod. Servers can use this version to determine which functionality
-     * of Noxesium is available on the client.
+     * of Noxesium is available on the client. The protocol version will increment every full release, as such
+     * ít is recommended to work with >= comparisons.
      */
     public static final int VERSION = 3;
 
