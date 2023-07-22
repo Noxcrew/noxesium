@@ -149,10 +149,10 @@ individual rule and how it interprets the incoming packet.
 - Noxesium's API has been completely rewritten. Its features should now be more stable for others to make use of and depend on.
 - New feature: Background music now continues playing when briefly setting the music slider to 0% and back.
 - New feature: Servers can now easily disable all vanilla music from playing on the client and add extra music sliders.
-- New feature: Performance improvements to rendering colored custom models
+- New feature: Performance improvements to rendering colored custom models (+~5 fps)
+- New feature: Performance improvements to rendering all custom models (+~15 fps)
 - Player heads now support showing any skin texture instead of requiring a player uuid. This fixes issues with showing the skins of disguised players.
 - Removed model culling improvements as they are obsolete in 1.20
 
 TODOs:
 - Add a system to determine when a server is running an outdated protocol version
-- Performance improvements
