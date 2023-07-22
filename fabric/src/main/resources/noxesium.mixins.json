@@ -28,6 +28,7 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "model.DyeableLeatherItemMixin",
+    "model.ItemOverridesMixin",
     "model.SodiumMixinItemRendererMixin",
     "mouse.MouseHandlerAccessor",
     "mouse.MouseHandlerMixin",
