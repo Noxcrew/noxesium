@@ -1,9 +1,6 @@
 plugins {
-    id("java")
+    id("java-library")
 }
-
-group = "com.noxcrew.noxesium"
-version = "1.0.0"
 
 repositories {
     mavenCentral()
