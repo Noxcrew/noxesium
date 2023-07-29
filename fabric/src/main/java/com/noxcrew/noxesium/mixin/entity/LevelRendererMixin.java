@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.client.entity;
+package com.noxcrew.noxesium.mixin.entity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;

@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.client.entity;
+package com.noxcrew.noxesium.mixin.entity;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -34,6 +34,11 @@ import java.util.Objects;
 
 /**
  * Update the culling bounding box for armor stands to include the hitbox of the model on their head or arms.
+ *
+ * This patch will be dropped in the future as usage of display entities is preferred over armor stands. Display
+ * entities allow you to modify these culling hitboxes on the server-side which allows for finer control and wider
+ * adoption. This patch only works for servers that specifically use head items on armor stands which makes it
+ * ill-suited for wide adoption.
  */
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {

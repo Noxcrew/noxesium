@@ -22,6 +22,7 @@
     "component.MinecraftExt",
     "component.SkinManagerExt",
     "component.SkullBlockEntityExt",
+    "entity.LevelRendererMixin",
     "info.MinecraftMixin",
     "info.OptionInstanceExt",
     "info.OptionInstanceMixin",
@@ -39,5 +40,8 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "entity.LivingEntityMixin"
+  ]
 }
