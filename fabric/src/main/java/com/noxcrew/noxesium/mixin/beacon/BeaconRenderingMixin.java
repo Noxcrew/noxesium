@@ -47,6 +47,7 @@ public class BeaconRenderingMixin {
     private void renderGlobalBlockEntities(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
         // Synchronise on the global block entities because vanilla does as well, this list will be empty
         // when using Sodium
+        if (globalBlockEntities.isEmpty()) return;
         synchronized (globalBlockEntities) {
             GlobalBlockEntityRenderer.render(globalBlockEntities, camera, poseStack, renderBuffers.bufferSource(), camera.getPosition(), f);
         }

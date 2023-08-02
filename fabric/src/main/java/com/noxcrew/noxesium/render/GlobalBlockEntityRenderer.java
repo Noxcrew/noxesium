@@ -19,6 +19,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,7 @@ import java.util.Set;
  * Handles rendering logic for global block entities, specifically optimizes beacon rendering.
  */
 public class GlobalBlockEntityRenderer {
-    public static void render(Set<BlockEntity> globalBlockEntities, Camera camera, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, float tickDelta) {
+    public static void render(Collection<BlockEntity> globalBlockEntities, Camera camera, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, float tickDelta) {
         if (globalBlockEntities.isEmpty()) return;
 
         var blockEntityRenderDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
