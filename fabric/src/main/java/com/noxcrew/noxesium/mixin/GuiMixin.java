@@ -18,6 +18,6 @@ public class GuiMixin {
             constant = @Constant(intValue = 59)
     )
     public int modify(int constant) {
-        return constant + ServerRules.HELD_ITEM_NAME_OFFSET.get();
+        return constant + ServerRules.HELD_ITEM_NAME_OFFSET.getValue();
     }
 }

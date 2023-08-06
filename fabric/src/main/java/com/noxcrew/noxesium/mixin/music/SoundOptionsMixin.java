@@ -20,7 +20,7 @@ public class SoundOptionsMixin {
 
     @Inject(method = "getAllSoundOptionsExceptMaster", at = @At("RETURN"), cancellable = true)
     private void injected(CallbackInfoReturnable<OptionInstance<?>[]> cir) {
-        if (ServerRules.ENABLE_CUSTOM_MUSIC.get()) return;
+        if (ServerRules.ENABLE_CUSTOM_MUSIC.getValue()) return;
         var options = Minecraft.getInstance().options;
         cir.setReturnValue(
                 Arrays.stream(SoundSource.values())

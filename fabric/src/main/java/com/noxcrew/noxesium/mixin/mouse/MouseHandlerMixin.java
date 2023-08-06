@@ -24,7 +24,7 @@ public class MouseHandlerMixin {
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
     public void turnPlayer(CallbackInfo ci) {
         // Cancel mouse movement during camera lock
-        if (ServerRules.CAMERA_LOCKED.get()) {
+        if (ServerRules.CAMERA_LOCKED.getValue()) {
             ci.cancel();
             
             // Reset smooth turning variables

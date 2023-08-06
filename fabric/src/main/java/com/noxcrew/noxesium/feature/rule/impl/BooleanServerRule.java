@@ -1,11 +1,12 @@
-package com.noxcrew.noxesium.feature.rule;
+package com.noxcrew.noxesium.feature.rule.impl;
 
+import com.noxcrew.noxesium.feature.rule.ClientServerRule;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * A standard server rule that stores a boolean.
  */
-public class BooleanServerRule extends ServerRule<Boolean> {
+public class BooleanServerRule extends ClientServerRule<Boolean> {
 
     private final boolean defaultValue;
 

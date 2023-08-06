@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
+import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter;
 import com.noxcrew.noxesium.feature.skull.GameProfileFetcher;
 import com.noxcrew.noxesium.feature.skull.SkullContents;
 import net.minecraft.client.resources.SkinManager;
@@ -49,33 +50,18 @@ public abstract class ComponentSerializerMixin {
         if (jsonObject.has("translate")) {
             // We allow custom servers to use a custom translate component since it renders as the fallback if the value is not found.
             var jsonString = GsonHelper.getAsString(jsonObject, "translate");
-
-            // We check for a string that starts with our custom syntax.
-            boolean raw = false;
-            String[] values;
-            if (jsonString.startsWith("%nox_uuid%")) {
-                values = jsonString.substring("%nox_uuid%".length()).split(",");
-            } else if (jsonString.startsWith("%nox_raw%")) {
-                values = jsonString.substring("%nox_raw%".length()).split(",");
-                raw = true;
-            } else {
-                return;
-            }
+            if (!jsonString.startsWith("%nox_uuid%") && !jsonString.startsWith("%nox_raw%")) return;
+            var info = SkullStringFormatter.parse(jsonString);
 
             try {
-                var grayscale = Boolean.parseBoolean(values[1]);
-                var advance = Integer.parseInt(values[2]);
-                var ascent = Integer.parseInt(values[3]);
-                var scale = Float.parseFloat(values[4]);
-
                 UUID uuid = null;
                 CompletableFuture<String> texture = new CompletableFuture<>();
-                if (raw) {
+                if (info.raw()) {
                     // If raw we load the texture directly
-                    texture.complete(values[0]);
+                    texture.complete(info.value());
                 } else {
                     // If it's a uuid we create a task to fetch it and complete later
-                    var stringUuid = values[0];
+                    var stringUuid = info.value();
                     try {
                         uuid = UUID.fromString(stringUuid);
                         GameProfile gameprofile = new GameProfile(uuid, null);
@@ -90,7 +76,7 @@ public abstract class ComponentSerializerMixin {
                     }
                 }
 
-                MutableComponent mutableComponent = MutableComponent.create(new SkullContents(uuid, texture, grayscale, advance, ascent, scale));
+                MutableComponent mutableComponent = MutableComponent.create(new SkullContents(uuid, texture, info.grayscale(), info.advance(), info.ascent(), info.scale()));
                 if (jsonObject.has("extra")) {
                     JsonArray jsonArray2 = GsonHelper.getAsJsonArray(jsonObject, "extra");
                     if (jsonArray2.size() <= 0) throw new JsonParseException("Unexpected empty array of components");

@@ -36,7 +36,7 @@ public abstract class PlayerMixin {
 
         // Only override it if you're being denied the block modification
         if (cir.getReturnValue()) {
-            cir.setReturnValue(!ServerRules.GLOBAL_CAN_DESTROY.get().test(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, blockPos, false)));
+            cir.setReturnValue(!ServerRules.GLOBAL_CAN_DESTROY.getValue().test(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, blockPos, false)));
         }
     }
 
@@ -47,6 +47,6 @@ public abstract class PlayerMixin {
         }
 
         // Also allow usage when the global can place on allows it
-        return ServerRules.GLOBAL_CAN_PLACE_ON.get().test(registry, blockInWorld);
+        return ServerRules.GLOBAL_CAN_PLACE_ON.getValue().test(registry, blockInWorld);
     }
 }

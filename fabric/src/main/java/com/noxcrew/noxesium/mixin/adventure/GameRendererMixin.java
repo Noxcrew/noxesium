@@ -56,7 +56,7 @@ public class GameRendererMixin {
                     Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registries.BLOCK);
 
                     // Allow global can destroy or can place on to override and render the outline anyway
-                    if (ServerRules.GLOBAL_CAN_DESTROY.get().test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.get().test(registry, blockInWorld)) {
+                    if (ServerRules.GLOBAL_CAN_DESTROY.getValue().test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.getValue().test(registry, blockInWorld)) {
                         cir.setReturnValue(true);
                     }
                 }

@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
-import com.noxcrew.noxesium.feature.rule.BooleanServerRule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.SoundOptionsScreen;
 

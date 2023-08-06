@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.feature.rule.ServerRule;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -30,7 +29,7 @@ public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacke
             if (rule == null) continue;
 
             // TODO Can we do something that does not involve passing along the buffer?
-            rule.set(buffer);
+            rule.setValueFromBuffer(buffer);
         }
     }
 

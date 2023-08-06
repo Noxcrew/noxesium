@@ -22,6 +22,6 @@ public abstract class ItemStackMixin {
         }
 
         // Also allow usage when the global can place on allows it
-        return ServerRules.GLOBAL_CAN_PLACE_ON.get().test(registry, blockInWorld);
+        return ServerRules.GLOBAL_CAN_PLACE_ON.getValue().test(registry, blockInWorld);
     }
 }

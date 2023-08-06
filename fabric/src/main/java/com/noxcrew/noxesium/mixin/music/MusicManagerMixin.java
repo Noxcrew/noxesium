@@ -16,6 +16,6 @@ public class MusicManagerMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(CallbackInfo ci) {
         // Prevent vanilla music from ticking and starting to play whenever custom music is running
-        if (ServerRules.ENABLE_CUSTOM_MUSIC.get()) ci.cancel();
+        if (ServerRules.ENABLE_CUSTOM_MUSIC.getValue()) ci.cancel();
     }
 }

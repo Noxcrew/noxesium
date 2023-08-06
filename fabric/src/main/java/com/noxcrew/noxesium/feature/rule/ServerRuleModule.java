@@ -23,7 +23,7 @@ public class ServerRuleModule implements NoxesiumModule {
         return instance;
     }
 
-    private final Map<Integer, ServerRule<?>> rules = new HashMap<>();
+    private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
 
     @Override
     public void onQuitServer() {
@@ -37,7 +37,7 @@ public class ServerRuleModule implements NoxesiumModule {
      * @param index The index of this rule, must be unique.
      * @param rule  The object with the data for this rule.
      */
-    public void register(int index, ServerRule<?> rule) {
+    public void register(int index, ClientServerRule<?> rule) {
         Preconditions.checkArgument(!rules.containsKey(index), "Index " + index + " was used by multiple server rules");
         rules.put(index, rule);
     }
@@ -45,7 +45,7 @@ public class ServerRuleModule implements NoxesiumModule {
     /**
      * Returns the rule saved under the given index.
      */
-    public ServerRule<?> getIndex(int index) {
+    public ClientServerRule<?> getIndex(int index) {
         return rules.get(index);
     }
 
