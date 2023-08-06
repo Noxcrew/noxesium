@@ -4,6 +4,7 @@ package com.noxcrew.noxesium.api.protocol.rule;
  * A static location to fetch all server rule indices.
  */
 public class ServerRuleIndices {
+
     /**
      * Prevents the riptide trident's spin attack from colliding with any targets.
      */

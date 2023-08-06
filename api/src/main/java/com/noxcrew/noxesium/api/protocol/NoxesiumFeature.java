@@ -9,6 +9,10 @@ package com.noxcrew.noxesium.api.protocol;
  */
 public enum NoxesiumFeature {
     /**
+     * A generic feature that can be used to check if Noxesium is installed in general.
+     */
+    ANY(0),
+    /**
      * Supports sending player heads in the %NCPH% syntax.
      */
     PLAYER_HEADS(2),

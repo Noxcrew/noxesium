@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium;
 
+import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
@@ -54,7 +55,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * Returns the latest protocol version that is currently supported.
      */
     public static int getMaxProtocolVersion() {
-         return currentMaxProtocol;
+        return currentMaxProtocol;
     }
 
     /**
@@ -107,13 +108,15 @@ public class NoxesiumMod implements ClientModInitializer {
         var options = Minecraft.getInstance().options;
 
         new ServerboundClientSettingsPacket(
-                options.guiScale().get(),
-                window.getGuiScale(),
-                window.getGuiScaledWidth(),
-                window.getGuiScaledHeight(),
-                Minecraft.getInstance().isEnforceUnicode(),
-                options.touchscreen().get(),
-                options.notificationDisplayTime().get()
+                new ClientSettings(
+                        options.guiScale().get(),
+                        window.getGuiScale(),
+                        window.getGuiScaledWidth(),
+                        window.getGuiScaledHeight(),
+                        Minecraft.getInstance().isEnforceUnicode(),
+                        options.touchscreen().get(),
+                        options.notificationDisplayTime().get()
+                )
         ).send();
     }
 }
