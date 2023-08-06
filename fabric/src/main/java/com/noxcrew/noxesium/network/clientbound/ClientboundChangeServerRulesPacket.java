@@ -8,30 +8,39 @@ import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Changes the stored value for one or more server rules.
  */
 public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacket {
 
     private final IntList indices;
-    private final FriendlyByteBuf buffer;
+    private final List<Object> values;
 
     public ClientboundChangeServerRulesPacket(FriendlyByteBuf buf) {
         super(buf.readVarInt());
         this.indices = buf.readIntIdList();
-        this.buffer = buf;
-    }
+        this.values = new ArrayList<>(indices.size());
 
-    @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
         for (var index : indices) {
             var rule = ServerRuleModule.getInstance().getIndex(index);
 
             // If we don't know one rule the whole packet is useless
             if (rule == null) return;
+            var data = rule.read(buf);
+            this.values.add(data);
+        }
+    }
 
-            // TODO Can we do something that does not involve passing along the buffer?
-            rule.setValueFromBuffer(buffer);
+    @Override
+    public void receive(LocalPlayer player, PacketSender responseSender) {
+        for (var idx = 0; idx < indices.size(); idx++) {
+            var index = indices.getInt(idx);
+            var rule = ServerRuleModule.getInstance().getIndex(index);
+            if (rule == null) return;
+            rule.setUnsafe(values.get(idx));
         }
     }
 

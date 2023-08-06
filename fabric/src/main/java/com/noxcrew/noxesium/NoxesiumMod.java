@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -68,9 +69,13 @@ public class NoxesiumMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Every time the client joins a server we send over information on the version being used
-        ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
-            // Send a packet containing information about the client version of Noxesium
+        C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
+            // Find the packet that includes the server asking for the information packet
+            if (!channels.contains(NoxesiumPackets.SERVER_CLIENT_INFO.getId())) return;
+
+            // Check if the connection has been established first, just in case
             if (Minecraft.getInstance().getConnection() != null) {
+                // Send a packet containing information about the client version of Noxesium
                 new ServerboundClientInformationPacket(VERSION).send();
 
                 // Inform the player about the GUI scale of the client
@@ -83,10 +88,10 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
-            modules.forEach(NoxesiumModule::onQuitServer);
-
             // Reset the current max protocol version
             currentMaxProtocol = VERSION;
+
+            modules.forEach(NoxesiumModule::onQuitServer);
         });
 
         // Register all universal messaging channels

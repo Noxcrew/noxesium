@@ -43,9 +43,10 @@ public abstract class ServerRule<ValueT, BufferT> {
     }
 
     /**
-     * Reads the value of this rule from the given [buffer].
+     * Sets the value of this rule to the given value, performs
+     * an unsafe cast to the ValueT!
      */
-    public void setValueFromBuffer(BufferT buffer) {
-        setValue(read(buffer));
+    public void setUnsafe(Object value) {
+        setValue((ValueT) value);
     }
 }
