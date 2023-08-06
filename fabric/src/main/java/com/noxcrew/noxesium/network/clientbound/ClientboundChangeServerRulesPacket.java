@@ -9,7 +9,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
- * Resets the stored value for one or more server rules.
+ * Changes the stored value for one or more server rules.
  */
 public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacket {
 
@@ -26,7 +26,9 @@ public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacke
     public void receive(LocalPlayer player, PacketSender responseSender) {
         for (var index : indices) {
             var rule = ServerRuleModule.getInstance().getIndex(index);
-            if (rule == null) continue;
+
+            // If we don't know one rule the whole packet is useless
+            if (rule == null) return;
 
             // TODO Can we do something that does not involve passing along the buffer?
             rule.setValueFromBuffer(buffer);

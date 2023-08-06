@@ -9,6 +9,7 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
+import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
@@ -43,7 +44,7 @@ public class NoxesiumPackets {
     public static final PacketType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO = client("server_info", ClientboundServerInformationPacket::new);
 
     public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = server("client_info");
-    public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_SETTINGS = server("client_settings");
+    public static final PacketType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = server("client_settings");
 
     /**
      * Registers a new clientbound Noxesium packet.

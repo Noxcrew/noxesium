@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.network.clientbound;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
 import net.minecraft.client.player.LocalPlayer;

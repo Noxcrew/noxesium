@@ -43,7 +43,7 @@ public abstract class ServerboundNoxesiumPacket extends NoxesiumPacket {
      * used by the server, e.g. if this is 3 and the packet being serialized
      * was v1 until protocol 4 and v2 after then this should return 1.
      */
-    public int getVersion(int protocolVersion) {
+    public Integer getVersion(int protocolVersion) {
         return version;
     }
 
@@ -68,6 +68,10 @@ public abstract class ServerboundNoxesiumPacket extends NoxesiumPacket {
         if (ClientPlayNetworking.canSend(getType()) && NoxesiumPackets.canSend(getType())) {
             var maxProtocol = NoxesiumMod.getMaxProtocolVersion();
             var maxVersion = getVersion(maxProtocol);
+            if (maxVersion == null) {
+                // If the server does not know how to handle this packet we don't send it!
+                return false;
+            }
 
             var buffer = PacketByteBufs.create();
             if (maxVersion >= version) {
