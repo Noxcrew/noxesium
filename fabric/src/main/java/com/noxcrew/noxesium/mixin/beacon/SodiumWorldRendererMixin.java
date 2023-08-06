@@ -48,20 +48,20 @@ public class SodiumWorldRendererMixin {
         var iterator = renderSectionManager.getSectionsWithGlobalEntities().iterator();
         outer: while (true) {
             // Find the chunks with section information
-            BuiltSectionInfo sectionInfo;
+            BlockEntity[] blockEntities;
             do {
                 // Break the loop when we've reached the end
                 if (!iterator.hasNext()) break outer;
 
                 var renderSection = iterator.next();
-                sectionInfo = renderSection.getInfo();
-            } while (sectionInfo == null);
+                blockEntities = renderSection.getGlobalBlockEntities();
+            } while (blockEntities == null);
 
             // Only create the set when we need it
             if (globalBlockEntities == null) {
                 globalBlockEntities = new HashSet<>();
             }
-            globalBlockEntities.addAll(sectionInfo.getGlobalBlockEntities());
+            Collections.addAll(globalBlockEntities, blockEntities);
         }
 
         if (globalBlockEntities == null) return;

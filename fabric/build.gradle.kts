@@ -28,10 +28,10 @@ dependencies {
 
     // Compatibility with other mods
     api(project(":api"))
-    modImplementation(files("libs/sodium-fabric-mc1.20.1-0.5.0-rc1.jar")) // "maven.modrinth:sodium:${property("sodium")}")
-    /*modImplementation("maven.modrinth:iris:${property("iris")}") {
+    modImplementation("maven.modrinth:sodium:${property("sodium")}")
+    modImplementation("maven.modrinth:iris:${property("iris")}") {
         isTransitive = false
-    }*/
+    }
 
     // Add modmenu at local runtime for testing, we don't need it as a dependency though.
     modLocalRuntime("com.terraformersmc:modmenu:${property("modmenu")}")

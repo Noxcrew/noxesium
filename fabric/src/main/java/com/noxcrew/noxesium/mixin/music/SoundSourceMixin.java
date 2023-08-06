@@ -20,7 +20,8 @@ import java.util.List;
  * Credits to <a href="https://github.com/AsoDesu/IslandUtils/blob/main/src/main/java/net/asodev/islandutils/mixins/sounds/SoundSourceMixin.java">AsoDesu</a>
  * for the concept of injecting into the $VALUES initialisation.
  */
-@Mixin(SoundSource.class)
+// Ensure we inject after other mods
+@Mixin(value = SoundSource.class, priority = 1001)
 public class SoundSourceMixin {
 
     @Mutable @Shadow @Final private static SoundSource[] $VALUES;
