@@ -26,8 +26,11 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
-    // Compatibility with other mods
+    // Add the API module
+    include(project(":api"))
     api(project(":api"))
+
+    // Compatibility with other mods
     modImplementation("maven.modrinth:sodium:${property("sodium")}")
     modImplementation("maven.modrinth:iris:${property("iris")}") {
         isTransitive = false

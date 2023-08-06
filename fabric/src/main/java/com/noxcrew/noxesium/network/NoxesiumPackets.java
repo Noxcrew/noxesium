@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundNoxesiumPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
@@ -35,13 +37,18 @@ public class NoxesiumPackets {
     private static final Map<String, String> serverboundPackets = new HashMap<>();
     private static final Set<String> registeredGroups = new HashSet<>();
 
-    /** The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium. */
+    /**
+     * The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium.
+     */
     public static final String PACKET_NAMESPACE = NoxesiumMod.NAMESPACE + "-v1";
 
     public static final PacketType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES = client("change_server_rules", ClientboundChangeServerRulesPacket::new);
     public static final PacketType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES = client("reset_server_rules", ClientboundResetServerRulesPacket::new);
     public static final PacketType<ClientboundResetPacket> CLIENT_RESET = client("reset", ClientboundResetPacket::new);
     public static final PacketType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO = client("server_info", ClientboundServerInformationPacket::new);
+
+    public static final PacketType<ClientboundMccServerPacket> CLIENT_MCC_SERVER = client("mcc_server", ClientboundMccServerPacket::new);
+    public static final PacketType<ClientboundMccGameStatePacket> CLIENT_MCC_GAME_STATE = client("mcc_game_state", ClientboundMccGameStatePacket::new);
 
     public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = server("client_info");
     public static final PacketType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = server("client_settings");
@@ -78,8 +85,8 @@ public class NoxesiumPackets {
     /**
      * Registers a new serverbound Noxesium packet.
      *
-     * @param id          The identifier of this packet.
-     * @param <T>         The type of packet.
+     * @param id  The identifier of this packet.
+     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
     public static <T extends ServerboundNoxesiumPacket> PacketType<T> server(String id) {
@@ -89,9 +96,9 @@ public class NoxesiumPackets {
     /**
      * Registers a new serverbound Noxesium packet.
      *
-     * @param id          The identifier of this packet.
-     * @param group       The group this packet belongs to, this can be used to selectively register packets based on the server being used.
-     * @param <T>         The type of packet.
+     * @param id    The identifier of this packet.
+     * @param group The group this packet belongs to, this can be used to selectively register packets based on the server being used.
+     * @param <T>   The type of packet.
      * @return The PacketType instance.
      */
     public static <T extends ServerboundNoxesiumPacket> PacketType<T> server(String id, String group) {
