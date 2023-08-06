@@ -21,9 +21,9 @@ public abstract class ServerRule<ValueT, BufferT> {
     public abstract ValueT read(BufferT buffer);
 
     /**
-     * Writes this value to a buffer.
+     * Writes the given value to a buffer.
      */
-    public abstract void write(BufferT buffer);
+    public abstract void write(ValueT value, BufferT buffer);
 
     /**
      * Returns the value of this rule.

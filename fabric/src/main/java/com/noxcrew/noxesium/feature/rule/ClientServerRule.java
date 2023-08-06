@@ -36,7 +36,7 @@ public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf>
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(T value, FriendlyByteBuf buffer) {
         throw new UnsupportedOperationException("Cannot write a client-side server rule to a buffer");
     }
 

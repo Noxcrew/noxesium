@@ -20,7 +20,7 @@ public class ServerRules {
 
     /**
      * A global value for the "CanPlaceOn" item tag that applies to players in adventure mode,
-     * allowing the server to define which blocks are placable globally regardless of tool.
+     * allowing the server to define which blocks are placeable globally regardless of tool.
      */
     public static ClientServerRule<CustomAdventureModeCheck> GLOBAL_CAN_PLACE_ON = new AdventureModeCheckServerRule(ServerRuleIndices.GLOBAL_CAN_PLACE_ON);
 
