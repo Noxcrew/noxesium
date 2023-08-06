@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPack
 import com.noxcrew.noxesium.network.clientbound.ClientboundNoxesiumPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -39,6 +40,7 @@ public class NoxesiumPackets {
     public static final PacketType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES = client("change_server_rules", ClientboundChangeServerRulesPacket::new);
     public static final PacketType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES = client("reset_server_rules", ClientboundResetServerRulesPacket::new);
     public static final PacketType<ClientboundResetPacket> CLIENT_RESET = client("reset", ClientboundResetPacket::new);
+    public static final PacketType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO = client("server_info", ClientboundServerInformationPacket::new);
 
     public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = server("client_info");
     public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_SETTINGS = server("client_settings");

@@ -1,13 +1,11 @@
 package com.noxcrew.noxesium;
 
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
-import com.noxcrew.noxesium.feature.skull.CustomSkullFont;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -40,11 +38,30 @@ public class NoxesiumMod implements ClientModInitializer {
     ));
 
     /**
+     * The current maximum supported protocol version.
+     */
+    private static int currentMaxProtocol = VERSION;
+
+    /**
      * Adds a new module to the list of modules that should have
      * their hooks called. Available for other mods to use.
      */
     public static void registerModule(NoxesiumModule module) {
         modules.add(module);
+    }
+
+    /**
+     * Returns the latest protocol version that is currently supported.
+     */
+    public static int getMaxProtocolVersion() {
+         return currentMaxProtocol;
+    }
+
+    /**
+     * Stores the maximum protocol version of the current server.
+     */
+    public static void setServerVersion(int maxProtocolVersion) {
+        currentMaxProtocol = maxProtocolVersion;
     }
 
     @Override
@@ -66,6 +83,9 @@ public class NoxesiumMod implements ClientModInitializer {
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
             modules.forEach(NoxesiumModule::onQuitServer);
+
+            // Reset the current max protocol version
+            currentMaxProtocol = VERSION;
         });
 
         // Register all universal messaging channels

@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Hooks into the SoundSource enum to add additional custom values.
@@ -36,9 +37,15 @@ public class SoundSourceMixin {
             at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/SoundSource;$VALUES:[Lnet/minecraft/sounds/SoundSource;", opcode = Opcodes.PUTSTATIC, shift = At.Shift.AFTER)
     )
     private static void modifyValues(CallbackInfo ci) {
+        // Avoid conflicts by checking if they already exist
         var newValues = new ArrayList<>(List.of($VALUES));
-        newValues.add(createNewCategory("CORE_MUSIC", newValues.size(), "core_music"));
-        newValues.add(createNewCategory("GAME_MUSIC", newValues.size(), "game_music"));
+        var existingValues = newValues.stream().map(Enum::name).toList();
+        if (!existingValues.contains("CORE_MUSIC")) {
+            newValues.add(createNewCategory("CORE_MUSIC", newValues.size(), "core_music"));
+        }
+        if (!existingValues.contains("GAME_MUSIC")) {
+            newValues.add(createNewCategory("GAME_MUSIC", newValues.size(), "game_music"));
+        }
         $VALUES = newValues.toArray(new SoundSource[0]);
     }
 }

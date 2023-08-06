@@ -33,6 +33,9 @@ Server developers are welcome to submit additional patches they need, however al
 
 # For developers
 
+Any developers interested in writing code that interacts with Noxesium should have a look at the `api` module which contains various structures useful for setting up a server-side implementation that interacts with Noxesium. This modules
+does not have a dependency on fabric and can thus be used as a dependency in server software.
+
 ## Player Heads
 
 Noxesium supports rendering player heads into text through a custom skull component. The details of which can be found by looking into the contents
