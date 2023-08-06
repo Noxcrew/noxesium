@@ -72,13 +72,13 @@ public class NoxesiumMod implements ClientModInitializer {
             // Send a packet containing information about the client version of Noxesium
             if (Minecraft.getInstance().getConnection() != null) {
                 new ServerboundClientInformationPacket(VERSION).send();
+
+                // Inform the player about the GUI scale of the client
+                syncGuiScale();
+
+                // Call connection hooks
+                modules.forEach(NoxesiumModule::onJoinServer);
             }
-
-            // Inform the player about the GUI scale of the client
-            syncGuiScale();
-
-            // Call connection hooks
-            modules.forEach(NoxesiumModule::onJoinServer);
         });
 
         // Call disconnection hooks
