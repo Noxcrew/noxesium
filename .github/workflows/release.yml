@@ -25,7 +25,7 @@ jobs:
       - name: Setup Gradle Build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build
+          arguments: build publish
         
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
