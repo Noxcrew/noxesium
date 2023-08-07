@@ -1,5 +1,7 @@
 Noxesium
 ---
+> :warning: The current version of Noxesium in this repository is the 1.0.0 update. This update is not yet supported by MCC Island's production network as of 07/08/2023. The update should start working on MCC Island after its next major update.
+
 A fabric mod with feature additions, bugfixes, and performance improvements. It allows servers to offer a better experience to clients through access to additional features beyond vanilla limitations.
 
 Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
@@ -14,11 +16,13 @@ Server developers are welcome to submit additional patches they need, however al
 - Allow servers to show player heads in chat messages
 - Allow servers to prevent picking up items in GUIs
 - Allow servers to prevent camera movement temporarily
-- Allow servers to disable vanilla Minecraft music
+- Allow servers to disable vanilla Minecraft music and play custom music in custom categories
 
 ### Performance
-
-- Optimized Beacon block entity rendering (disabled when using Iris Shaders)
+- Optimizes CustomModelData lookups for item models
+- Optimizes color lookups for leather armor
+- Caches color provider results in Sodium
+- Optimizes Beacon block entity rendering (disabled when using Iris Shaders)
 
 ### Bugfixes
 
@@ -30,6 +34,7 @@ Server developers are welcome to submit additional patches they need, however al
 ### MCC Island-specific Features
 
 - Adds a setting to show player heads in UIs
+- Provides access to additional information sent by the server regarding the current server and current game state
 
 # For developers
 
