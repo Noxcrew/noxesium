@@ -33,5 +33,5 @@ jobs:
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/libs/noxesium-+([0-9]).+([0-9]).+([0-9a-zA-Z]).jar
+          files: fabric/build/libs/noxesium-+([0-9]).+([0-9]).+([0-9a-zA-Z]).jar
           draft: true
