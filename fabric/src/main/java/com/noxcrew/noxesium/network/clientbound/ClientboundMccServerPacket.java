@@ -34,9 +34,6 @@ public class ClientboundMccServerPacket extends ClientboundNoxesiumPacket {
     public void receive(LocalPlayer player, PacketSender responseSender) {
         // This packet is sent to be handled by any other users of the MCC Island API.
         // TODO Set up a public packet handler API here?
-
-        // Debug message for testing
-        System.out.println("Received MCCI server state, joined " + type + ":" + subType + " (" + associatedGame + " / " + legacyGameId + ")");
     }
 
     @Override
