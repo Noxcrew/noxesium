@@ -6,6 +6,25 @@ A fabric mod with feature additions, bugfixes, and performance improvements. It 
 
 Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
 
+# Usage
+Public builds of Noxesium can be found on the [Modrinth](https://modrinth.com/mod/noxesium) page. Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.
+
+Developers that want to use Noxesium as a dependency can add it can find the artefact on our [public Maven repository](https://maven.noxcrew.com/#/public/com/noxcrew/noxesium/api).
+
+```xml
+<repository>
+    <id>noxcrew-maven</id>
+    <name>Noxcrew Public Maven Repository</name>
+    <url>https://maven.noxcrew.com/<repository></url>
+</repository>
+
+<dependency>
+  <groupId>com.noxcrew.noxesium</groupId>
+  <artifactId>api</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
 # Features
 
 ### Additions
