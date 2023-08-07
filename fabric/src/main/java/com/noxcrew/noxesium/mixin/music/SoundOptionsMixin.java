@@ -15,7 +15,7 @@ import java.util.Arrays;
 /**
  * Hides the additional music sliders when the system is not active.
  */
-@Mixin(SoundOptionsScreen.class, priority = 999)
+@Mixin(value = SoundOptionsScreen.class, priority = 999)
 public class SoundOptionsMixin {
 
     @Inject(method = "getAllSoundOptionsExceptMaster", at = @At("RETURN"), cancellable = true)
