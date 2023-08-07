@@ -26,6 +26,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build publish
+        env:
+          NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
+          NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
         
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
