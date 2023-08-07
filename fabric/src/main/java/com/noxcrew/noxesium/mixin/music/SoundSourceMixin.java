@@ -13,19 +13,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Hooks into the SoundSource enum to add additional custom values.
- *
+ * <p>
  * Credits to <a href="https://github.com/AsoDesu/IslandUtils/blob/main/src/main/java/net/asodev/islandutils/mixins/sounds/SoundSourceMixin.java">AsoDesu</a>
  * for the concept of injecting into the $VALUES initialisation.
  */
-// Ensure we inject after other mods
 @Mixin(value = SoundSource.class, priority = 1001)
 public class SoundSourceMixin {
 
-    @Mutable @Shadow @Final private static SoundSource[] $VALUES;
+    @Mutable
+    @Shadow
+    @Final
+    private static SoundSource[] $VALUES;
 
     @Invoker("<init>")
     private static SoundSource createNewCategory(String fieldName, int ordinal, String name) {
@@ -40,11 +41,11 @@ public class SoundSourceMixin {
         // Avoid conflicts by checking if they already exist
         var newValues = new ArrayList<>(List.of($VALUES));
         var existingValues = newValues.stream().map(Enum::name).toList();
-        if (!existingValues.contains("CORE_MUSIC")) {
-            newValues.add(createNewCategory("CORE_MUSIC", newValues.size(), "core_music"));
+        if (!existingValues.contains("CORE_MUSIC_NOXESIUM")) {
+            newValues.add(createNewCategory("CORE_MUSIC_NOXESIUM", newValues.size(), "core_music_noxesium"));
         }
-        if (!existingValues.contains("GAME_MUSIC")) {
-            newValues.add(createNewCategory("GAME_MUSIC", newValues.size(), "game_music"));
+        if (!existingValues.contains("GAME_MUSIC_NOXESIUM")) {
+            newValues.add(createNewCategory("GAME_MUSIC_NOXESIUM", newValues.size(), "game_music_noxesium"));
         }
         $VALUES = newValues.toArray(new SoundSource[0]);
     }

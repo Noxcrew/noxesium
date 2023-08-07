@@ -15,7 +15,7 @@ import java.util.Arrays;
 /**
  * Hides the additional music sliders when the system is not active.
  */
-@Mixin(SoundOptionsScreen.class)
+@Mixin(SoundOptionsScreen.class, priority = 999)
 public class SoundOptionsMixin {
 
     @Inject(method = "getAllSoundOptionsExceptMaster", at = @At("RETURN"), cancellable = true)
@@ -25,7 +25,11 @@ public class SoundOptionsMixin {
         cir.setReturnValue(
                 Arrays.stream(SoundSource.values())
                         // Filter out the two custom music sliders
-                        .filter((soundSource) -> soundSource != SoundSource.MASTER && !soundSource.getName().equals("core_music") && !soundSource.getName().equals("game_music"))
+                        .filter((soundSource) ->
+                                soundSource != SoundSource.MASTER &&
+                                        !soundSource.getName().equals("core_music_noxesium") &&
+                                        !soundSource.getName().equals("game_music_noxesium")
+                        )
                         .map(options::getSoundSourceOptionInstance)
                         .toArray(OptionInstance[]::new)
         );
