@@ -59,16 +59,18 @@ public class CustomSkullFont extends FontSet {
 
     @Override
     public @NotNull GlyphInfo getGlyphInfo(int i, boolean bl) {
-        if (module.getGlyphs().containsKey(i)) {
-            return module.getGlyphs().get(i);
+        var info = module.getGlyphs().get(i);
+        if (info == null) {
+            return SpecialGlyphs.MISSING;
         }
-        return SpecialGlyphs.MISSING;
+        return info;
     }
 
     @Override
     public @NotNull BakedGlyph getGlyph(int i) {
-        if (bakedGlyphs.containsKey(i)) {
-            return bakedGlyphs.get(i);
+        var glyph = bakedGlyphs.get(i);
+        if (glyph != null) {
+            return glyph;
         }
         if (module.getGlyphs().containsKey(i)) {
             // If we haven't baked a glyph yet we do so on the fly, vanilla
