@@ -29,9 +29,12 @@ jobs:
         env:
           NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
           NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
-        
+
+      - name: Clean up artifacts
+        run: rm fabric/build/libs/*-sources.jar
+
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         with:
-          files: fabric/build/libs/noxesium-+([0-9]).+([0-9]).+([0-9a-zA-Z]).jar
+          files: fabric/build/libs/*.jar
           draft: true
