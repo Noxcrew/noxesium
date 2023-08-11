@@ -1,7 +1,5 @@
 Noxesium
 ---
-> :warning: The current version of Noxesium in this repository is the 1.0.0 update. This update is not yet supported by MCC Island's production network as of 07/08/2023. The update should start working on MCC Island after its next major update.
-
 A fabric mod with feature additions, bugfixes, and performance improvements. It allows servers to offer a better experience to clients through access to additional features beyond vanilla limitations.
 
 Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
