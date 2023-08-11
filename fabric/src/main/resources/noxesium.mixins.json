@@ -26,6 +26,7 @@
     "entity.BoatMixin",
     "entity.LevelRendererMixin",
     "entity.TextDisplayRenderer",
+    "font.ScoreboardMixin",
     "info.MinecraftMixin",
     "info.OptionInstanceExt",
     "info.OptionInstanceMixin",

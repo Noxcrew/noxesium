@@ -41,4 +41,9 @@ public class ServerRuleIndices {
      * Allows server to prevent boat on entity collisions on the client side.
      */
     public static final int DISABLE_BOAT_COLLISIONS = 6;
+
+    /**
+     * Disables rendering of the numbers in the scoreboard.
+     */
+    public static final int DISABLE_SCOREBOARD_NUMBER_RENDERING = 7;
 }

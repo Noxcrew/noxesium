@@ -54,4 +54,10 @@ public class ServerRules {
      */
     public static ClientServerRule<Boolean> DISABLE_BOAT_COLLISIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_BOAT_COLLISIONS, false);
 
+
+    /**
+     * Whether to fully disable drawing numbers in the scorebaord. Even if cancelled out by a shader not drawing
+     * the numbers altogether speeds up the rendering process.
+     */
+    public static ClientServerRule<Boolean> DISABLE_SCOREBOARD_NUMBER_RENDERING = new BooleanServerRule(ServerRuleIndices.DISABLE_SCOREBOARD_NUMBER_RENDERING, true);
 }
