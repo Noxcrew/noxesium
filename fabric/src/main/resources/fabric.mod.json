@@ -37,6 +37,7 @@
     "iris": ">=1.6.4"
   },
   "breaks": {
-    "optifabric": "*"
+    "optifabric": "*",
+    "sodium": "<0.5.0"
   }
 }
