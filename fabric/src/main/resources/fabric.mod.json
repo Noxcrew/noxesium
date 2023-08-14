@@ -33,11 +33,11 @@
     "minecraft": ">=1.20.1"
   },
   "suggests": {
-    "sodium": ">=0.5.0",
+    "sodium": ">=0.5.1",
     "iris": ">=1.6.4"
   },
   "breaks": {
     "optifabric": "*",
-    "sodium": "<0.5.0"
+    "sodium": "<0.5.1"
   }
 }
