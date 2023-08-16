@@ -13,13 +13,13 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 <repository>
     <id>noxcrew-maven</id>
     <name>Noxcrew Public Maven Repository</name>
-    <url>https://maven.noxcrew.com/<repository></url>
+    <url>https://maven.noxcrew.com/public</url>
 </repository>
 
 <dependency>
   <groupId>com.noxcrew.noxesium</groupId>
   <artifactId>api</artifactId>
-  <version>1.0.0</version>
+  <version>$REPLACE_WITH_CURRENT_NOXESIUM_VERSION</version>
 </dependency>
 ```
 
