@@ -19,7 +19,7 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 <dependency>
   <groupId>com.noxcrew.noxesium</groupId>
   <artifactId>api</artifactId>
-  <version>$REPLACE_WITH_CURRENT_NOXESIUM_VERSION</version>
+  <version>REPLACE_WITH_CURRENT_NOXESIUM_VERSION</version>
 </dependency>
 ```
 
