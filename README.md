@@ -47,6 +47,7 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 - Change teleport packets to teleport vehicle passengers to their vehicle
 - Fixes lighting issues with moving piston walls
 - Music properly resumes playing when setting the volume to 0% and back up
+- Fixes the backgrounds of text displays not being transparent
 
 ### MCC Island-specific Features
 

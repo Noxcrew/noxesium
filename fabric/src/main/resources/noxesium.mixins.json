@@ -23,6 +23,7 @@
     "component.SkinManagerExt",
     "component.SkullBlockEntityExt",
     "entity.LevelRendererMixin",
+    "entity.TextDisplayRenderer",
     "info.MinecraftMixin",
     "info.OptionInstanceExt",
     "info.OptionInstanceMixin",
