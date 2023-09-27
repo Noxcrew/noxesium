@@ -38,7 +38,7 @@ public class CustomSkullFont extends FontSet {
         this.module = module;
 
         try {
-            ResourceLocation location = DefaultPlayerSkin.getDefaultSkin();
+            ResourceLocation location = DefaultPlayerSkin.getDefaultTexture();
             var simpleTexture = SimpleTexture.TextureImage.load(Minecraft.getInstance().getResourceManager(), location);
             var image = simpleTexture.getImage();
 

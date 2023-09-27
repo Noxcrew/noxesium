@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.mixin.beacon;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  *
  * This patch never triggers when Sodium is used.
  */
-@Mixin(ChunkRenderDispatcher.RenderChunk.RebuildTask.class)
+@Mixin(SectionRenderDispatcher.RenderSection.RebuildTask.class)
 public class PreventDoubleBeaconRenderingMixin {
 
     @Inject(method = "handleBlockEntity", at = @At("HEAD"), cancellable = true)
-    public <E extends BlockEntity> void render(ChunkRenderDispatcher.RenderChunk.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
+    public <E extends BlockEntity> void render(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
         if (blockEntity instanceof BeaconBlockEntity) {
             ci.cancel();
 

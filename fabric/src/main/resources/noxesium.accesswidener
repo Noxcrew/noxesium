@@ -1,8 +1,11 @@
 accessWidener v1 named
 
 accessible class net/minecraft/client/renderer/texture/SimpleTexture$TextureImage
-accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask
-accessible class net/minecraft/client/renderer/chunk/ChunkRenderDispatcher$RenderChunk$RebuildTask$CompileResults
+accessible class net/minecraft/client/resources/SkinManager$TextureCache
+accessible class net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection$RebuildTask
+accessible class net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection$RebuildTask$CompileResults
 
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides bakeModel (Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Lnet/minecraft/client/renderer/block/model/ItemOverride;)Lnet/minecraft/client/resources/model/BakedModel;
+
+accessible field net/minecraft/client/resources/SkinManager PROPERTY_TEXTURES Ljava/lang/String;

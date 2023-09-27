@@ -4,11 +4,12 @@ import net.minecraft.client.resources.SkinManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.io.File;
+import java.nio.file.Path;
 
-@Mixin(SkinManager.class)
-public interface SkinManagerExt {
+@Mixin(SkinManager.TextureCache.class)
+public interface TextureCacheExt {
 
-    @Accessor("skinTextures")
-    SkinManager.TextureCache getSkinTextures();
+    @Accessor("root")
+    Path getRootPath();
+
 }
