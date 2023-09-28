@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.mixin.component.*;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.HttpTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -142,7 +143,7 @@ public class SkullFontModule implements NoxesiumModule {
             if (!Objects.equals(cache, oldInstance)) return;
 
             try {
-                var gameProfile = new GameProfile(UUID.randomUUID(), "dummy_mcdummyface");
+                var gameProfile = new GameProfile(Util.NIL_UUID, "dummy_mcdummyface");
                 gameProfile.getProperties().put(SkinManager.PROPERTY_TEXTURES, new Property(SkinManager.PROPERTY_TEXTURES, texture, ""));
 
                 // Let the session servers extract the texture, don't check the signature
