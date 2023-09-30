@@ -29,7 +29,7 @@ public class ItemOverridesMixin {
      * @reason Vanilla overrides are incredibly slow, best to replace the whole system here
      */
     @Overwrite
-    private ItemOverrides getItemOverrides(ModelBaker baker, BlockModel model) {
+    public ItemOverrides getItemOverrides(ModelBaker baker, BlockModel model) {
         // Re-use the same empty instance whenever possible
         return this.overrides.isEmpty() ? CustomItemOverrides.EMPTY : new CustomItemOverrides(baker, model, this.overrides);
     }
