@@ -9,3 +9,5 @@ accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init>
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides bakeModel (Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Lnet/minecraft/client/renderer/block/model/ItemOverride;)Lnet/minecraft/client/resources/model/BakedModel;
 
 accessible field net/minecraft/client/resources/SkinManager PROPERTY_TEXTURES Ljava/lang/String;
+
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
