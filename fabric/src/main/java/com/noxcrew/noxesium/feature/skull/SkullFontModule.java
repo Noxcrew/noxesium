@@ -11,11 +11,9 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import com.noxcrew.noxesium.mixin.component.FontManagerExt;
-import com.noxcrew.noxesium.mixin.component.MinecraftExt;
-import com.noxcrew.noxesium.mixin.component.SkinManagerExt;
-import com.noxcrew.noxesium.mixin.component.SkullBlockEntityExt;
+import com.noxcrew.noxesium.mixin.component.*;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.HttpTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -27,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,15 +143,17 @@ public class SkullFontModule implements NoxesiumModule {
             if (!Objects.equals(cache, oldInstance)) return;
 
             try {
-                var gameProfile = new GameProfile(null, "dummy_mcdummyface");
+                var gameProfile = new GameProfile(Util.NIL_UUID, "dummy_mcdummyface");
                 gameProfile.getProperties().put(SkinManager.PROPERTY_TEXTURES, new Property(SkinManager.PROPERTY_TEXTURES, texture, ""));
 
                 // Let the session servers extract the texture, don't check the signature
                 var information = SkullBlockEntityExt.getSessionService().getTextures(gameProfile, false).get(MinecraftProfileTexture.Type.SKIN);
                 if (information != null) {
                     String string = Hashing.sha1().hashUnencodedChars(information.getHash()).toString();
-                    File file = new File(((SkinManagerExt) (Minecraft.getInstance().getSkinManager())).getSkinsDirectory(), string.length() > 2 ? string.substring(0, 2) : "xx");
-                    File file2 = new File(file, string);
+
+                    SkinManager.TextureCache skinTextures = ((SkinManagerExt) (Minecraft.getInstance().getSkinManager())).getSkinTextures();
+                    Path rootPath = ((TextureCacheExt) skinTextures).getRootPath();
+                    File file2 = rootPath.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string).toFile();
 
                     if (file2.exists()) {
                         // If the skin already exists we load it in
@@ -168,7 +169,7 @@ public class SkullFontModule implements NoxesiumModule {
                     } else {
                         // If this skin isn't known we download it first
                         var resourceLocation = new ResourceLocation("skins/" + string);
-                        var httpTexture = new HttpTexture(file2, information.getUrl(), DefaultPlayerSkin.getDefaultSkin(), true, () -> {
+                        var httpTexture = new HttpTexture(file2, information.getUrl(), DefaultPlayerSkin.getDefaultTexture(), true, () -> {
                             // At this point the texture has been saved to the file, so we can read out the native image
                             try {
                                 NativeImage nativeImage;

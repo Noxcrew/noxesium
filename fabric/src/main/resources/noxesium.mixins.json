@@ -22,6 +22,7 @@
     "component.MinecraftExt",
     "component.SkinManagerExt",
     "component.SkullBlockEntityExt",
+    "component.TextureCacheExt",
     "entity.LevelRendererMixin",
     "entity.TextDisplayRenderer",
     "info.MinecraftMixin",

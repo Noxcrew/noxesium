@@ -30,7 +30,7 @@ public class GameProfileFetcher {
             var newProfile = profile;
             Property property = Iterables.getFirst(newProfile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
             if (property == null) {
-                newProfile = SkullBlockEntityExt.getSessionService().fillProfileProperties(newProfile, true);
+                newProfile = SkullBlockEntityExt.getSessionService().fetchProfile(newProfile.getId(), true).profile();
             }
             consumer.accept(newProfile);
         }, Util.backgroundExecutor());
