@@ -11,18 +11,22 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A complete re-implementation of the item overrides system. We do diverge slightly from vanilla behaviour because
- * it doesn't really make sense. Vanilla matches the first entry where the value is at or below the target value. We only
- * match the custom model data exactly the first time, and then do it like vanilla.
+ * it doesn't really make sense. Vanilla's algorithm goes as follows:
+ * - Start iterating over all overrides bottom up
+ * - Find the first override that is exceeded by the values, e.g. if the bottom model has custom model data 5, an item
+ * with custom model data 6 will match that override. Even if another override exists for model data 6.
+ * <p>
+ * Instead, this patch uses a hashmap for custom model data, if and only if, such a hashmap will not cause any differences
+ * to vanilla behaviour.
  */
 public class CustomItemOverrides extends ItemOverrides {
 
@@ -40,9 +44,25 @@ public class CustomItemOverrides extends ItemOverrides {
     private List<BakedOverride> overrides;
 
     /**
-     * All models that are directly determined by a single custom model data.
+     * All models that are directly determined by a single custom model data in the correct order.
      */
     private Map<Integer, BakedModel> customModelDatas;
+
+    /**
+     * All optional model ranges.
+     */
+    private List<Triple<Integer, Integer, BakedModel>> optionalRanges;
+
+    /**
+     * The lowest valid custom model data integer. No new values below this are entered as any such
+     * values would use a different custom model.
+     */
+    private Integer lowestCustomModelData;
+
+    /**
+     * The highest valid custom model data integer. Any values above this use this value.
+     */
+    private Integer highestCustomModelData;
 
     public CustomItemOverrides() {
         super();
@@ -72,12 +92,13 @@ public class CustomItemOverrides extends ItemOverrides {
         }
 
         // Iterate through the list in reverse order
+        var canOptimize = true;
         var modelCache = new HashMap<ResourceLocation, BakedModel>();
         for (var i = list.size() - 1; i >= 0; --i) {
             var override = list.get(i);
 
-            // Micro-optmization: cache the model in case it's used multiple times per model, we ditch this hashmap after
-            // this constructor anyway and it only stores references. But if we had to make the model multiple times it'd be
+            // Micro-optimization: cache the model in case it's used multiple times per model, we ditch this hashmap after
+            // this constructor anyway, and it only stores references. But if we had to make the model multiple times it'd be
             // much more costly!
             var bakedmodel = modelCache.computeIfAbsent(override.getModel(), (t) -> bakeModel(modelBaker, blockModel, override));
             var properties = override.getPredicates().map((predicate) -> {
@@ -93,12 +114,20 @@ public class CustomItemOverrides extends ItemOverrides {
                 }
                 var value = (int) properties[0].minimum;
 
-                // We don't enter the value if it's already in there because normally the first valid
-                // value is taken, so we don't want the second valid value to take precedence
-                if (!customModelDatas.containsKey(value)) {
+                // We only enter the custom model data if it's the new minimum. Otherwise any of the other
+                // models would have taken up this model instead.
+                if (lowestCustomModelData == null || value < lowestCustomModelData) {
                     customModelDatas.put(value, bakedmodel);
+                    lowestCustomModelData = value;
+
+                    // Cache the highest value
+                    if (highestCustomModelData == null || value > highestCustomModelData) {
+                        highestCustomModelData = value;
+                    }
                 }
-                continue;
+            } else {
+                // Indicate that there is a non-custom model data override!
+                canOptimize = false;
             }
 
             // Add this model to the overrides list
@@ -107,12 +136,39 @@ public class CustomItemOverrides extends ItemOverrides {
             }
             overrides.add(new BakedOverride(bakedmodel, properties));
         }
+
+        // Determine if we can optimize and clear the appropriate maps
+        if (!canOptimize) {
+            customModelDatas = null;
+        } else {
+            overrides = null;
+
+            if (customModelDatas != null) {
+                // Fill in the gaps in the custom model data, so we can fetch them all properly
+                Map.Entry<Integer, BakedModel> lastPair = null;
+                var copy = new ArrayList<>(new HashMap<>(customModelDatas).entrySet());
+                copy.sort(Map.Entry.comparingByKey());
+                for (var pair : copy) {
+                    if (lastPair != null) {
+                        // Go over each index between these two pairs
+                        var distance = (pair.getKey() - 1) - (lastPair.getKey() + 1);
+                        if (distance > 0) {
+                            if (optionalRanges == null) {
+                                optionalRanges = new ArrayList<>();
+                            }
+                            optionalRanges.add(Triple.of(lastPair.getKey() + 1, pair.getKey() - 1, lastPair.getValue()));
+                        }
+                    }
+                    lastPair = pair;
+                }
+            }
+        }
     }
 
     @Nullable
     @Override
     public BakedModel resolve(BakedModel fallback, ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int i) {
-        // Try test individual overrides first, these do not include any sole custom models
+        // Try to test individual overrides if possible
         if (overrides != null) {
             var item = itemStack.getItem();
 
@@ -136,10 +192,7 @@ public class CustomItemOverrides extends ItemOverrides {
                     return bakedmodel == null ? fallback : bakedmodel;
                 }
             }
-        }
-
-        // Try test sole custom model data
-        if (customModelDatas != null) {
+        } else if (customModelDatas != null) {
             // Determine the custom model of the item as fast as possible (this code is called a lot per tick if there's many models)
             var customTag = itemStack.getTag();
             if (customTag == null) return fallback;
@@ -147,7 +200,32 @@ public class CustomItemOverrides extends ItemOverrides {
             if (customModelData == null || customModelData.getId() > 6) return fallback;
             var numericTag = (NumericTag) customModelData;
             var id = numericTag.getAsInt();
-            return customModelDatas.getOrDefault(id, fallback);
+
+            // Snap to the highest valid id
+            if (highestCustomModelData != null && id > highestCustomModelData) {
+                id = highestCustomModelData;
+            }
+
+            // If the id is below the minimum we will never find a hit and
+            // we simply return the fallback
+            if (lowestCustomModelData != null && id < lowestCustomModelData) {
+                return fallback;
+            }
+
+            // Try to get the exact model from the cache
+            var model = customModelDatas.get(id);
+            if (model != null) {
+                return model;
+            }
+
+            if (optionalRanges != null) {
+                // We fall somewhere in between, let's assess the ranges
+                for (var triple : optionalRanges) {
+                    if (id >= triple.getLeft() && id <= triple.getMiddle()) {
+                        return triple.getRight();
+                    }
+                }
+            }
         }
         return fallback;
     }
