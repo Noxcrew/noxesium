@@ -170,3 +170,10 @@ individual rule and how it interprets the incoming packet.
 |------------|------------|---------------------|
 | Index      | VarInt     | 5                   |
 | Enabled    | Boolean    | `false` by default. |
+
+**Disable Boat Collisions**. Disables boats colliding with other entities. Similar modification is recommended on the server side to ensure behaviour congruity.
+
+| Field Name | Field Type | Notes               |
+|------------|------------|---------------------|
+| Index      | VarInt     | 6                   |
+| Value      | Boolean    | `false` by default. |
