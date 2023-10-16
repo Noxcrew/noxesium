@@ -34,6 +34,7 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 - Allow servers to prevent picking up items in GUIs
 - Allow servers to prevent camera movement temporarily
 - Allow servers to disable vanilla Minecraft music and play custom music in custom categories
+- Allow servers more control the start offset, and change volume of sounds
 
 ### Performance
 - Optimizes CustomModelData lookups for item models
@@ -177,3 +178,34 @@ individual rule and how it interprets the incoming packet.
 |------------|------------|---------------------|
 | Index      | VarInt     | 6                   |
 | Value      | Boolean    | `false` by default. |
+## Sounds
+Noxesium allows servers more control over sounds, when they're started, and while they're playing. 
+You can start a sound from a specific start time, have the sound automatically loop, or modify the
+sound's volume while it's playing.
+
+### Start Sound
+Sounds using this system must be started through the `start_sound` custom packet.\
+**NOTE:** If a sound with the same location is already playing, that sound will be stopped.
+
+| Field Name   | Field Type  | Notes                                                                                                      |
+|--------------|-------------|------------------------------------------------------------------------------------------------------------|
+| Sound        | Identifier  | The sound to play                                                                                          |
+| Category     | VarInt Enum | The sound category to play in ([current categories](https://gist.github.com/konwboj/7c0c380d3923443e9d55)) |
+| X            | VarInt      | The X position of the sound                                                                                |
+| Y            | VarInt      | The Y position of the sound                                                                                |
+| Z            | VarInt      | The Z position of the sound                                                                                |
+| Looping      | Boolean     | Weather the sound should automatically loop                                                                |
+| Volume       | Float       | The starting volume of the sound (0 - 1)                                                                   |
+| Pitch        | Float       | The pitch of the sound (0.5 - 2)                                                                           |
+| Start Offset | Float       | The start offset of the sound (in seconds)                                                                 |
+
+### Modify Volume
+The `sound_volume` custom packet allows you to modify the volume of a sound played through the 
+`start_sound` packet.\
+**NOTE:** Setting/fading the volume to 0 will not stop the sound.
+
+| Field Name    | Field Type | Notes                  |
+|---------------|------------|------------------------|
+| Sound         | Identifier | The sound to modify    |
+| Volume        | Float      | The volume to set to   |
+| Interpolation | Float      | The fade time in ticks |

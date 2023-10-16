@@ -3,13 +3,7 @@ package com.noxcrew.noxesium.network;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundNoxesiumPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
+import com.noxcrew.noxesium.network.clientbound.*;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
@@ -50,6 +44,9 @@ public class NoxesiumPackets {
 
     public static final PacketType<ClientboundMccServerPacket> CLIENT_MCC_SERVER = client("mcc_server", ClientboundMccServerPacket::new);
     public static final PacketType<ClientboundMccGameStatePacket> CLIENT_MCC_GAME_STATE = client("mcc_game_state", ClientboundMccGameStatePacket::new);
+
+    public static final PacketType<ClientboundCustomSoundStartPacket> CLIENT_START_SOUND = client("start_sound", ClientboundCustomSoundStartPacket::new);
+    public static final PacketType<ClientboundCustomSoundVolumePacket> CLIENT_SOUND_VOLUME = client("sound_volume", ClientboundCustomSoundVolumePacket::new);
 
     public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = server("client_info");
     public static final PacketType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = server("client_settings");
