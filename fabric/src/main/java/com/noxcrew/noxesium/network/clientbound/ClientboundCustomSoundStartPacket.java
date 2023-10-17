@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.network.clientbound;
 
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
-import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundManager;
+import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
@@ -41,7 +41,7 @@ public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket
 
     @Override
     public void receive(LocalPlayer player, PacketSender responseSender) {
-        NoxesiumSoundManager manager = NoxesiumSoundManager.getInstance();
+        NoxesiumSoundModule manager = NoxesiumSoundModule.getInstance();
         NoxesiumSoundInstance instance = new NoxesiumSoundInstance(
                 sound,
                 source,

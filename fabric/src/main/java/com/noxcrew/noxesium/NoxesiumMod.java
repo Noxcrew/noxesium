@@ -3,6 +3,7 @@ package com.noxcrew.noxesium;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
+import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
@@ -36,7 +37,8 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     private static final Set<NoxesiumModule> modules = new HashSet<>(Set.of(
             ServerRuleModule.getInstance(),
-            SkullFontModule.getInstance()
+            SkullFontModule.getInstance(),
+            NoxesiumSoundModule.getInstance()
     ));
 
     /**
