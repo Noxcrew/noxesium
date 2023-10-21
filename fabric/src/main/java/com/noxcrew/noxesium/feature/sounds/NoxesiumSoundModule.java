@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.feature.sounds;
 import com.noxcrew.noxesium.NoxesiumModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
  * Manages and stores the currently playing sounds
  */
 public class NoxesiumSoundModule implements NoxesiumModule {
-    private final Map<ResourceLocation, NoxesiumSoundInstance> sounds = new HashMap<>();
+    private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
     private static NoxesiumSoundModule instance;
     public static NoxesiumSoundModule getInstance() {
         if (instance == null) {
@@ -27,14 +26,14 @@ public class NoxesiumSoundModule implements NoxesiumModule {
      * can be modified later
      * @param instance The sound instance to play
      */
-    public void play(NoxesiumSoundInstance instance) {
+    public void play(int id, NoxesiumSoundInstance instance) {
         SoundManager soundManager = Minecraft.getInstance().getSoundManager();
 
-        if (sounds.containsKey(instance.getLocation())) {
-            NoxesiumSoundInstance sound = sounds.get(instance.getLocation());
+        if (sounds.containsKey(id)) {
+            NoxesiumSoundInstance sound = sounds.get(id);
             soundManager.stop(sound);
         }
-        sounds.put(instance.getLocation(), instance);
+        sounds.put(id, instance);
         soundManager.play(instance);
     }
 
@@ -48,10 +47,10 @@ public class NoxesiumSoundModule implements NoxesiumModule {
      * Returns a currently playing custom sound
      */
     @Nullable
-    public NoxesiumSoundInstance getSound(ResourceLocation location) {
-        NoxesiumSoundInstance soundInstance = sounds.get(location);
+    public NoxesiumSoundInstance getSound(int id) {
+        NoxesiumSoundInstance soundInstance = sounds.get(id);
         if (soundInstance.isStopped()) {
-            sounds.remove(location);
+            sounds.remove(id);
             return null;
         }
         return soundInstance;

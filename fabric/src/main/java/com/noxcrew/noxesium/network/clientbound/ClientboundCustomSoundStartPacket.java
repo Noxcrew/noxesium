@@ -17,6 +17,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket {
     private final ResourceLocation sound;
+    private final int id;
     private final SoundSource source;
     private final int x;
     private final int y;
@@ -29,6 +30,7 @@ public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket
     public ClientboundCustomSoundStartPacket(FriendlyByteBuf buf) {
         super(buf.readVarInt());
         this.sound = buf.readResourceLocation();
+        this.id = buf.readVarInt();
         this.source = buf.readEnum(SoundSource.class);
         this.x = buf.readVarInt();
         this.y = buf.readVarInt();
@@ -51,7 +53,7 @@ public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket
                 looping,
                 startOffset
         );
-        manager.play(instance);
+        manager.play(id, instance);
     }
 
     @Override
