@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Sent by a server to start a Noxesium custom sound. If a sound with the same resource location
+ * Sent by a server to start a Noxesium custom sound. If a sound with the same id
  * is already playing, that sound will be stopped.
  */
 public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket {
@@ -38,7 +38,7 @@ public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket
         this.looping = buf.readBoolean();
         this.volume = buf.readFloat();
         this.pitch = buf.readFloat();
-        this.startOffset = buf.readFloat();
+        this.startOffset = buf.readFloat(); // Start offset in seconds
     }
 
     @Override
