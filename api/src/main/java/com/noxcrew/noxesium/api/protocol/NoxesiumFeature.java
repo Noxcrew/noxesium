@@ -35,6 +35,10 @@ public enum NoxesiumFeature {
      * Adds support for disabling boat on entity collisions.
      */
     BOAT_COLLISIONS_RULE(4),
+    /**
+     * Allows usage of the custom sounds packets.
+     */
+    CUSTOM_SOUNDS(4),
     ;
 
     private final int minProtocolVersion;

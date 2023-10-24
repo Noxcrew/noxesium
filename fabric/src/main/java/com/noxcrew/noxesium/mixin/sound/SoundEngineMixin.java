@@ -35,8 +35,6 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(SoundEngine.class)
 public abstract class SoundEngineMixin {
 
-    // TODO We can consider pausing the channel for a muted sound but it's TBD if there's any performance gain there, who turns off audio for fps anyway?
-
     @Shadow
     protected abstract float calculateVolume(SoundInstance soundInstance);
     @Shadow @Final private SoundBufferLibrary soundBuffers;
@@ -59,6 +57,7 @@ public abstract class SoundEngineMixin {
     @Redirect(method = "tickNonPaused", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getSoundSourceVolume(Lnet/minecraft/sounds/SoundSource;)F"))
     private float overrideVolume(Options instance, SoundSource soundSource) {
         // We return a non-0.0 value if we don't want to stop playing the music to avoid it getting stopped.
+        // We can consider pausing the channel for a muted sound, but it's TBD if there's any performance gain there, who turns off audio for fps anyway?
         var volume = instance.getSoundSourceVolume(soundSource);
         return volume <= 0.0F && soundSource.getName().contains("music") ? 1.0f : volume;
     }
@@ -75,7 +74,7 @@ public abstract class SoundEngineMixin {
     )
     private void execute(SoundInstance soundInstance, CallbackInfo ci, WeighedSoundEvents weighedSoundEvents, ResourceLocation resourceLocation, Sound sound, float f, float g, SoundSource soundSource, float h, float i, SoundInstance.Attenuation attenuation, boolean bl, Vec3 vec3, boolean isLooping, boolean streaming, CompletableFuture completableFuture, ChannelAccess.ChannelHandle channelHandle) {
         if (!(soundInstance instanceof NoxesiumSoundInstance soundInstance1)) return;
-        if (soundInstance1.startOffset < 0) return;
+        if (soundInstance1.getStartOffset() <= 0) return;
 
         soundInstance1.applyStartOffset(channelHandle);
         if (streaming) {
@@ -84,7 +83,7 @@ public abstract class SoundEngineMixin {
                 // Preloads `startOffset` amount of buffers but never reads them, so when minecraft loads
                 // the first 4 buffers, it's already offset by our `startOffset`
                 int bufferSize = Channel.calculateBufferSize(audioStream.getFormat(), 1);
-                int startOffset = Mth.floor(soundInstance1.startOffset);
+                int startOffset = Mth.floor(soundInstance1.getStartOffset());
                 try {
                     audioStream.read(startOffset * bufferSize);
                 } catch (IOException e) {

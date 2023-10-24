@@ -12,8 +12,8 @@ import java.util.Map;
  * Manages and stores the currently playing sounds
  */
 public class NoxesiumSoundModule implements NoxesiumModule {
-    private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
     private static NoxesiumSoundModule instance;
+
     public static NoxesiumSoundModule getInstance() {
         if (instance == null) {
             instance = new NoxesiumSoundModule();
@@ -21,24 +21,35 @@ public class NoxesiumSoundModule implements NoxesiumModule {
         return instance;
     }
 
-    /**
-     * Plays a given sound instance and stores it, so it
-     * can be modified later
-     * @param instance The sound instance to play
-     */
-    public void play(int id, NoxesiumSoundInstance instance) {
-        SoundManager soundManager = Minecraft.getInstance().getSoundManager();
+    private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
 
-        if (sounds.containsKey(id)) {
-            NoxesiumSoundInstance sound = sounds.get(id);
-            soundManager.stop(sound);
+    /**
+     * Plays a given sound instance and stores it by its id so it
+     * can be modified later.
+     *
+     * @param id The id to play the sound under
+     * @param instance The sound instance to play
+     * @param ignoreIfPlaying Whether to ignore this request if the sound is already playing
+     */
+    public void play(int id, NoxesiumSoundInstance instance, boolean ignoreIfPlaying) {
+        var soundManager = Minecraft.getInstance().getSoundManager();
+
+        // Deal with whatever sound is currently playing
+        var currentSound = getSound(id);
+        if (currentSound != null && ignoreIfPlaying) return;
+        if (currentSound != null) {
+            soundManager.stop(currentSound);
+            sounds.remove(id);
         }
+
+        // Play the new sound
         sounds.put(id, instance);
         soundManager.play(instance);
     }
 
     @Override
     public void onQuitServer() {
+        // Clear all information about pending sounds on quit
         sounds.clear();
     }
 
@@ -56,4 +67,17 @@ public class NoxesiumSoundModule implements NoxesiumModule {
         return soundInstance;
     }
 
+    /**
+     * Stops the sound with the given id, if one is playing.
+     *
+     * @param id The id of the sound to stop
+     */
+    public void stopSound(int id) {
+        var sound = getSound(id);
+        if (sound != null) {
+            var soundManager = Minecraft.getInstance().getSoundManager();
+            soundManager.stop(sound);
+            sounds.remove(id);
+        }
+    }
 }

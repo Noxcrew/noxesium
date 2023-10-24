@@ -15,64 +15,62 @@ import org.lwjgl.openal.AL11;
  * The sound instance for custom modifiable sounds
  */
 public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
-    public float startOffset;
+
+    private final float startOffset;
     private VolumeInterpolation volumeInterpolation;
 
-    public NoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Vec3 position, float volume, float pitch) {
-        this(sound, soundSource, position, volume, pitch, false, 0f);
-    }
-    public NoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Vec3 position, float volume, float pitch, float startOffset) {
-        this(sound, soundSource, position, volume, pitch, false, startOffset);
-    }
-    public NoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Vec3 position, float volume, float pitch, boolean looping, float startOffset) {
+    public NoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Vec3 initialPosition, float volume, float pitch, boolean looping, boolean attenuation, float startOffset) {
         super(SoundEvent.createVariableRangeEvent(sound), soundSource, SoundInstance.createUnseededRandom());
-        this.x = position.x();
-        this.y = position.y();
-        this.z = position.z();
+        this.x = initialPosition.x();
+        this.y = initialPosition.y();
+        this.z = initialPosition.z();
         this.volume = volume;
         this.pitch = pitch;
         this.looping = looping;
         this.startOffset = startOffset;
+
+        if (attenuation) {
+            this.attenuation = Attenuation.LINEAR;
+        } else {
+            this.attenuation = Attenuation.NONE;
+        }
+    }
+
+    /**
+     * Returns the offset at which this sound should start.
+     */
+    public float getStartOffset() {
+        return startOffset;
     }
 
     @Override
     public void tick() {
         if (volumeInterpolation != null) {
-            volumeInterpolation.tick(this);
+            var newVolume = volumeInterpolation.tick();
+            if (newVolume == null) {
+                volumeInterpolation = null;
+            } else {
+                this.volume = newVolume;
+            }
         }
     }
 
     /**
      * Sets the volume over a specified time
+     *
      * @param volume The new volume to set to
+     * @param startVolume The volume to start interpolation from.
      * @param ticks The fade time
      */
-    public void setVolume(float volume, int ticks) {
+    public void setVolume(float volume, Float startVolume, int ticks) {
         if (ticks <= 0) {
             this.volume = volume;
         } else {
-            this.volumeInterpolation = new VolumeInterpolation(this.volume, volume, ticks);
-        }
-    }
-
-    /**
-     * A class to manage volume interpolation
-     */
-    static class VolumeInterpolation {
-        int ticks;
-        float deltaPerTick;
-
-        public VolumeInterpolation(float startingVolume, float endingVolume, int ticks) {
-            this.ticks = ticks;
-            this.deltaPerTick = (endingVolume - startingVolume) / ticks;
-        }
-
-        public void tick(NoxesiumSoundInstance soundInstance) {
-            soundInstance.volume = soundInstance.volume + deltaPerTick;
-            ticks--;
-            if (ticks <= 0) {
-                soundInstance.volumeInterpolation = null;
+            // Start from the current volume if unspecified
+            if (startVolume == null) {
+                startVolume = this.volume;
             }
+            this.volumeInterpolation = new VolumeInterpolation(startVolume, volume, ticks);
         }
     }
 
