@@ -39,6 +39,7 @@
     "music.MusicManagerMixin",
     "music.SoundOptionsMixin",
     "music.SoundSourceMixin",
+    "sound.ChannelExt",
     "sound.SoundEngineMixin"
   ],
   "injectors": {
