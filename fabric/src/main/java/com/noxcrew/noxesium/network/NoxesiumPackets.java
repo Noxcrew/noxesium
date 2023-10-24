@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -63,6 +64,21 @@ public class NoxesiumPackets {
      */
     public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, Function<FriendlyByteBuf, T> constructor) {
         return client(id, "universal", constructor);
+    }
+
+    /**
+     * Registers a new clientbound Noxesium packet.
+     *
+     * @param id          The identifier of this packet.
+     * @param constructor A constructor that creates this packet when given a byte buffer and a version.
+     * @param <T>         The type of packet.
+     * @return The PacketType instance.
+     */
+    public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, BiFunction<FriendlyByteBuf, Integer, T> constructor) {
+        return client(id, "universal", (buffer) -> {
+            var version = buffer.readVarInt();
+            return constructor.apply(buffer, version);
+        });
     }
 
     /**
