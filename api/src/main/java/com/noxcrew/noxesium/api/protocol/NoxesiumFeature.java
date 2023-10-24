@@ -28,6 +28,10 @@ public enum NoxesiumFeature {
      */
     MUSIC_SERVER_RULE(3),
     /**
+     * Adds support for disabling boat on entity collisions.
+     */
+    BOAT_COLLISIONS_RULE(4),
+    /**
      * Supports the V1 API of Noxesium.
      */
     API_V1(3),

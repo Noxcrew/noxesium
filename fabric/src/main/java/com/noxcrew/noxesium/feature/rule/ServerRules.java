@@ -47,4 +47,11 @@ public class ServerRules {
      * own music.
      */
     public static ClientServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(ServerRuleIndices.ENABLE_CUSTOM_MUSIC);
+
+    /**
+     * When true, disables boat collision on the client side, useful for movement games involving
+     * boats and other entities in one area. Similar mechanism must exist server side to prevent lagbacks with this enabled.
+     */
+    public static ClientServerRule<Boolean> DISABLE_BOAT_COLLISIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_BOAT_COLLISIONS, false);
+
 }

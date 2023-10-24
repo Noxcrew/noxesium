@@ -36,4 +36,9 @@ public class ServerRuleIndices {
      * by clients and used by the server.
      */
     public static final int ENABLE_CUSTOM_MUSIC = 5;
+
+    /**
+     * Allows server to prevent boat on entity collisions on the client side.
+     */
+    public static final int DISABLE_BOAT_COLLISIONS = 6;
 }
