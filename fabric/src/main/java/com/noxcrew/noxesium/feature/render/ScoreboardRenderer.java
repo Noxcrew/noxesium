@@ -1,8 +1,10 @@
 package com.noxcrew.noxesium.feature.render;
 
-import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 
 /**
  * Provides a function to render the scoreboard efficiently.
@@ -10,44 +12,47 @@ import net.minecraft.client.gui.GuiGraphics;
 public class ScoreboardRenderer {
 
     /**
-     * Renders the scoreboard to the screen using the cached contents.
+     * Renders the scoreboard to the screen using the cached contents. We optimize scoreboard rendering in multiple levels:
+     * - Render background in one call instead of 15
+     * - Cache contents of the scoreboard
+     * - Cache structure of text in scoreboard
+     * - Micro-optimizations to rendering code itself
+     * - Drawing into an intermediate buffer
      */
     public static void renderScoreboard(GuiGraphics graphics, int screenWidth, int screenHeight, Minecraft minecraft) {
         var cache = CachedScoreboardContents.getCachedScoreboardContents();
-        var drawNumbers = cache.drawNumbers();
         var font = Minecraft.getInstance().font;
 
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var right = 3;
         var left = screenWidth - cache.maxWidth() - right;
-        var backgroundRight = screenWidth - right + 2;
-        var background = minecraft.options.getBackgroundColor(0.3f);
-        var darkerBackground = minecraft.options.getBackgroundColor(0.4f);
 
-        // Draw the header
-        var headerTop = bottom - cache.lines().size() * 9;
-        graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
-        graphics.drawString(font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+        // Draw the buffered contents of the scoreboard to the screen as a base!
+        var screenBuffer = CachedScoreboardContents.getScoreboardBuffer();
+        screenBuffer.draw();
 
-        // Draw the background (vanilla does this per line but we do it once)
-        graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
+        if (!cache.hasObfuscation()) return;
 
-        // Line 1 here is the bottom line, this is because the
-        // finalScores are sorted and we're getting them still
-        // ordered ascending, so we want to display the last
-        // score at the top.
-        for (var line = 1; line <= cache.lines().size(); line++) {
-            var pair = cache.lines().get(line - 1);
-            var score = pair.getFirst();
-            var text = pair.getSecond();
-            var lineTop = bottom - line * 9;
-            graphics.drawString(font, text, left, lineTop, -1, false);
-
-            if (drawNumbers) {
-                var number = String.valueOf(ChatFormatting.RED) + score.getScore();
-                graphics.drawString(font, number, backgroundRight - cache.numberWidths().get(line - 1), lineTop, -1, false);
+        // We always draw the lines that have obfuscation overtop!
+        graphics.drawManaged(() -> {
+            // Draw the header if it has obfuscation
+            var headerTop = bottom - cache.lines().size() * 9;
+            if (cache.header().hasObfuscation) {
+                GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
             }
-        }
+
+            // Line 1 here is the bottom line, this is because the
+            // finalScores are sorted and we're getting them still
+            // ordered ascending, so we want to display the last
+            // score at the top.
+            for (var line = 1; line <= cache.lines().size(); line++) {
+                var text = cache.lines().get(line - 1);
+                if (!text.hasObfuscation) continue;
+
+                var lineTop = bottom - line * 9;
+                GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
+            }
+        });
     }
 }

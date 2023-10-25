@@ -16,3 +16,30 @@ accessible field net/minecraft/client/resources/SkinManager PROPERTY_TEXTURES Lj
 accessible class net/minecraft/client/renderer/RenderType$CompositeState
 
 accessible method net/minecraft/client/gui/Gui displayScoreboardSidebar (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V
+
+accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
+accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/vertex/PoseStack;
+accessible method net/minecraft/client/gui/Font adjustColor (I)I
+
+accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph u0 F
+accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph v0 F
+accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph u1 F
+accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph v1 F
+
+accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
+accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
+
+accessible field net/minecraft/client/gui/font/FontSet glyphsByWidth Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
+accessible field net/minecraft/client/gui/font/FontSet missingGlyph Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;
+
+accessible method net/minecraft/client/gui/Font renderChar (Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V
+
+accessible field net/minecraft/client/gui/font/FontSet name Lnet/minecraft/resources/ResourceLocation;
+accessible field net/minecraft/client/gui/font/FontSet textures Ljava/util/List;
+
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible field net/minecraft/client/renderer/RenderType$CompositeRenderType state Lnet/minecraft/client/renderer/RenderType$CompositeState;
+accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
+accessible class net/minecraft/client/renderer/RenderStateShard$TextureStateShard
+accessible field net/minecraft/client/renderer/RenderStateShard$TextureStateShard texture Ljava/util/Optional;
+accessible field net/minecraft/client/renderer/RenderStateShard name Ljava/lang/String;

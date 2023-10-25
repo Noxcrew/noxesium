@@ -1,10 +1,13 @@
 package com.noxcrew.noxesium.feature.render;
 
-import com.google.common.cache.Cache;
-import com.mojang.datafixers.util.Pair;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
@@ -14,39 +17,120 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static net.minecraft.client.Minecraft.ON_OSX;
 
 /**
  * Stores information about a single state of the scoreboard. We cache
  * this information as scoreboards are drawn each frame, so storing some
  * information about it between ticks is useful.
  *
+ * @param objective    The relevant scoreboard objective.
+ * @param players      The players whose team this scoreboard depends on.
+ * @param teams        The teams whose properties this scoreboard depends on.
  * @param header       The header text.
  * @param lines        The final lines to be drawn.
+ * @param numbers      The text to be drawn for the numbers.
  * @param numberWidths The widths of each row's number.
  * @param headerWidth  The width of the scoreboard's header.
  * @param maxWidth     The maximum width of the scoreboard.
- * @param drawNumbers  Whether the numbers should be drawn.
  */
 public record CachedScoreboardContents(
         @Nullable
         Objective objective,
         List<String> players,
         List<String> teams,
-        Component header,
-        List<Pair<Score, Component>> lines,
+        BakedComponent header,
+        List<BakedComponent> lines,
+        List<BakedComponent> numbers,
         List<Integer> numberWidths,
         int headerWidth,
         int maxWidth,
-        boolean drawNumbers
+        boolean hasObfuscation
 ) {
 
     /**
      * The fallback contents if the scoreboard is empty.
      */
-    public static final CachedScoreboardContents EMPTY = new CachedScoreboardContents(null, List.of(), List.of(), Component.empty(), List.of(), List.of(), 0, 0, false);
+    public static final CachedScoreboardContents EMPTY = new CachedScoreboardContents(null, List.of(), List.of(), new BakedComponent(Component.empty()), List.of(), List.of(), List.of(), 0, 0, false);
 
     private static CachedScoreboardContents current;
+    private static boolean needsRedraw;
+    private static ScreenBuffer scoreboardBuffer = null;
+
+    /**
+     * Returns the current buffer to use for drawing the scoreboard.
+     * The buffer is automatically redrawn if it's not up-to-date.
+     */
+    public static ScreenBuffer getScoreboardBuffer() {
+        RenderSystem.assertOnRenderThread();
+
+        var minecraft = Minecraft.getInstance();
+        var font = minecraft.font;
+        var screenWidth = minecraft.getWindow().getGuiScaledWidth();
+        var screenHeight = minecraft.getWindow().getGuiScaledHeight();
+
+        // Create the buffer and ensure it has the correct size
+        if (scoreboardBuffer == null) {
+            scoreboardBuffer = new ScreenBuffer();
+        }
+        if (scoreboardBuffer.resize(screenWidth, screenHeight)) {
+            needsRedraw = true;
+        }
+
+        // Redraw into the buffer if we have to
+        if (needsRedraw) {
+            var cache = getCachedScoreboardContents();
+            var height = cache.lines().size() * 9;
+            var bottom = screenHeight / 2 + height / 3;
+            var right = 3;
+            var left = screenWidth - cache.maxWidth() - right;
+            var backgroundRight = screenWidth - right + 2;
+            var background = Minecraft.getInstance().options.getBackgroundColor(0.3f);
+            var darkerBackground = Minecraft.getInstance().options.getBackgroundColor(0.4f);
+
+            var buffer = scoreboardBuffer.getTarget();
+            try {
+                buffer.setClearColor(0f, 0f, 0f, 0f);
+                buffer.clear(ON_OSX);
+                buffer.bindWrite(true);
+
+                var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
+                graphics.drawManaged(() -> {
+                    // Draw the header
+                    var headerTop = bottom - cache.lines().size() * 9;
+                    graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
+                    if (!cache.header.hasObfuscation) {
+                        GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+                    }
+
+                    // Draw the background (vanilla does this per line but we do it once)
+                    graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
+
+                    // Line 1 here is the bottom line, this is because the
+                    // finalScores are sorted and we're getting them still
+                    // ordered ascending, so we want to display the last
+                    // score at the top.
+                    for (var line = 1; line <= cache.lines().size(); line++) {
+                        var text = cache.lines().get(line - 1);
+                        var lineTop = bottom - line * 9;
+                        if (!text.hasObfuscation) {
+                            GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
+                        }
+
+                        if (cache.numbers().size() >= line) {
+                            GuiGraphicsExt.drawString(graphics, font, cache.numbers().get(line - 1), backgroundRight - cache.numberWidths().get(line - 1), lineTop, -1, false);
+                        }
+                    }
+                });
+            } finally {
+                needsRedraw = false;
+                buffer.unbindWrite();
+                minecraft.getMainRenderTarget().bindWrite(true);
+            }
+        }
+        return scoreboardBuffer;
+    }
 
     /**
      * Clears the currently cached scoreboard contents. The frequency at which this is irrelevant as it's assumed
@@ -94,6 +178,7 @@ public record CachedScoreboardContents(
     public static CachedScoreboardContents getCachedScoreboardContents() {
         if (current == null) {
             current = cacheScoreboard();
+            needsRedraw = true;
         }
         return current;
     }
@@ -131,6 +216,7 @@ public record CachedScoreboardContents(
 
         var drawNumbers = !ServerRules.DISABLE_SCOREBOARD_NUMBER_RENDERING.getValue();
         var font = Minecraft.getInstance().font;
+        var hasObfuscation = false;
 
         var players = new ArrayList<String>();
         var teams = new ArrayList<String>();
@@ -140,8 +226,9 @@ public record CachedScoreboardContents(
         }
 
         var scores = (List<Score>) scoreboard.getPlayerScores(objective);
-        var finalScores = new ArrayList<Pair<Score, Component>>();
+        var finalScores = new ArrayList<BakedComponent>();
         var numberWidths = new ArrayList<Integer>();
+        var numbers = new ArrayList<BakedComponent>();
 
         var title = objective.getDisplayName();
         var lowerLimit = scores.size() - 15;
@@ -163,26 +250,33 @@ public record CachedScoreboardContents(
             players.add(score.getOwner());
             teams.add(playerTeam.getName());
             var text = PlayerTeam.formatNameForTeam(playerTeam, Component.literal(score.getOwner()));
-            finalScores.add(0, Pair.of(score, text));
+            var baked = new BakedComponent(text);
+            finalScores.add(0, baked);
+            if (baked.hasObfuscation) hasObfuscation = true;
 
             // Update the maximum width we've found, if numbers are being omitted we move the whole
             // background right.
             var number = "" + ChatFormatting.RED + score.getScore();
             var numberWidth = drawNumbers ? font.width(number) : 0;
             maxWidth = Math.max(maxWidth, font.width(text) + extraWidth + numberWidth);
-            numberWidths.add(0, numberWidth);
+            if (drawNumbers) {
+                numberWidths.add(0, numberWidth);
+                numbers.add(0, new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED)));
+            }
         }
 
+        var header = new BakedComponent(title);
         return new CachedScoreboardContents(
                 objective,
                 players,
                 teams,
-                title,
+                header,
                 finalScores,
+                numbers,
                 numberWidths,
                 headerWidth,
                 maxWidth,
-                drawNumbers
+                header.hasObfuscation || hasObfuscation
         );
     }
 }
