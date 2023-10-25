@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.JsonOps;
+import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
@@ -45,6 +46,7 @@ public abstract class KeyboardHandlerMixin {
     public void redirect(ChatComponent instance, Component component) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
+                instance.addMessage(Component.translatable("debug.disable_patches.help"));
                 instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
         }
@@ -57,7 +59,17 @@ public abstract class KeyboardHandlerMixin {
             return;
         }
 
-        if (keyCode == InputConstants.KEY_Z) {
+        if (keyCode == InputConstants.KEY_W) {
+            cir.setReturnValue(true);
+
+            if (NoxesiumMod.DEBUG_DISABLE_PATCHES) {
+                NoxesiumMod.DEBUG_DISABLE_PATCHES = false;
+                this.debugFeedbackTranslated("debug.disable_patches.enabled");
+            } else {
+                NoxesiumMod.DEBUG_DISABLE_PATCHES = true;
+                this.debugFeedbackTranslated("debug.disable_patches.disabled");
+            }
+        } else if (keyCode == InputConstants.KEY_Z) {
             cir.setReturnValue(true);
 
             try {

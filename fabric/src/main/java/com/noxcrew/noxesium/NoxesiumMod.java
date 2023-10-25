@@ -24,6 +24,11 @@ import java.util.Set;
 public class NoxesiumMod implements ClientModInitializer {
 
     /**
+     * A debug value to disable performance patches for comparison.
+     */
+    public static boolean DEBUG_DISABLE_PATCHES = false;
+
+    /**
      * The current protocol version of the mod. Servers can use this version to determine which functionality
      * of Noxesium is available on the client. The protocol version will increment every full release, as such
      * ít is recommended to work with >= comparisons.

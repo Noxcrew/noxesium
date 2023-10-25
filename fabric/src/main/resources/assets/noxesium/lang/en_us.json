@@ -4,5 +4,9 @@
 
   "debug.dump_ui.success": "Wrote UI debug commands to %s",
   "debug.dump_ui.error": "An error occurred while writing UI debug commands",
-  "debug.dump_ui.help": "F3 + Z = Dump current UI layout"
+  "debug.dump_ui.help": "F3 + Z = Dump current UI layout",
+
+  "debug.disable_patches.disabled": "Noxesium UI performance patches are now off",
+  "debug.disable_patches.enabled": "Noxesium UI performance patches are now on",
+  "debug.disable_patches.help": "F3 + W = Toggle Noxesium UI performance patches"
 }

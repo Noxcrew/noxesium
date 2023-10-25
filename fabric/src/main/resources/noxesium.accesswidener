@@ -14,3 +14,5 @@ accessible method com/mojang/blaze3d/audio/Channel calculateBufferSize (Ljavax/s
 accessible field net/minecraft/client/resources/SkinManager PROPERTY_TEXTURES Ljava/lang/String;
 
 accessible class net/minecraft/client/renderer/RenderType$CompositeState
+
+accessible method net/minecraft/client/gui/Gui displayScoreboardSidebar (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V
