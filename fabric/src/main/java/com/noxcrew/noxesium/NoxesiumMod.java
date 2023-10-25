@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium;
 
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
+import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
@@ -12,6 +13,7 @@ import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -101,6 +103,11 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Call initialisation on all modules
         modules.forEach(NoxesiumModule::onStartup);
+
+        // Register the resource listener
+        if (Minecraft.getInstance().getResourceManager() instanceof ReloadableResourceManager reloadableResourceManager) {
+            reloadableResourceManager.registerReloadListener(new NoxesiumReloadListener());
+        }
     }
 
     /**

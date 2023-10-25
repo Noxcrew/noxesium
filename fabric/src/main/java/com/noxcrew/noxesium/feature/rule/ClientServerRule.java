@@ -11,7 +11,7 @@ import java.util.Objects;
 public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf> {
 
     private final int index;
-    private T value = getDefault();
+    private T value;
 
     public ClientServerRule(int index) {
         this.index = index;

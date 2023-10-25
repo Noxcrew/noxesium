@@ -1,4 +1,8 @@
 {
   "soundCategory.core_music_noxesium": "Core Music",
-  "soundCategory.game_music_noxesium": "Game Music"
+  "soundCategory.game_music_noxesium": "Game Music",
+
+  "debug.dump_ui.success": "Wrote UI debug commands to %s",
+  "debug.dump_ui.error": "An error occurred while writing UI debug commands",
+  "debug.dump_ui.help": "F3 + Z = Dump current UI layout"
 }

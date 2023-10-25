@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.feature.rule.impl.AdventureModeCheckServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
 import com.noxcrew.noxesium.feature.rule.impl.CustomAdventureModeCheck;
+import com.noxcrew.noxesium.feature.rule.impl.DisableScoreboardNumbersRule;
 import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
 
@@ -56,8 +57,8 @@ public class ServerRules {
 
 
     /**
-     * Whether to fully disable drawing numbers in the scorebaord. Even if cancelled out by a shader not drawing
+     * Whether to fully disable drawing numbers in the scoreboard. Even if cancelled out by a shader not drawing
      * the numbers altogether speeds up the rendering process.
      */
-    public static ClientServerRule<Boolean> DISABLE_SCOREBOARD_NUMBER_RENDERING = new BooleanServerRule(ServerRuleIndices.DISABLE_SCOREBOARD_NUMBER_RENDERING, true);
+    public static ClientServerRule<Boolean> DISABLE_SCOREBOARD_NUMBER_RENDERING = new DisableScoreboardNumbersRule(ServerRuleIndices.DISABLE_SCOREBOARD_NUMBER_RENDERING);
 }

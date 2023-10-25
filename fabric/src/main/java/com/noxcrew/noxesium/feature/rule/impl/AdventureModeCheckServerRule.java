@@ -12,6 +12,7 @@ public class AdventureModeCheckServerRule extends ClientServerRule<CustomAdventu
 
     public AdventureModeCheckServerRule(int index) {
         super(index);
+        setValue(new CustomAdventureModeCheck(List.of()));
     }
 
     @Override

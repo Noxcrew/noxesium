@@ -13,6 +13,7 @@ public class BooleanServerRule extends ClientServerRule<Boolean> {
     public BooleanServerRule(int index, boolean defaultValue) {
         super(index);
         this.defaultValue = defaultValue;
+        setValue(defaultValue);
     }
 
     @Override

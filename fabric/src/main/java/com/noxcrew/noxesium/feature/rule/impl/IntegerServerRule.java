@@ -13,6 +13,7 @@ public class IntegerServerRule extends ClientServerRule<Integer> {
     public IntegerServerRule(int index, int defaultValue) {
         super(index);
         this.defaultValue = defaultValue;
+        setValue(defaultValue);
     }
 
     @Override

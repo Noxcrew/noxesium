@@ -23,10 +23,10 @@
     "component.SkinManagerExt",
     "component.SkullBlockEntityExt",
     "component.TextureCacheExt",
+    "debug.KeyboardHandlerMixin",
     "entity.BoatMixin",
     "entity.LevelRendererMixin",
     "entity.TextDisplayRenderer",
-    "font.ScoreboardMixin",
     "info.MinecraftMixin",
     "info.OptionInstanceExt",
     "info.OptionInstanceMixin",
@@ -40,6 +40,7 @@
     "music.MusicManagerMixin",
     "music.SoundOptionsMixin",
     "music.SoundSourceMixin",
+    "render.ScoreboardGuiMixin",
     "sound.ChannelExt",
     "sound.SoundEngineMixin"
   ],
@@ -47,6 +48,8 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "entity.LivingEntityMixin"
+    "entity.LivingEntityMixin",
+    "render.PlayerTeamMixin",
+    "render.ScoreboardMixin"
   ]
 }
