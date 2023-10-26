@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.feature.render.font;
 
-import com.noxcrew.noxesium.feature.render.GuiGraphicsExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;

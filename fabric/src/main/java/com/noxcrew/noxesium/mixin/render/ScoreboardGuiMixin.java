@@ -1,8 +1,7 @@
 package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.render.ScoreboardRenderer;
-import com.noxcrew.noxesium.feature.rule.ServerRules;
+import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,8 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.List;
 
 @Mixin(Gui.class)
 public abstract class ScoreboardGuiMixin {
@@ -29,7 +26,7 @@ public abstract class ScoreboardGuiMixin {
         if (NoxesiumMod.DEBUG_DISABLE_PATCHES) {
             instance.displayScoreboardSidebar(guiGraphics, objective);
         } else {
-            ScoreboardRenderer.renderScoreboard(guiGraphics, screenWidth, screenHeight, minecraft);
+            ScoreboardCache.getInstance().renderDirect(guiGraphics, ScoreboardCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
         }
     }
 }

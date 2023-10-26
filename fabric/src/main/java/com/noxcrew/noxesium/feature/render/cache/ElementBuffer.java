@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.render;
+package com.noxcrew.noxesium.feature.render.cache;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -26,7 +26,7 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  * per element we instead tackle the problem directly and cache everything that
  * we know cannot change unless we cleared the cache.
  */
-public class ScreenBuffer implements Closeable {
+public class ElementBuffer implements Closeable {
 
     private RenderTarget target;
     private VertexBuffer buffer;
@@ -113,10 +113,19 @@ public class ScreenBuffer implements Closeable {
     public void draw() {
         if (buffer == null) return;
 
+        // Cache the current blend state so we can return to it
+        var currentBlend = GlStateManager.BLEND.mode.enabled;
+        var srcRgb = GlStateManager.BLEND.srcRgb;
+        var dstRgb = GlStateManager.BLEND.dstRgb;
+        var srcAlpha = GlStateManager.BLEND.srcAlpha;
+        var dstAlpha = GlStateManager.BLEND.dstAlpha;
+
         // Set the texture and draw the buffer using the render texture
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        RenderSystem.enableBlend();
+        if (!currentBlend) {
+            RenderSystem.enableBlend();
+        }
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -125,6 +134,10 @@ public class ScreenBuffer implements Closeable {
         buffer.drawWithShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
+        if (!currentBlend) {
+            RenderSystem.disableBlend();
+        }
+        GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 

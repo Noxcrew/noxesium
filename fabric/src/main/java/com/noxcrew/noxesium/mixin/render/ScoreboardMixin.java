@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.render;
 
-import com.noxcrew.noxesium.feature.render.CachedScoreboardContents;
+import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.ScoreboardInformation;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -20,22 +21,22 @@ public class ScoreboardMixin {
 
     @Inject(method = "addPlayerToTeam", at = @At(value = "TAIL"))
     private void addPlayerToTeam(String string, PlayerTeam playerTeam, CallbackInfoReturnable<Boolean> cir) {
-        if (CachedScoreboardContents.isPlayerRelevant(string)) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isPlayerRelevant(string)) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "removePlayerFromTeam(Ljava/lang/String;Lnet/minecraft/world/scores/PlayerTeam;)V", at = @At(value = "TAIL"))
     private void removePlayerFromTeam(String string, PlayerTeam playerTeam, CallbackInfo ci) {
-        if (CachedScoreboardContents.isPlayerRelevant(string)) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isPlayerRelevant(string)) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "removePlayerTeam", at = @At(value = "TAIL"))
     private void removePlayerTeam(PlayerTeam playerTeam, CallbackInfo ci) {
-        if (CachedScoreboardContents.isTeamRelevant(playerTeam.getName())) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isTeamRelevant(playerTeam.getName())) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
@@ -46,27 +47,27 @@ public class ScoreboardMixin {
 
         // We do listen to any change to a team slot as the player could be seeing one
         // of those and notice it get overridden.
-        CachedScoreboardContents.clearCache();
+        ScoreboardCache.getInstance().clearCache();
     }
 
     @Inject(method = "getOrCreatePlayerScore", at = @At(value = "TAIL"))
     private void getOrCreatePlayerScore(String string, Objective objective, CallbackInfoReturnable<Score> cir) {
-        if (CachedScoreboardContents.isObjectiveRelevant(objective)) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "resetPlayerScore", at = @At(value = "TAIL"))
     private void resetPlayerScore(String string, Objective objective, CallbackInfo ci) {
-        if (CachedScoreboardContents.isObjectiveRelevant(objective)) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "onScoreChanged", at = @At(value = "TAIL"))
     private void onScoreChanged(Score score, CallbackInfo ci) {
-        if (CachedScoreboardContents.isObjectiveRelevant(score.getObjective())) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(score.getObjective())) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.render;
+package com.noxcrew.noxesium.feature.render.font;
 
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;

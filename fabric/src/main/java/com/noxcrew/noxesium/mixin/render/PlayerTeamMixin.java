@@ -1,16 +1,16 @@
 package com.noxcrew.noxesium.mixin.render;
 
-import com.noxcrew.noxesium.feature.render.CachedScoreboardContents;
+import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.ScoreboardInformation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Score;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Listens to changes to the teams relevant to the scoreboard cache.
@@ -22,22 +22,22 @@ public abstract class PlayerTeamMixin {
 
     @Inject(method = "setPlayerPrefix", at = @At(value = "TAIL"))
     private void setPlayerPrefix(Component component, CallbackInfo ci) {
-        if (CachedScoreboardContents.isTeamRelevant(this.getName())) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isTeamRelevant(this.getName())) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "setPlayerSuffix", at = @At(value = "TAIL"))
     private void setPlayerSuffix(Component component, CallbackInfo ci) {
-        if (CachedScoreboardContents.isTeamRelevant(this.getName())) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isTeamRelevant(this.getName())) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 
     @Inject(method = "setColor", at = @At(value = "TAIL"))
     private void setColor(ChatFormatting chatFormatting, CallbackInfo ci) {
-        if (CachedScoreboardContents.isTeamRelevant(this.getName())) {
-            CachedScoreboardContents.clearCache();
+        if (ScoreboardCache.getInstance().isTeamRelevant(this.getName())) {
+            ScoreboardCache.getInstance().clearCache();
         }
     }
 }
