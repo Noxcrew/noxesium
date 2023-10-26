@@ -152,14 +152,14 @@ public class GuiGraphicsExt {
                     var boldOffset = character.bold ? character.glyphInfo.getBoldOffset() : 0.0F;
                     var shadowOffset = shadow ? character.glyphInfo.getShadowOffset() : 0.0F;
                     var vertexconsumer = bufferSource.getBuffer(bakedglyph.renderType(displayMode));
-                    font.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : character.r * dimFactor, character.g == null ? g : character.g * dimFactor, character.b == null ? b : character.b * dimFactor, a, packedLightCoords);
+                    font.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, packedLightCoords);
                 }
 
                 if (character.strikethrough) {
-                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.left + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : character.r * dimFactor, character.g == null ? g : character.g * dimFactor, character.b == null ? b : character.b * dimFactor, a, matrix, baseVertexconsumer, packedLightCoords);
+                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.left + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
                 }
                 if (character.underline) {
-                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.left + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : character.r * dimFactor, character.g == null ? g : character.g * dimFactor, character.b == null ? b : character.b * dimFactor, a, matrix, baseVertexconsumer, packedLightCoords);
+                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.left + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
                 }
 
                 // Store the furthest right we have drawn!

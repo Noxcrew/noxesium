@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,7 +29,7 @@ public abstract class GuiMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V"))
     private void injected(Gui instance, GuiGraphics guiGraphics, Objective objective) {
-        if (NoxesiumMod.DEBUG_DISABLE_PATCHES) {
+        if (true || NoxesiumMod.DEBUG_DISABLE_PATCHES) {
             instance.displayScoreboardSidebar(guiGraphics, objective);
         } else {
             ScoreboardCache.getInstance().renderDirect(guiGraphics, ScoreboardCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);

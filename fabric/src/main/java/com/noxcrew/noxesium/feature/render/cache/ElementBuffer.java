@@ -28,12 +28,57 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public class ElementBuffer implements Closeable {
 
+    /**
+     * If true, the buffer is drawn to the screen instead of on top so
+     * its contents can be checked properly.
+     */
+    public static final boolean DEBUG_BUFFER = false;
+    public static RenderTarget CURRENT_BUFFER = null;
+
+    private final boolean shouldBlend;
+
     private RenderTarget target;
     private VertexBuffer buffer;
     private int screenWidth;
     private int screenHeight;
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
+
+    public ElementBuffer(boolean shouldBlend) {
+        this.shouldBlend = shouldBlend;
+    }
+
+    /**
+     * Runs the given runnable and sets back the blending state after.
+     */
+    public static void withBlend(boolean state, Runnable runnable) {
+        // Cache the current blend state so we can return to it
+        var currentBlend = GlStateManager.BLEND.mode.enabled;
+        var srcRgb = GlStateManager.BLEND.srcRgb;
+        var dstRgb = GlStateManager.BLEND.dstRgb;
+        var srcAlpha = GlStateManager.BLEND.srcAlpha;
+        var dstAlpha = GlStateManager.BLEND.dstAlpha;
+
+        // Set the blend state, run the function and revert the blend state
+        if (currentBlend != state) {
+            if (state) {
+                RenderSystem.enableBlend();
+            } else {
+                RenderSystem.disableBlend();
+            }
+        }
+        runnable.run();
+        if (currentBlend != state) {
+            if (state) {
+                RenderSystem.disableBlend();
+            } else {
+                RenderSystem.enableBlend();
+            }
+        }
+        if (state) {
+            GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
+        }
+    }
 
     /**
      * Indicates that the buffer is valid.
@@ -111,33 +156,26 @@ public class ElementBuffer implements Closeable {
      * Draws this buffer to the screen.
      */
     public void draw() {
-        if (buffer == null) return;
+        if (!isValid()) return;
 
-        // Cache the current blend state so we can return to it
-        var currentBlend = GlStateManager.BLEND.mode.enabled;
-        var srcRgb = GlStateManager.BLEND.srcRgb;
-        var dstRgb = GlStateManager.BLEND.dstRgb;
-        var srcAlpha = GlStateManager.BLEND.srcAlpha;
-        var dstAlpha = GlStateManager.BLEND.dstAlpha;
+        if (DEBUG_BUFFER) {
+            CURRENT_BUFFER = target;
+            return;
+        }
 
         // Set the texture and draw the buffer using the render texture
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        if (!currentBlend) {
-            RenderSystem.enableBlend();
-        }
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, getTextureId());
-        buffer.bind();
-        buffer.drawWithShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        withBlend(shouldBlend, () -> {
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, getTextureId());
+            buffer.bind();
+            buffer.drawWithShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        });
         RenderSystem.depthMask(true);
         RenderSystem.enableDepthTest();
-        if (!currentBlend) {
-            RenderSystem.disableBlend();
-        }
-        GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 

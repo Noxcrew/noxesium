@@ -24,7 +24,14 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * necessary to render the element. Other functions should call {@link this#clearCache()}
      * whenever this information may have changed. Changes are NOT passively detected!
      */
-    public abstract T createCache();
+    protected abstract T createCache();
+
+    /**
+     * Creates a new buffer. Can be modified to disable blending of the drawn element.
+     */
+    protected ElementBuffer createBuffer() {
+        return new ElementBuffer(true);
+    }
 
     /**
      * Renders the direct part of the element to the UI directly.
@@ -38,7 +45,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the buffered part of the element to the given buffer.
      */
-    public abstract void renderBuffered(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font);
+    protected abstract void renderBuffered(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font);
 
     /**
      * Returns the current cached scoreboard contents.
@@ -60,7 +67,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
         // Create the buffer and ensure it has the correct size
         if (buffer == null) {
-            buffer = new ElementBuffer();
+            buffer = createBuffer();
         }
         if (buffer.resize(minecraft.getWindow())) {
             needsRedraw = true;
@@ -68,16 +75,20 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
         // Redraw into the buffer if we have to
         if (needsRedraw && buffer.isValid()) {
-            var buffer = this.buffer.getTarget();
+            var target = this.buffer.getTarget();
             try {
                 var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
-                buffer.setClearColor(0f, 0f, 0f, 0f);
-                buffer.clear(ON_OSX);
-                buffer.bindWrite(true);
-                renderBuffered(graphics, getCache(), minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font);
+                target.setClearColor(0f, 0f, 0f, 0f);
+                target.clear(ON_OSX);
+                target.bindWrite(false);
+
+                // Draw managed here to ensure we flush graphics buffers at the end!
+                graphics.drawManaged(() -> {
+                    renderBuffered(graphics, getCache(), minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font);
+                });
             } finally {
                 needsRedraw = false;
-                buffer.unbindWrite();
+                target.unbindWrite();
                 minecraft.getMainRenderTarget().bindWrite(true);
             }
         }

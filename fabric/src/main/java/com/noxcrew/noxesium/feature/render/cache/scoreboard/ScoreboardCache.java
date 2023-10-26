@@ -1,5 +1,6 @@
-package com.noxcrew.noxesium.feature.render.cache;
+package com.noxcrew.noxesium.feature.render.cache.scoreboard;
 
+import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.render.font.GuiGraphicsExt;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
@@ -69,7 +70,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
      * - Any visual properties of the associated teams (team of client player and teams of all players in objective)
      */
     @Override
-    public ScoreboardInformation createCache() {
+    protected ScoreboardInformation createCache() {
         var player = Minecraft.getInstance().player;
         if (player == null) {
             return ScoreboardInformation.EMPTY;
@@ -128,7 +129,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             players.add(score.getOwner());
             teams.add(playerTeam.getName());
             var text = PlayerTeam.formatNameForTeam(playerTeam, Component.literal(score.getOwner()));
-            var baked = new BakedComponent(text);
+            var baked = new BakedComponent(text, font);
             finalScores.add(0, baked);
             if (baked.hasObfuscation) hasObfuscation = true;
 
@@ -139,11 +140,11 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             maxWidth = Math.max(maxWidth, font.width(text) + extraWidth + numberWidth);
             if (drawNumbers) {
                 numberWidths.add(0, numberWidth);
-                numbers.add(0, new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED)));
+                numbers.add(0, new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED), font));
             }
         }
 
-        var header = new BakedComponent(title);
+        var header = new BakedComponent(title, font);
         return new ScoreboardInformation(
                 objective,
                 players,
@@ -199,7 +200,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
     }
 
     @Override
-    public void renderBuffered(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
+    protected void renderBuffered(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
@@ -208,32 +209,30 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var background = Minecraft.getInstance().options.getBackgroundColor(0.3f);
         var darkerBackground = Minecraft.getInstance().options.getBackgroundColor(0.4f);
 
-        graphics.drawManaged(() -> {
-            // Draw the header
-            var headerTop = bottom - cache.lines().size() * 9;
-            graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
-            if (!cache.header().hasObfuscation) {
-                GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+        // Draw the header
+        var headerTop = bottom - cache.lines().size() * 9;
+        graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
+        if (!cache.header().hasObfuscation) {
+            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+        }
+
+        // Draw the background (vanilla does this per line but we do it once)
+        graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
+
+        // Line 1 here is the bottom line, this is because the
+        // finalScores are sorted and we're getting them still
+        // ordered ascending, so we want to display the last
+        // score at the top.
+        for (var line = 1; line <= cache.lines().size(); line++) {
+            var text = cache.lines().get(line - 1);
+            var lineTop = bottom - line * 9;
+            if (!text.hasObfuscation) {
+                GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
             }
 
-            // Draw the background (vanilla does this per line but we do it once)
-            graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
-
-            // Line 1 here is the bottom line, this is because the
-            // finalScores are sorted and we're getting them still
-            // ordered ascending, so we want to display the last
-            // score at the top.
-            for (var line = 1; line <= cache.lines().size(); line++) {
-                var text = cache.lines().get(line - 1);
-                var lineTop = bottom - line * 9;
-                if (!text.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
-                }
-
-                if (cache.numbers().size() >= line) {
-                    GuiGraphicsExt.drawString(graphics, font, cache.numbers().get(line - 1), backgroundRight - cache.numberWidths().get(line - 1), lineTop, -1, false);
-                }
+            if (cache.numbers().size() >= line) {
+                GuiGraphicsExt.drawString(graphics, font, cache.numbers().get(line - 1), backgroundRight - cache.numberWidths().get(line - 1), lineTop, -1, false);
             }
-        });
+        }
     }
 }

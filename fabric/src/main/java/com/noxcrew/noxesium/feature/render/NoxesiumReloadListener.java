@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.feature.render;
 
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +15,7 @@ public class NoxesiumReloadListener implements SimpleSynchronousResourceReloadLi
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         ScoreboardCache.getInstance().clearCache();
-        BossBarCache.getInstance().createCache();
+        BossBarCache.getInstance().clearCache();
     }
 
     @Override

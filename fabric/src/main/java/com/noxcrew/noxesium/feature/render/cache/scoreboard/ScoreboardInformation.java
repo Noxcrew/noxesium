@@ -1,5 +1,6 @@
-package com.noxcrew.noxesium.feature.render.cache;
+package com.noxcrew.noxesium.feature.render.cache.scoreboard;
 
+import com.noxcrew.noxesium.feature.render.cache.ElementInformation;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.Objective;

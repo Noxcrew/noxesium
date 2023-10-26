@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.render;
 
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.PlayerTeam;
