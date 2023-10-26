@@ -1,7 +1,5 @@
 package com.noxcrew.noxesium.feature.render;
 
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
@@ -15,6 +13,7 @@ import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Score;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public record CachedScoreboardContents(
         int headerWidth,
         int maxWidth,
         boolean hasObfuscation
-) {
+) implements Closeable {
 
     /**
      * The fallback contents if the scoreboard is empty.
@@ -74,12 +73,12 @@ public record CachedScoreboardContents(
         if (scoreboardBuffer == null) {
             scoreboardBuffer = new ScreenBuffer();
         }
-        if (scoreboardBuffer.resize(screenWidth, screenHeight)) {
+        if (scoreboardBuffer.resize(minecraft.getWindow())) {
             needsRedraw = true;
         }
 
         // Redraw into the buffer if we have to
-        if (needsRedraw) {
+        if (needsRedraw && scoreboardBuffer.isValid()) {
             var cache = getCachedScoreboardContents();
             var height = cache.lines().size() * 9;
             var bottom = screenHeight / 2 + height / 3;
@@ -132,6 +131,13 @@ public record CachedScoreboardContents(
         return scoreboardBuffer;
     }
 
+    @Override
+    public void close() {
+        if (scoreboardBuffer != null) {
+            scoreboardBuffer.close();
+        }
+    }
+
     /**
      * Clears the currently cached scoreboard contents. The frequency at which this is irrelevant as it's assumed
      * a server, even if it's constantly updating the scoreboard, cannot do so more frequently than a fast enough
@@ -144,6 +150,9 @@ public record CachedScoreboardContents(
      * probably not one that heavily needs optimization.
      */
     public static void clearCache() {
+        if (current != null) {
+            current.close();
+        }
         current = null;
     }
 
