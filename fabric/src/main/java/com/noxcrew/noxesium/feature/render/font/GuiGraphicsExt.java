@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.feature.render.font;
 
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

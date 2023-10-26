@@ -30,7 +30,8 @@ import java.util.SortedSet;
 @Mixin(SodiumWorldRenderer.class)
 public class SodiumWorldRendererMixin {
 
-    @Shadow private RenderSectionManager renderSectionManager;
+    @Shadow
+    private RenderSectionManager renderSectionManager;
 
     /**
      * @author Aeltumn
@@ -45,7 +46,8 @@ public class SodiumWorldRendererMixin {
     private void renderBlockEntities(PoseStack poseStack, RenderBuffers renderBuffers, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, Camera camera, float tickDelta, CallbackInfo ci) {
         Set<BlockEntity> globalBlockEntities = null;
         var iterator = renderSectionManager.getSectionsWithGlobalEntities().iterator();
-        outer: while (true) {
+        outer:
+        while (true) {
             // Find the chunks with section information
             BlockEntity[] blockEntities;
             do {

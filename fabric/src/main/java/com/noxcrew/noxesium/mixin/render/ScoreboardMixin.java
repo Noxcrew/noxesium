@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardInformation;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;

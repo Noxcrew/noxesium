@@ -1,11 +1,9 @@
 package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardInformation;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Score;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,7 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerTeam.class)
 public abstract class PlayerTeamMixin {
 
-    @Shadow public abstract String getName();
+    @Shadow
+    public abstract String getName();
 
     @Inject(method = "setPlayerPrefix", at = @At(value = "TAIL"))
     private void setPlayerPrefix(Component component, CallbackInfo ci) {

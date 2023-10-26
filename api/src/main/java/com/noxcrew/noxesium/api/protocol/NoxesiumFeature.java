@@ -39,6 +39,10 @@ public enum NoxesiumFeature {
      * Allows usage of the custom sounds packets.
      */
     CUSTOM_SOUNDS(4),
+    /**
+     * Allows usage of the optimized UI rendering-related server rules.
+     */
+    OPTIMIZED_UI(4),
     ;
 
     private final int minProtocolVersion;

@@ -125,7 +125,8 @@ public class CustomSkullFont extends FontSet {
     }
 
     @Environment(value = EnvType.CLIENT)
-    public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance, int ascent) implements GlyphInfo {
+    public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance,
+                        int ascent) implements GlyphInfo {
 
         public Glyph(CompletableFuture<NativeImage> image, SkullProperties properties) {
             this(image, properties.grayscale(), properties.scale(), properties.advance(), properties.ascent());

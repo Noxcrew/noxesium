@@ -37,8 +37,13 @@ public abstract class SoundEngineMixin {
 
     @Shadow
     protected abstract float calculateVolume(SoundInstance soundInstance);
-    @Shadow @Final private SoundBufferLibrary soundBuffers;
-    @Shadow @Final private List<TickableSoundInstance> tickingSounds;
+
+    @Shadow
+    @Final
+    private SoundBufferLibrary soundBuffers;
+    @Shadow
+    @Final
+    private List<TickableSoundInstance> tickingSounds;
 
     @Inject(method = "method_19754", at = @At("HEAD"), cancellable = true)
     public void updateCategoryVolume(SoundInstance soundInstance, ChannelAccess.ChannelHandle channelHandle, CallbackInfo ci) {

@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.feature.sounds;
 
 import com.noxcrew.noxesium.NoxesiumModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.sounds.SoundManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -27,8 +26,8 @@ public class NoxesiumSoundModule implements NoxesiumModule {
      * Plays a given sound instance and stores it by its id so it
      * can be modified later.
      *
-     * @param id The id to play the sound under
-     * @param instance The sound instance to play
+     * @param id              The id to play the sound under
+     * @param instance        The sound instance to play
      * @param ignoreIfPlaying Whether to ignore this request if the sound is already playing
      */
     public void play(int id, NoxesiumSoundInstance instance, boolean ignoreIfPlaying) {

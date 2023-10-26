@@ -34,7 +34,7 @@ import java.util.Objects;
 
 /**
  * Update the culling bounding box for armor stands to include the hitbox of the model on their head or arms.
- *
+ * <p>
  * This patch will be dropped in the future as usage of display entities is preferred over armor stands. Display
  * entities allow you to modify these culling hitboxes on the server-side which allows for finer control and wider
  * adoption. This patch only works for servers that specifically use head items on armor stands which makes it
@@ -123,9 +123,9 @@ public abstract class LivingEntityMixin {
 
                 // Rotate the bounding box following the rotation of the entity
                 var pose = armorStand.getEntityData().get(ArmorStand.DATA_HEAD_POSE);
-                var xRot = ((float)Math.PI / 180F) * pose.getX();
-                var yRot = ((float)Math.PI / 180F) * pose.getY();
-                var zRot = ((float)Math.PI / 180F) * pose.getZ();
+                var xRot = ((float) Math.PI / 180F) * pose.getX();
+                var yRot = ((float) Math.PI / 180F) * pose.getY();
+                var zRot = ((float) Math.PI / 180F) * pose.getZ();
                 if (zRot != 0.0F) {
                     poseStack.mulPose(Axis.ZP.rotation(zRot));
                 }
@@ -150,9 +150,9 @@ public abstract class LivingEntityMixin {
                 } else {
                     poseStack.translate(-5.0 / 16.0, 0.0, 0.0);
                 }
-                var xRot = ((float)Math.PI / 180F) * pose.getX();
-                var yRot = ((float)Math.PI / 180F) * pose.getY();
-                var zRot = ((float)Math.PI / 180F) * pose.getZ();
+                var xRot = ((float) Math.PI / 180F) * pose.getX();
+                var yRot = ((float) Math.PI / 180F) * pose.getY();
+                var zRot = ((float) Math.PI / 180F) * pose.getZ();
                 if (zRot != 0.0F) {
                     poseStack.mulPose(Axis.ZP.rotation(zRot));
                 }

@@ -47,3 +47,6 @@ accessible field net/minecraft/client/renderer/RenderStateShard name Ljava/lang/
 accessible field com/mojang/blaze3d/platform/GlStateManager BLEND Lcom/mojang/blaze3d/platform/GlStateManager$BlendState;
 accessible class com/mojang/blaze3d/platform/GlStateManager$BlendState
 accessible field com/mojang/blaze3d/platform/GlStateManager$BooleanState enabled Z
+
+accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
+accessible field net/minecraft/client/gui/components/LerpingBossEvent targetPercent F

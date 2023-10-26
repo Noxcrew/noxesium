@@ -1,17 +1,10 @@
 package com.noxcrew.noxesium.feature.render;
 
 import com.noxcrew.noxesium.feature.render.cache.ScoreboardCache;
-import com.noxcrew.noxesium.feature.render.cache.ScoreboardInformation;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.Unit;
-import net.minecraft.util.profiling.ProfilerFiller;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 /**
  * Listens to Minecraft reloading the resources and clears cached scoreboard information as the
@@ -22,6 +15,7 @@ public class NoxesiumReloadListener implements SimpleSynchronousResourceReloadLi
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
         ScoreboardCache.getInstance().clearCache();
+        BossBarCache.getInstance().createCache();
     }
 
     @Override

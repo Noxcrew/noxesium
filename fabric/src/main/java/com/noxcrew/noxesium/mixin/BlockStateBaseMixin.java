@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class BlockStateBaseMixin {
 
-    @Shadow public abstract Block getBlock();
+    @Shadow
+    public abstract Block getBlock();
 
     @Inject(method = "isCollisionShapeFullBlock", at = @At(value = "HEAD"), cancellable = true)
     private void redirected(BlockGetter blockGetter, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {

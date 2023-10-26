@@ -8,7 +8,9 @@ import net.fabricmc.fabric.api.networking.v1.FabricPacket;
  */
 public abstract class NoxesiumPacket implements FabricPacket {
 
-    /** The version of this packet. */
+    /**
+     * The version of this packet.
+     */
     public final int version;
 
     /**

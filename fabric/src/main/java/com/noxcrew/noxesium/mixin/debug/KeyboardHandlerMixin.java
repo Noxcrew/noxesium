@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.serialization.JsonOps;
 import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -21,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.stream.Collectors;
@@ -101,6 +99,20 @@ public abstract class KeyboardHandlerMixin {
                             text.append("team modify " + team + " prefix " + Component.Serializer.toJson(ownerTeam.getPlayerPrefix())).append("\n");
                             text.append("team modify " + team + " suffix " + Component.Serializer.toJson(ownerTeam.getPlayerSuffix())).append("\n");
                         }
+                    }
+                }
+
+                // Determine all current boss bars
+                var bossBarOverlay = minecraft.gui.getBossOverlay();
+                if (!bossBarOverlay.events.isEmpty()) {
+                    for (var event : bossBarOverlay.events.entrySet()) {
+                        var bar = "minecraft:" + event.getKey();
+                        text.append("bossbar add " + bar + " " + Component.Serializer.toJson(event.getValue().getName())).append("\n");
+                        text.append("bossbar set " + bar + " color " + event.getValue().getColor().getName()).append("\n");
+                        text.append("bossbar set " + bar + " style " + event.getValue().getOverlay().getName()).append("\n");
+                        text.append("bossbar set " + bar + " max " + 10000).append("\n");
+                        text.append("bossbar set " + bar + " value " + event.getValue().getProgress() * 10000).append("\n");
+                        text.append("bossbar set " + bar + " players @a").append("\n");
                     }
                 }
 

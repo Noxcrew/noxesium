@@ -40,7 +40,8 @@
     "music.MusicManagerMixin",
     "music.SoundOptionsMixin",
     "music.SoundSourceMixin",
-    "render.ScoreboardGuiMixin",
+    "render.BossHealthOverlayMixin",
+    "render.GuiMixin",
     "sound.ChannelExt",
     "sound.SoundEngineMixin"
   ],

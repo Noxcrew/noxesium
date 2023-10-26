@@ -22,6 +22,7 @@ import java.util.List;
 public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
     private static ScoreboardCache instance;
+    private static final int RIGHT = 3;
 
     /**
      * Returns the current instance of this scoreboard cache.
@@ -173,8 +174,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var font = minecraft.font;
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
-        var right = 3;
-        var left = screenWidth - cache.maxWidth() - right;
+        var left = screenWidth - cache.maxWidth() - RIGHT;
 
         // We always draw the lines that have obfuscation overtop!
         graphics.drawManaged(() -> {
@@ -202,10 +202,9 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
     public void renderBuffered(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
-        var right = 3;
-        var left = screenWidth - cache.maxWidth() - right;
+        var left = screenWidth - cache.maxWidth() - RIGHT;
 
-        var backgroundRight = screenWidth - right + 2;
+        var backgroundRight = screenWidth - RIGHT + 2;
         var background = Minecraft.getInstance().options.getBackgroundColor(0.3f);
         var darkerBackground = Minecraft.getInstance().options.getBackgroundColor(0.4f);
 

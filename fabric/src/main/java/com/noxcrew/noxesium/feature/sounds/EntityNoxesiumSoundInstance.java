@@ -1,16 +1,8 @@
 package com.noxcrew.noxesium.feature.sounds;
 
-import com.noxcrew.noxesium.mixin.sound.ChannelExt;
-import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
-import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.AL11;
 
 /**
  * The sound instance for custom modifiable sounds

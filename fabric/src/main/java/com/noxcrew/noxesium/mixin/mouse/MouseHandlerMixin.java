@@ -26,7 +26,7 @@ public class MouseHandlerMixin {
         // Cancel mouse movement during camera lock
         if (ServerRules.CAMERA_LOCKED.getValue()) {
             ci.cancel();
-            
+
             // Reset smooth turning variables
             smoothTurnX.reset();
             smoothTurnY.reset();

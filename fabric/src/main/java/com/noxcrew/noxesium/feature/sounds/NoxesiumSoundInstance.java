@@ -58,9 +58,9 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     /**
      * Sets the volume over a specified time
      *
-     * @param volume The new volume to set to
+     * @param volume      The new volume to set to
      * @param startVolume The volume to start interpolation from.
-     * @param ticks The fade time
+     * @param ticks       The fade time
      */
     public void setVolume(float volume, Float startVolume, int ticks) {
         if (ticks <= 0) {
@@ -79,7 +79,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
      */
     public void applyStartOffset(ChannelAccess.ChannelHandle channelHandle) {
         channelHandle.execute(channel -> {
-            AL10.alSourcef(((ChannelExt)channel).getSource(), AL11.AL_SEC_OFFSET, this.startOffset);
+            AL10.alSourcef(((ChannelExt) channel).getSource(), AL11.AL_SEC_OFFSET, this.startOffset);
         });
     }
 }

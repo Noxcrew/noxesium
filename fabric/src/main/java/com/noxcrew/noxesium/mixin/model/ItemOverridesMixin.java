@@ -22,7 +22,9 @@ import java.util.List;
 @Mixin(BlockModel.class)
 public class ItemOverridesMixin {
 
-    @Shadow @Final private List<ItemOverride> overrides;
+    @Shadow
+    @Final
+    private List<ItemOverride> overrides;
 
     /**
      * @author Aeltumn
