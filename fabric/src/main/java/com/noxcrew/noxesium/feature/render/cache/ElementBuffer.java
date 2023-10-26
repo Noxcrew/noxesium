@@ -35,18 +35,12 @@ public class ElementBuffer implements Closeable {
     public static final boolean DEBUG_BUFFER = false;
     public static RenderTarget CURRENT_BUFFER = null;
 
-    private final boolean shouldBlend;
-
     private RenderTarget target;
     private VertexBuffer buffer;
     private int screenWidth;
     private int screenHeight;
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
-
-    public ElementBuffer(boolean shouldBlend) {
-        this.shouldBlend = shouldBlend;
-    }
 
     /**
      * Runs the given runnable and sets back the blending state after.
@@ -166,7 +160,7 @@ public class ElementBuffer implements Closeable {
         // Set the texture and draw the buffer using the render texture
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        withBlend(shouldBlend, () -> {
+        withBlend(true, () -> {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

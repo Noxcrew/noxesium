@@ -19,7 +19,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -121,15 +120,6 @@ public class GuiGraphicsExt {
             ));
             x += advance;
             return true;
-        }
-
-        /**
-         * Cleans up this output after it has received all inputs.
-         */
-        public void clean() {
-            // Sort the characters by font so we draw them one font at a time, greatly reducing
-            // buffer switches when combining different font types!
-            characters.sort(Comparator.comparing(f -> f.texture));
         }
 
         /**

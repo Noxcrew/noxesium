@@ -30,7 +30,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Creates a new buffer. Can be modified to disable blending of the drawn element.
      */
     protected ElementBuffer createBuffer() {
-        return new ElementBuffer(true);
+        return new ElementBuffer();
     }
 
     /**

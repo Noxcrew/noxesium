@@ -19,7 +19,6 @@ public class BakedComponent {
     public BakedComponent(Component component, Font font) {
         renderOutput = new GuiGraphicsExt.StringRenderOutput(font);
         component.getVisualOrderText().accept(renderOutput);
-        renderOutput.clean();
         this.hasObfuscation = renderOutput.doesContainObfuscation();
     }
 }

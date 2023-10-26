@@ -50,3 +50,7 @@ accessible field com/mojang/blaze3d/platform/GlStateManager$BooleanState enabled
 
 accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 accessible field net/minecraft/client/gui/components/LerpingBossEvent targetPercent F
+
+accessible field net/minecraft/client/gui/Gui overlayMessageTime I
+accessible field net/minecraft/client/gui/Gui animateOverlayMessageColor Z
+accessible field net/minecraft/client/gui/Gui overlayMessageString Lnet/minecraft/network/chat/Component;

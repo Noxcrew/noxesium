@@ -32,15 +32,6 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
         return instance;
     }
 
-    @Override
-    protected ElementBuffer createBuffer() {
-        // We internally blend already by blending the second layer of the bar into the first.
-        // We do not want to blend further when drawing the overlay back onto the game. This
-        // does mean transparent text is not supported here but that's an ok sacrifice for not
-        // having to hold two buffers based on whether it needs blending.
-        return new ElementBuffer(false);
-    }
-
     /**
      * Creates newly cached boss bar content information.
      * <p>
@@ -75,24 +66,26 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
 
     @Override
     public void renderDirect(GuiGraphics graphics, BossBarInformation cache, int screenWidth, int screenHeight, Minecraft minecraft) {
-        super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
         if (cache.bars().isEmpty()) return;
+
+        // Only draw the buffer if there are bars to draw!
+        super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
 
         graphics.drawManaged(() -> {
             var clearCache = false;
             var currentHeight = HEIGHT;
             for (var bossbar : cache.bars()) {
-                if (bossbar.animating()) {
+                if (bossbar.animating() || bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
                     // Draw the main bars
                     var barLeft = screenWidth / 2 - 91;
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
                     var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                     if (progress > 0) {
-                        this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5);
+                        this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
                     }
 
                     // If any bar has finished animating we clear the cache
-                    if (Math.abs(bossbar.bar().getProgress() - bossbar.bar().targetPercent) < 0.001) {
+                    if (bossbar.animating() && Math.abs(bossbar.bar().getProgress() - bossbar.bar().targetPercent) < 0.001) {
                         clearCache = true;
                     }
                 }
@@ -125,10 +118,10 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (!bossbar.animating()) {
                 // Draw the main bars
                 var barLeft = screenWidth / 2 - 91;
-                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0);
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0, true, false);
                 var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                 if (progress > 0) {
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5, true, false);
                 }
             }
 
@@ -149,9 +142,11 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
     /**
      * Draws a single boss bar background.
      */
-    private void drawBar(GuiGraphics guiGraphics, int x, int y, BossBar bossBar, int uvWidth, int uvOffset) {
-        guiGraphics.blit(GUI_BARS_LOCATION, x, y, 0, bossBar.color().ordinal() * 5 * 2 + uvOffset, uvWidth, 5);
-        if (bossBar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
+    private void drawBar(GuiGraphics guiGraphics, int x, int y, BossBar bossBar, int uvWidth, int uvOffset, boolean includeBase, boolean includeOverlay) {
+        if (includeBase) {
+            guiGraphics.blit(GUI_BARS_LOCATION, x, y, 0, bossBar.color().ordinal() * 5 * 2 + uvOffset, uvWidth, 5);
+        }
+        if (includeOverlay) {
             RenderSystem.enableBlend();
             guiGraphics.blit(GUI_BARS_LOCATION, x, y, 0, 80 + (bossBar.overlay().ordinal() - 1) * 5 * 2 + uvOffset, uvWidth, 5);
             RenderSystem.disableBlend();
