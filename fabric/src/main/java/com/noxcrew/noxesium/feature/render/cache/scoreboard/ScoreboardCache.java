@@ -126,7 +126,9 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             // We want to end up with the last 15 entries of scores.
             var playerTeam = scoreboard.getPlayersTeam(score.getOwner());
             players.add(score.getOwner());
-            teams.add(playerTeam.getName());
+            if (playerTeam != null) {
+                teams.add(playerTeam.getName());
+            }
             var text = PlayerTeam.formatNameForTeam(playerTeam, Component.literal(score.getOwner()));
             var bakedText = new BakedComponent(text, font);
             finalScores.add(0, bakedText);
