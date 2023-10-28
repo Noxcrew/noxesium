@@ -20,7 +20,6 @@ import java.util.List;
  * @param lines        The final lines to be drawn.
  * @param numbers      The text to be drawn for the numbers.
  * @param numberWidths The widths of each row's number.
- * @param headerWidth  The width of the scoreboard's header.
  * @param maxWidth     The maximum width of the scoreboard.
  */
 public record ScoreboardInformation(
@@ -32,7 +31,6 @@ public record ScoreboardInformation(
         List<BakedComponent> lines,
         List<BakedComponent> numbers,
         List<Integer> numberWidths,
-        int headerWidth,
         int maxWidth,
         boolean hasObfuscation
 ) implements ElementInformation {
@@ -41,5 +39,5 @@ public record ScoreboardInformation(
      * The fallback contents if the scoreboard is empty.
      */
     public static final ScoreboardInformation EMPTY =
-            new ScoreboardInformation(null, List.of(), List.of(), new BakedComponent(Component.empty()), List.of(), List.of(), List.of(), 0, 0, false);
+            new ScoreboardInformation(null, List.of(), List.of(), BakedComponent.EMPTY, List.of(), List.of(), List.of(), 0, false);
 }

@@ -43,10 +43,8 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             return ActionBarInformation.EMPTY;
         }
         var font = Minecraft.getInstance().font;
-        return new ActionBarInformation(
-                new BakedComponent(gui.overlayMessageString, font),
-                font.width(gui.overlayMessageString)
-        );
+        var baked = new BakedComponent(gui.overlayMessageString, font);
+        return new ActionBarInformation(baked);
     }
 
     @Override
@@ -89,7 +87,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             }
 
             var trueAlpha = alpha << 24 & -16777216;
-            var width = cache.width();
+            var width = cache.component().width;
             var background = minecraft.options.getBackgroundColor(0.0F);
             var color = 16777215 | trueAlpha;
             var offset = -4;
@@ -111,7 +109,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         // If the text is being animated we alter the color (used by jukeboxes)
         var textColor = 16777215;
         var trueAlpha = 255 << 24 & -16777216;
-        var width = cache.width();
+        var width = cache.component().width;
         var background = minecraft.options.getBackgroundColor(0.0F);
         var color = 16777215 | trueAlpha;
         var offset = -4;

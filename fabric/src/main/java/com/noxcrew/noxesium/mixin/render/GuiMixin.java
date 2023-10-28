@@ -4,12 +4,15 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
+import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,6 +54,15 @@ public abstract class GuiMixin {
             instance.render(guiGraphics);
         } else {
             BossBarCache.getInstance().renderDirect(guiGraphics, BossBarCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
+        }
+    }
+
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V"))
+    private void injected(PlayerTabOverlay instance, GuiGraphics guiGraphics, int width, Scoreboard scoreboard, Objective objective) {
+        if (NoxesiumMod.DEBUG_DISABLE_PATCHES) {
+            instance.render(guiGraphics, width, scoreboard, objective);
+        } else {
+            TabListCache.getInstance().renderDirect(guiGraphics, TabListCache.getInstance().getCache(), width, screenHeight, minecraft);
         }
     }
 

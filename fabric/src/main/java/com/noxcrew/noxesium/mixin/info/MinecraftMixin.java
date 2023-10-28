@@ -3,7 +3,10 @@ package com.noxcrew.noxesium.mixin.info;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
+import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
+import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
@@ -21,7 +24,10 @@ public class MinecraftMixin {
 
     @Inject(method = "resizeDisplay", at = @At(value = "TAIL"))
     private void resizeDisplay(CallbackInfo ci) {
-        NoxesiumMod.syncGuiScale();
+        ScoreboardCache.getInstance().clearCache();
+        BossBarCache.getInstance().clearCache();
+        ActionBarCache.getInstance().clearCache();
+        TabListCache.getInstance().clearCache();
     }
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;blitToScreen(II)V"))

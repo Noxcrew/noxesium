@@ -41,7 +41,10 @@
     "music.SoundOptionsMixin",
     "music.SoundSourceMixin",
     "render.BossHealthOverlayMixin",
+    "render.ClientPacketListenerMixin",
     "render.GuiMixin",
+    "render.PlayerInfoMixin",
+    "render.PlayerTabOverlayMixin",
     "sound.ChannelExt",
     "sound.SoundEngineMixin"
   ],

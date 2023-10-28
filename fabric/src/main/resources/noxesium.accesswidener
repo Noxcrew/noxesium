@@ -54,3 +54,6 @@ accessible field net/minecraft/client/gui/components/LerpingBossEvent targetPerc
 accessible field net/minecraft/client/gui/Gui overlayMessageTime I
 accessible field net/minecraft/client/gui/Gui animateOverlayMessageColor Z
 accessible field net/minecraft/client/gui/Gui overlayMessageString Lnet/minecraft/network/chat/Component;
+
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay header Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/components/PlayerTabOverlay footer Lnet/minecraft/network/chat/Component;

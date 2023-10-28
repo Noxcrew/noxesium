@@ -20,7 +20,13 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
 
     private static BossBarCache instance;
     private static final int HEIGHT = 12;
-    private static final ResourceLocation GUI_BARS_LOCATION = new ResourceLocation("textures/gui/bars.png");
+    private static final int BAR_WIDTH = 182;
+    private static final int BAR_HEIGHT = 5;
+
+    private static final ResourceLocation[] BAR_BACKGROUND_SPRITES = new ResourceLocation[]{new ResourceLocation("boss_bar/pink_background"), new ResourceLocation("boss_bar/blue_background"), new ResourceLocation("boss_bar/red_background"), new ResourceLocation("boss_bar/green_background"), new ResourceLocation("boss_bar/yellow_background"), new ResourceLocation("boss_bar/purple_background"), new ResourceLocation("boss_bar/white_background")};
+    private static final ResourceLocation[] BAR_PROGRESS_SPRITES = new ResourceLocation[]{new ResourceLocation("boss_bar/pink_progress"), new ResourceLocation("boss_bar/blue_progress"), new ResourceLocation("boss_bar/red_progress"), new ResourceLocation("boss_bar/green_progress"), new ResourceLocation("boss_bar/yellow_progress"), new ResourceLocation("boss_bar/purple_progress"), new ResourceLocation("boss_bar/white_progress")};
+    private static final ResourceLocation[] OVERLAY_BACKGROUND_SPRITES = new ResourceLocation[]{new ResourceLocation("boss_bar/notched_6_background"), new ResourceLocation("boss_bar/notched_10_background"), new ResourceLocation("boss_bar/notched_12_background"), new ResourceLocation("boss_bar/notched_20_background")};
+    private static final ResourceLocation[] OVERLAY_PROGRESS_SPRITES = new ResourceLocation[]{new ResourceLocation("boss_bar/notched_6_progress"), new ResourceLocation("boss_bar/notched_10_progress"), new ResourceLocation("boss_bar/notched_12_progress"), new ResourceLocation("boss_bar/notched_20_progress")};
 
     /**
      * Returns the current instance of this boss bar cache.
@@ -54,7 +60,6 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             var animating = Math.abs(bar.getProgress() - bar.targetPercent) >= 0.001;
             bars.add(new BossBar(
                     new BakedComponent(bar.getName(), font),
-                    font.width(bar.getName()),
                     bar,
                     bar.getOverlay(),
                     bar.getColor(),
@@ -78,10 +83,10 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
                 if (bossbar.animating() || bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
                     // Draw the main bars
                     var barLeft = screenWidth / 2 - 91;
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
                     var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                     if (progress > 0) {
-                        this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
+                        this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
                     }
 
                     // If any bar has finished animating we clear the cache
@@ -92,7 +97,7 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
 
                 // Draw the text above
                 if (bossbar.name().hasObfuscation) {
-                    var x = screenWidth / 2 - bossbar.barWidth() / 2;
+                    var x = screenWidth / 2 - bossbar.name().width / 2;
                     var y = currentHeight - 9;
                     GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215, true);
                 }
@@ -118,16 +123,16 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (!bossbar.animating()) {
                 // Draw the main bars
                 var barLeft = screenWidth / 2 - 91;
-                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, 0, true, false);
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, true, false);
                 var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                 if (progress > 0) {
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, 5, true, false);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, true, false);
                 }
             }
 
             // Draw the text above
             if (!bossbar.name().hasObfuscation) {
-                var x = screenWidth / 2 - bossbar.barWidth() / 2;
+                var x = screenWidth / 2 - bossbar.name().width / 2;
                 var y = currentHeight - 9;
                 GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215, true);
             }
@@ -142,13 +147,13 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
     /**
      * Draws a single boss bar background.
      */
-    private void drawBar(GuiGraphics guiGraphics, int x, int y, BossBar bossBar, int uvWidth, int uvOffset, boolean includeBase, boolean includeOverlay) {
+    private void drawBar(GuiGraphics guiGraphics, int x, int y, BossBar bossBar, int targetWidth, ResourceLocation[] bars, ResourceLocation[] overlays, boolean includeBase, boolean includeOverlay) {
         if (includeBase) {
-            guiGraphics.blit(GUI_BARS_LOCATION, x, y, 0, bossBar.color().ordinal() * 5 * 2 + uvOffset, uvWidth, 5);
+            guiGraphics.blitSprite(bars[bossBar.color().ordinal()], BAR_WIDTH, BAR_HEIGHT, 0, 0, x, y, targetWidth, BAR_HEIGHT);
         }
         if (includeOverlay) {
             RenderSystem.enableBlend();
-            guiGraphics.blit(GUI_BARS_LOCATION, x, y, 0, 80 + (bossBar.overlay().ordinal() - 1) * 5 * 2 + uvOffset, uvWidth, 5);
+            guiGraphics.blitSprite(overlays[bossBar.overlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, x, y, targetWidth, BAR_HEIGHT);
             RenderSystem.disableBlend();
         }
     }

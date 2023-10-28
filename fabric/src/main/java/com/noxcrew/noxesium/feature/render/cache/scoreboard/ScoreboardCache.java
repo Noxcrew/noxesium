@@ -111,8 +111,8 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
         var title = objective.getDisplayName();
         var lowerLimit = scores.size() - 15;
-        var headerWidth = font.width(title);
-        var maxWidth = headerWidth;
+        var baked = new BakedComponent(title, font);
+        var maxWidth = baked.width;
         var extraWidth = drawNumbers ? font.width(": ") : 0;
 
         for (var index = scores.size() - 1; index >= lowerLimit && index >= 0; index--) {
@@ -129,33 +129,31 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             players.add(score.getOwner());
             teams.add(playerTeam.getName());
             var text = PlayerTeam.formatNameForTeam(playerTeam, Component.literal(score.getOwner()));
-            var baked = new BakedComponent(text, font);
-            finalScores.add(0, baked);
-            if (baked.hasObfuscation) hasObfuscation = true;
+            var bakedText = new BakedComponent(text, font);
+            finalScores.add(0, bakedText);
+            if (bakedText.hasObfuscation) hasObfuscation = true;
 
             // Update the maximum width we've found, if numbers are being omitted we move the whole
             // background right.
             var number = "" + ChatFormatting.RED + score.getScore();
             var numberWidth = drawNumbers ? font.width(number) : 0;
-            maxWidth = Math.max(maxWidth, font.width(text) + extraWidth + numberWidth);
+            maxWidth = Math.max(maxWidth, bakedText.width + extraWidth + numberWidth);
             if (drawNumbers) {
                 numberWidths.add(0, numberWidth);
                 numbers.add(0, new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED), font));
             }
         }
 
-        var header = new BakedComponent(title, font);
         return new ScoreboardInformation(
                 objective,
                 players,
                 teams,
-                header,
+                baked,
                 finalScores,
                 numbers,
                 numberWidths,
-                headerWidth,
                 maxWidth,
-                header.hasObfuscation || hasObfuscation
+                baked.hasObfuscation || hasObfuscation
         );
     }
 
@@ -182,7 +180,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             // Draw the header if it has obfuscation
             var headerTop = bottom - cache.lines().size() * 9;
             if (cache.header().hasObfuscation) {
-                GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+                GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
             }
 
             // Line 1 here is the bottom line, this is because the
@@ -213,7 +211,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var headerTop = bottom - cache.lines().size() * 9;
         graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
         if (!cache.header().hasObfuscation) {
-            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.headerWidth() / 2, headerTop - 9, -1, false);
+            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
         }
 
         // Draw the background (vanilla does this per line but we do it once)

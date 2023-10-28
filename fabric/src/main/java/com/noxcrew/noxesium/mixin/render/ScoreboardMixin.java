@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
+import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
+import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
@@ -41,6 +43,11 @@ public class ScoreboardMixin {
 
     @Inject(method = "setDisplayObjective", at = @At(value = "TAIL"))
     private void setDisplayObjective(DisplaySlot displaySlot, Objective objective, CallbackInfo ci) {
+        // Inform the tab list whenever the tab list slot changes.
+        if (displaySlot == DisplaySlot.LIST) {
+            TabListCache.getInstance().clearCache();
+        }
+
         // We don't need to care about changes to the below name or list slots.
         if (displaySlot == DisplaySlot.BELOW_NAME || displaySlot == DisplaySlot.LIST) return;
 
@@ -54,6 +61,9 @@ public class ScoreboardMixin {
         if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
             ScoreboardCache.getInstance().clearCache();
         }
+        if (TabListCache.getInstance().isObjectiveRelevant(objective)) {
+            TabListCache.getInstance().clearCache();
+        }
     }
 
     @Inject(method = "resetPlayerScore", at = @At(value = "TAIL"))
@@ -61,12 +71,18 @@ public class ScoreboardMixin {
         if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
             ScoreboardCache.getInstance().clearCache();
         }
+        if (TabListCache.getInstance().isObjectiveRelevant(objective)) {
+            TabListCache.getInstance().clearCache();
+        }
     }
 
     @Inject(method = "onScoreChanged", at = @At(value = "TAIL"))
     private void onScoreChanged(Score score, CallbackInfo ci) {
         if (ScoreboardCache.getInstance().isObjectiveRelevant(score.getObjective())) {
             ScoreboardCache.getInstance().clearCache();
+        }
+        if (TabListCache.getInstance().isObjectiveRelevant(score.getObjective())) {
+            TabListCache.getInstance().clearCache();
         }
     }
 }
