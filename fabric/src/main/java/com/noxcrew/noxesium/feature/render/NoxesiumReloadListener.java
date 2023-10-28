@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.feature.render;
 
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
+import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
@@ -20,6 +21,7 @@ public class NoxesiumReloadListener implements SimpleSynchronousResourceReloadLi
         BossBarCache.getInstance().clearCache();
         ActionBarCache.getInstance().clearCache();
         TabListCache.getInstance().clearCache();
+        ChatCache.getInstance().clearCache();
     }
 
     @Override

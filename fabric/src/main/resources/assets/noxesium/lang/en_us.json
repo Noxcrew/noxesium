@@ -8,5 +8,10 @@
 
   "debug.disable_patches.disabled": "Noxesium UI performance patches are now off",
   "debug.disable_patches.enabled": "Noxesium UI performance patches are now on",
-  "debug.disable_patches.help": "F3 + W = Toggle Noxesium UI performance patches"
+  "debug.disable_patches.help": "F3 + W = Toggle Noxesium UI performance patches",
+
+  "debug.fps_overlay.disabled": "FPS counter is now off",
+  "debug.fps_overlay.enabled": "FPS counter is now on (turn off with F3 + Y)",
+  "debug.fps_overlay.help": "F3 + Y = Toggle on-screen fps counter",
+  "debug.fps_overlay": "%s fps"
 }

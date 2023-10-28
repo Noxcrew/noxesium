@@ -27,7 +27,12 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * A debug value to disable performance patches for comparison.
      */
-    public static boolean DEBUG_DISABLE_PATCHES = true;
+    public static boolean disablePatches = true;
+
+    /**
+     * Whether to show the FPS overlay.
+     */
+    public static boolean fpsOverlay = false;
 
     /**
      * The current protocol version of the mod. Servers can use this version to determine which functionality

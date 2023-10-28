@@ -45,6 +45,7 @@ public abstract class KeyboardHandlerMixin {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
                 instance.addMessage(Component.translatable("debug.disable_patches.help"));
+                instance.addMessage(Component.translatable("debug.fps_overlay.help"));
                 instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
         }
@@ -57,14 +58,24 @@ public abstract class KeyboardHandlerMixin {
             return;
         }
 
-        if (keyCode == InputConstants.KEY_W) {
+        if (keyCode == InputConstants.KEY_Y) {
             cir.setReturnValue(true);
 
-            if (NoxesiumMod.DEBUG_DISABLE_PATCHES) {
-                NoxesiumMod.DEBUG_DISABLE_PATCHES = false;
+            if (NoxesiumMod.fpsOverlay) {
+                NoxesiumMod.fpsOverlay = false;
+                this.debugFeedbackTranslated("debug.fps_overlay.enabled");
+            } else {
+                NoxesiumMod.fpsOverlay = true;
+                this.debugFeedbackTranslated("debug.fps_overlay.disabled");
+            }
+        } else if (keyCode == InputConstants.KEY_W) {
+            cir.setReturnValue(true);
+
+            if (NoxesiumMod.disablePatches) {
+                NoxesiumMod.disablePatches = false;
                 this.debugFeedbackTranslated("debug.disable_patches.enabled");
             } else {
-                NoxesiumMod.DEBUG_DISABLE_PATCHES = true;
+                NoxesiumMod.disablePatches = true;
                 this.debugFeedbackTranslated("debug.disable_patches.disabled");
             }
         } else if (keyCode == InputConstants.KEY_Z) {

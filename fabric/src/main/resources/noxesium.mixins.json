@@ -41,6 +41,8 @@
     "music.SoundOptionsMixin",
     "music.SoundSourceMixin",
     "render.BossHealthOverlayMixin",
+    "render.ChatComponentMixin",
+    "render.ChatListenerMixin",
     "render.ClientPacketListenerMixin",
     "render.GuiMixin",
     "render.PlayerInfoMixin",

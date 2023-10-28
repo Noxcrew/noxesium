@@ -57,3 +57,14 @@ accessible field net/minecraft/client/gui/Gui overlayMessageString Lnet/minecraf
 
 accessible field net/minecraft/client/gui/components/PlayerTabOverlay header Lnet/minecraft/network/chat/Component;
 accessible field net/minecraft/client/gui/components/PlayerTabOverlay footer Lnet/minecraft/network/chat/Component;
+
+accessible field net/minecraft/client/gui/components/ChatComponent trimmedMessages Ljava/util/List;
+accessible method net/minecraft/client/gui/components/ChatComponent isChatHidden ()Z
+accessible method net/minecraft/client/gui/components/ChatComponent isChatFocused ()Z
+accessible method net/minecraft/client/gui/components/ChatComponent getMessageEndIndexAt (DD)I
+accessible method net/minecraft/client/gui/components/ChatComponent screenToChatX (D)D
+accessible method net/minecraft/client/gui/components/ChatComponent screenToChatY (D)D
+accessible field net/minecraft/client/gui/components/ChatComponent chatScrollbarPos I
+accessible method net/minecraft/client/gui/components/ChatComponent getTimeFactor (I)D
+accessible field net/minecraft/client/gui/components/ChatComponent newMessageSinceScroll Z
+accessible method net/minecraft/client/gui/components/ChatComponent getLineHeight ()I
