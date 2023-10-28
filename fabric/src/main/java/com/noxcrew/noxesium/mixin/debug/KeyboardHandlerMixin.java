@@ -61,11 +61,11 @@ public abstract class KeyboardHandlerMixin {
         if (keyCode == InputConstants.KEY_Y) {
             cir.setReturnValue(true);
 
-            if (NoxesiumMod.fpsOverlay) {
-                NoxesiumMod.fpsOverlay = false;
+            if (!NoxesiumMod.fpsOverlay) {
+                NoxesiumMod.fpsOverlay = true;
                 this.debugFeedbackTranslated("debug.fps_overlay.enabled");
             } else {
-                NoxesiumMod.fpsOverlay = true;
+                NoxesiumMod.fpsOverlay = false;
                 this.debugFeedbackTranslated("debug.fps_overlay.disabled");
             }
         } else if (keyCode == InputConstants.KEY_W) {

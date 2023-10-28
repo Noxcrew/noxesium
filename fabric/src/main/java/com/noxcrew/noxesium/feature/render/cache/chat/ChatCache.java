@@ -53,20 +53,17 @@ public class ChatCache extends ElementCache<ChatInformation> {
         var font = minecraft.font;
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
-        var hasObfuscation = false;
         var fading = new ArrayList<Integer>();
         var focused = chatOverlay.isChatFocused();
-        int ticksSinceMessageSend;
 
         var index = 0;
         for (var line : chatOverlay.trimmedMessages) {
             index++;
             var baked = new BakedComponent(line.content(), font);
             lines.add(baked);
-            if (baked.hasObfuscation) hasObfuscation = true;
 
             // Determine if this line is fading out!
-            if ((ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
+            var ticksSinceMessageSend = lastTick - line.addedTime();
             var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
             if (timeFactor < 1.0) {
                 fading.add(index - 1);
@@ -80,7 +77,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 focused,
                 new BakedComponent(Component.translatable("chat.queue", queueSize), font),
                 lines,
-                hasObfuscation,
                 fading
         );
     }
@@ -97,8 +93,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
         // Render the buffered contents!
         super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
 
-        // Don't render anything here if there's obfuscation
-        if (!cache.hasObfuscation()) return;
         var clearCache = false;
         var messageCount = cache.trimmedMessages().size();
         int lineBottom;

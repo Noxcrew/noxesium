@@ -16,12 +16,11 @@ public record ChatInformation(
         boolean focused,
         BakedComponent queueSize,
         List<BakedComponent> lines,
-        boolean hasObfuscation,
         List<Integer> fading
 ) implements ElementInformation {
 
     /**
      * The fallback contents if the chat is absent.
      */
-    public static final ChatInformation EMPTY = new ChatInformation(List.of(), 0, false, false, BakedComponent.EMPTY, List.of(), false, List.of());
+    public static final ChatInformation EMPTY = new ChatInformation(List.of(), 0, false, false, BakedComponent.EMPTY, List.of(), List.of());
 }
