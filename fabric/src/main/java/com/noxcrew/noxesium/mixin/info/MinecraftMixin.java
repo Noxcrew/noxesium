@@ -32,7 +32,7 @@ public class MinecraftMixin {
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;blitToScreen(II)V"))
     private void injected(RenderTarget instance, int width, int height) {
-        if (NoxesiumMod.DEBUG_DISABLE_PATCHES || !ElementBuffer.DEBUG_BUFFER || ElementBuffer.CURRENT_BUFFER == null) {
+        if (NoxesiumMod.DEBUG_DISABLE_PATCHES || ElementBuffer.CURRENT_BUFFER == null) {
             instance.blitToScreen(width, height);
         } else {
             ElementBuffer.CURRENT_BUFFER.blitToScreen(width, height);

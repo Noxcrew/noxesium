@@ -106,7 +106,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
         var scores = (List<Score>) scoreboard.getPlayerScores(objective);
         var finalScores = new ArrayList<BakedComponent>();
-        var numberWidths = new ArrayList<Integer>();
         var numbers = new ArrayList<BakedComponent>();
 
         var title = objective.getDisplayName();
@@ -132,15 +131,12 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             var bakedText = new BakedComponent(text, font);
             finalScores.add(0, bakedText);
             if (bakedText.hasObfuscation) hasObfuscation = true;
-
-            // Update the maximum width we've found, if numbers are being omitted we move the whole
-            // background right.
-            var number = "" + ChatFormatting.RED + score.getScore();
-            var numberWidth = drawNumbers ? font.width(number) : 0;
-            maxWidth = Math.max(maxWidth, bakedText.width + extraWidth + numberWidth);
             if (drawNumbers) {
-                numberWidths.add(0, numberWidth);
-                numbers.add(0, new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED), font));
+                // Update the maximum width we've found, if numbers are being omitted we
+                // move the whole background right.
+                var bakedNumber = new BakedComponent(Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED), font);
+                maxWidth = Math.max(maxWidth, bakedText.width + extraWidth + bakedNumber.width);
+                numbers.add(0, bakedNumber);
             }
         }
 
@@ -151,7 +147,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
                 baked,
                 finalScores,
                 numbers,
-                numberWidths,
                 maxWidth,
                 baked.hasObfuscation || hasObfuscation
         );
@@ -175,26 +170,23 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
 
-        // We always draw the lines that have obfuscation overtop!
-        graphics.drawManaged(() -> {
-            // Draw the header if it has obfuscation
-            var headerTop = bottom - cache.lines().size() * 9;
-            if (cache.header().hasObfuscation) {
-                GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
-            }
+        // Line 1 here is the bottom line, this is because the
+        // finalScores are sorted and we're getting them still
+        // ordered ascending, so we want to display the last
+        // score at the top.
+        for (var line = 1; line <= cache.lines().size(); line++) {
+            var text = cache.lines().get(line - 1);
+            if (!text.hasObfuscation) continue;
 
-            // Line 1 here is the bottom line, this is because the
-            // finalScores are sorted and we're getting them still
-            // ordered ascending, so we want to display the last
-            // score at the top.
-            for (var line = 1; line <= cache.lines().size(); line++) {
-                var text = cache.lines().get(line - 1);
-                if (!text.hasObfuscation) continue;
+            var lineTop = bottom - line * 9;
+            GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
+        }
 
-                var lineTop = bottom - line * 9;
-                GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
-            }
-        });
+        // Draw the header if it has obfuscation
+        var headerTop = bottom - cache.lines().size() * 9;
+        if (cache.header().hasObfuscation) {
+            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
+        }
     }
 
     @Override
@@ -207,16 +199,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var background = Minecraft.getInstance().options.getBackgroundColor(0.3f);
         var darkerBackground = Minecraft.getInstance().options.getBackgroundColor(0.4f);
 
-        // Draw the header
-        var headerTop = bottom - cache.lines().size() * 9;
-        graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
-        if (!cache.header().hasObfuscation) {
-            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
-        }
-
-        // Draw the background (vanilla does this per line but we do it once)
-        graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
-
         // Line 1 here is the bottom line, this is because the
         // finalScores are sorted and we're getting them still
         // ordered ascending, so we want to display the last
@@ -224,13 +206,27 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         for (var line = 1; line <= cache.lines().size(); line++) {
             var text = cache.lines().get(line - 1);
             var lineTop = bottom - line * 9;
+
+            // It would be far better to draw the whole scoreboard at once, but this is what
+            // vanilla does so we follow along too...
+            graphics.fill(left - 2, lineTop, backgroundRight, lineTop + 9, background);
+
             if (!text.hasObfuscation) {
                 GuiGraphicsExt.drawString(graphics, font, text, left, lineTop, -1, false);
             }
 
             if (cache.numbers().size() >= line) {
-                GuiGraphicsExt.drawString(graphics, font, cache.numbers().get(line - 1), backgroundRight - cache.numberWidths().get(line - 1), lineTop, -1, false);
+                var num = cache.numbers().get(line - 1);
+                GuiGraphicsExt.drawString(graphics, font, num, backgroundRight - num.width, lineTop, -1, false, true);
             }
+        }
+
+        // Draw the header
+        var headerTop = bottom - cache.lines().size() * 9;
+        graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
+        graphics.fill(left - 2, headerTop - 1, backgroundRight, headerTop, background);
+        if (!cache.header().hasObfuscation) {
+            GuiGraphicsExt.drawString(graphics, font, cache.header(), left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1, false);
         }
     }
 }

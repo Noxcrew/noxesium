@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.feature.render.cache.tablist;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.render.font.GuiGraphicsExt;
@@ -250,67 +251,61 @@ public class TabListCache extends ElementCache<TabListInformation> {
         // Render the buffer contents
         super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
 
-        graphics.drawManaged(() -> {
-            // Render all parts that need to be drawn directly! (blinking hearts)
-            var left = cache.left();
-            var playersPerColumn = cache.playersPerColumn();
-            var columnWidth = cache.columnWidth();
-            var height = BASE_OFFSET;
+        // Render all parts that need to be drawn directly! (blinking hearts)
+        var left = cache.left();
+        var playersPerColumn = cache.playersPerColumn();
+        var columnWidth = cache.columnWidth();
+        var height = BASE_OFFSET;
 
-            if (cache.header() != null) {
-                for (var line : cache.header()) {
-                    if (line.hasObfuscation) {
-                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1, true);
-                    }
-                    height += font.lineHeight;
+        if (cache.header() != null) {
+            for (var line : cache.header()) {
+                if (line.hasObfuscation) {
+                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
                 }
-                ++height;
+                height += font.lineHeight;
+            }
+            ++height;
+        }
+
+        var playerCount = cache.players().size();
+        for (int index = 0; index < playerCount; ++index) {
+            // Optimization: if the tab list is so big it pushes the rest off-screen stop rendering!
+            // Only necessary when doing it real-time.
+            if (height >= screenHeight) return;
+
+            int z;
+            int aa;
+
+            var column = index / playersPerColumn;
+            var row = index % playersPerColumn;
+            var x = left + column * columnWidth + column * 5;
+            var y = height + row * 9;
+
+            if (index >= cache.players().size()) continue;
+            var playerInfo = cache.players().get(index);
+            var profile = playerInfo.getProfile();
+
+            if (cache.showSkins()) {
+                x += 9;
             }
 
-            var playerCount = cache.players().size();
-            for (int index = 0; index < playerCount; ++index) {
-                int z;
-                int aa;
-
-                var column = index / playersPerColumn;
-                var row = index % playersPerColumn;
-                var x = left + column * columnWidth + column * 5;
-                var y = height + row * 9;
-
-                if (index >= cache.players().size()) continue;
-                var playerInfo = cache.players().get(index);
-                var profile = playerInfo.getProfile();
-
-                if (cache.showSkins()) {
-                    // Draw the hat layer here! We need to be able to blend.
-                    var player = minecraft.level.getPlayerByUUID(profile.getId());
-                    var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
-                    int l = 8 + (upsideDown ? 8 : 0);
-                    int m = 8 * (upsideDown ? -1 : 1);
-                    RenderSystem.enableBlend();
-                    graphics.blit(playerInfo.getSkin().texture(), x, y, 8, 8, 40.0f, l, 8, m, 64, 64);
-                    RenderSystem.disableBlend();
-                    x += 9;
-                }
-
-                if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (aa = (z = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - z > 5) {
-                    // Render the score outside the buffer when in a blinking animation!
-                    if (cache.blinking().contains(playerInfo.getProfile().getId())) {
-                        this.renderTablistScore(objective, y, profile.getName(), z, aa, profile.getId(), graphics, font);
-                    }
+            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (aa = (z = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - z > 5) {
+                // Render the score outside the buffer when in a blinking animation!
+                if (cache.blinking().contains(playerInfo.getProfile().getId())) {
+                    this.renderTablistScore(objective, y, profile.getName(), z, aa, profile.getId(), graphics, font);
                 }
             }
+        }
 
-            if (cache.footer() != null) {
-                height += playersPerColumn * 9 + 1;
-                for (var line : cache.footer()) {
-                    if (line.hasObfuscation) {
-                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1, true);
-                    }
-                    height += font.lineHeight;
+        if (cache.footer() != null) {
+            height += playersPerColumn * 9 + 1;
+            for (var line : cache.footer()) {
+                if (line.hasObfuscation) {
+                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
                 }
+                height += font.lineHeight;
             }
-        });
+        }
 
         // Clear cache at the end as we cannot edit the current cache in this method so we need
         // to expect next tick to sort things out.
@@ -335,7 +330,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
             for (var line : cache.header()) {
                 if (!line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1, true);
+                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;
             }
@@ -347,8 +342,8 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var playerCount = cache.players().size();
         var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
         for (int index = 0; index < playerCount; ++index) {
-            int z;
-            int aa;
+            int scoreX;
+            int scoreWidth;
 
             var column = index / playersPerColumn;
             var row = index % playersPerColumn;
@@ -356,25 +351,23 @@ public class TabListCache extends ElementCache<TabListInformation> {
             var y = height + row * 9;
 
             graphics.fill(x, y, x + columnWidth, y + 8, background);
+            RenderSystem.enableBlend();
 
             if (index >= cache.players().size()) continue;
             var playerInfo = cache.players().get(index);
             var profile = playerInfo.getProfile();
 
             if (cache.showSkins()) {
-                // Draw only the base layer here!
                 var player = minecraft.level.getPlayerByUUID(profile.getId());
                 var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
-                int l = 8 + (upsideDown ? 8 : 0);
-                int m = 8 * (upsideDown ? -1 : 1);
-                graphics.blit(playerInfo.getSkin().texture(), x, y, 8, 8, 8.0f, l, 8, m, 64, 64);
+                PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
                 x += 9;
             }
 
-            GuiGraphicsExt.drawString(graphics, font, cache.names().get(playerInfo.getProfile().getId()), x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1, true);
-            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (aa = (z = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - z > 5) {
+            GuiGraphicsExt.drawString(graphics, font, cache.names().get(playerInfo.getProfile().getId()), x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
+            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
                 if (!cache.blinking().contains(playerInfo.getProfile().getId())) {
-                    this.renderTablistScore(objective, y, profile.getName(), z, aa, profile.getId(), graphics, font);
+                    this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
                 }
             }
             this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
@@ -384,7 +377,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             graphics.fill(screenWidth / 2 - width / 2 - 1, (height += playersPerColumn * 9 + 1) - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
             for (var line : cache.footer()) {
                 if (!line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1, true);
+                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;
             }
@@ -398,17 +391,17 @@ public class TabListCache extends ElementCache<TabListInformation> {
         graphics.pose().popPose();
     }
 
-    private void renderTablistScore(Objective objective, int y, String pUsername, int x, int offset, UUID playerId, GuiGraphics graphics, Font font) {
+    private void renderTablistScore(Objective objective, int y, String pUsername, int x, int width, UUID playerId, GuiGraphics graphics, Font font) {
         var score = objective.getScoreboard().getOrCreatePlayerScore(pUsername, objective).getScore();
         if (objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
-            renderTablistHearts(y, x, offset, playerId, graphics, score, font);
+            renderTablistHearts(y, x, width, playerId, graphics, score, font);
         } else {
             var scoreString = "" + ChatFormatting.YELLOW + score;
-            graphics.drawString(font, scoreString, offset - font.width(scoreString), y, 16777215);
+            graphics.drawString(font, scoreString, width - font.width(scoreString), y, 16777215);
         }
     }
 
-    private void renderTablistHearts(int y, int x, int offset, UUID playerId, GuiGraphics graphics, int health, Font font) {
+    private void renderTablistHearts(int y, int x, int width, UUID playerId, GuiGraphics graphics, int health, Font font) {
         var healthState = healthStates.computeIfAbsent(playerId, (id) -> new TabListInformation.HealthState(health));
         var guiTicks = Minecraft.getInstance().gui.getGuiTicks();
         var displayedHearts = Mth.positiveCeilDiv(Math.max(health, healthState.displayedValue()), 2);
@@ -416,7 +409,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var blinking = healthState.isBlinking(guiTicks);
 
         if (displayedHearts > 0) {
-            var heartOffset = Mth.floor(Math.min((float) (offset - x - 4) / (float) totalHearts, 9.0F));
+            var heartOffset = Mth.floor(Math.min((float) (width - x - 4) / (float) totalHearts, 9.0F));
             int heart;
 
             if (heartOffset <= 3) {
@@ -426,13 +419,13 @@ public class TabListCache extends ElementCache<TabListInformation> {
 
                 var text = Component.translatable("multiplayer.player.list.hp", hearts);
                 Component trueText;
-                if (offset - font.width(text) >= x) {
+                if (width - font.width(text) >= x) {
                     trueText = text;
                 } else {
                     trueText = Component.literal("" + hearts);
                 }
 
-                graphics.drawString(font, trueText, (offset + x - font.width(trueText)) / 2, y, heart);
+                graphics.drawString(font, trueText, (width + x - font.width(trueText)) / 2, y, heart);
             } else {
                 var texture = blinking ? HEART_CONTAINER_BLINKING_SPRITE : HEART_CONTAINER_SPRITE;
 

@@ -32,7 +32,23 @@ public class GuiGraphicsExt {
      * Draws a new string into the given graphics based on the given baked component.
      * It is assumed we are running in managed mode.
      */
+    public static int drawString(GuiGraphics graphics, Font font, BakedComponent bakedComponent, int x, int y, int color) {
+        return drawString(graphics, font, bakedComponent, x, y, color, true, false);
+    }
+
+    /**
+     * Draws a new string into the given graphics based on the given baked component.
+     * It is assumed we are running in managed mode.
+     */
     public static int drawString(GuiGraphics graphics, Font font, BakedComponent bakedComponent, int x, int y, int color, boolean shadow) {
+        return drawString(graphics, font, bakedComponent, x, y, color, shadow, false);
+    }
+
+    /**
+     * Draws a new string into the given graphics based on the given baked component.
+     * It is assumed we are running in managed mode.
+     */
+    public static int drawString(GuiGraphics graphics, Font font, BakedComponent bakedComponent, int x, int y, int color, boolean shadow, boolean forceFlush) {
         var matrix = graphics.pose.last().pose();
         var bufferSource = graphics.bufferSource;
         var displayMode = Font.DisplayMode.NORMAL;
@@ -43,11 +59,11 @@ public class GuiGraphicsExt {
         var matrixCopy = matrix;
         if (shadow) {
             matrixCopy = new Matrix4f(matrix);
-            bakedComponent.renderOutput.finish(font, x, y, color, true, matrix, bufferSource, displayMode, background, packedLightCoords);
+            bakedComponent.renderOutput.finish(font, x, y, color, true, matrix, bufferSource, displayMode, background, packedLightCoords, forceFlush);
             matrixCopy.translate(SHADOW_OFFSET);
         }
 
-        var fx = bakedComponent.renderOutput.finish(font, x, y, color, false, matrixCopy, bufferSource, displayMode, background, packedLightCoords);
+        var fx = bakedComponent.renderOutput.finish(font, x, y, color, false, matrixCopy, bufferSource, displayMode, background, packedLightCoords, forceFlush);
         return (int) fx + (shadow ? 1 : 0);
     }
 
@@ -125,7 +141,7 @@ public class GuiGraphicsExt {
         /**
          * Finishes creation of this string and draws it to the given buffer.
          */
-        public float finish(Font font, float x, float y, int color, boolean shadow, Matrix4f matrix, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int background, int packedLightCoords) {
+        public float finish(Font font, float x, float y, int color, boolean shadow, Matrix4f matrix, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int background, int packedLightCoords, boolean forceFlush) {
             var right = x;
             var dimFactor = shadow ? 0.25F : 1.0F;
             var decorationOffset = shadow ? 1f : 0f;
@@ -141,8 +157,22 @@ public class GuiGraphicsExt {
                 if (!(bakedglyph instanceof EmptyGlyph)) {
                     var boldOffset = character.bold ? character.glyphInfo.getBoldOffset() : 0.0F;
                     var shadowOffset = shadow ? character.glyphInfo.getShadowOffset() : 0.0F;
-                    var vertexconsumer = bufferSource.getBuffer(bakedglyph.renderType(displayMode));
+                    var renderType = bakedglyph.renderType(displayMode);
+                    if (forceFlush && bufferSource instanceof MultiBufferSource.BufferSource source) {
+                        // Ensure the batch has ended properly!
+                        source.endBatch(renderType);
+                    }
+                    var vertexconsumer = bufferSource.getBuffer(renderType);
                     font.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, packedLightCoords);
+
+                    // Forcefully fix an issue with scoreboard number removal shaders where the
+                    // most common one on GitHub checks for the first 4 vertices for some reason??
+                    // Because of this we want to flush after every character (4 vertices per char)
+                    // to ensure the shader catches and removes them all.
+                    if (forceFlush && bufferSource instanceof MultiBufferSource.BufferSource source) {
+                        source.endBatch(renderType);
+                        baseVertexconsumer = bufferSource.getBuffer(baseBakedGlyph.renderType(displayMode));
+                    }
                 }
 
                 if (character.strikethrough) {

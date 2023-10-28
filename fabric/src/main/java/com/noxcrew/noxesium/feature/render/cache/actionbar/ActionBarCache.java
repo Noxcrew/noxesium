@@ -96,7 +96,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
                 int j = -width / 2;
                 graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
             }
-            GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha, true);
+            GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
             graphics.pose().popPose();
         }
     }
@@ -117,7 +117,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             int j = -width / 2;
             graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
         }
-        GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha, true);
+        GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
         graphics.pose().popPose();
     }
 }

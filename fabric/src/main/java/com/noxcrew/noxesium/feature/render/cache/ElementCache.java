@@ -30,7 +30,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Creates a new buffer. Can be modified to disable blending of the drawn element.
      */
     protected ElementBuffer createBuffer() {
-        return new ElementBuffer();
+        return new ElementBuffer(getClass());
     }
 
     /**
@@ -81,11 +81,8 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 target.setClearColor(0f, 0f, 0f, 0f);
                 target.clear(ON_OSX);
                 target.bindWrite(false);
-
-                // Draw managed here to ensure we flush graphics buffers at the end!
-                graphics.drawManaged(() -> {
-                    renderBuffered(graphics, getCache(), minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font);
-                });
+                renderBuffered(graphics, getCache(), minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font);
+                graphics.flush();
             } finally {
                 needsRedraw = false;
                 target.unbindWrite();

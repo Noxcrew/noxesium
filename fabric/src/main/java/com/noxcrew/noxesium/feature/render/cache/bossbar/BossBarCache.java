@@ -76,42 +76,40 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
         // Only draw the buffer if there are bars to draw!
         super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
 
-        graphics.drawManaged(() -> {
-            var clearCache = false;
-            var currentHeight = HEIGHT;
-            for (var bossbar : cache.bars()) {
-                if (bossbar.animating() || bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
-                    // Draw the main bars
-                    var barLeft = screenWidth / 2 - 91;
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
-                    var progress = (int) (bossbar.bar().getProgress() * 183.0F);
-                    if (progress > 0) {
-                        this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, bossbar.animating(), bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
-                    }
-
-                    // If any bar has finished animating we clear the cache
-                    if (bossbar.animating() && Math.abs(bossbar.bar().getProgress() - bossbar.bar().targetPercent) < 0.001) {
-                        clearCache = true;
-                    }
+        var clearCache = false;
+        var currentHeight = HEIGHT;
+        for (var bossbar : cache.bars()) {
+            if (bossbar.animating() || bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
+                // Draw the main bars
+                var barLeft = screenWidth / 2 - 91;
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, true, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
+                var progress = (int) (bossbar.bar().getProgress() * 183.0F);
+                if (progress > 0) {
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, true, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS);
                 }
 
-                // Draw the text above
-                if (bossbar.name().hasObfuscation) {
-                    var x = screenWidth / 2 - bossbar.name().width / 2;
-                    var y = currentHeight - 9;
-                    GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215, true);
-                }
-
-                currentHeight += 10 + 9;
-                if (currentHeight >= screenHeight / 3) {
-                    break;
+                // If any bar has finished animating we clear the cache
+                if (bossbar.animating() && Math.abs(bossbar.bar().getProgress() - bossbar.bar().targetPercent) < 0.001) {
+                    clearCache = true;
                 }
             }
 
-            if (clearCache) {
-                clearCache();
+            // Draw the text above
+            if (bossbar.name().hasObfuscation) {
+                var x = screenWidth / 2 - bossbar.name().width / 2;
+                var y = currentHeight - 9;
+                GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215);
             }
-        });
+
+            currentHeight += 10 + 9;
+            if (currentHeight >= screenHeight / 3) {
+                break;
+            }
+        }
+
+        if (clearCache) {
+            clearCache();
+        }
     }
 
     @Override
@@ -123,10 +121,10 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (!bossbar.animating()) {
                 // Draw the main bars
                 var barLeft = screenWidth / 2 - 91;
-                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, true, false);
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS, false);
                 var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                 if (progress > 0) {
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, true, false);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS, false);
                 }
             }
 
@@ -134,7 +132,7 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (!bossbar.name().hasObfuscation) {
                 var x = screenWidth / 2 - bossbar.name().width / 2;
                 var y = currentHeight - 9;
-                GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215, true);
+                GuiGraphicsExt.drawString(graphics, minecraft.font, bossbar.name(), x, y, 16777215);
             }
 
             currentHeight += 10 + 9;

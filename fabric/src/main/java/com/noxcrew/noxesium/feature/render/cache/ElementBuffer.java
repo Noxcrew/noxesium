@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
@@ -32,15 +33,20 @@ public class ElementBuffer implements Closeable {
      * If true, the buffer is drawn to the screen instead of on top so
      * its contents can be checked properly.
      */
-    public static final boolean DEBUG_BUFFER = false;
+    public static final Class<?> DEBUG_BUFFER = null;
     public static RenderTarget CURRENT_BUFFER = null;
 
     private RenderTarget target;
     private VertexBuffer buffer;
-    private int screenWidth;
-    private int screenHeight;
+    private double screenWidth;
+    private double screenHeight;
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
+    private final Class<?> klass;
+
+    public ElementBuffer(Class<?> klass) {
+        this.klass = klass;
+    }
 
     /**
      * Runs the given runnable and sets back the blending state after.
@@ -89,8 +95,12 @@ public class ElementBuffer implements Closeable {
 
         var width = window.getWidth();
         var height = window.getHeight();
-        var screenWidth = window.getGuiScaledWidth();
-        var screenHeight = window.getGuiScaledHeight();
+
+        // Do the screen size calculation manually so we can use doubles which
+        // give necessary precision.
+        var guiScale = window.getGuiScale();
+        var screenWidth = ((float)width) / guiScale;
+        var screenHeight = ((float)height) / guiScale;
 
         if (target == null || target.width != width || target.height != height || this.screenWidth != screenWidth || this.screenHeight != screenHeight) {
             if (configuring.compareAndSet(false, true)) {
@@ -152,8 +162,10 @@ public class ElementBuffer implements Closeable {
     public void draw() {
         if (!isValid()) return;
 
-        if (DEBUG_BUFFER) {
-            CURRENT_BUFFER = target;
+        if (DEBUG_BUFFER != null) {
+            if (klass.equals(DEBUG_BUFFER)) {
+                CURRENT_BUFFER = target;
+            }
             return;
         }
 
