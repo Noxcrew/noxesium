@@ -51,9 +51,9 @@ public abstract class GuiMixin {
         if (gui.getDebugOverlay().showDebugScreen() || !NoxesiumMod.fpsOverlay) return;
 
         var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
-        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight + 2 : 0;
-        guiGraphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight, -1873784752);
-        guiGraphics.drawString(font, text, 5, 5, 0xE0E0E0, false);
+        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight + 5 : 0;
+        guiGraphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
+        guiGraphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V"))

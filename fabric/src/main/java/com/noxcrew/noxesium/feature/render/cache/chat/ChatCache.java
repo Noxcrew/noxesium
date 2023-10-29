@@ -55,9 +55,10 @@ public class ChatCache extends ElementCache<ChatInformation> {
         var lines = new ArrayList<BakedComponent>();
         var fading = new ArrayList<Integer>();
         var focused = chatOverlay.isChatFocused();
+        var messages = new ArrayList<>(chatOverlay.trimmedMessages);
 
         var index = 0;
-        for (var line : chatOverlay.trimmedMessages) {
+        for (var line : messages) {
             index++;
             var baked = new BakedComponent(line.content(), font);
             lines.add(baked);
@@ -71,7 +72,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
         }
 
         return new ChatInformation(
-                chatOverlay.trimmedMessages,
+                messages,
                 chatOverlay.chatScrollbarPos,
                 chatOverlay.newMessageSinceScroll,
                 focused,
