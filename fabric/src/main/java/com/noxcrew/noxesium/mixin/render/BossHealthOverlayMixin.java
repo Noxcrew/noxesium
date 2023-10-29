@@ -17,9 +17,6 @@ import java.util.UUID;
 @Mixin(BossHealthOverlay.class)
 public class BossHealthOverlayMixin {
 
-    @Shadow @Final
-    public Map<UUID, LerpingBossEvent> events;
-
     @Inject(method = "update", at = @At(value = "TAIL"))
     private void update(ClientboundBossEventPacket packet, CallbackInfo ci) {
         BossBarCache.getInstance().clearCache();
@@ -27,8 +24,6 @@ public class BossHealthOverlayMixin {
 
     @Inject(method = "reset", at = @At(value = "TAIL"))
     private void reset(CallbackInfo ci) {
-        // Don't clear if it's already empty!
-        if (this.events.isEmpty()) return;
         BossBarCache.getInstance().clearCache();
     }
 }
