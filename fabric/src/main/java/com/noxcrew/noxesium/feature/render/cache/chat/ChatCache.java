@@ -107,51 +107,55 @@ public class ChatCache extends ElementCache<ChatInformation> {
         var height = graphics.guiHeight();
 
         // Set up the pose
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 1.0f);
-        graphics.pose().translate(4.0f, 0.0f, 0.0f);
+        var pose = graphics.pose();
+        try {
+            pose.pushPose();
+            pose.scale(scale, scale, 1.0f);
+            pose.translate(4.0f, 0.0f, 0.0f);
 
-        var scaledHeight = Mth.floor((float) (height - 40) / scale);
-        var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
-        double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
-        double lineSpacing = minecraft.options.chatLineSpacing().get();
-        var lineHeight = chatOverlay.getLineHeight();
-        var lineSize = (int) Math.round(-8.0 * (lineSpacing + 1.0) + 4.0 * lineSpacing);
+            var scaledHeight = Mth.floor((float) (height - 40) / scale);
+            var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
+            double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
+            double lineSpacing = minecraft.options.chatLineSpacing().get();
+            var lineHeight = chatOverlay.getLineHeight();
+            var lineSize = (int) Math.round(-8.0 * (lineSpacing + 1.0) + 4.0 * lineSpacing);
 
-        // Draw all the lines in the chat
-        for (int currentLine = 0; currentLine + cache.chatScrollbarPos() < messageCount && currentLine < linesPerPage; ++currentLine) {
-            var messageIndex = currentLine + cache.chatScrollbarPos();
-            var line = cache.trimmedMessages().get(messageIndex);
-            if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
+            // Draw all the lines in the chat
+            for (int currentLine = 0; currentLine + cache.chatScrollbarPos() < messageCount && currentLine < linesPerPage; ++currentLine) {
+                var messageIndex = currentLine + cache.chatScrollbarPos();
+                var line = cache.trimmedMessages().get(messageIndex);
+                if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
 
-            var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
-            alpha = (int) (255.0 * timeFactor * opacity);
-            backgroundAlpha = (int) (255.0 * timeFactor * backgroundOpacity);
-            if (alpha <= 3) continue;
+                var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
+                alpha = (int) (255.0 * timeFactor * opacity);
+                backgroundAlpha = (int) (255.0 * timeFactor * backgroundOpacity);
+                if (alpha <= 3) continue;
 
-            // Clear the cache next tick if we need to start a fade.
-            if (timeFactor < 1.0 && !cache.fading().contains(messageIndex)) {
-                clearCache = true;
-            }
-
-            if (cache.lines().get(messageIndex).hasObfuscation || cache.fading().contains(messageIndex)) {
-                lineBottom = scaledHeight - currentLine * lineHeight;
-                var lineDrawTop = lineBottom + lineSize;
-
-                graphics.pose().pushPose();
-                graphics.pose().translate(0.0f, 0.0f, 50.0f);
-                if (cache.fading().contains(messageIndex)) {
-                    graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                // Clear the cache next tick if we need to start a fade.
+                if (timeFactor < 1.0 && !cache.fading().contains(messageIndex)) {
+                    clearCache = true;
                 }
-                graphics.pose().translate(0.0f, 0.0f, 50.0f);
-                GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
-                graphics.pose().popPose();
-            }
-        }
-        graphics.pose().pushPose();
 
-        if (clearCache) {
-            clearCache();
+                if (cache.lines().get(messageIndex).hasObfuscation || cache.fading().contains(messageIndex)) {
+                    lineBottom = scaledHeight - currentLine * lineHeight;
+                    var lineDrawTop = lineBottom + lineSize;
+
+                    pose.pushPose();
+                    pose.translate(0.0f, 0.0f, 50.0f);
+                    if (cache.fading().contains(messageIndex)) {
+                        graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                    }
+                    pose.translate(0.0f, 0.0f, 50.0f);
+                    GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
+                    pose.popPose();
+                }
+            }
+        } finally {
+            pose.popPose();
+
+            if (clearCache) {
+                clearCache();
+            }
         }
     }
 
@@ -177,87 +181,91 @@ public class ChatCache extends ElementCache<ChatInformation> {
         var height = graphics.guiHeight();
 
         // Set up the pose
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 1.0f);
-        graphics.pose().translate(4.0f, 0.0f, 0.0f);
+        var pose = graphics.pose();
+        try {
+            pose.pushPose();
+            pose.scale(scale, scale, 1.0f);
+            pose.translate(4.0f, 0.0f, 0.0f);
 
-        var scaledHeight = Mth.floor((float) (height - 40) / scale);
-        var highlightedMessage = chatOverlay.getMessageEndIndexAt(chatOverlay.screenToChatX(mouseX), chatOverlay.screenToChatY(mouseY));
-        var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
-        double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
-        double lineSpacing = minecraft.options.chatLineSpacing().get();
-        var lineHeight = chatOverlay.getLineHeight();
-        var lineSize = (int) Math.round(-8.0 * (lineSpacing + 1.0) + 4.0 * lineSpacing);
-        var shownLineCount = 0;
+            var scaledHeight = Mth.floor((float) (height - 40) / scale);
+            var highlightedMessage = chatOverlay.getMessageEndIndexAt(chatOverlay.screenToChatX(mouseX), chatOverlay.screenToChatY(mouseY));
+            var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
+            double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
+            double lineSpacing = minecraft.options.chatLineSpacing().get();
+            var lineHeight = chatOverlay.getLineHeight();
+            var lineSize = (int) Math.round(-8.0 * (lineSpacing + 1.0) + 4.0 * lineSpacing);
+            var shownLineCount = 0;
 
-        // Draw all the lines in the chat
-        for (int currentLine = 0; currentLine + cache.chatScrollbarPos() < messageCount && currentLine < linesPerPage; ++currentLine) {
-            var messageIndex = currentLine + cache.chatScrollbarPos();
+            // Draw all the lines in the chat
+            for (int currentLine = 0; currentLine + cache.chatScrollbarPos() < messageCount && currentLine < linesPerPage; ++currentLine) {
+                var messageIndex = currentLine + cache.chatScrollbarPos();
 
-            // Fading lines are drawn directly!
-            if (cache.fading().contains(messageIndex)) continue;
+                // Fading lines are drawn directly!
+                if (cache.fading().contains(messageIndex)) continue;
 
-            var line = cache.trimmedMessages().get(messageIndex);
-            if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
+                var line = cache.trimmedMessages().get(messageIndex);
+                if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
 
-            var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
-            alpha = (int) (255.0 * timeFactor * opacity);
-            backgroundAlpha = (int) (255.0 * timeFactor * backgroundOpacity);
-            ++shownLineCount;
-            if (alpha <= 3) continue;
+                var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
+                alpha = (int) (255.0 * timeFactor * opacity);
+                backgroundAlpha = (int) (255.0 * timeFactor * backgroundOpacity);
+                ++shownLineCount;
+                if (alpha <= 3) continue;
 
-            lineBottom = scaledHeight - currentLine * lineHeight;
-            var lineDrawTop = lineBottom + lineSize;
+                lineBottom = scaledHeight - currentLine * lineHeight;
+                var lineDrawTop = lineBottom + lineSize;
 
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0f, 0.0f, 50.0f);
-            graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                pose.pushPose();
+                pose.translate(0.0f, 0.0f, 50.0f);
+                graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
 
-            var guiMessageTag = line.tag();
-            if (guiMessageTag != null) {
-                var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
-                graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
-                if (messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
-                    var tagIconLeft = cache.lines().get(messageIndex).width + 4;
-                    var tagIconTop = lineDrawTop + minecraft.font.lineHeight;
-                    drawTagIcon(graphics, tagIconLeft, tagIconTop, guiMessageTag.icon());
+                var guiMessageTag = line.tag();
+                if (guiMessageTag != null) {
+                    var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
+                    graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
+                    if (messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
+                        var tagIconLeft = cache.lines().get(messageIndex).width + 4;
+                        var tagIconTop = lineDrawTop + minecraft.font.lineHeight;
+                        drawTagIcon(graphics, tagIconLeft, tagIconTop, guiMessageTag.icon());
+                    }
                 }
+                if (!cache.lines().get(messageIndex).hasObfuscation) {
+                    pose.translate(0.0f, 0.0f, 50.0f);
+                    GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
+                }
+                pose.popPose();
             }
-            if (!cache.lines().get(messageIndex).hasObfuscation) {
-                graphics.pose().translate(0.0f, 0.0f, 50.0f);
-                GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
+
+            // Draw the queue message
+            var queueSize = minecraft.getChatListener().queueSize();
+            if (queueSize > 0L) {
+                var queueColor = (int) (128.0 * opacity);
+                var queueBackgroundColor = (int) (255.0 * backgroundOpacity);
+                pose.pushPose();
+                pose.translate(0.0f, scaledHeight, 50.0f);
+                graphics.fill(-2, 0, scaledWidth + 4, 9, queueBackgroundColor << 24);
+                pose.translate(0.0f, 0.0f, 50.0f);
+                GuiGraphicsExt.drawString(graphics, minecraft.font, cache.queueSize(), 0, 1, 0xFFFFFF + (queueColor << 24));
+                pose.popPose();
             }
-            graphics.pose().popPose();
-        }
 
-        // Draw the queue message
-        var queueSize = minecraft.getChatListener().queueSize();
-        if (queueSize > 0L) {
-            var queueColor = (int) (128.0 * opacity);
-            var queueBackgroundColor = (int) (255.0 * backgroundOpacity);
-            graphics.pose().pushPose();
-            graphics.pose().translate(0.0f, scaledHeight, 50.0f);
-            graphics.fill(-2, 0, scaledWidth + 4, 9, queueBackgroundColor << 24);
-            graphics.pose().translate(0.0f, 0.0f, 50.0f);
-            GuiGraphicsExt.drawString(graphics, minecraft.font, cache.queueSize(), 0, 1, 0xFFFFFF + (queueColor << 24));
-            graphics.pose().popPose();
-        }
+            // Draw the scroll bar
+            if (focused) {
+                var drawnFocusedTop = messageCount * lineHeight;
+                var theoryFocusedTop = shownLineCount * lineHeight;
+                var scrollHeight = cache.chatScrollbarPos() * theoryFocusedTop / messageCount - scaledHeight;
+                alpha = theoryFocusedTop * theoryFocusedTop / drawnFocusedTop;
 
-        // Draw the scroll bar
-        if (focused) {
-            var drawnFocusedTop = messageCount * lineHeight;
-            var theoryFocusedTop = shownLineCount * lineHeight;
-            var scrollHeight = cache.chatScrollbarPos() * theoryFocusedTop / messageCount - scaledHeight;
-            alpha = theoryFocusedTop * theoryFocusedTop / drawnFocusedTop;
-
-            if (drawnFocusedTop != theoryFocusedTop) {
-                backgroundAlpha = scrollHeight > 0 ? 170 : 96;
-                int z = cache.newMessageSinceScroll() ? 0xCC3333 : 0x3333AA;
-                lineBottom = scaledWidth + 4;
-                graphics.fill(lineBottom, -scrollHeight, lineBottom + 2, -scrollHeight - alpha, 100, z + (backgroundAlpha << 24));
-                graphics.fill(lineBottom + 2, -scrollHeight, lineBottom + 1, -scrollHeight - alpha, 100, 0xCCCCCC + (backgroundAlpha << 24));
-            }
+                if (drawnFocusedTop != theoryFocusedTop) {
+                    backgroundAlpha = scrollHeight > 0 ? 170 : 96;
+                    int z = cache.newMessageSinceScroll() ? 0xCC3333 : 0x3333AA;
+                    lineBottom = scaledWidth + 4;
+                    graphics.fill(lineBottom, -scrollHeight, lineBottom + 2, -scrollHeight - alpha, 100, z + (backgroundAlpha << 24));
+                    graphics.fill(lineBottom + 2, -scrollHeight, lineBottom + 1, -scrollHeight - alpha, 100, 0xCCCCCC + (backgroundAlpha << 24));
+                }
+            }   
+        } finally {
+            pose.popPose();
         }
-        graphics.pose().popPose();
     }
 }

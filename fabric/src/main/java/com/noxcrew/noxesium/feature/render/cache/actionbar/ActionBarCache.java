@@ -77,8 +77,9 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
 
         // If at least a transparency of 8 is left
         if (alpha > 8) {
-            graphics.pose().pushPose();
-            graphics.pose().translate((float) (screenWidth / 2), (float) (screenHeight - 68), 0.0F);
+            var pose = graphics.pose();
+            pose.pushPose();
+            pose.translate((float) (screenWidth / 2), (float) (screenHeight - 68), 0.0F);
 
             // If the text is being animated we alter the color (used by jukeboxes)
             var textColor = 16777215;
@@ -97,14 +98,15 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
                 graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
             }
             GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
-            graphics.pose().popPose();
+            pose.popPose();
         }
     }
 
     @Override
     protected void renderBuffered(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
-        graphics.pose().pushPose();
-        graphics.pose().translate((float) (screenWidth / 2), (float) (screenHeight - 68), 0.0F);
+        var pose = graphics.pose();
+        pose.pushPose();
+        pose.translate((float) (screenWidth / 2), (float) (screenHeight - 68), 0.0F);
 
         // If the text is being animated we alter the color (used by jukeboxes)
         var textColor = 16777215;
@@ -118,6 +120,6 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
         }
         GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
-        graphics.pose().popPose();
+        pose.popPose();
     }
 }
