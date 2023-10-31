@@ -27,7 +27,7 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * A debug value to disable performance patches for comparison.
      */
-    public static boolean disablePatches = true;
+    public static boolean disablePatches = false;
 
     /**
      * Whether to show the FPS overlay.
