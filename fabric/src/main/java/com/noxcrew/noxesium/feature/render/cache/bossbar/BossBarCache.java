@@ -121,10 +121,10 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (!bossbar.animating()) {
                 // Draw the main bars
                 var barLeft = screenWidth / 2 - 91;
-                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS, false);
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, bossbar.overlay() == BossEvent.BossBarOverlay.PROGRESS, false);
                 var progress = (int) (bossbar.bar().getProgress() * 183.0F);
                 if (progress > 0) {
-                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS, false);
+                    this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, bossbar.overlay() == BossEvent.BossBarOverlay.PROGRESS, false);
                 }
             }
 
