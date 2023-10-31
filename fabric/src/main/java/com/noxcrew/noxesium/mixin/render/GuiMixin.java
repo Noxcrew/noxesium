@@ -61,7 +61,7 @@ public abstract class GuiMixin {
         if (NoxesiumMod.disablePatches) {
             instance.displayScoreboardSidebar(guiGraphics, objective);
         } else {
-            ScoreboardCache.getInstance().renderDirect(guiGraphics, ScoreboardCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
+            ScoreboardCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class GuiMixin {
         if (NoxesiumMod.disablePatches) {
             instance.render(guiGraphics);
         } else {
-            BossBarCache.getInstance().renderDirect(guiGraphics, BossBarCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
+            BossBarCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class GuiMixin {
         if (NoxesiumMod.disablePatches) {
             instance.render(guiGraphics, width, scoreboard, objective);
         } else {
-            TabListCache.getInstance().renderDirect(guiGraphics, TabListCache.getInstance().getCache(), width, screenHeight, minecraft);
+            TabListCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
         }
     }
 
@@ -91,7 +91,7 @@ public abstract class GuiMixin {
             ChatCache.lastTick = ticks;
             ChatCache.mouseX = mouseX;
             ChatCache.mouseY = mouseY;
-            ChatCache.getInstance().renderDirect(guiGraphics, ChatCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
+            ChatCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
         }
     }
 
@@ -101,7 +101,7 @@ public abstract class GuiMixin {
         if (NoxesiumMod.disablePatches) {
             return overlayMessageString;
         } else {
-            ActionBarCache.getInstance().renderDirect(ActionBarCache.graphics, ActionBarCache.getInstance().getCache(), screenWidth, screenHeight, minecraft);
+            ActionBarCache.getInstance().render(ActionBarCache.graphics, screenWidth, screenHeight, minecraft);
             return null;
         }
     }

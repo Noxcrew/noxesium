@@ -34,6 +34,28 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     }
 
     /**
+     * Renders the UI element.
+     */
+    public void render(GuiGraphics graphics) {
+        var minecraft = Minecraft.getInstance();
+        var screenWidth = graphics.guiWidth();
+        var screenHeight = graphics.guiHeight();
+        render(graphics, screenWidth, screenHeight, minecraft);
+    }
+
+    /**
+     * Renders the UI element.
+     */
+    public void render(GuiGraphics graphics, int screenWidth, int screenHeight, Minecraft minecraft) {
+        try {
+            renderDirect(graphics, getCache(), screenWidth, screenHeight, minecraft);
+        } finally {
+            // Ensure we always properly flush the graphics.
+            graphics.flush();
+        }
+    }
+
+    /**
      * Renders the direct part of the element to the UI directly.
      */
     public void renderDirect(GuiGraphics graphics, T cache, int screenWidth, int screenHeight, Minecraft minecraft) {

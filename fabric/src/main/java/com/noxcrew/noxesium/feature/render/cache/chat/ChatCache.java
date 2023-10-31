@@ -153,7 +153,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
             }
         } finally {
             pose.popPose();
-
             if (clearCache) {
                 clearCache();
             }
@@ -201,9 +200,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
             for (int currentLine = 0; currentLine + cache.chatScrollbarPos() < messageCount && currentLine < linesPerPage; ++currentLine) {
                 var messageIndex = currentLine + cache.chatScrollbarPos();
 
-                // Fading lines are drawn directly!
-                if (cache.fading().contains(messageIndex)) continue;
-
                 var line = cache.trimmedMessages().get(messageIndex);
                 if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
 
@@ -218,7 +214,9 @@ public class ChatCache extends ElementCache<ChatInformation> {
 
                 pose.pushPose();
                 pose.translate(0.0f, 0.0f, 50.0f);
-                graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                if (!cache.fading().contains(messageIndex)) {
+                    graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                }
 
                 var guiMessageTag = line.tag();
                 if (guiMessageTag != null) {
@@ -230,7 +228,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
                         drawTagIcon(graphics, tagIconLeft, tagIconTop, guiMessageTag.icon());
                     }
                 }
-                if (!cache.lines().get(messageIndex).hasObfuscation) {
+                if (!cache.fading().contains(messageIndex) && !cache.lines().get(messageIndex).hasObfuscation) {
                     pose.translate(0.0f, 0.0f, 50.0f);
                     GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
                 }
