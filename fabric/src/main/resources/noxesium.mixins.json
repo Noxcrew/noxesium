@@ -47,6 +47,7 @@
     "render.GuiMixin",
     "render.PlayerInfoMixin",
     "render.PlayerTabOverlayMixin",
+    "render.SkinManagerMixin",
     "sound.ChannelExt",
     "sound.SoundEngineMixin"
   ],

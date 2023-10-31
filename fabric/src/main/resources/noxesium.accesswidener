@@ -68,3 +68,5 @@ accessible field net/minecraft/client/gui/components/ChatComponent chatScrollbar
 accessible method net/minecraft/client/gui/components/ChatComponent getTimeFactor (I)D
 accessible field net/minecraft/client/gui/components/ChatComponent newMessageSinceScroll Z
 accessible method net/minecraft/client/gui/components/ChatComponent getLineHeight ()I
+
+accessible class net/minecraft/client/resources/SkinManager$TextureInfo

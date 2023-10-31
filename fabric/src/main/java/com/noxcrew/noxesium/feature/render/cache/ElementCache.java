@@ -6,6 +6,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.io.Closeable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.minecraft.client.Minecraft.ON_OSX;
 
@@ -15,9 +18,21 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public abstract class ElementCache<T extends ElementInformation> implements Closeable {
 
+    private static final Set<ElementCache<?>> caches = new HashSet<>();
     protected T cache = null;
     private ElementBuffer buffer = null;
     private boolean needsRedraw = true;
+
+    /**
+     * Returns a collection of all created caches.
+     */
+    public static Collection<ElementCache<?>> getAllCaches() {
+        return caches;
+    }
+
+    public ElementCache() {
+        caches.add(this);
+    }
 
     /**
      * Creates a new cached information object. This should contain all information
