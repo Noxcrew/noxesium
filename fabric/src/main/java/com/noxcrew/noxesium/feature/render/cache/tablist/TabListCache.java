@@ -316,72 +316,73 @@ public class TabListCache extends ElementCache<TabListInformation> {
 
     @Override
     protected void renderBuffered(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
-        var scoreboard = minecraft.level.getScoreboard();
-        var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
+        ElementBuffer.withBlend(true, () -> {
+            var scoreboard = minecraft.level.getScoreboard();
+            var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
 
-        // Render all parts that need to be drawn directly! (blinking hearts)
-        var width = cache.width();
-        var left = cache.left();
-        var playersPerColumn = cache.playersPerColumn();
-        var columnWidth = cache.columnWidth();
-        var height = BASE_OFFSET;
+            // Render all parts that need to be drawn directly! (blinking hearts)
+            var width = cache.width();
+            var left = cache.left();
+            var playersPerColumn = cache.playersPerColumn();
+            var columnWidth = cache.columnWidth();
+            var height = BASE_OFFSET;
 
-        if (cache.header() != null) {
-            graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
-            for (var line : cache.header()) {
-                if (!line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
+            if (cache.header() != null) {
+                graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
+                for (var line : cache.header()) {
+                    if (!line.hasObfuscation) {
+                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
+                    }
+                    height += font.lineHeight;
                 }
-                height += font.lineHeight;
-            }
-            ++height;
-        }
-
-        graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + playersPerColumn * 9, Integer.MIN_VALUE);
-
-        var playerCount = cache.players().size();
-        var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
-        for (int index = 0; index < playerCount; ++index) {
-            int scoreX;
-            int scoreWidth;
-
-            var column = index / playersPerColumn;
-            var row = index % playersPerColumn;
-            var x = left + column * columnWidth + column * 5;
-            var y = height + row * 9;
-
-            graphics.fill(x, y, x + columnWidth, y + 8, background);
-            RenderSystem.enableBlend();
-
-            if (index >= cache.players().size()) continue;
-            var playerInfo = cache.players().get(index);
-            var profile = playerInfo.getProfile();
-
-            if (cache.showSkins()) {
-                var player = minecraft.level.getPlayerByUUID(profile.getId());
-                var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
-                PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
-                x += 9;
+                ++height;
             }
 
-            GuiGraphicsExt.drawString(graphics, font, cache.names().get(playerInfo.getProfile().getId()), x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
-            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
-                if (!cache.blinking().contains(playerInfo.getProfile().getId())) {
-                    this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
+            graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + playersPerColumn * 9, Integer.MIN_VALUE);
+
+            var playerCount = cache.players().size();
+            var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
+            for (int index = 0; index < playerCount; ++index) {
+                int scoreX;
+                int scoreWidth;
+
+                var column = index / playersPerColumn;
+                var row = index % playersPerColumn;
+                var x = left + column * columnWidth + column * 5;
+                var y = height + row * 9;
+
+                graphics.fill(x, y, x + columnWidth, y + 8, background);
+
+                if (index >= cache.players().size()) continue;
+                var playerInfo = cache.players().get(index);
+                var profile = playerInfo.getProfile();
+
+                if (cache.showSkins()) {
+                    var player = minecraft.level.getPlayerByUUID(profile.getId());
+                    var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
+                    PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
+                    x += 9;
+                }
+
+                GuiGraphicsExt.drawString(graphics, font, cache.names().get(playerInfo.getProfile().getId()), x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
+                if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
+                    if (!cache.blinking().contains(playerInfo.getProfile().getId())) {
+                        this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
+                    }
+                }
+                this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
+            }
+
+            if (cache.footer() != null) {
+                graphics.fill(screenWidth / 2 - width / 2 - 1, (height += playersPerColumn * 9 + 1) - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
+                for (var line : cache.footer()) {
+                    if (!line.hasObfuscation) {
+                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
+                    }
+                    height += font.lineHeight;
                 }
             }
-            this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
-        }
-
-        if (cache.footer() != null) {
-            graphics.fill(screenWidth / 2 - width / 2 - 1, (height += playersPerColumn * 9 + 1) - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
-            for (var line : cache.footer()) {
-                if (!line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
-                }
-                height += font.lineHeight;
-            }
-        }
+        });
     }
 
     private void renderPingIcon(GuiGraphics graphics, int x, int offset, int y, ResourceLocation latency) {

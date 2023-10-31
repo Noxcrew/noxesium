@@ -26,6 +26,7 @@
     "debug.KeyboardHandlerMixin",
     "entity.BoatMixin",
     "entity.LevelRendererMixin",
+    "entity.LivingEntityMixin",
     "entity.TextDisplayRenderer",
     "info.MinecraftMixin",
     "info.OptionInstanceExt",
@@ -44,9 +45,12 @@
     "render.ChatComponentMixin",
     "render.ChatListenerMixin",
     "render.ClientPacketListenerMixin",
+    "render.GlStateManagerMixin",
     "render.GuiMixin",
     "render.PlayerInfoMixin",
     "render.PlayerTabOverlayMixin",
+    "render.PlayerTeamMixin",
+    "render.ScoreboardMixin",
     "render.SkinManagerMixin",
     "sound.ChannelExt",
     "sound.SoundEngineMixin"
@@ -55,8 +59,5 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "entity.LivingEntityMixin",
-    "render.PlayerTeamMixin",
-    "render.ScoreboardMixin"
   ]
 }

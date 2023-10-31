@@ -115,6 +115,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
             pose.translate(4.0f, 0.0f, 0.0f);
 
             var scaledHeight = Mth.floor((float) (height - 40) / scale);
+            var highlightedMessage = chatOverlay.getMessageEndIndexAt(chatOverlay.screenToChatX(mouseX), chatOverlay.screenToChatY(mouseY));
             var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
             double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
             double lineSpacing = minecraft.options.chatLineSpacing().get();
@@ -143,8 +144,18 @@ public class ChatCache extends ElementCache<ChatInformation> {
 
                     pose.pushPose();
                     pose.translate(0.0f, 0.0f, 50.0f);
+                    var guiMessageTag = line.tag();
                     if (cache.fading().contains(messageIndex)) {
                         graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                        if (guiMessageTag != null) {
+                            var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
+                            graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
+                        }
+                    }
+                    if (guiMessageTag != null && messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
+                        var tagIconLeft = cache.lines().get(messageIndex).width + 4;
+                        var tagIconTop = lineDrawTop + minecraft.font.lineHeight;
+                        drawTagIcon(graphics, tagIconLeft, tagIconTop, guiMessageTag.icon());
                     }
                     pose.translate(0.0f, 0.0f, 50.0f);
                     GuiGraphicsExt.drawString(graphics, minecraft.font, cache.lines().get(messageIndex), 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
@@ -188,7 +199,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
             pose.translate(4.0f, 0.0f, 0.0f);
 
             var scaledHeight = Mth.floor((float) (height - 40) / scale);
-            var highlightedMessage = chatOverlay.getMessageEndIndexAt(chatOverlay.screenToChatX(mouseX), chatOverlay.screenToChatY(mouseY));
             var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
             double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
             double lineSpacing = minecraft.options.chatLineSpacing().get();
@@ -216,16 +226,10 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 pose.translate(0.0f, 0.0f, 50.0f);
                 if (!cache.fading().contains(messageIndex)) {
                     graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
-                }
-
-                var guiMessageTag = line.tag();
-                if (guiMessageTag != null) {
-                    var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
-                    graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
-                    if (messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
-                        var tagIconLeft = cache.lines().get(messageIndex).width + 4;
-                        var tagIconTop = lineDrawTop + minecraft.font.lineHeight;
-                        drawTagIcon(graphics, tagIconLeft, tagIconTop, guiMessageTag.icon());
+                    var guiMessageTag = line.tag();
+                    if (guiMessageTag != null) {
+                        var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
+                        graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
                     }
                 }
                 if (!cache.fading().contains(messageIndex) && !cache.lines().get(messageIndex).hasObfuscation) {

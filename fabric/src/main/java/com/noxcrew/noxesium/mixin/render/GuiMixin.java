@@ -50,10 +50,17 @@ public abstract class GuiMixin {
         // Don't render when the debug screen is shown as it would overlap
         if (gui.getDebugOverlay().showDebugScreen() || !NoxesiumMod.fpsOverlay) return;
 
+        // Draw the current fps
         var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
-        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight + 5 : 0;
+        var lineOffset = font.lineHeight + 5;
+        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
         guiGraphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
         guiGraphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
+
+        // Draw the state of noxesium
+        var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.disablePatches ? "off" : "on"));
+        guiGraphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
+        guiGraphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
     }
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V"))

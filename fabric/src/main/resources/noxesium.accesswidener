@@ -70,3 +70,5 @@ accessible field net/minecraft/client/gui/components/ChatComponent newMessageSin
 accessible method net/minecraft/client/gui/components/ChatComponent getLineHeight ()I
 
 accessible class net/minecraft/client/resources/SkinManager$TextureInfo
+accessible field com/mojang/blaze3d/platform/GlStateManager DEPTH Lcom/mojang/blaze3d/platform/GlStateManager$DepthState;
+accessible field com/mojang/blaze3d/platform/GlStateManager$DepthState mode Lcom/mojang/blaze3d/platform/GlStateManager$BooleanState;

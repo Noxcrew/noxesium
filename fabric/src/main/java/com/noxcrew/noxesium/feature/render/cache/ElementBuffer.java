@@ -13,6 +13,8 @@ import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.minecraft.client.Minecraft.ON_OSX;
@@ -36,6 +38,10 @@ public class ElementBuffer implements Closeable {
     public static final Class<?> DEBUG_BUFFER = null;
     public static RenderTarget CURRENT_BUFFER = null;
 
+    public static Boolean blendOverride = null;
+
+    private static final Set<String> used = new HashSet<>();
+
     private RenderTarget target;
     private VertexBuffer buffer;
     private double screenWidth;
@@ -46,6 +52,20 @@ public class ElementBuffer implements Closeable {
 
     public ElementBuffer(Class<?> klass) {
         this.klass = klass;
+    }
+
+    /**
+     * Prints the current render state at [location].
+     */
+    public static void printRenderState(String location) {
+        if (!used.add(location)) return;
+        var currentBlend = GlStateManager.BLEND.mode.enabled;
+        var currentDepth = GlStateManager.DEPTH.mode.enabled;
+        var srcRgb = GlStateManager.BLEND.srcRgb;
+        var dstRgb = GlStateManager.BLEND.dstRgb;
+        var srcAlpha = GlStateManager.BLEND.srcAlpha;
+        var dstAlpha = GlStateManager.BLEND.dstAlpha;
+        System.out.println("[" + location + "] BLEND: " + currentBlend + ", DEPTH: " + currentDepth + ", srcRgb: " + srcRgb + ", dstRgb: " + dstRgb + ", srcAlpha: " + srcAlpha + ", dstAlpha: " + dstAlpha);
     }
 
     /**
@@ -67,7 +87,9 @@ public class ElementBuffer implements Closeable {
                 RenderSystem.disableBlend();
             }
         }
+        blendOverride = state;
         runnable.run();
+        blendOverride = null;
         if (currentBlend != state) {
             if (state) {
                 RenderSystem.disableBlend();
