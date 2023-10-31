@@ -176,10 +176,10 @@ public class GuiGraphicsExt {
                 }
 
                 if (character.strikethrough) {
-                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.left + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
+                    render(baseBakedGlyph, x + character.left + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.right + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
                 }
                 if (character.underline) {
-                    render(baseBakedGlyph, x + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.left + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
+                    render(baseBakedGlyph, x + character.left + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.right + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, packedLightCoords);
                 }
 
                 // Store the furthest right we have drawn!
