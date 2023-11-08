@@ -164,6 +164,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
      */
     @Override
     public void renderDirect(GuiGraphics graphics, ScoreboardInformation cache, int screenWidth, int screenHeight, Minecraft minecraft) {
+        if (cache.lines().isEmpty()) return;
         super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
         if (!cache.hasObfuscation()) return;
 
@@ -193,6 +194,8 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
     @Override
     protected void renderBuffered(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
+        if (cache.lines().isEmpty()) return;
+
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
