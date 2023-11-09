@@ -85,4 +85,14 @@ public class ScoreboardMixin {
             TabListCache.getInstance().clearCache();
         }
     }
+
+    @Inject(method = "onObjectiveChanged", at = @At(value = "TAIL"))
+    private void onObjectiveChanged(Objective objective, CallbackInfo ci) {
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
+            ScoreboardCache.getInstance().clearCache();
+        }
+        if (TabListCache.getInstance().isObjectiveRelevant(objective)) {
+            TabListCache.getInstance().clearCache();
+        }
+    }
 }
