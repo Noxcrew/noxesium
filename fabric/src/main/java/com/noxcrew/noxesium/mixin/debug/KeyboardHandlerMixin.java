@@ -45,7 +45,7 @@ public abstract class KeyboardHandlerMixin {
     public void redirect(ChatComponent instance, Component component) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
-                instance.addMessage(Component.translatable("debug.disable_patches.help"));
+                instance.addMessage(Component.translatable("debug.experimental_patches.help"));
                 if (!NoxesiumMod.isUsingClothConfig) instance.addMessage(Component.translatable("debug.fps_overlay.help"));
                 if (NoxesiumMod.DEVELOPMENT_VERSION) instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
@@ -72,12 +72,12 @@ public abstract class KeyboardHandlerMixin {
         } else if (keyCode == InputConstants.KEY_W) {
             cir.setReturnValue(true);
 
-            if (Objects.equals(NoxesiumMod.enableExperimentalPatches, true)) {
-                NoxesiumMod.enableExperimentalPatches = false;
-                this.debugFeedbackTranslated("debug.disable_patches.disabled");
-            } else {
+            if (Objects.equals(NoxesiumMod.enableExperimentalPatches, false)) {
                 NoxesiumMod.enableExperimentalPatches = true;
-                this.debugFeedbackTranslated("debug.disable_patches.enabled");
+                this.debugFeedbackTranslated("debug.experimental_patches.enabled");
+            } else {
+                NoxesiumMod.enableExperimentalPatches = false;
+                this.debugFeedbackTranslated("debug.experimental_patches.disabled");
             }
         } else if (keyCode == InputConstants.KEY_Z && NoxesiumMod.DEVELOPMENT_VERSION) {
             cir.setReturnValue(true);

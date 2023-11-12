@@ -59,7 +59,7 @@ public abstract class GuiMixin {
 
         if (NoxesiumMod.enableExperimentalPatches != null) {
             // Draw the state of experimental patches
-            var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.enableExperimentalPatches ? "off" : "on"));
+            var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.enableExperimentalPatches ? "on" : "off"));
             guiGraphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
             guiGraphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
         }
@@ -67,7 +67,7 @@ public abstract class GuiMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V"))
     private void injected(Gui instance, GuiGraphics guiGraphics, Objective objective) {
-        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches()) {
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
             instance.displayScoreboardSidebar(guiGraphics, objective);
         } else {
             ScoreboardCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
@@ -76,7 +76,7 @@ public abstract class GuiMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
     private void injected(BossHealthOverlay instance, GuiGraphics guiGraphics) {
-        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches()) {
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
             instance.render(guiGraphics);
         } else {
             BossBarCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
@@ -85,7 +85,7 @@ public abstract class GuiMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V"))
     private void injected(PlayerTabOverlay instance, GuiGraphics guiGraphics, int width, Scoreboard scoreboard, Objective objective) {
-        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches()) {
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
             instance.render(guiGraphics, width, scoreboard, objective);
         } else {
             TabListCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
@@ -94,7 +94,7 @@ public abstract class GuiMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;III)V"))
     private void injected(ChatComponent instance, GuiGraphics guiGraphics, int ticks, int mouseX, int mouseY) {
-        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches()) {
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
             instance.render(guiGraphics, ticks, mouseX, mouseY);
         } else {
             ChatCache.lastTick = ticks;
@@ -107,7 +107,7 @@ public abstract class GuiMixin {
     @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/Gui;overlayMessageString:Lnet/minecraft/network/chat/Component;"))
     private Component injected(Gui instance) {
         // Prevent the normal action bar from rendering!
-        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches()) {
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
             return overlayMessageString;
         } else {
             ActionBarCache.getInstance().render(ActionBarCache.graphics, screenWidth, screenHeight, minecraft);

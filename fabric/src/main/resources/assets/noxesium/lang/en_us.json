@@ -6,9 +6,9 @@
   "debug.dump_ui.error": "An error occurred while writing UI debug commands",
   "debug.dump_ui.help": "F3 + Z = Dump current UI layout",
 
-  "debug.disable_patches.disabled": "Noxesium UI performance patches are now off",
-  "debug.disable_patches.enabled": "Noxesium UI performance patches are now on",
-  "debug.disable_patches.help": "F3 + W = Toggle Noxesium UI performance patches",
+  "debug.experimental_patches.disabled": "Noxesium UI performance patches are now off",
+  "debug.experimental_patches.enabled": "Noxesium UI performance patches are now on",
+  "debug.experimental_patches.help": "F3 + W = Toggle Noxesium UI performance patches",
 
   "debug.fps_overlay.disabled": "FPS counter is now off",
   "debug.fps_overlay.enabled": "FPS counter is now on (turn off with F3 + Y)",

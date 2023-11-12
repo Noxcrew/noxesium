@@ -96,14 +96,14 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * Whether the experimental performance patches should be used.
      */
-    public static boolean shouldUseExperimentalPerformancePatches() {
+    public static boolean shouldDisableExperimentalPerformancePatches() {
         if (enableExperimentalPatches != null) {
-            return enableExperimentalPatches;
+            return !enableExperimentalPatches;
         }
         if (isUsingClothConfig) {
-            return ClothConfigIntegration.getExperimentalPerformancePatches();
+            return !ClothConfigIntegration.getExperimentalPerformancePatches();
         }
-        return false;
+        return true;
     }
 
     /**
