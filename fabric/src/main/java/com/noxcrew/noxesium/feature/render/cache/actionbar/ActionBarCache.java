@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -15,9 +16,6 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
 
     private static ActionBarCache instance;
 
-    public static float lastPartialTicks = 0f;
-    public static GuiGraphics graphics = null;
-
     /**
      * Returns the current instance of this action bar cache.
      */
@@ -28,6 +26,20 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         return instance;
     }
 
+    /**
+     * Returns the current alpha of the text.
+     */
+    protected int getAlpha(Gui gui, float partialTicks) {
+        var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
+        var alpha = (int) (remainingTicks * 255.0F / 20.0F);
+        return Mth.clamp(alpha, 0, 255);
+    }
+
+    @Override
+    protected boolean isEmpty(ActionBarInformation cache) {
+        return cache == ActionBarInformation.EMPTY;
+    }
+
     @Override
     protected ActionBarInformation createCache(Minecraft minecraft, Font font) {
         var gui = minecraft.gui;
@@ -35,31 +47,34 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             return ActionBarInformation.EMPTY;
         }
         var baked = new BakedComponent(gui.overlayMessageString, font);
-        return new ActionBarInformation(baked);
+        return new ActionBarInformation(baked, getAlpha(gui, 0f) != 255 || gui.animateOverlayMessageColor);
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
+    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var gui = minecraft.gui;
-        if (gui.overlayMessageString == null || gui.overlayMessageTime <= 0) return;
-        var remainingTicks = (float) gui.overlayMessageTime - lastPartialTicks;
+        var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
 
         // Determine the transparency of the text, if above 1s is left
         // it's fixed at maximum.
-        var fixed = false;
-        var alpha = (int) (remainingTicks * 255.0F / 20.0F);
-        if (alpha > 255) {
-            alpha = 255;
-            fixed = true;
-        }
+        var alpha = getAlpha(gui, partialTicks);
+        var fading = cache.fading();
+        var shouldBeFading = alpha != 255;
 
         // Animated text can never be fixed!
-        if (gui.animateOverlayMessageColor || cache.component().needsCustomReRendering) {
-            fixed = false;
+        if (gui.animateOverlayMessageColor) {
+            shouldBeFading = false;
+        }
+
+        // Check if the fading has started and the buffer doesn't match,
+        // we can only clear the cache for next tick so we still use
+        // the cached fading state for the logic.
+        if (!buffered && shouldBeFading != fading) {
+            clearCache();
         }
 
         // Only render in this layer if the text is fixed or not
-        if (fixed != buffered) return;
+        if (fading == buffered) return;
 
         // If at least a transparency of 8 is left
         if (alpha > 8) {
@@ -76,12 +91,12 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             var trueAlpha = alpha << 24 & -16777216;
             var width = cache.component().width;
             var background = minecraft.options.getBackgroundColor(0.0F);
-            var color = 16777215 | trueAlpha;
+            var backgroundColor = FastColor.ARGB32.multiply(background, 16777215 | trueAlpha);
             var offset = -4;
 
             if (background != 0) {
-                int j = -width / 2;
-                graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
+                var left = -width / 2;
+                graphics.fill(left - 2, offset - 2, left + width + 2, offset + 9 + 2, backgroundColor);
             }
             cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
             pose.popPose();

@@ -32,6 +32,11 @@ public class ChatCache extends ElementCache<ChatInformation> {
         return instance;
     }
 
+    @Override
+    protected boolean isEmpty(ChatInformation cache) {
+        return Minecraft.getInstance().gui.getChat().isChatHidden() || cache.trimmedMessages().isEmpty();
+    }
+
     /**
      * Creates newly cached chat information.
      * <p>
@@ -79,14 +84,8 @@ public class ChatCache extends ElementCache<ChatInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
-        // Never render anything if hidden
+    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var chatOverlay = minecraft.gui.getChat();
-        if (chatOverlay.isChatHidden()) return;
-
-        // No messages means no rendering
-        if (cache.trimmedMessages().isEmpty()) return;
-
         var clearCache = false;
         var messageCount = cache.trimmedMessages().size();
         int lineBottom;

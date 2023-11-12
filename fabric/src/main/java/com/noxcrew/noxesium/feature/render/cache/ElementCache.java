@@ -49,27 +49,24 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     }
 
     /**
-     * Renders the UI element.
+     * Returns whether cache is empty and nothing should be drawn.
      */
-    public void render(GuiGraphics graphics) {
-        var minecraft = Minecraft.getInstance();
-        var screenWidth = graphics.guiWidth();
-        var screenHeight = graphics.guiHeight();
-        render(graphics, screenWidth, screenHeight, minecraft);
-    }
+    protected abstract boolean isEmpty(T cache);
 
     /**
      * Renders the UI element.
      */
-    public void render(GuiGraphics graphics, int screenWidth, int screenHeight, Minecraft minecraft) {
+    public void render(GuiGraphics graphics, int screenWidth, int screenHeight, float partialTicks, Minecraft minecraft) {
+        var cache = getCache();
+        if (isEmpty(cache)) return;
+
         try {
             // Draw the buffered contents of the element to the screen as a base!
-            var cache = getCache();
             var screenBuffer = getBuffer(cache);
             screenBuffer.draw();
 
             // Draw the direct parts on top each tick
-            render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, false);
+            render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, partialTicks, false);
         } finally {
             // Ensure we always properly flush the graphics after drawing a component!
             graphics.flush();
@@ -79,7 +76,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the UI element using the same logic whether we are in the buffer or not.
      */
-    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered);
+    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered);
 
     /**
      * Returns the current cached scoreboard contents.
@@ -115,7 +112,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 target.setClearColor(0f, 0f, 0f, 0f);
                 target.clear(ON_OSX);
                 target.bindWrite(false);
-                render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, true);
+                render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, true);
                 graphics.flush();
             } finally {
                 needsRedraw = false;

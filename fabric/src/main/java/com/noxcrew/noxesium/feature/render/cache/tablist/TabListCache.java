@@ -99,6 +99,11 @@ public class TabListCache extends ElementCache<TabListInformation> {
         }
     }
 
+    @Override
+    protected boolean isEmpty(TabListInformation cache) {
+        return false;
+    }
+
     /**
      * Creates newly cached action bar content information.
      * <p>
@@ -216,7 +221,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
+    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
 

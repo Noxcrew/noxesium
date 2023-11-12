@@ -1,28 +1,36 @@
 package com.noxcrew.noxesium.mixin.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
+import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.BossHealthOverlay;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.gui.components.PlayerTabOverlay;
+import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.client.gui.components.SubtitleOverlay;
+import net.minecraft.client.gui.components.spectator.SpectatorGui;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Scoreboard;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.PlayerRideableJumping;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
@@ -39,91 +47,289 @@ public abstract class GuiMixin {
     private Minecraft minecraft;
 
     @Shadow
-    @Nullable
-    private Component overlayMessageString;
+    private int tickCount;
 
-    @Inject(method = "renderSavingIndicator", at = @At("RETURN"))
-    private void injected(GuiGraphics guiGraphics, CallbackInfo ci) {
-        var gui = minecraft.gui;
-        var font = minecraft.font;
+    @Shadow
+    public abstract Font getFont();
 
-        // Don't render when the debug screen is shown as it would overlap
-        if (gui.getDebugOverlay().showDebugScreen() || !NoxesiumMod.shouldShowFpsOverlay()) return;
+    @Shadow
+    protected abstract void renderVignette(GuiGraphics guiGraphics, Entity entity);
 
-        // Draw the current fps
-        var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
-        var lineOffset = font.lineHeight + 5;
-        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
-        guiGraphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
-        guiGraphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
+    @Shadow
+    private float scopeScale;
 
-        if (NoxesiumMod.enableExperimentalPatches != null) {
-            // Draw the state of experimental patches
-            var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.enableExperimentalPatches ? "on" : "off"));
-            guiGraphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
-            guiGraphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
-        }
-    }
+    @Shadow
+    @Final
+    private static ResourceLocation PUMPKIN_BLUR_LOCATION;
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;displayScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V"))
-    private void injected(Gui instance, GuiGraphics guiGraphics, Objective objective) {
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
-            instance.displayScoreboardSidebar(guiGraphics, objective);
+    @Shadow
+    protected abstract void renderTextureOverlay(GuiGraphics guiGraphics, ResourceLocation resourceLocation, float f);
+
+    @Shadow
+    protected abstract void renderSpyglassOverlay(GuiGraphics guiGraphics, float f);
+
+    @Shadow
+    @Final
+    private static ResourceLocation POWDER_SNOW_OUTLINE_LOCATION;
+
+    @Shadow
+    protected abstract void renderPortalOverlay(GuiGraphics guiGraphics, float f);
+
+    @Shadow
+    @Final
+    private SpectatorGui spectatorGui;
+
+    @Shadow
+    protected abstract void renderHotbar(float f, GuiGraphics guiGraphics);
+
+    @Shadow
+    protected abstract void renderCrosshair(GuiGraphics guiGraphics);
+
+    @Shadow
+    protected abstract void renderPlayerHealth(GuiGraphics guiGraphics);
+
+    @Shadow
+    protected abstract void renderVehicleHealth(GuiGraphics guiGraphics);
+
+    @Shadow
+    public abstract void renderJumpMeter(PlayerRideableJumping playerRideableJumping, GuiGraphics guiGraphics, int i);
+
+    @Shadow
+    public abstract void renderExperienceBar(GuiGraphics guiGraphics, int i);
+
+    @Shadow
+    public abstract void renderSelectedItemName(GuiGraphics guiGraphics);
+
+    @Shadow
+    public abstract void renderDemoOverlay(GuiGraphics guiGraphics);
+
+    @Shadow
+    protected abstract void renderEffects(GuiGraphics guiGraphics);
+
+    @Shadow
+    @Final
+    private DebugScreenOverlay debugOverlay;
+
+    @Shadow
+    protected abstract void renderSavingIndicator(GuiGraphics guiGraphics);
+
+    @Shadow
+    @Final
+    private SubtitleOverlay subtitleOverlay;
+
+    /**
+     * @author Aeltumn
+     * @reason Redo all UI rendering to be batched
+     */
+    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    public void render(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+        // Override the super-method
+        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) return;
+        ci.cancel();
+        
+        /*
+            General notes:
+            - Profiler calls have been removed as optimizations make individual
+              elements not worth tracking on the profiler.
+            - Entire method is replaced as any optimizations from other mods just
+              get in the way with how thorough Noxesium's optimizations are.
+         */
+
+        var window = this.minecraft.getWindow();
+        var font = getFont();
+        var showGui = !this.minecraft.options.hideGui;
+
+        this.screenWidth = graphics.guiWidth();
+        this.screenHeight = graphics.guiHeight();
+
+        // Enable blending, blending is never disabled outside this method!
+        RenderSystem.enableBlend();
+
+        // (TODO Optimize) Render the red border effect
+        if (Minecraft.useFancyGraphics()) {
+            this.renderVignette(graphics, this.minecraft.getCameraEntity());
         } else {
-            ScoreboardCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
+            // TODO Determine why this is here
+            RenderSystem.enableDepthTest();
         }
-    }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
-    private void injected(BossHealthOverlay instance, GuiGraphics guiGraphics) {
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
-            instance.render(guiGraphics);
-        } else {
-            BossBarCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
+        // (TODO Optimize) Render spyglass / pumpkin overlays
+        var deltaFrameTime = this.minecraft.getDeltaFrameTime();
+        this.scopeScale = Mth.lerp(0.5F * deltaFrameTime, this.scopeScale, 1.125F);
+        if (this.minecraft.options.getCameraType().isFirstPerson()) {
+            if (this.minecraft.player.isScoping()) {
+                this.renderSpyglassOverlay(graphics, this.scopeScale);
+            } else {
+                this.scopeScale = 0.5F;
+                ItemStack itemstack = this.minecraft.player.getInventory().getArmor(3);
+                if (itemstack.is(Blocks.CARVED_PUMPKIN.asItem())) {
+                    this.renderTextureOverlay(graphics, PUMPKIN_BLUR_LOCATION, 1.0F);
+                }
+            }
         }
-    }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V"))
-    private void injected(PlayerTabOverlay instance, GuiGraphics guiGraphics, int width, Scoreboard scoreboard, Objective objective) {
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
-            instance.render(guiGraphics, width, scoreboard, objective);
-        } else {
-            TabListCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
+        // (TODO Optimize) Render frozen overlay
+        if (this.minecraft.player.getTicksFrozen() > 0) {
+            this.renderTextureOverlay(graphics, POWDER_SNOW_OUTLINE_LOCATION, this.minecraft.player.getPercentFrozen());
         }
-    }
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;III)V"))
-    private void injected(ChatComponent instance, GuiGraphics guiGraphics, int ticks, int mouseX, int mouseY) {
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
-            instance.render(guiGraphics, ticks, mouseX, mouseY);
-        } else {
-            ChatCache.lastTick = ticks;
-            ChatCache.mouseX = mouseX;
-            ChatCache.mouseY = mouseY;
-            ChatCache.getInstance().render(guiGraphics, screenWidth, screenHeight, minecraft);
+        // (TODO Optimize) Render portal overlay
+        var portalTicks = Mth.lerp(partialTicks, this.minecraft.player.oSpinningEffectIntensity, this.minecraft.player.spinningEffectIntensity);
+        if (portalTicks > 0.0F && !this.minecraft.player.hasEffect(MobEffects.CONFUSION)) {
+            this.renderPortalOverlay(graphics, portalTicks);
         }
-    }
 
-    @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/Gui;overlayMessageString:Lnet/minecraft/network/chat/Component;"))
-    private Component injected(Gui instance) {
-        // Prevent the normal action bar from rendering!
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) {
-            return overlayMessageString;
-        } else {
-            ActionBarCache.getInstance().render(ActionBarCache.graphics, screenWidth, screenHeight, minecraft);
-            return null;
+        // (TODO Optimize) Render the player's hotbar
+        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) {
+            this.spectatorGui.renderHotbar(graphics);
+        } else if (!this.minecraft.options.hideGui) {
+            this.renderHotbar(partialTicks, graphics);
         }
-    }
 
-    @Inject(method = "render", at = @At(value = "HEAD"))
-    private void render(GuiGraphics guiGraphics, float partialTicks, CallbackInfo ci) {
-        // Store the current partial ticks and graphics at the start of the method as we need it later in the redirect
-        ActionBarCache.lastPartialTicks = partialTicks;
-        ActionBarCache.graphics = guiGraphics;
+        if (showGui) {
+            // Vanilla runs enableBlend() again here but it's already enabled so we ignore that.
+            // (TODO Optimize) Render the crosshair and attack indicator
+            this.renderCrosshair(graphics);
+
+            // Render the boss bar
+            BossBarCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // (TODO Optimize) Render player's hearts
+            if (this.minecraft.gameMode.canHurtPlayer()) {
+                this.renderPlayerHealth(graphics);
+            }
+
+            // (TODO Optimize) Render vehicle hearts
+            this.renderVehicleHealth(graphics);
+        }
+
+        // Disable blending so we can draw most non-blending elements.
+        // This fixes a vanilla bug with the sleep overlay where pressing F1 changes
+        // the brightness of the overlay because vanilla puts this disableBlend in
+        // the showGui block.
+        RenderSystem.disableBlend();
+
+        if (showGui) {
+            // (TODO Optimize) Render the jump meter or experience bar
+            var center = this.screenWidth / 2 - 91;
+            var playerrideablejumping = this.minecraft.player.jumpableVehicle();
+            if (playerrideablejumping != null) {
+                this.renderJumpMeter(playerrideablejumping, graphics, center);
+            } else if (this.minecraft.gameMode.hasExperience()) {
+                this.renderExperienceBar(graphics, center);
+            }
+
+            // (TODO Optimize) Render the selected item name or spectator menu tooltip
+            if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
+                this.renderSelectedItemName(graphics);
+            } else if (this.minecraft.player.isSpectator()) {
+                this.spectatorGui.renderTooltip(graphics);
+            }
+        }
+
+        // (TODO Optimize) Render the sleeping overlay
+        if (this.minecraft.player.getSleepTimer() > 0) {
+            this.minecraft.getProfiler().push("sleep");
+            var sleepTimer = (float) this.minecraft.player.getSleepTimer();
+            var sleepFactor = sleepTimer / 100.0F;
+            if (sleepFactor > 1.0F) {
+                sleepFactor = 1.0F - (sleepTimer - 100.0F) / 10.0F;
+            }
+
+            var color = (int) (220.0F * sleepFactor) << 24 | 1052704;
+            graphics.fill(RenderType.guiOverlay(), 0, 0, this.screenWidth, this.screenHeight, color);
+            this.minecraft.getProfiler().pop();
+        }
+
+        // Render the demo overlay (not optimized since it should never be encountered for Noxesium)
+        if (this.minecraft.isDemo()) {
+            this.renderDemoOverlay(graphics);
+        }
+
+        // (TODO Optimize) Render the potion effects onto the UI as well as the debug screen
+        // renderEffects will turn on blend but we do so here for clarity
+        RenderSystem.enableBlend();
+        this.renderEffects(graphics);
+
+        if (showGui) {
+            // (TODO Optimize) Renders the debug screen, vanilla has this outside showGui but
+            // showDebugScreen also checks for showGui.
+            if (this.debugOverlay.showDebugScreen()) {
+                this.debugOverlay.render(graphics);
+            }
+
+            // Render the action bar overlay
+            ActionBarCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // Render the title overlay
+            TitleCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // (TODO Optimize) Render the audio subtitles
+            this.subtitleOverlay.render(graphics);
+
+            // Render the scoreboard
+            ScoreboardCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // Render the chat overlay
+            ChatCache.mouseX = Mth.floor(this.minecraft.mouseHandler.xpos() * (double) window.getGuiScaledWidth() / (double) window.getScreenWidth());
+            ChatCache.mouseY = Mth.floor(this.minecraft.mouseHandler.ypos() * (double) window.getGuiScaledHeight() / (double) window.getScreenHeight());
+            ChatCache.lastTick = this.tickCount;
+            ChatCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // Render the tab list
+            if ((this.minecraft.options.keyPlayerList.isDown() && !this.minecraft.isLocalServer()) || this.minecraft.player.connection.getListedOnlinePlayers().size() > 1) {
+                TabListCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+            }
+
+            // (TODO Optimize) Render the saving indicator
+            this.renderSavingIndicator(graphics);
+
+            // (TODO Optimize) Draw the fps counter and overlay
+            if (NoxesiumMod.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
+                // Draw the current fps
+                var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
+                var lineOffset = font.lineHeight + 5;
+                var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
+                graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
+                graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
+
+                if (NoxesiumMod.enableExperimentalPatches != null) {
+                    // Draw the state of experimental patches
+                    var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.enableExperimentalPatches ? "on" : "off"));
+                    graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
+                    graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
+                }
+            }
+        }
     }
 
     @Inject(method = "setOverlayMessage", at = @At(value = "TAIL"))
     private void setOverlayMessage(Component component, boolean bl, CallbackInfo ci) {
         ActionBarCache.getInstance().clearCache();
+    }
+
+    @Inject(method = "resetTitleTimes", at = @At(value = "TAIL"))
+    private void resetTitleTimes(CallbackInfo ci) {
+        TitleCache.getInstance().clearCache();
+    }
+
+    @Inject(method = "setTimes", at = @At(value = "TAIL"))
+    private void setTimes(CallbackInfo ci) {
+        TitleCache.getInstance().clearCache();
+    }
+
+    @Inject(method = "setSubtitle", at = @At(value = "TAIL"))
+    private void setSubtitle(CallbackInfo ci) {
+        TitleCache.getInstance().clearCache();
+    }
+
+    @Inject(method = "setTitle", at = @At(value = "TAIL"))
+    private void setTitle(CallbackInfo ci) {
+        TitleCache.getInstance().clearCache();
+    }
+
+    @Inject(method = "clear", at = @At(value = "TAIL"))
+    private void clear(CallbackInfo ci) {
+        TitleCache.getInstance().clearCache();
     }
 }

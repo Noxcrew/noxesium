@@ -37,6 +37,11 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
     }
 
     @Override
+    protected boolean isEmpty(BossBarInformation cache) {
+        return cache == BossBarInformation.EMPTY;
+    }
+
+    @Override
     protected BossBarInformation createCache(Minecraft minecraft, Font font) {
         var overlay = minecraft.gui.getBossOverlay();
         if (overlay.events.isEmpty()) {
@@ -60,9 +65,7 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, BossBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
-        if (cache.bars().isEmpty()) return;
-
+    protected void render(GuiGraphics graphics, BossBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var clearCache = false;
         var currentHeight = HEIGHT;
         for (var bossbar : cache.bars()) {

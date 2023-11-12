@@ -72,3 +72,10 @@ accessible method net/minecraft/client/gui/components/ChatComponent getLineHeigh
 accessible class net/minecraft/client/resources/SkinManager$TextureInfo
 accessible field com/mojang/blaze3d/platform/GlStateManager DEPTH Lcom/mojang/blaze3d/platform/GlStateManager$DepthState;
 accessible field com/mojang/blaze3d/platform/GlStateManager$DepthState mode Lcom/mojang/blaze3d/platform/GlStateManager$BooleanState;
+
+accessible field net/minecraft/client/gui/Gui title Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/Gui subtitle Lnet/minecraft/network/chat/Component;
+accessible field net/minecraft/client/gui/Gui titleTime I
+accessible field net/minecraft/client/gui/Gui titleFadeInTime I
+accessible field net/minecraft/client/gui/Gui titleStayTime I
+accessible field net/minecraft/client/gui/Gui titleFadeOutTime I

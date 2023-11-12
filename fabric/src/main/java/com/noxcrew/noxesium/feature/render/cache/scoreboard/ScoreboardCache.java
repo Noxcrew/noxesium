@@ -60,6 +60,11 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         return cache.objective() == objective;
     }
 
+    @Override
+    protected boolean isEmpty(ScoreboardInformation cache) {
+        return cache == ScoreboardInformation.EMPTY;
+    }
+
     /**
      * Creates newly cached scoreboard content information.
      * <p>
@@ -159,9 +164,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
-        if (cache.lines().isEmpty()) return;
-
+    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
