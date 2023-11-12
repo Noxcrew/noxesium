@@ -172,7 +172,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var headerTop = bottom - cache.lines().size() * 9;
         if (buffered) {
             var background = minecraft.options.getBackgroundColor(0.3f);
-            graphics.fill(left - 2, bottom, backgroundRight, headerTop, background);
+            graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
         }
 
         // Line 1 here is the bottom line, this is because the

@@ -16,5 +16,9 @@
   "debug.fps_overlay": "%s fps",
 
   "debug.noxesium_overlay.on": "Noxesium: §aOn",
-  "debug.noxesium_overlay.off": "Noxesium: §cOff"
+  "debug.noxesium_overlay.off": "Noxesium: §cOff",
+
+  "text.autoconfig.noxesium.title": "Noxesium Configuration Settings",
+  "text.autoconfig.noxesium.option.fpsOverlay": "Enable FPS overlay",
+  "text.autoconfig.noxesium.option.experimentalPerformanceChanges": "Enable experimental performance improvements (warning: unstable!)"
 }

@@ -4,11 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
-import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
-import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
-import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,7 +40,7 @@ public class MinecraftMixin {
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;blitToScreen(II)V"))
     private void injected(RenderTarget instance, int width, int height) {
-        if (NoxesiumMod.disablePatches || ElementBuffer.CURRENT_BUFFER == null) {
+        if (!NoxesiumMod.shouldUseExperimentalPerformancePatches() || ElementBuffer.CURRENT_BUFFER == null) {
             instance.blitToScreen(width, height);
         } else {
             ElementBuffer.CURRENT_BUFFER.blitToScreen(width, height);

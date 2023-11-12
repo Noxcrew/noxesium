@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -45,8 +46,8 @@ public abstract class KeyboardHandlerMixin {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
                 instance.addMessage(Component.translatable("debug.disable_patches.help"));
-                instance.addMessage(Component.translatable("debug.fps_overlay.help"));
-                instance.addMessage(Component.translatable("debug.dump_ui.help"));
+                if (!NoxesiumMod.isUsingClothConfig) instance.addMessage(Component.translatable("debug.fps_overlay.help"));
+                if (NoxesiumMod.DEVELOPMENT_VERSION) instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
         }
         instance.addMessage(component);
@@ -58,7 +59,7 @@ public abstract class KeyboardHandlerMixin {
             return;
         }
 
-        if (keyCode == InputConstants.KEY_Y) {
+        if (keyCode == InputConstants.KEY_Y && !NoxesiumMod.isUsingClothConfig) {
             cir.setReturnValue(true);
 
             if (!NoxesiumMod.fpsOverlay) {
@@ -71,14 +72,14 @@ public abstract class KeyboardHandlerMixin {
         } else if (keyCode == InputConstants.KEY_W) {
             cir.setReturnValue(true);
 
-            if (NoxesiumMod.disablePatches) {
-                NoxesiumMod.disablePatches = false;
-                this.debugFeedbackTranslated("debug.disable_patches.enabled");
-            } else {
-                NoxesiumMod.disablePatches = true;
+            if (Objects.equals(NoxesiumMod.enableExperimentalPatches, true)) {
+                NoxesiumMod.enableExperimentalPatches = false;
                 this.debugFeedbackTranslated("debug.disable_patches.disabled");
+            } else {
+                NoxesiumMod.enableExperimentalPatches = true;
+                this.debugFeedbackTranslated("debug.disable_patches.enabled");
             }
-        } else if (keyCode == InputConstants.KEY_Z) {
+        } else if (keyCode == InputConstants.KEY_Z && NoxesiumMod.DEVELOPMENT_VERSION) {
             cir.setReturnValue(true);
 
             try {

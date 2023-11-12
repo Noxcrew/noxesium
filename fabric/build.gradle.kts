@@ -16,6 +16,8 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+    maven { url = uri("https://maven.shedaniel.me/") }
+    maven { url = uri("https://maven.terraformersmc.com/releases/") }
 }
 
 dependencies {
@@ -37,8 +39,15 @@ dependencies {
         isTransitive = false
     }
 
-    // Add modmenu at local runtime for testing, we don't need it as a dependency though.
-    modLocalRuntime("com.terraformersmc:modmenu:${property("modmenu")}")
+    // Optional dependency on Modmenu for the config screen
+    modApi("com.terraformersmc:modmenu:${property("modmenu")}") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+
+    // Optional dependency on Cloth Config API
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${property("clothconfig")}") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
 }
 
 java {

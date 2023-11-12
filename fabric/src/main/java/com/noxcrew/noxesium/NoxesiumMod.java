@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium;
 
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
+import com.noxcrew.noxesium.compat.ClothConfigIntegration;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
@@ -12,6 +13,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -25,9 +27,14 @@ import java.util.Set;
 public class NoxesiumMod implements ClientModInitializer {
 
     /**
-     * A debug value to disable performance patches for comparison.
+     * Whether cloth configs are being used.
      */
-    public static boolean disablePatches = false;
+    public final static boolean isUsingClothConfig = FabricLoader.getInstance().isModLoaded("cloth-config");
+
+    /**
+     * Whether to enable experimental performance patches.
+     */
+    public static Boolean enableExperimentalPatches = null;
 
     /**
      * Whether to show the FPS overlay.
@@ -40,6 +47,11 @@ public class NoxesiumMod implements ClientModInitializer {
      * ít is recommended to work with >= comparisons.
      */
     public static final int VERSION = 4;
+
+    /**
+     * Whether this is a development version of Noxesium.
+     */
+    public static final boolean DEVELOPMENT_VERSION = true;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String NAMESPACE = "noxesium";
@@ -81,8 +93,36 @@ public class NoxesiumMod implements ClientModInitializer {
         currentMaxProtocol = maxProtocolVersion;
     }
 
+    /**
+     * Whether the experimental performance patches should be used.
+     */
+    public static boolean shouldUseExperimentalPerformancePatches() {
+        if (enableExperimentalPatches != null) {
+            return enableExperimentalPatches;
+        }
+        if (isUsingClothConfig) {
+            return ClothConfigIntegration.getExperimentalPerformancePatches();
+        }
+        return false;
+    }
+
+    /**
+     * Whether the fps overlay should be shown.
+     */
+    public static boolean shouldShowFpsOverlay() {
+        if (isUsingClothConfig) {
+            return ClothConfigIntegration.getFpsOverlay();
+        }
+        return fpsOverlay;
+    }
+
     @Override
     public void onInitializeClient() {
+        // Register the config
+        if (isUsingClothConfig) {
+            ClothConfigIntegration.register();
+        }
+
         // Every time the client joins a server we send over information on the version being used
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             // Find the packet that includes the server asking for the information packet

@@ -20,6 +20,9 @@
       "com.noxcrew.noxesium.NoxesiumMod"
     ],
     "main": [
+    ],
+    "modmenu": [
+      "com.noxcrew.noxesium.compat.ModMenuIntegration"
     ]
   },
   "accessWidener": "noxesium.accesswidener",
@@ -34,7 +37,9 @@
   },
   "suggests": {
     "sodium": ">=0.5.3",
-    "iris": ">=1.6.9"
+    "iris": ">=1.6.9",
+    "modmenu": ">=8.0.0",
+    "cloth-config": ">=12.0.109"
   },
   "breaks": {
     "optifabric": "*",
