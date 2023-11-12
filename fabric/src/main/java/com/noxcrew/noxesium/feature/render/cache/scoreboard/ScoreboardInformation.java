@@ -29,13 +29,12 @@ public record ScoreboardInformation(
         BakedComponent header,
         List<BakedComponent> lines,
         List<BakedComponent> numbers,
-        int maxWidth,
-        boolean hasObfuscation
+        int maxWidth
 ) implements ElementInformation {
 
     /**
      * The fallback contents if the scoreboard is empty.
      */
     public static final ScoreboardInformation EMPTY =
-            new ScoreboardInformation(null, List.of(), List.of(), BakedComponent.EMPTY, List.of(), List.of(), 0, false);
+            new ScoreboardInformation(null, List.of(), List.of(), BakedComponent.EMPTY, List.of(), List.of(), 0);
 }

@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;

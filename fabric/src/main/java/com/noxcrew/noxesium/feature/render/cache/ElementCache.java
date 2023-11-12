@@ -39,7 +39,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * necessary to render the element. Other functions should call {@link this#clearCache()}
      * whenever this information may have changed. Changes are NOT passively detected!
      */
-    protected abstract T createCache();
+    protected abstract T createCache(Minecraft minecraft, Font font);
 
     /**
      * Creates a new buffer. Can be modified to disable blending of the drawn element.
@@ -63,33 +63,29 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      */
     public void render(GuiGraphics graphics, int screenWidth, int screenHeight, Minecraft minecraft) {
         try {
-            renderDirect(graphics, getCache(), screenWidth, screenHeight, minecraft);
+            // Draw the buffered contents of the element to the screen as a base!
+            var screenBuffer = getBuffer();
+            screenBuffer.draw();
+
+            // Draw the direct parts on top each tick
+            render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, false);
         } finally {
-            // Ensure we always properly flush the graphics.
+            // Ensure we always properly flush the graphics after drawing a component!
             graphics.flush();
         }
     }
 
     /**
-     * Renders the direct part of the element to the UI directly.
+     * Renders the UI element using the same logic whether we are in the buffer or not.
      */
-    public void renderDirect(GuiGraphics graphics, T cache, int screenWidth, int screenHeight, Minecraft minecraft) {
-        // Draw the buffered contents of the element to the screen as a base!
-        var screenBuffer = getBuffer();
-        screenBuffer.draw();
-    }
-
-    /**
-     * Renders the buffered part of the element to the given buffer.
-     */
-    protected abstract void renderBuffered(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font);
+    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered);
 
     /**
      * Returns the current cached scoreboard contents.
      */
     public T getCache() {
         if (cache == null) {
-            cache = createCache();
+            cache = createCache(Minecraft.getInstance(), Minecraft.getInstance().font);
         }
         return cache;
     }
@@ -118,7 +114,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 target.setClearColor(0f, 0f, 0f, 0f);
                 target.clear(ON_OSX);
                 target.bindWrite(false);
-                renderBuffered(graphics, getCache(), minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font);
+                render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, true);
                 graphics.flush();
             } finally {
                 needsRedraw = false;

@@ -1,10 +1,7 @@
 package com.noxcrew.noxesium.feature.render.cache.tablist;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import com.noxcrew.noxesium.feature.render.font.GuiGraphicsExt;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
@@ -114,9 +111,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
      * - The current blinking animations
      */
     @Override
-    protected TabListInformation createCache() {
-        var minecraft = Minecraft.getInstance();
-        var font = minecraft.font;
+    protected TabListInformation createCache(Minecraft minecraft, Font font) {
         var playerTabOverlay = minecraft.gui.getTabList();
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
@@ -221,87 +216,116 @@ public class TabListCache extends ElementCache<TabListInformation> {
     }
 
     @Override
-    public void renderDirect(GuiGraphics graphics, TabListInformation cache, int screenWidth, int screenHeight, Minecraft minecraft) {
+    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
-        var font = minecraft.font;
 
         // Update all heart states
         var clearCache = false;
-        var players = cache.players();
-        if (!healthStates.isEmpty()) {
-            var uuids = players.stream().map((playerInfo) -> playerInfo.getProfile().getId()).collect(Collectors.toSet());
-            healthStates.keySet().removeIf((uUID) -> !uuids.contains(uUID));
+        if (!buffered) {
+            var players = cache.players();
+            if (!healthStates.isEmpty()) {
+                var uuids = players.stream().map((playerInfo) -> playerInfo.getProfile().getId()).collect(Collectors.toSet());
+                healthStates.keySet().removeIf((uUID) -> !uuids.contains(uUID));
 
-            // If there is an objective showing hearts we determine the heart states and
-            if (objective != null && objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
-                // Update the remaining heart states, if any have started blinking we need to clear the cache for next tick!
-                // This means we can now draw the hearts into the buffer next time. This does mean it starts a tick for
-                // any heart blinking to become visible because we need to clear the buffer the tick after.
-                for (var player : players) {
-                    var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
-                    var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
-                    if (state.update(score, minecraft.gui.getGuiTicks())) {
-                        clearCache = true;
+                // If there is an objective showing hearts we determine the heart states and
+                if (objective != null && objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
+                    // Update the remaining heart states, if any have started blinking we need to clear the cache for next tick!
+                    // This means we can now draw the hearts into the buffer next time. This does mean it starts a tick for
+                    // any heart blinking to become visible because we need to clear the buffer the tick after.
+                    for (var player : players) {
+                        var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
+                        var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
+                        if (state.update(score, minecraft.gui.getGuiTicks())) {
+                            clearCache = true;
+                        }
                     }
                 }
             }
         }
 
-        // Render the buffer contents
-        super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
-
         // Render all parts that need to be drawn directly! (blinking hearts)
+        var width = cache.width();
         var left = cache.left();
         var playersPerColumn = cache.playersPerColumn();
         var columnWidth = cache.columnWidth();
         var height = BASE_OFFSET;
 
         if (cache.header() != null) {
+            if (buffered) {
+                graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
+            }
             for (var line : cache.header()) {
-                if (line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
+                if (line.shouldDraw(buffered)) {
+                    line.draw(graphics, font, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;
+                if (height >= screenHeight) return;
             }
             ++height;
         }
 
+        if (buffered) {
+            graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + playersPerColumn * 9, Integer.MIN_VALUE);
+        }
+
         var playerCount = cache.players().size();
+        var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
         for (int index = 0; index < playerCount; ++index) {
             // Optimization: if the tab list is so big it pushes the rest off-screen stop rendering!
             // Only necessary when doing it real-time.
             if (height >= screenHeight) return;
 
-            int z;
-            int aa;
+            int scoreX;
+            int scoreWidth;
 
             var column = index / playersPerColumn;
             var row = index % playersPerColumn;
             var x = left + column * columnWidth + column * 5;
             var y = height + row * 9;
 
+            if (buffered) {
+                graphics.fill(x, y, x + columnWidth, y + 8, background);
+            }
+
             if (index >= cache.players().size()) continue;
             var playerInfo = cache.players().get(index);
             var profile = playerInfo.getProfile();
 
             if (cache.showSkins()) {
+                if (buffered) {
+                    var player = minecraft.level.getPlayerByUUID(profile.getId());
+                    var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
+                    PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
+                }
                 x += 9;
             }
 
-            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (aa = (z = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - z > 5) {
+            var name = cache.names().get(playerInfo.getProfile().getId());
+            if (name.shouldDraw(buffered)) {
+                name.draw(graphics, font, x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
+            }
+
+            if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
                 // Render the score outside the buffer when in a blinking animation!
-                if (cache.blinking().contains(playerInfo.getProfile().getId())) {
-                    this.renderTablistScore(objective, y, profile.getName(), z, aa, profile.getId(), graphics, font);
+                if (cache.blinking().contains(playerInfo.getProfile().getId()) != buffered) {
+                    this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
                 }
+            }
+            if (buffered) {
+                this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
             }
         }
 
         if (cache.footer() != null) {
             height += playersPerColumn * 9 + 1;
+            if (height >= screenHeight) return;
+            if (buffered) {
+                graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
+            }
             for (var line : cache.footer()) {
-                if (line.hasObfuscation) {
-                    GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
+                if (line.shouldDraw(buffered)) {
+                    line.draw(graphics, font, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;
             }
@@ -312,77 +336,6 @@ public class TabListCache extends ElementCache<TabListInformation> {
         if (clearCache) {
             clearCache();
         }
-    }
-
-    @Override
-    protected void renderBuffered(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
-        ElementBuffer.withBlend(true, () -> {
-            var scoreboard = minecraft.level.getScoreboard();
-            var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
-
-            // Render all parts that need to be drawn directly! (blinking hearts)
-            var width = cache.width();
-            var left = cache.left();
-            var playersPerColumn = cache.playersPerColumn();
-            var columnWidth = cache.columnWidth();
-            var height = BASE_OFFSET;
-
-            if (cache.header() != null) {
-                graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
-                for (var line : cache.header()) {
-                    if (!line.hasObfuscation) {
-                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
-                    }
-                    height += font.lineHeight;
-                }
-                ++height;
-            }
-
-            graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + playersPerColumn * 9, Integer.MIN_VALUE);
-
-            var playerCount = cache.players().size();
-            var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
-            for (int index = 0; index < playerCount; ++index) {
-                int scoreX;
-                int scoreWidth;
-
-                var column = index / playersPerColumn;
-                var row = index % playersPerColumn;
-                var x = left + column * columnWidth + column * 5;
-                var y = height + row * 9;
-
-                graphics.fill(x, y, x + columnWidth, y + 8, background);
-
-                if (index >= cache.players().size()) continue;
-                var playerInfo = cache.players().get(index);
-                var profile = playerInfo.getProfile();
-
-                if (cache.showSkins()) {
-                    var player = minecraft.level.getPlayerByUUID(profile.getId());
-                    var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
-                    PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
-                    x += 9;
-                }
-
-                GuiGraphicsExt.drawString(graphics, font, cache.names().get(playerInfo.getProfile().getId()), x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
-                if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
-                    if (!cache.blinking().contains(playerInfo.getProfile().getId())) {
-                        this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
-                    }
-                }
-                this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
-            }
-
-            if (cache.footer() != null) {
-                graphics.fill(screenWidth / 2 - width / 2 - 1, (height += playersPerColumn * 9 + 1) - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
-                for (var line : cache.footer()) {
-                    if (!line.hasObfuscation) {
-                        GuiGraphicsExt.drawString(graphics, font, line, screenWidth / 2 - line.width / 2, height, -1);
-                    }
-                    height += font.lineHeight;
-                }
-            }
-        });
     }
 
     private void renderPingIcon(GuiGraphics graphics, int x, int offset, int y, ResourceLocation latency) {

@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.feature.render.cache.actionbar;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import com.noxcrew.noxesium.feature.render.font.GuiGraphicsExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,30 +28,20 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         return instance;
     }
 
-    /**
-     * Creates newly cached action bar content information.
-     * <p>
-     * Depends on the following information:
-     * - Current resource pack configuration
-     * - Current action bar state
-     */
     @Override
-    protected ActionBarInformation createCache() {
-        var gui = Minecraft.getInstance().gui;
+    protected ActionBarInformation createCache(Minecraft minecraft, Font font) {
+        var gui = minecraft.gui;
         if (gui.overlayMessageString == null || gui.overlayMessageTime <= 0) {
             return ActionBarInformation.EMPTY;
         }
-        var font = Minecraft.getInstance().font;
         var baked = new BakedComponent(gui.overlayMessageString, font);
         return new ActionBarInformation(baked);
     }
 
     @Override
-    public void renderDirect(GuiGraphics graphics, ActionBarInformation cache, int screenWidth, int screenHeight, Minecraft minecraft) {
+    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, boolean buffered) {
         var gui = minecraft.gui;
         if (gui.overlayMessageString == null || gui.overlayMessageTime <= 0) return;
-
-        var font = minecraft.font;
         var remainingTicks = (float) gui.overlayMessageTime - lastPartialTicks;
 
         // Determine the transparency of the text, if above 1s is left
@@ -65,15 +54,12 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         }
 
         // Animated text can never be fixed!
-        if (gui.animateOverlayMessageColor || cache.component().hasObfuscation) {
+        if (gui.animateOverlayMessageColor || cache.component().needsCustomReRendering) {
             fixed = false;
         }
 
-        // If the text is fixed both here and in the cache we use the buffered info
-        if (fixed) {
-            super.renderDirect(graphics, cache, screenWidth, screenHeight, minecraft);
-            return;
-        }
+        // Only render in this layer if the text is fixed or not
+        if (fixed != buffered) return;
 
         // If at least a transparency of 8 is left
         if (alpha > 8) {
@@ -97,29 +83,8 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
                 int j = -width / 2;
                 graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
             }
-            GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
+            cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
             pose.popPose();
         }
-    }
-
-    @Override
-    protected void renderBuffered(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font) {
-        var pose = graphics.pose();
-        pose.pushPose();
-        pose.translate((float) (screenWidth / 2), (float) (screenHeight - 68), 0.0F);
-
-        // If the text is being animated we alter the color (used by jukeboxes)
-        var textColor = 16777215;
-        var trueAlpha = 255 << 24 & -16777216;
-        var width = cache.component().width;
-        var background = minecraft.options.getBackgroundColor(0.0F);
-        var color = 16777215 | trueAlpha;
-        var offset = -4;
-        if (background != 0) {
-            int j = -width / 2;
-            graphics.fill(j - 2, offset - 2, j + width + 2, offset + 9 + 2, FastColor.ARGB32.multiply(background, color));
-        }
-        GuiGraphicsExt.drawString(graphics, font, cache.component(), -width / 2, -4, textColor | trueAlpha);
-        pose.popPose();
     }
 }
