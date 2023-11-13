@@ -9,15 +9,16 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param title The current title
  * @param subtitle The current subtitle
+ * @param alpha The alpha value of the text
  */
 public record TitleInformation(
         BakedComponent title,
         @Nullable BakedComponent subtitle,
-        boolean fading
+        int alpha
 ) implements ElementInformation {
 
     /**
      * The fallback contents if the title is absent.
      */
-    public static final TitleInformation EMPTY = new TitleInformation(BakedComponent.EMPTY, null, false);
+    public static final TitleInformation EMPTY = new TitleInformation(BakedComponent.EMPTY, null, 255);
 }

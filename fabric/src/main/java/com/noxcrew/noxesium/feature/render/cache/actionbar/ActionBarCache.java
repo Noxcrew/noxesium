@@ -26,13 +26,13 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         return instance;
     }
 
-    /**
-     * Returns the current alpha of the text.
-     */
-    protected int getAlpha(Gui gui, float partialTicks) {
-        var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
-        var alpha = (int) (remainingTicks * 255.0F / 20.0F);
-        return Mth.clamp(alpha, 0, 255);
+    public ActionBarCache() {
+        registerVariable("alpha", (minecraft, partialTicks) -> {
+            var gui = minecraft.gui;
+            var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
+            var alpha = (int) (remainingTicks * 255.0F / 20.0F);
+            return Mth.clamp(alpha, 0, 255);
+        });
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             return ActionBarInformation.EMPTY;
         }
         var baked = new BakedComponent(gui.overlayMessageString, font);
-        return new ActionBarInformation(baked, getAlpha(gui, 0f) != 255 || gui.animateOverlayMessageColor);
+        return new ActionBarInformation(baked, getVariable("alpha"));
     }
 
     @Override
@@ -55,28 +55,8 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
         var gui = minecraft.gui;
         var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
 
-        // Determine the transparency of the text, if above 1s is left
-        // it's fixed at maximum.
-        var alpha = getAlpha(gui, partialTicks);
-        var fading = cache.fading();
-        var shouldBeFading = alpha != 255;
-
-        // Animated text can never be fixed!
-        if (gui.animateOverlayMessageColor) {
-            shouldBeFading = false;
-        }
-
-        // Check if the fading has started and the buffer doesn't match,
-        // we can only clear the cache for next tick so we still use
-        // the cached fading state for the logic.
-        if (!buffered && shouldBeFading != fading) {
-            clearCache();
-        }
-
-        // Only render in this layer if the text is fixed or not
-        if (fading == buffered) return;
-
         // If at least a transparency of 8 is left
+        var alpha = cache.alpha();
         if (alpha > 8) {
             var pose = graphics.pose();
             pose.pushPose();
@@ -86,6 +66,9 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             var textColor = 16777215;
             if (gui.animateOverlayMessageColor) {
                 textColor = Mth.hsvToRgb(remainingTicks / 50.0F, 0.7F, 0.6F) & 16777215;
+
+                // Don't draw if changing color and in buffer!
+                if (buffered) return;
             }
 
             var trueAlpha = alpha << 24 & -16777216;
@@ -94,11 +77,13 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             var backgroundColor = FastColor.ARGB32.multiply(background, 16777215 | trueAlpha);
             var offset = -4;
 
-            if (background != 0) {
+            if (buffered && background != 0) {
                 var left = -width / 2;
                 graphics.fill(left - 2, offset - 2, left + width + 2, offset + 9 + 2, backgroundColor);
             }
-            cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
+            if (gui.animateOverlayMessageColor || cache.component().shouldDraw(buffered)) {
+                cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
+            }
             pose.popPose();
         }
     }

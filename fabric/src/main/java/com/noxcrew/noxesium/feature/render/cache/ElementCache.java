@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.render.cache;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -7,8 +8,12 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
 
 import static net.minecraft.client.Minecraft.ON_OSX;
 
@@ -19,9 +24,13 @@ import static net.minecraft.client.Minecraft.ON_OSX;
 public abstract class ElementCache<T extends ElementInformation> implements Closeable {
 
     private static final Set<ElementCache<?>> caches = new HashSet<>();
-    protected T cache = null;
+
+    private final Map<String, BiFunction<Minecraft, Float, Object>> variables = new HashMap<>();
+    private final Map<String, Object> values = new HashMap<>();
     private ElementBuffer buffer = null;
     private boolean needsRedraw = true;
+    protected T cache = null;
+
 
     /**
      * Returns a collection of all created caches.
@@ -32,6 +41,15 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
     public ElementCache() {
         caches.add(this);
+    }
+
+    /**
+     * Registers a new variable that is re-evaluated each time the element is drawn which will
+     * cause a cache clear if it changes.
+     */
+    public void registerVariable(String name, BiFunction<Minecraft, Float, Object> function) {
+        Preconditions.checkState(!variables.containsKey(name), "Variable called " + name + " already exists");
+        variables.put(name, function);
     }
 
     /**
@@ -57,7 +75,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Renders the UI element.
      */
     public void render(GuiGraphics graphics, int screenWidth, int screenHeight, float partialTicks, Minecraft minecraft) {
-        var cache = getCache();
+        var cache = getCache(minecraft, partialTicks);
         if (isEmpty(cache)) return;
 
         try {
@@ -79,11 +97,38 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered);
 
     /**
+     * Returns the value of the variable called name cast as T.
+     */
+    public <V> V getVariable(String name) {
+        return (V) values.get(name);
+    }
+
+    /**
      * Returns the current cached scoreboard contents.
      */
-    public T getCache() {
+    public T getCache(Minecraft minecraft, float partialTicks) {
+        // Test all variables and clear the cache if any change
+        if (!variables.isEmpty()) {
+            for (var variable : variables.entrySet()) {
+                var currentValue = values.get(variable.getKey());
+                var newValue = variable.getValue().apply(minecraft, partialTicks);
+                if (Objects.equals(currentValue, newValue)) continue;
+
+                // Clear the cache and ensure all variables are determined!
+                clearCache();
+                for (var otherVariable : variables.entrySet()) {
+                    if (Objects.equals(variable.getKey(), otherVariable.getKey())) {
+                        values.put(variable.getKey(), newValue);
+                    } else {
+                        values.put(otherVariable.getKey(), otherVariable.getValue().apply(minecraft, partialTicks));
+                    }
+                }
+                break;
+            }
+        }
+
         if (cache == null) {
-            cache = createCache(Minecraft.getInstance(), Minecraft.getInstance().font);
+            cache = createCache(minecraft, minecraft.font);
         }
         return cache;
     }
@@ -137,6 +182,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      */
     public void clearCache() {
         cache = null;
+        values.clear();
         needsRedraw = true;
     }
 

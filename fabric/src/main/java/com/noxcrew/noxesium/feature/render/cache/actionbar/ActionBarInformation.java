@@ -8,15 +8,15 @@ import net.minecraft.network.chat.Component;
  * Stores information about the state of the action bar.
  *
  * @param component The current text
- * @param fading Whether the text is currently fading
+ * @param alpha The alpha value of the text
  */
 public record ActionBarInformation(
         BakedComponent component,
-        boolean fading
+        int alpha
 ) implements ElementInformation {
 
     /**
      * The fallback contents if the action bar is absent.
      */
-    public static final ActionBarInformation EMPTY = new ActionBarInformation(BakedComponent.EMPTY, false);
+    public static final ActionBarInformation EMPTY = new ActionBarInformation(BakedComponent.EMPTY, 255);
 }

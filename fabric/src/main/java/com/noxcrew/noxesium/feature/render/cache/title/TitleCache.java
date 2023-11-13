@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -27,23 +26,23 @@ public class TitleCache extends ElementCache<TitleInformation> {
         return instance;
     }
 
-    /**
-     * Returns the current alpha of the text.
-     */
-    protected int getAlpha(Gui gui, float partialTicks) {
-        var alpha = 255;
-        var ticksElapsed = (float) gui.titleTime - partialTicks;
+    public TitleCache() {
+        registerVariable("alpha", (minecraft, partialTicks) -> {
+            var gui = minecraft.gui;
+            var alpha = 255;
+            var ticksElapsed = (float) gui.titleTime - partialTicks;
 
-        if (gui.titleTime > gui.titleFadeOutTime + gui.titleStayTime) {
-            float f6 = (float) (gui.titleFadeInTime + gui.titleStayTime + gui.titleFadeOutTime) - ticksElapsed;
-            alpha = (int) (f6 * 255.0F / (float) gui.titleFadeInTime);
-        }
+            if (gui.titleTime > gui.titleFadeOutTime + gui.titleStayTime) {
+                var fadeFactor = (float) (gui.titleFadeInTime + gui.titleStayTime + gui.titleFadeOutTime) - ticksElapsed;
+                alpha = (int) (fadeFactor * 255.0F / (float) gui.titleFadeInTime);
+            }
 
-        if (gui.titleTime <= gui.titleFadeOutTime) {
-            alpha = (int) (ticksElapsed * 255.0F / (float) gui.titleFadeOutTime);
-        }
+            if (gui.titleTime <= gui.titleFadeOutTime) {
+                alpha = (int) (ticksElapsed * 255.0F / (float) gui.titleFadeOutTime);
+            }
 
-        return Mth.clamp(alpha, 0, 255);
+            return Mth.clamp(alpha, 0, 255);
+        });
     }
 
     @Override
@@ -61,7 +60,7 @@ public class TitleCache extends ElementCache<TitleInformation> {
         return new TitleInformation(
                 new BakedComponent(gui.title, font),
                 gui.subtitle == null ? null : new BakedComponent(gui.subtitle, font),
-                getAlpha(gui, 0f) != 255
+                getVariable("alpha")
         );
     }
 
@@ -75,25 +74,10 @@ public class TitleCache extends ElementCache<TitleInformation> {
             return;
         }
 
-        // Determine the transparency of the text and determine if it's at the maximum
-        var alpha = getAlpha(gui, partialTicks);
-        var fading = cache.fading();
-        var shouldBeFading = alpha != 255;
-
-        // Check if the fading has started and the buffer doesn't match,
-        // we can only clear the cache for next tick so we still use
-        // the cached fading state for the logic.
-        if (!buffered && shouldBeFading != fading) {
-            clearCache();
-        }
-
-        // Only render in this layer if the text is fixed or not
-        if (fading == buffered) return;
-
+        var alpha = cache.alpha();
         if (alpha > 8) {
             graphics.pose().pushPose();
             graphics.pose().translate((float) (screenWidth / 2), (float) (screenHeight / 2), 0.0F);
-            RenderSystem.enableBlend();
             graphics.pose().pushPose();
             graphics.pose().scale(4.0F, 4.0F, 4.0F);
 
@@ -113,8 +97,8 @@ public class TitleCache extends ElementCache<TitleInformation> {
                 cache.title().draw(graphics, font, -titleWidth / 2, -10, 16777215 | trueAlpha);
             }
             graphics.pose().popPose();
+
             if (cache.subtitle() != null) {
-                graphics.pose().pushPose();
                 graphics.pose().scale(2.0F, 2.0F, 2.0F);
                 var subtitleWidth = cache.subtitle().width;
                 if (buffered) {
@@ -127,10 +111,7 @@ public class TitleCache extends ElementCache<TitleInformation> {
                 if (cache.subtitle().shouldDraw(buffered)) {
                     cache.subtitle().draw(graphics, font, -subtitleWidth / 2, 5, 16777215 | trueAlpha);
                 }
-                graphics.pose().popPose();
             }
-
-            RenderSystem.disableBlend();
             graphics.pose().popPose();
         }
     }
