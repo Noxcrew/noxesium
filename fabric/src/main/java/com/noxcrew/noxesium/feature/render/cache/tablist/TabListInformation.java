@@ -57,7 +57,6 @@ public record TabListInformation(
          * Returns true if the hearts started or stopped blinking.
          */
         public boolean update(int value, long currentTick) {
-            var isBlinking = isDoneBlinking(currentTick - 1);
             if (value != this.lastValue) {
                 var blinkTime = value < this.lastValue ? DECREASE_BLINK_DURATION : INCREASE_BLINK_DURATION;
                 this.blinkUntilTick = currentTick + blinkTime;
@@ -68,7 +67,7 @@ public record TabListInformation(
             if (currentTick - this.lastUpdateTick > DISPLAY_UPDATE_DELAY) {
                 this.displayedValue = value;
             }
-            return isBlinking != isDoneBlinking(currentTick);
+            return !isDoneBlinking(currentTick);
         }
 
         /**

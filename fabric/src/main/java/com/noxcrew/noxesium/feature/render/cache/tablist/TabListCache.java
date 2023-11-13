@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.tablist;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
+import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
@@ -22,8 +23,10 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -62,6 +65,37 @@ public class TabListCache extends ElementCache<TabListInformation> {
             instance = new TabListCache();
         }
         return instance;
+    }
+
+    public TabListCache() {
+        registerVariable("blinking", (minecraft, partialTicks) -> {
+            // Don't start checking blinking unless we know there is some hearts being rendered!
+            if (!healthStates.isEmpty()) {
+                var blinking = new ArrayList<UUID>();
+                List<PlayerInfo> players = minecraft.player == null ? List.of() : minecraft.player.connection.getListedOnlinePlayers().stream().sorted(PLAYER_COMPARATOR).limit(80L).toList();
+                var uuids = players.stream().map((playerInfo) -> playerInfo.getProfile().getId()).collect(Collectors.toSet());
+                healthStates.keySet().removeIf((uUID) -> !uuids.contains(uUID));
+
+                // If there is an objective showing hearts we determine the heart states
+                var scoreboard = minecraft.level.getScoreboard();
+                var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
+                if (objective != null && objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
+                    // Update the remaining heart states, if any have started blinking we need to clear the cache for next tick!
+                    // This means we can now draw the hearts into the buffer next time. This does mean it starts a tick for
+                    // any heart blinking to become visible because we need to clear the buffer the tick after.
+                    for (var player : players) {
+                        var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
+                        var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
+                        if (state.update(score, minecraft.gui.getGuiTicks())) {
+                            blinking.add(player.getProfile().getId());
+                        }
+                    }
+                }
+                return blinking;
+            } else {
+                return List.of();
+            }
+        });
     }
 
     /**
@@ -125,20 +159,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var header = playerTabOverlay.header;
         var footer = playerTabOverlay.footer;
         List<PlayerInfo> players = minecraft.player == null ? List.of() : minecraft.player.connection.getListedOnlinePlayers().stream().sorted(PLAYER_COMPARATOR).limit(80L).toList();
-        List<UUID> blinking = new ArrayList<>();
-
-        // If there is an objective showing hearts we determine the heart states and
-        if (objective != null && objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
-            for (var player : players) {
-                var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
-                var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
-
-                // We store which hearts are blinking so we know which ones are not in the buffer!
-                if (!state.isDoneBlinking(minecraft.gui.getGuiTicks())) {
-                    blinking.add(player.getProfile().getId());
-                }
-            }
-        }
+        List<UUID> blinking = getVariable("blinking");
 
         // Determine the width
         var maxNameWidth = 0;
@@ -225,30 +246,6 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
 
-        // Update all heart states
-        var clearCache = false;
-        if (!buffered) {
-            var players = cache.players();
-            if (!healthStates.isEmpty()) {
-                var uuids = players.stream().map((playerInfo) -> playerInfo.getProfile().getId()).collect(Collectors.toSet());
-                healthStates.keySet().removeIf((uUID) -> !uuids.contains(uUID));
-
-                // If there is an objective showing hearts we determine the heart states and
-                if (objective != null && objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
-                    // Update the remaining heart states, if any have started blinking we need to clear the cache for next tick!
-                    // This means we can now draw the hearts into the buffer next time. This does mean it starts a tick for
-                    // any heart blinking to become visible because we need to clear the buffer the tick after.
-                    for (var player : players) {
-                        var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
-                        var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
-                        if (state.update(score, minecraft.gui.getGuiTicks())) {
-                            clearCache = true;
-                        }
-                    }
-                }
-            }
-        }
-
         // Render all parts that need to be drawn directly! (blinking hearts)
         var width = cache.width();
         var left = cache.left();
@@ -334,12 +331,6 @@ public class TabListCache extends ElementCache<TabListInformation> {
                 }
                 height += font.lineHeight;
             }
-        }
-
-        // Clear cache at the end as we cannot edit the current cache in this method so we need
-        // to expect next tick to sort things out.
-        if (clearCache) {
-            clearCache();
         }
     }
 

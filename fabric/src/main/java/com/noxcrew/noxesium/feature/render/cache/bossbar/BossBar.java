@@ -7,17 +7,15 @@ import net.minecraft.world.BossEvent;
 /**
  * Stores information about a single boss bar.
  *
- * @param name      The name of the boss bar
- * @param bar       The current bar object which holds the progress
- * @param overlay   The overlay of this bar
- * @param color     The color of this bar
- * @param animating Whether the bar's progress is animating right now
+ * @param name     The name of the boss bar
+ * @param overlay  The overlay of this bar
+ * @param color    The color of this bar
+ * @param progress The progress of this bar
  */
 public record BossBar(
         BakedComponent name,
-        LerpingBossEvent bar,
         BossEvent.BossBarOverlay overlay,
         BossEvent.BossBarColor color,
-        boolean animating
+        float progress
 ) {
 }

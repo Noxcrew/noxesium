@@ -10,6 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.BossEvent;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manages the current cache of the boss bar.
@@ -36,6 +39,19 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
         return instance;
     }
 
+    public BossBarCache() {
+        registerVariable("progress", (minecraft, partialTicks) -> {
+            var overlay = minecraft.gui.getBossOverlay();
+            if (overlay.events.isEmpty()) return Map.of();
+
+            var progress = new HashMap<>();
+            for (var entry : overlay.events.entrySet()) {
+                progress.put(entry.getKey(), entry.getValue().getProgress());
+            }
+            return progress;
+        });
+    }
+
     @Override
     protected boolean isEmpty(BossBarInformation cache) {
         return cache == BossBarInformation.EMPTY;
@@ -49,16 +65,15 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
         }
 
         // Go through all event overlays and create cache boss bar instances
+        Map<UUID, Float> progress = getVariable("progress");
         var bars = new ArrayList<BossBar>();
         for (var entry : overlay.events.entrySet()) {
             var bar = entry.getValue();
-            var animating = Math.abs(bar.getProgress() - bar.targetPercent) >= 0.001;
             bars.add(new BossBar(
                     new BakedComponent(bar.getName(), font),
-                    bar,
                     bar.getOverlay(),
                     bar.getColor(),
-                    animating
+                    progress.get(entry.getKey())
             ));
         }
         return new BossBarInformation(bars);
@@ -66,28 +81,18 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
 
     @Override
     protected void render(GuiGraphics graphics, BossBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
-        var clearCache = false;
         var currentHeight = HEIGHT;
         for (var bossbar : cache.bars()) {
-            // Determine if this bossbar should render in this layer
-            var isRenderingInBase = bossbar.animating() || bossbar.overlay() != BossEvent.BossBarOverlay.PROGRESS;
-            var shouldRender = buffered != isRenderingInBase;
-
             // Draw the main bars
             var barLeft = screenWidth / 2 - 91;
-            this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, shouldRender, !buffered);
-            var progress = (int) (bossbar.bar().getProgress() * 183.0F);
+            this.drawBar(graphics, barLeft, currentHeight, bossbar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES, buffered, buffered);
+            var progress = (int) (bossbar.progress() * 183.0F);
             if (progress > 0) {
-                this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, shouldRender, !buffered);
+                this.drawBar(graphics, barLeft, currentHeight, bossbar, progress, BAR_PROGRESS_SPRITES, OVERLAY_PROGRESS_SPRITES, buffered, buffered);
             }
 
-            // If any bar has finished animating we clear the cache to possible redraw this bar into the buffer
-            if (!buffered && bossbar.animating() && Math.abs(bossbar.bar().getProgress() - bossbar.bar().targetPercent) < 0.001) {
-                clearCache = true;
-            }
-
-            // Draw the text on top of the background on the correct layer
-            if (buffered ? shouldRender && bossbar.name().shouldDraw(true) : shouldRender || bossbar.name().shouldDraw(false)) {
+            // Draw the text if necessary
+            if (bossbar.name().shouldDraw(buffered)) {
                 var x = screenWidth / 2 - bossbar.name().width / 2;
                 var y = currentHeight - 9;
                 bossbar.name().draw(graphics, font, x, y, 16777215);
@@ -97,10 +102,6 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
             if (currentHeight >= screenHeight / 3) {
                 break;
             }
-        }
-
-        if (clearCache) {
-            clearCache();
         }
     }
 
@@ -114,9 +115,8 @@ public class BossBarCache extends ElementCache<BossBarInformation> {
 
         // Never draw the progress overlay because progress has no overlay!
         if (includeOverlay && bossBar.overlay() != BossEvent.BossBarOverlay.PROGRESS) {
-            RenderSystem.enableBlend();
+            // TODO Mojang turns on blending here!
             guiGraphics.blitSprite(overlays[bossBar.overlay().ordinal() - 1], BAR_WIDTH, BAR_HEIGHT, 0, 0, x, y, targetWidth, BAR_HEIGHT);
-            RenderSystem.disableBlend();
         }
     }
 }

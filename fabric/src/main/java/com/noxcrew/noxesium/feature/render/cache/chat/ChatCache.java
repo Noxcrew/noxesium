@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Manages the current cache of the chat.
@@ -30,6 +31,30 @@ public class ChatCache extends ElementCache<ChatInformation> {
             instance = new ChatCache();
         }
         return instance;
+    }
+
+    public ChatCache() {
+        // Re-evaluate which lines are fading out every tick
+        registerVariable("fading", (minecraft, partialTicks) -> {
+            var chatOverlay = minecraft.gui.getChat();
+            var focused = chatOverlay.isChatFocused();
+            var messages = new ArrayList<>(chatOverlay.trimmedMessages);
+            if (messages.isEmpty()) return List.of();
+
+            var fading = new ArrayList<>();
+
+            var index = 0;
+            for (var line : messages) {
+                index++;
+
+                var ticksSinceMessageSend = lastTick - line.addedTime();
+                var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
+                if (timeFactor < 1.0) {
+                    fading.add(index - 1);
+                }
+            }
+            return fading;
+        });
     }
 
     @Override
@@ -54,24 +79,14 @@ public class ChatCache extends ElementCache<ChatInformation> {
         var chatOverlay = minecraft.gui.getChat();
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
-        var fading = new ArrayList<Integer>();
         var focused = chatOverlay.isChatFocused();
         var messages = new ArrayList<>(chatOverlay.trimmedMessages);
+        List<Integer> fading = getVariable("fading");
 
-        var index = 0;
         for (var line : messages) {
-            index++;
             var baked = new BakedComponent(line.content(), font);
             lines.add(baked);
-
-            // Determine if this line is fading out!
-            var ticksSinceMessageSend = lastTick - line.addedTime();
-            var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
-            if (timeFactor < 1.0) {
-                fading.add(index - 1);
-            }
         }
-
         return new ChatInformation(
                 messages,
                 chatOverlay.chatScrollbarPos,
@@ -86,7 +101,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
     @Override
     protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
         var chatOverlay = minecraft.gui.getChat();
-        var clearCache = false;
         var messageCount = cache.trimmedMessages().size();
         int lineBottom;
         int backgroundAlpha;
@@ -128,11 +142,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 ++shownLineCount;
                 if (alpha <= 3) continue;
 
-                // Clear the cache next tick if we need to start a fade.
-                if (!buffered && timeFactor < 1.0 && !cache.fading().contains(messageIndex)) {
-                    clearCache = true;
-                }
-
                 if (buffered || cache.lines().get(messageIndex).needsCustomReRendering || cache.fading().contains(messageIndex)) {
                     lineBottom = scaledHeight - currentLine * lineHeight;
                     var lineDrawTop = lineBottom + lineSize;
@@ -140,6 +149,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
                     pose.pushPose();
                     pose.translate(0.0f, 0.0f, 50.0f);
                     var guiMessageTag = line.tag();
+
                     if (cache.fading().contains(messageIndex) != buffered) {
                         graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
                         if (guiMessageTag != null) {
@@ -195,9 +205,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
             }
         } finally {
             pose.popPose();
-            if (clearCache) {
-                clearCache();
-            }
         }
     }
 }
