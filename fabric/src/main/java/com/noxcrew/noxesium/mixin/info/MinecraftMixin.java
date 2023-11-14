@@ -26,9 +26,7 @@ public class MinecraftMixin {
 
     @Inject(method = "resizeDisplay", at = @At(value = "TAIL"))
     private void resizeDisplay(CallbackInfo ci) {
-        for (var cache : ElementCache.getAllCaches()) {
-            cache.clearCache();
-        }
+        ElementCache.getAllCaches().forEach(ElementCache::clearCache);
     }
 
     @Inject(method = "setScreen", at = @At(value = "HEAD"))

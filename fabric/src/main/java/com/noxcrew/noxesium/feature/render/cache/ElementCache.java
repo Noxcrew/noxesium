@@ -112,7 +112,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
             for (var variable : variables.entrySet()) {
                 var currentValue = values.get(variable.getKey());
                 var newValue = variable.getValue().apply(minecraft, partialTicks);
-                if (Objects.equals(currentValue, newValue)) continue;
+                if (Objects.equals(currentValue, newValue) && currentValue != null) continue;
 
                 // Clear the cache and ensure all variables are determined!
                 clearCache();

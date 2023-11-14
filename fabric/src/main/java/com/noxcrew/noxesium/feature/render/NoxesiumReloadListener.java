@@ -18,9 +18,7 @@ public class NoxesiumReloadListener implements SimpleSynchronousResourceReloadLi
 
     @Override
     public void onResourceManagerReload(ResourceManager resourceManager) {
-        for (var cache : ElementCache.getAllCaches()) {
-            cache.clearCache();
-        }
+        ElementCache.getAllCaches().forEach(ElementCache::clearCache);
     }
 
     @Override
