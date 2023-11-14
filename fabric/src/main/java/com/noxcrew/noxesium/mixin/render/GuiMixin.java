@@ -26,6 +26,7 @@ import net.minecraft.world.entity.PlayerRideableJumping;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.scores.DisplaySlot;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -277,7 +278,9 @@ public abstract class GuiMixin {
             ChatCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
 
             // Render the tab list
-            if ((this.minecraft.options.keyPlayerList.isDown() && !this.minecraft.isLocalServer()) || this.minecraft.player.connection.getListedOnlinePlayers().size() > 1) {
+            var scoreboard = minecraft.level.getScoreboard();
+            var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
+            if (this.minecraft.options.keyPlayerList.isDown() && (!this.minecraft.isLocalServer() || this.minecraft.player.connection.getListedOnlinePlayers().size() >= 1 || objective != null)) {
                 TabListCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
             }
 
@@ -295,11 +298,34 @@ public abstract class GuiMixin {
 
                 if (NoxesiumMod.enableExperimentalPatches != null) {
                     // Draw the state of experimental patches
-                    var text2 = Component.translatable("debug.noxesium_overlay." + (NoxesiumMod.enableExperimentalPatches ? "on" : "off"));
+                    var text2 = Component.translatable("debug.noxesium_overlay.on");
                     graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
                     graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
                 }
             }
+        }
+    }
+
+    @Inject(method = "renderSavingIndicator", at = @At("RETURN"))
+    private void injected(GuiGraphics graphics, CallbackInfo ci) {
+        var font = minecraft.font;
+
+        // If experimental patches are applied we don't render here
+        if (!NoxesiumMod.shouldDisableExperimentalPerformancePatches()) return;
+
+        // Don't render when the debug screen is shown as it would overlap
+        if (NoxesiumMod.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
+            // Draw the current fps
+            var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
+            var lineOffset = font.lineHeight + 5;
+            var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
+            graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
+            graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
+
+            // Draw the state of experimental patches
+            var text2 = Component.translatable("debug.noxesium_overlay.off");
+            graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
+            graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
         }
     }
 
