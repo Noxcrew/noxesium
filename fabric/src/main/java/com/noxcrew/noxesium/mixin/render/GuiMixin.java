@@ -188,7 +188,9 @@ public abstract class GuiMixin {
         }
 
         if (showGui) {
-            // Vanilla runs enableBlend() again here but it's already enabled so we ignore that.
+            // Vanilla re-enables blend here for safety, presumably for the crosshair as that needs blending on!
+            RenderSystem.enableBlend();
+
             // (TODO Optimize) Render the crosshair and attack indicator
             this.renderCrosshair(graphics);
 
@@ -270,6 +272,9 @@ public abstract class GuiMixin {
 
             // Render the scoreboard
             ScoreboardCache.getInstance().render(graphics, screenWidth, screenHeight, partialTicks, minecraft);
+
+            // Ensure blending is on
+            RenderSystem.enableBlend();
 
             // Render the chat overlay
             ChatCache.mouseX = Mth.floor(this.minecraft.mouseHandler.xpos() * (double) window.getGuiScaledWidth() / (double) window.getScreenWidth());

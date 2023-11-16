@@ -9,6 +9,8 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.noxcrew.noxesium.feature.render.CustomShaderManager;
+import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
@@ -70,7 +72,7 @@ public class ElementBuffer implements Closeable {
     /**
      * Runs the given runnable and sets back the blending state after.
      */
-    public static void withBlend(boolean state, Runnable runnable) {
+    public static void withBlend(Boolean state, Runnable runnable) {
         // Cache the current blend state so we can return to it
         var currentBlend = GlStateManager.BLEND.mode.enabled;
         var srcRgb = GlStateManager.BLEND.srcRgb;
@@ -79,7 +81,7 @@ public class ElementBuffer implements Closeable {
         var dstAlpha = GlStateManager.BLEND.dstAlpha;
 
         // Set the blend state, run the function and revert the blend state
-        if (currentBlend != state) {
+        if (state != null && currentBlend != state) {
             if (state) {
                 RenderSystem.enableBlend();
             } else {
@@ -89,16 +91,14 @@ public class ElementBuffer implements Closeable {
         blendOverride = state;
         runnable.run();
         blendOverride = null;
-        if (currentBlend != state) {
+        if (state != null && currentBlend != state) {
             if (state) {
                 RenderSystem.disableBlend();
             } else {
                 RenderSystem.enableBlend();
             }
         }
-        if (state) {
-            GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
-        }
+        GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
     }
 
     /**
@@ -138,10 +138,10 @@ public class ElementBuffer implements Closeable {
 
                     var builder = new BufferBuilder(4);
                     builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                    builder.vertex(0.0f, screenHeight, -90.0f).uv(0.0f, 0.0f).endVertex();
-                    builder.vertex(screenWidth, screenHeight, -90.0f).uv(1.0f, 0.0f).endVertex();
-                    builder.vertex(screenWidth, 0.0f, -90.0f).uv(1.0f, 1.0f).endVertex();
-                    builder.vertex(0.0f, 0.0f, -90.0f).uv(0.0f, 1.0f).endVertex();
+                    builder.vertex(0.0f, screenHeight, 0.0f).uv(0.0f, 0.0f).endVertex();
+                    builder.vertex(screenWidth, screenHeight, 0.0f).uv(1.0f, 0.0f).endVertex();
+                    builder.vertex(screenWidth, 0.0f, 0.0f).uv(1.0f, 1.0f).endVertex();
+                    builder.vertex(0.0f, 0.0f, 0.0f).uv(0.0f, 1.0f).endVertex();
                     buffer.upload(builder.end());
 
                     if (target == null) {
@@ -195,7 +195,7 @@ public class ElementBuffer implements Closeable {
         RenderSystem.depthMask(false);
         withBlend(true, () -> {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(CustomShaderManager::getPositionTexBlendShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getTextureId());
             buffer.bind();

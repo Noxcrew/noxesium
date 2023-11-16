@@ -79,8 +79,11 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
         if (isEmpty(cache)) return;
 
         try {
+            // Flush any remaining buffer from a previous element
+            graphics.flush();
+
             // Draw the buffered contents of the element to the screen as a base!
-            var screenBuffer = getBuffer(cache);
+            var screenBuffer = getBuffer(graphics, cache);
             screenBuffer.draw();
 
             // Draw the direct parts on top each tick
@@ -137,7 +140,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Returns the current buffer to use for drawing this element.
      * The buffer is automatically redrawn if it's not up-to-date.
      */
-    public ElementBuffer getBuffer(T cache) {
+    public ElementBuffer getBuffer(GuiGraphics graphics, T cache) {
         RenderSystem.assertOnRenderThread();
         var minecraft = Minecraft.getInstance();
 
@@ -153,13 +156,12 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
         if (needsRedraw && buffer.isValid()) {
             var target = this.buffer.getTarget();
             try {
-                var graphics = new GuiGraphics(minecraft, minecraft.renderBuffers().bufferSource());
-                target.setClearColor(0f, 0f, 0f, 0f);
+                target.setClearColor(0, 0, 0, 0);
                 target.clear(ON_OSX);
                 target.bindWrite(false);
                 render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, true);
-                graphics.flush();
             } finally {
+                graphics.flush();
                 needsRedraw = false;
                 target.unbindWrite();
                 minecraft.getMainRenderTarget().bindWrite(true);

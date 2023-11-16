@@ -14,8 +14,8 @@ import java.util.UUID;
  * Stores information about the state of the tab list.
  */
 public record TabListInformation(
-        List<BakedComponent> header,
-        List<BakedComponent> footer,
+        @Nullable List<BakedComponent> header,
+        @Nullable List<BakedComponent> footer,
         List<PlayerInfo> players,
         List<UUID> blinking,
         Map<UUID, BakedComponent> names,

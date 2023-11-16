@@ -45,6 +45,7 @@
     "render.ChatComponentMixin",
     "render.ChatListenerMixin",
     "render.ClientPacketListenerMixin",
+    "render.GameRendererMixin",
     "render.GlStateManagerMixin",
     "render.GuiMixin",
     "render.PlayerInfoMixin",

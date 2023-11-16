@@ -79,3 +79,5 @@ accessible field net/minecraft/client/gui/Gui titleTime I
 accessible field net/minecraft/client/gui/Gui titleFadeInTime I
 accessible field net/minecraft/client/gui/Gui titleStayTime I
 accessible field net/minecraft/client/gui/Gui titleFadeOutTime I
+
+accessible method net/minecraft/client/renderer/GameRenderer preloadShader (Lnet/minecraft/server/packs/resources/ResourceProvider;Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;)Lnet/minecraft/client/renderer/ShaderInstance;

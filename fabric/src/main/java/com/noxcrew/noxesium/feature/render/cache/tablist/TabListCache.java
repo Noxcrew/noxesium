@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.feature.render.cache.tablist;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import it.unimi.dsi.fastutil.Hash;
@@ -204,11 +206,14 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var left = screenWidth / 2 - (columnWidth * columns + (columns - 1) * 5) / 2;
         var width = columnWidth * columns + (columns - 1) * 5;
 
-        var headerLines = new ArrayList<BakedComponent>();
-        var footerLines = new ArrayList<BakedComponent>();
+        ArrayList<BakedComponent> headerLines = null;
+        ArrayList<BakedComponent> footerLines = null;
 
         if (header != null) {
             var lines = font.split(header, screenWidth - 50);
+            if (!lines.isEmpty()) {
+                headerLines = new ArrayList<>();
+            }
             for (var line : lines) {
                 var baked = new BakedComponent(line, font);
                 width = Math.max(width, baked.width);
@@ -217,6 +222,9 @@ public class TabListCache extends ElementCache<TabListInformation> {
         }
         if (footer != null) {
             var lines = font.split(footer, screenWidth - 50);
+            if (!lines.isEmpty()) {
+                footerLines = new ArrayList<>();
+            }
             for (var line : lines) {
                 var baked = new BakedComponent(line, font);
                 width = Math.max(width, baked.width);
@@ -272,7 +280,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
         }
 
         var playerCount = cache.players().size();
-        var background = minecraft.options.getBackgroundColor(0x20FFFFFF);
+        var highlightBackground = minecraft.options.getBackgroundColor(553648127);
         for (int index = 0; index < playerCount; ++index) {
             // Optimization: if the tab list is so big it pushes the rest off-screen stop rendering!
             // Only necessary when doing it real-time.
@@ -287,7 +295,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             var y = height + row * 9;
 
             if (buffered) {
-                graphics.fill(x, y, x + columnWidth, y + 8, background);
+                graphics.fill(x, y, x + columnWidth, y + 8, highlightBackground);
             }
 
             if (index >= cache.players().size()) continue;
@@ -296,6 +304,9 @@ public class TabListCache extends ElementCache<TabListInformation> {
 
             if (cache.showSkins()) {
                 if (buffered) {
+                    // Turn on blending after the background drawing for the player heads
+                    RenderSystem.enableBlend();
+
                     var player = minecraft.level.getPlayerByUUID(profile.getId());
                     var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
                     PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
