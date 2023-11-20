@@ -103,6 +103,10 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Returns the value of the variable called name cast as T.
      */
     public <V> V getVariable(String name) {
+        // Fallback to ensure there is always some data!
+        if (!values.containsKey(name)) {
+            return (V) variables.get(name).apply(Minecraft.getInstance(), 0f);
+        }
         return (V) values.get(name);
     }
 
