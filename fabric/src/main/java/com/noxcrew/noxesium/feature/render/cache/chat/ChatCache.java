@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.chat;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
+import com.noxcrew.noxesium.mixin.render.ChatComponentExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,8 +38,9 @@ public class ChatCache extends ElementCache<ChatInformation> {
         // Re-evaluate which lines are fading out every tick
         registerVariable("fading", (minecraft, partialTicks) -> {
             var chatOverlay = minecraft.gui.getChat();
+            var chatExt = (ChatComponentExt) chatOverlay;
             var focused = chatOverlay.isChatFocused();
-            var messages = new ArrayList<>(chatOverlay.trimmedMessages);
+            var messages = new ArrayList<>(chatExt.getTrimmedMessages());
             if (messages.isEmpty()) return List.of();
 
             var fading = new ArrayList<>();
@@ -72,14 +74,15 @@ public class ChatCache extends ElementCache<ChatInformation> {
     @Override
     protected ChatInformation createCache(Minecraft minecraft, Font font) {
         var chatOverlay = minecraft.gui.getChat();
-        if (chatOverlay.isChatHidden() || chatOverlay.trimmedMessages.isEmpty()) {
+        var chatExt = (ChatComponentExt) chatOverlay;
+        if (chatOverlay.isChatHidden() || chatExt.getTrimmedMessages().isEmpty()) {
             return ChatInformation.EMPTY;
         }
 
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
         var focused = chatOverlay.isChatFocused();
-        var messages = new ArrayList<>(chatOverlay.trimmedMessages);
+        var messages = new ArrayList<>(chatExt.getTrimmedMessages());
         List<Integer> fading = getVariable("fading");
 
         for (var line : messages) {
@@ -88,8 +91,8 @@ public class ChatCache extends ElementCache<ChatInformation> {
         }
         return new ChatInformation(
                 messages,
-                chatOverlay.chatScrollbarPos,
-                chatOverlay.newMessageSinceScroll,
+                chatExt.getChatScrollbarPos(),
+                chatExt.getNewMessageSinceScroll(),
                 focused,
                 new BakedComponent(Component.translatable("chat.queue", queueSize), font),
                 lines,

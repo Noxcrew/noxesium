@@ -120,7 +120,7 @@ public abstract class GuiMixin {
 
     /**
      * @author Aeltumn
-     * @reason Redo all UI rendering to be batched
+     * @reason Redo all UI rendering to be much faster
      */
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
@@ -134,6 +134,24 @@ public abstract class GuiMixin {
               elements not worth tracking on the profiler.
             - Entire method is replaced as any optimizations from other mods just
               get in the way with how thorough Noxesium's optimizations are.
+            - These optimizations will stay hidden behind an optional toggle for
+              the foreseeable future since they cause a LOT of compatibility issues:
+                - Any mod adding a UI element (e.g. AppleSkin) will not function at all
+                - Any server using excessive text shaders will not have those work
+                - Any animated UI sprites will not animate at all
+
+            The plan is to start solving these compatibility issues over time, possibly
+            tearing apart this method override and overriding individual calls to sub-methods.
+            That should allow 3rd party mods to still function in their own context to some
+            degree. ImmediatelyFast/Exordium take this approach by injecting around the methods
+            but that doesn't work here since we replace the entire implementation.
+
+            At least I want to look into detecting if animated sprites are used or if text shaders
+            are used that depend on the current time and specifically draw those text strings
+            every frame. The goal of this optimization is to make zero compromises though.
+
+            Regardless the whole system causes far too many compatibility issues, so it's all staying
+            hidden behind an experimental toggle.
          */
 
         var window = this.minecraft.getWindow();
@@ -323,6 +341,8 @@ public abstract class GuiMixin {
             // Draw the current fps
             var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
             var lineOffset = font.lineHeight + 5;
+
+            // FIXME Can't just check for a different mod like this that's trash
             var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
             graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
             graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);

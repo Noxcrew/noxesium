@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.actionbar;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
+import com.noxcrew.noxesium.mixin.render.GuiExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,7 +29,8 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     public ActionBarCache() {
         registerVariable("alpha", (minecraft, partialTicks) -> {
             var gui = minecraft.gui;
-            var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
+            var guiExt = (GuiExt) gui;
+            var remainingTicks = (float) guiExt.getOverlayMessageTime() - partialTicks;
             var alpha = (int) (remainingTicks * 255.0F / 20.0F);
             return Mth.clamp(alpha, 0, 255);
         });
@@ -37,17 +39,19 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     @Override
     protected ActionBarInformation createCache(Minecraft minecraft, Font font) {
         var gui = minecraft.gui;
-        if (gui.overlayMessageString == null || gui.overlayMessageTime <= 0) {
+        var guiExt = (GuiExt) gui;
+        if (guiExt.getOverlayMessage() == null || guiExt.getOverlayMessageTime() <= 0) {
             return ActionBarInformation.EMPTY;
         }
-        var baked = new BakedComponent(gui.overlayMessageString, font);
+        var baked = new BakedComponent(guiExt.getOverlayMessage(), font);
         return new ActionBarInformation(baked, getVariable("alpha"));
     }
 
     @Override
     protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var gui = minecraft.gui;
-        var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
+        var guiExt = (GuiExt) gui;
+        var remainingTicks = (float) guiExt.getOverlayMessageTime() - partialTicks;
 
         // If at least a transparency of 8 is left
         var alpha = cache.alpha();
@@ -58,7 +62,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
 
             // If the text is being animated we alter the color (used by jukeboxes)
             var textColor = 16777215;
-            if (gui.animateOverlayMessageColor) {
+            if (guiExt.getShouldAnimateOverlayMessageColor()) {
                 textColor = Mth.hsvToRgb(remainingTicks / 50.0F, 0.7F, 0.6F) & 16777215;
 
                 // Don't draw to anything but the dynamic layer if the text is changing!
@@ -75,7 +79,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
                 var left = -width / 2;
                 graphics.fill(left - 2, offset - 2, left + width + 2, offset + 9 + 2, backgroundColor);
             }
-            if (gui.animateOverlayMessageColor || cache.component().shouldDraw(dynamic)) {
+            if (guiExt.getShouldAnimateOverlayMessageColor() || cache.component().shouldDraw(dynamic)) {
                 cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
             }
             pose.popPose();

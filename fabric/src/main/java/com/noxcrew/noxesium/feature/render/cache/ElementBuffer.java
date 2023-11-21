@@ -146,6 +146,13 @@ public class ElementBuffer implements Closeable {
                 RenderSystem.disableBlend();
             }
         }, () -> {
+            /*
+                Using a custom shader here is in practice completely useless. The custom shader does
+                nothing that the built-in position-tex shader does not do. At best, it prevents any
+                servers from messing with this shader, but that shouldn't really matter anyway.
+
+                It's more a remnant of many, many attempts to fix blending issues.
+             */
             RenderSystem.setShader(CustomShaderManager::getPositionTexBlendShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getTextureId());

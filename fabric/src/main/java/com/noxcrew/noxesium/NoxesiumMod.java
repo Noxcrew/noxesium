@@ -51,7 +51,7 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * Whether this is a development version of Noxesium.
      */
-    public static final boolean DEVELOPMENT_VERSION = true;
+    public static final boolean DEVELOPMENT_VERSION = false;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String NAMESPACE = "noxesium";
@@ -94,14 +94,24 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     /**
+     * Returns whether experimental performance are enabled in the configuration.
+     */
+    public static boolean hasConfiguredPerformancePatches() {
+        if (isUsingClothConfig) {
+            return ClothConfigIntegration.getExperimentalPerformancePatches();
+        }
+        return false;
+    }
+
+    /**
      * Whether the experimental performance patches should be used.
      */
     public static boolean shouldDisableExperimentalPerformancePatches() {
-        if (enableExperimentalPatches != null) {
-            return !enableExperimentalPatches;
-        }
-        if (isUsingClothConfig) {
-            return !ClothConfigIntegration.getExperimentalPerformancePatches();
+        if (hasConfiguredPerformancePatches()) {
+            if (enableExperimentalPatches != null) {
+                return !enableExperimentalPatches;
+            }
+            return false;
         }
         return true;
     }

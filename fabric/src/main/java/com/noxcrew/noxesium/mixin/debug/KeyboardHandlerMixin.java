@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Adds the F3 + Z debug hotkey to dump a file with commands to create the current UI.
+ * Adds various debug hotkeys for Noxesium.
  */
 @Mixin(KeyboardHandler.class)
 public abstract class KeyboardHandlerMixin {
@@ -45,7 +45,7 @@ public abstract class KeyboardHandlerMixin {
     public void redirect(ChatComponent instance, Component component) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
-                instance.addMessage(Component.translatable("debug.experimental_patches.help"));
+                if (NoxesiumMod.hasConfiguredPerformancePatches()) instance.addMessage(Component.translatable("debug.experimental_patches.help"));
                 if (!NoxesiumMod.isUsingClothConfig) instance.addMessage(Component.translatable("debug.fps_overlay.help"));
                 if (NoxesiumMod.DEVELOPMENT_VERSION) instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
@@ -69,7 +69,7 @@ public abstract class KeyboardHandlerMixin {
                 NoxesiumMod.fpsOverlay = false;
                 this.debugFeedbackTranslated("debug.fps_overlay.disabled");
             }
-        } else if (keyCode == InputConstants.KEY_W) {
+        } else if (keyCode == InputConstants.KEY_W && NoxesiumMod.hasConfiguredPerformancePatches()) {
             cir.setReturnValue(true);
 
             if (Objects.equals(NoxesiumMod.enableExperimentalPatches, false)) {

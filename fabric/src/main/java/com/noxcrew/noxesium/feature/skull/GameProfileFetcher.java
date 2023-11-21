@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 
 public class GameProfileFetcher {
 
+    public static final String PROPERTY_TEXTURES = "textures";
+
     /**
      * Fills in the incomplete parts of the given profile, given the uuid is present.
      */
@@ -28,7 +30,7 @@ public class GameProfileFetcher {
         CompletableFuture.runAsync(() -> {
             // Try to use the session service to fill out the data, but otherwise we just use what we have
             var newProfile = profile;
-            Property property = Iterables.getFirst(newProfile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
+            Property property = Iterables.getFirst(newProfile.getProperties().get(PROPERTY_TEXTURES), null);
             if (property == null) {
                 newProfile = SkullBlockEntityExt.getSessionService().fetchProfile(newProfile.getId(), true).profile();
             }

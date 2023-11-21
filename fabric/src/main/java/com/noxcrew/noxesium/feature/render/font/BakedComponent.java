@@ -93,9 +93,9 @@ public class BakedComponent {
      * Draws this string to [graphics] at [x], [y] in [color] without shadow.
      */
     public int draw(GuiGraphics graphics, Font font, int x, int y, int color) {
-        var matrix = graphics.pose.last().pose();
-        var bufferSource = graphics.bufferSource;
-        var newColor = Font.adjustColor(color);
+        var matrix = graphics.pose().last().pose();
+        var bufferSource = graphics.bufferSource();
+        var newColor = adjustColor(color);
         var matrixCopy = matrix;
         if (shadow) {
             matrixCopy = new Matrix4f(matrix);
@@ -105,6 +105,10 @@ public class BakedComponent {
 
         var fx = renderOutput.finish(font, x, y, newColor, false, matrixCopy, bufferSource);
         return (int) fx + (shadow ? 1 : 0);
+    }
+
+    private static int adjustColor(int i) {
+        return (i & -67108864) == 0 ? i | -16777216 : i;
     }
 
     /**

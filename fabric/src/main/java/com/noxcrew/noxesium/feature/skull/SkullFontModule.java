@@ -149,7 +149,7 @@ public class SkullFontModule implements NoxesiumModule {
 
             try {
                 var gameProfile = new GameProfile(Util.NIL_UUID, "dummy_mcdummyface");
-                gameProfile.getProperties().put(SkinManager.PROPERTY_TEXTURES, new Property(SkinManager.PROPERTY_TEXTURES, texture, ""));
+                gameProfile.getProperties().put(GameProfileFetcher.PROPERTY_TEXTURES, new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, ""));
 
                 // Let the session servers extract the texture, don't check the signature
                 var information = SkullBlockEntityExt.getSessionService().getTextures(gameProfile, false).get(MinecraftProfileTexture.Type.SKIN);

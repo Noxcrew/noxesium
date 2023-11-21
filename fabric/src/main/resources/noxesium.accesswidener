@@ -5,21 +5,25 @@ accessible class net/minecraft/client/resources/SkinManager$TextureCache
 accessible class net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection$RebuildTask
 accessible class net/minecraft/client/renderer/chunk/SectionRenderDispatcher$RenderSection$RebuildTask$CompileResults
 
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible class net/minecraft/client/renderer/RenderStateShard$TextureStateShard
+accessible field net/minecraft/client/renderer/RenderType$CompositeRenderType state Lnet/minecraft/client/renderer/RenderType$CompositeState;
+accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
+accessible field net/minecraft/client/renderer/RenderStateShard$TextureStateShard texture Ljava/util/Optional;
+accessible field net/minecraft/client/renderer/RenderStateShard name Ljava/lang/String;
+
+accessible class com/mojang/blaze3d/platform/GlStateManager$BlendState
+accessible field com/mojang/blaze3d/platform/GlStateManager BLEND Lcom/mojang/blaze3d/platform/GlStateManager$BlendState;
+accessible field com/mojang/blaze3d/platform/GlStateManager$BooleanState enabled Z
+
+accessible class net/minecraft/client/resources/SkinManager$TextureInfo
+
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides bakeModel (Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Lnet/minecraft/client/renderer/block/model/ItemOverride;)Lnet/minecraft/client/resources/model/BakedModel;
 
 accessible method com/mojang/blaze3d/audio/Channel pumpBuffers (I)V
 accessible method com/mojang/blaze3d/audio/Channel calculateBufferSize (Ljavax/sound/sampled/AudioFormat;I)I
-
-accessible field net/minecraft/client/resources/SkinManager PROPERTY_TEXTURES Ljava/lang/String;
-
-accessible class net/minecraft/client/renderer/RenderType$CompositeState
-
-accessible method net/minecraft/client/gui/Gui displayScoreboardSidebar (Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/scores/Objective;)V
-
-accessible field net/minecraft/client/gui/GuiGraphics bufferSource Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;
-accessible field net/minecraft/client/gui/GuiGraphics pose Lcom/mojang/blaze3d/vertex/PoseStack;
-accessible method net/minecraft/client/gui/Font adjustColor (I)I
 
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph u0 F
 accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph v0 F
@@ -28,56 +32,23 @@ accessible field net/minecraft/client/gui/font/glyphs/BakedGlyph v1 F
 
 accessible method net/minecraft/client/gui/Font getFontSet (Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/gui/font/FontSet;
 accessible field net/minecraft/client/gui/Font filterFishyGlyphs Z
+accessible method net/minecraft/client/gui/Font renderChar (Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V
 
 accessible field net/minecraft/client/gui/font/FontSet glyphsByWidth Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;
 accessible field net/minecraft/client/gui/font/FontSet missingGlyph Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;
 
-accessible method net/minecraft/client/gui/Font renderChar (Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;ZZFFFLorg/joml/Matrix4f;Lcom/mojang/blaze3d/vertex/VertexConsumer;FFFFI)V
-
-accessible field net/minecraft/client/gui/font/FontSet name Lnet/minecraft/resources/ResourceLocation;
-accessible field net/minecraft/client/gui/font/FontSet textures Ljava/util/List;
-
-accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
-accessible field net/minecraft/client/renderer/RenderType$CompositeRenderType state Lnet/minecraft/client/renderer/RenderType$CompositeState;
-accessible field net/minecraft/client/renderer/RenderType$CompositeState textureState Lnet/minecraft/client/renderer/RenderStateShard$EmptyTextureStateShard;
-accessible class net/minecraft/client/renderer/RenderStateShard$TextureStateShard
-accessible field net/minecraft/client/renderer/RenderStateShard$TextureStateShard texture Ljava/util/Optional;
-accessible field net/minecraft/client/renderer/RenderStateShard name Ljava/lang/String;
-
-accessible field com/mojang/blaze3d/platform/GlStateManager BLEND Lcom/mojang/blaze3d/platform/GlStateManager$BlendState;
-accessible class com/mojang/blaze3d/platform/GlStateManager$BlendState
-accessible field com/mojang/blaze3d/platform/GlStateManager$BooleanState enabled Z
-
 accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
 accessible field net/minecraft/client/gui/components/LerpingBossEvent targetPercent F
-
-accessible field net/minecraft/client/gui/Gui overlayMessageTime I
-accessible field net/minecraft/client/gui/Gui animateOverlayMessageColor Z
-accessible field net/minecraft/client/gui/Gui overlayMessageString Lnet/minecraft/network/chat/Component;
 
 accessible field net/minecraft/client/gui/components/PlayerTabOverlay header Lnet/minecraft/network/chat/Component;
 accessible field net/minecraft/client/gui/components/PlayerTabOverlay footer Lnet/minecraft/network/chat/Component;
 
-accessible field net/minecraft/client/gui/components/ChatComponent trimmedMessages Ljava/util/List;
 accessible method net/minecraft/client/gui/components/ChatComponent isChatHidden ()Z
 accessible method net/minecraft/client/gui/components/ChatComponent isChatFocused ()Z
 accessible method net/minecraft/client/gui/components/ChatComponent getMessageEndIndexAt (DD)I
 accessible method net/minecraft/client/gui/components/ChatComponent screenToChatX (D)D
 accessible method net/minecraft/client/gui/components/ChatComponent screenToChatY (D)D
-accessible field net/minecraft/client/gui/components/ChatComponent chatScrollbarPos I
 accessible method net/minecraft/client/gui/components/ChatComponent getTimeFactor (I)D
-accessible field net/minecraft/client/gui/components/ChatComponent newMessageSinceScroll Z
 accessible method net/minecraft/client/gui/components/ChatComponent getLineHeight ()I
-
-accessible class net/minecraft/client/resources/SkinManager$TextureInfo
-accessible field com/mojang/blaze3d/platform/GlStateManager DEPTH Lcom/mojang/blaze3d/platform/GlStateManager$DepthState;
-accessible field com/mojang/blaze3d/platform/GlStateManager$DepthState mode Lcom/mojang/blaze3d/platform/GlStateManager$BooleanState;
-
-accessible field net/minecraft/client/gui/Gui title Lnet/minecraft/network/chat/Component;
-accessible field net/minecraft/client/gui/Gui subtitle Lnet/minecraft/network/chat/Component;
-accessible field net/minecraft/client/gui/Gui titleTime I
-accessible field net/minecraft/client/gui/Gui titleFadeInTime I
-accessible field net/minecraft/client/gui/Gui titleStayTime I
-accessible field net/minecraft/client/gui/Gui titleFadeOutTime I
 
 accessible method net/minecraft/client/renderer/GameRenderer preloadShader (Lnet/minecraft/server/packs/resources/ResourceProvider;Ljava/lang/String;Lcom/mojang/blaze3d/vertex/VertexFormat;)Lnet/minecraft/client/renderer/ShaderInstance;

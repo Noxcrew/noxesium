@@ -66,7 +66,7 @@ public abstract class ComponentSerializerMixin {
                         uuid = UUID.fromString(stringUuid);
                         GameProfile gameprofile = new GameProfile(uuid, "dummy_mcdummyface");
                         GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
-                            var property = Iterables.getFirst(profile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
+                            var property = Iterables.getFirst(profile.getProperties().get(GameProfileFetcher.PROPERTY_TEXTURES), null);
                             if (property != null) {
                                 texture.complete(property.value());
                             }
@@ -101,7 +101,7 @@ public abstract class ComponentSerializerMixin {
                     uuid = UUID.fromString(GsonHelper.getAsString(jsonObject2, "uuid"));
                     GameProfile gameprofile = new GameProfile(uuid, "dummy_mcdummyface");
                     GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
-                        var property = Iterables.getFirst(profile.getProperties().get(SkinManager.PROPERTY_TEXTURES), null);
+                        var property = Iterables.getFirst(profile.getProperties().get(GameProfileFetcher.PROPERTY_TEXTURES), null);
                         if (property != null) {
                             texture.complete(property.value());
                         }

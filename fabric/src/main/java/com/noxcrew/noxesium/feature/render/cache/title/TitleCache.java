@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.title;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
+import com.noxcrew.noxesium.mixin.render.GuiExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,35 +29,37 @@ public class TitleCache extends ElementCache<TitleInformation> {
     public TitleCache() {
         registerVariable("alpha", (minecraft, partialTicks) -> {
             var gui = minecraft.gui;
+            var guiExt = (GuiExt) gui;
             var alpha = 255;
-            var ticksElapsed = (float) gui.titleTime - partialTicks;
+            var ticksElapsed = (float) guiExt.getTitleTime() - partialTicks;
 
-            if (gui.titleTime > gui.titleFadeOutTime + gui.titleStayTime) {
-                var fadeFactor = (float) (gui.titleFadeInTime + gui.titleStayTime + gui.titleFadeOutTime) - ticksElapsed;
-                alpha = (int) (fadeFactor * 255.0F / (float) gui.titleFadeInTime);
+            if (guiExt.getTitleTime() > guiExt.getTitleFadeOutTime() + guiExt.getTitleStayTime()) {
+                var fadeFactor = (float) (guiExt.getTitleFadeInTime() + guiExt.getTitleStayTime() + guiExt.getTitleFadeOutTime()) - ticksElapsed;
+                alpha = (int) (fadeFactor * 255.0F / (float) guiExt.getTitleFadeInTime());
             }
 
-            if (gui.titleTime <= gui.titleFadeOutTime) {
-                alpha = (int) (ticksElapsed * 255.0F / (float) gui.titleFadeOutTime);
+            if (guiExt.getTitleTime() <= guiExt.getTitleFadeOutTime()) {
+                alpha = (int) (ticksElapsed * 255.0F / (float) guiExt.getTitleFadeOutTime());
             }
 
             return Mth.clamp(alpha, 0, 255);
         });
 
         // Ensure we re-draw if the title time goes from 0 to not 0
-        registerVariable("title_visible", (minecraft, partialTicks) -> minecraft.gui.titleTime >= 0);
+        registerVariable("title_visible", (minecraft, partialTicks) -> ((GuiExt) minecraft.gui).getTitleTime() >= 0);
     }
 
     @Override
     protected TitleInformation createCache(Minecraft minecraft, Font font) {
         var gui = minecraft.gui;
-        if (gui.title == null || gui.titleTime <= 0) {
+        var guiExt = (GuiExt) gui;
+        if (guiExt.getTitle() == null || guiExt.getTitleTime() <= 0) {
             return TitleInformation.EMPTY;
         }
 
         return new TitleInformation(
-                new BakedComponent(gui.title, font),
-                gui.subtitle == null ? null : new BakedComponent(gui.subtitle, font),
+                new BakedComponent(guiExt.getTitle(), font),
+                guiExt.getSubtitle() == null ? null : new BakedComponent(guiExt.getSubtitle(), font),
                 getVariable("alpha")
         );
     }
