@@ -319,8 +319,8 @@ public abstract class GuiMixin {
                 graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
                 graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
 
+                // Draw the state of experimental patches if the keybind is being used
                 if (NoxesiumMod.enableExperimentalPatches != null) {
-                    // Draw the state of experimental patches
                     var text2 = Component.translatable("debug.noxesium_overlay.on");
                     graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
                     graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
@@ -347,10 +347,12 @@ public abstract class GuiMixin {
             graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
             graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
 
-            // Draw the state of experimental patches
-            var text2 = Component.translatable("debug.noxesium_overlay.off");
-            graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
-            graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
+            // Draw the state of experimental patches if they are enabled in the config but disabled with the keybind!
+            if (NoxesiumMod.hasConfiguredPerformancePatches()) {
+                var text2 = Component.translatable("debug.noxesium_overlay.off");
+                graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
+                graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
+            }
         }
     }
 
