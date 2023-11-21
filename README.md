@@ -37,6 +37,7 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 - Allow servers to play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
 
 ### Performance
+- (Experimental, disabled by default) Massively optimizes UI rendering by buffering components and optimizing text rendering
 - Optimizes CustomModelData lookups for item models
 - Optimizes color lookups for leather armor
 - Caches color provider results in Sodium
