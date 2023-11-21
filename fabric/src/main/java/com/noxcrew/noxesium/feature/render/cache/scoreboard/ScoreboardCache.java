@@ -147,11 +147,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             }
         }
 
-        // Remove when porting to 1.20.3; do not draw empty scoreboards
-        if (lines.isEmpty()) {
-            return ScoreboardInformation.EMPTY;
-        }
-
         return new ScoreboardInformation(
                 objective,
                 players,

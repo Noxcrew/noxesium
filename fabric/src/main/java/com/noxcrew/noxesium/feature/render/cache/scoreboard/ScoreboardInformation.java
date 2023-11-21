@@ -40,6 +40,7 @@ public record ScoreboardInformation(
 
     @Override
     public boolean isEmpty() {
-        return this == EMPTY;
+        // See empty lines as empty scoreboard!
+        return this == EMPTY || lines.isEmpty();
     }
 }
