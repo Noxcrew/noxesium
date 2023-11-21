@@ -21,4 +21,9 @@ public record TitleInformation(
      * The fallback contents if the title is absent.
      */
     public static final TitleInformation EMPTY = new TitleInformation(BakedComponent.EMPTY, null, 255);
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

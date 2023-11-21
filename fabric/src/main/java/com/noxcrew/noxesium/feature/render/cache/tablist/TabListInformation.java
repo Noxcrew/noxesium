@@ -91,4 +91,9 @@ public record TabListInformation(
             return this.blinkUntilTick <= currentTick;
         }
     }
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

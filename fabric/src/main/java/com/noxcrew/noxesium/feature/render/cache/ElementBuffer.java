@@ -10,12 +10,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.noxcrew.noxesium.feature.render.CustomShaderManager;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
-import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.minecraft.client.Minecraft.ON_OSX;
@@ -32,73 +28,17 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public class ElementBuffer implements Closeable {
 
-    /**
-     * If true, the buffer is drawn to the screen instead of on top so
-     * its contents can be checked properly.
-     */
-    public static final Class<?> DEBUG_BUFFER = null;
-    public static RenderTarget CURRENT_BUFFER = null;
-
-    public static Boolean blendOverride = null;
-
-    private static final Set<String> used = new HashSet<>();
-
     private RenderTarget target;
     private VertexBuffer buffer;
     private double screenWidth;
     private double screenHeight;
+    private boolean empty;
 
+    private final boolean blending;
     private final AtomicBoolean configuring = new AtomicBoolean(false);
-    private final Class<?> klass;
 
-    public ElementBuffer(Class<?> klass) {
-        this.klass = klass;
-    }
-
-    /**
-     * Prints the current render state at [location].
-     */
-    public static void printRenderState(String location) {
-        if (!used.add(location)) return;
-        var currentBlend = GlStateManager.BLEND.mode.enabled;
-        var currentDepth = GlStateManager.DEPTH.mode.enabled;
-        var srcRgb = GlStateManager.BLEND.srcRgb;
-        var dstRgb = GlStateManager.BLEND.dstRgb;
-        var srcAlpha = GlStateManager.BLEND.srcAlpha;
-        var dstAlpha = GlStateManager.BLEND.dstAlpha;
-        System.out.println("[" + location + "] BLEND: " + currentBlend + ", DEPTH: " + currentDepth + ", srcRgb: " + srcRgb + ", dstRgb: " + dstRgb + ", srcAlpha: " + srcAlpha + ", dstAlpha: " + dstAlpha);
-    }
-
-    /**
-     * Runs the given runnable and sets back the blending state after.
-     */
-    public static void withBlend(Boolean state, Runnable runnable) {
-        // Cache the current blend state so we can return to it
-        var currentBlend = GlStateManager.BLEND.mode.enabled;
-        var srcRgb = GlStateManager.BLEND.srcRgb;
-        var dstRgb = GlStateManager.BLEND.dstRgb;
-        var srcAlpha = GlStateManager.BLEND.srcAlpha;
-        var dstAlpha = GlStateManager.BLEND.dstAlpha;
-
-        // Set the blend state, run the function and revert the blend state
-        if (state != null && currentBlend != state) {
-            if (state) {
-                RenderSystem.enableBlend();
-            } else {
-                RenderSystem.disableBlend();
-            }
-        }
-        blendOverride = state;
-        runnable.run();
-        blendOverride = null;
-        if (state != null && currentBlend != state) {
-            if (state) {
-                RenderSystem.disableBlend();
-            } else {
-                RenderSystem.enableBlend();
-            }
-        }
-        GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
+    public ElementBuffer(boolean blending) {
+        this.blending = blending;
     }
 
     /**
@@ -106,6 +46,20 @@ public class ElementBuffer implements Closeable {
      */
     public boolean isValid() {
         return buffer != null;
+    }
+
+    /**
+     * Returns whether this buffer is empty.
+     */
+    public boolean isEmpty() {
+        return empty;
+    }
+
+    /**
+     * Sets whether this buffer is empty.
+     */
+    public void setEmpty(boolean empty) {
+        this.empty = empty;
     }
 
     /**
@@ -120,8 +74,8 @@ public class ElementBuffer implements Closeable {
         // Do the screen size calculation manually so we can use doubles which
         // give necessary precision.
         var guiScale = window.getGuiScale();
-        var screenWidth = ((float)width) / guiScale;
-        var screenHeight = ((float)height) / guiScale;
+        var screenWidth = ((float) width) / guiScale;
+        var screenHeight = ((float) height) / guiScale;
 
         if (target == null || target.width != width || target.height != height || this.screenWidth != screenWidth || this.screenHeight != screenHeight) {
             if (configuring.compareAndSet(false, true)) {
@@ -181,20 +135,17 @@ public class ElementBuffer implements Closeable {
      * Draws this buffer to the screen.
      */
     public void draw() {
-        if (!isValid()) return;
-
-        if (DEBUG_BUFFER != null) {
-            if (klass.equals(DEBUG_BUFFER)) {
-                CURRENT_BUFFER = target;
-            }
-            return;
-        }
-
         // Set the texture and draw the buffer using the render texture
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
-        withBlend(true, () -> {
-            RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        ElementCache.withBlend(() -> {
+            if (blending) {
+                RenderSystem.enableBlend();
+                RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            } else {
+                RenderSystem.disableBlend();
+            }
+        }, () -> {
             RenderSystem.setShader(CustomShaderManager::getPositionTexBlendShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getTextureId());

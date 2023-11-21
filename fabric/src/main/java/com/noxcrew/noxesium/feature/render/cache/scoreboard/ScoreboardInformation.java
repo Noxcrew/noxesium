@@ -37,4 +37,9 @@ public record ScoreboardInformation(
      */
     public static final ScoreboardInformation EMPTY =
             new ScoreboardInformation(null, List.of(), List.of(), BakedComponent.EMPTY, List.of(), List.of(), 0);
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

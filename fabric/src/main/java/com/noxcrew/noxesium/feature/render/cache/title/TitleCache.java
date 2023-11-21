@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.feature.render.cache.title;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.client.Minecraft;
@@ -43,11 +42,9 @@ public class TitleCache extends ElementCache<TitleInformation> {
 
             return Mth.clamp(alpha, 0, 255);
         });
-    }
 
-    @Override
-    protected boolean isEmpty(TitleInformation cache) {
-        return cache == TitleInformation.EMPTY;
+        // Ensure we re-draw if the title time goes from 0 to not 0
+        registerVariable("title_visible", (minecraft, partialTicks) -> minecraft.gui.titleTime >= 0);
     }
 
     @Override
@@ -65,15 +62,7 @@ public class TitleCache extends ElementCache<TitleInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, TitleInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
-        // If the title is null we should clear the cache and return because it faded out!
-        // (this detects the title changes from the tick() method)
-        var gui = minecraft.gui;
-        if (gui.titleTime <= 0) {
-            clearCache();
-            return;
-        }
-
+    protected void render(GuiGraphics graphics, TitleInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var alpha = cache.alpha();
         if (alpha > 8) {
             graphics.pose().pushPose();
@@ -86,14 +75,14 @@ public class TitleCache extends ElementCache<TitleInformation> {
             var backgroundColor = FastColor.ARGB32.multiply(background, 16777215 | trueAlpha);
 
             var titleWidth = cache.title().width;
-            if (buffered) {
+            if (!dynamic) {
                 var offset = -10;
                 if (background != 0) {
                     var left = -titleWidth / 2;
                     graphics.fill(left - 2, offset - 2, left + titleWidth + 2, offset + 9 + 2, backgroundColor);
                 }
             }
-            if (cache.title().shouldDraw(buffered)) {
+            if (cache.title().shouldDraw(dynamic)) {
                 cache.title().draw(graphics, font, -titleWidth / 2, -10, 16777215 | trueAlpha);
             }
             graphics.pose().popPose();
@@ -101,14 +90,14 @@ public class TitleCache extends ElementCache<TitleInformation> {
             if (cache.subtitle() != null) {
                 graphics.pose().scale(2.0F, 2.0F, 2.0F);
                 var subtitleWidth = cache.subtitle().width;
-                if (buffered) {
+                if (!dynamic) {
                     var offset = 5;
                     if (background != 0) {
                         var left = -subtitleWidth / 2;
                         graphics.fill(left - 2, offset - 2, left + subtitleWidth + 2, offset + 9 + 2, backgroundColor);
                     }
                 }
-                if (cache.subtitle().shouldDraw(buffered)) {
+                if (cache.subtitle().shouldDraw(dynamic)) {
                     cache.subtitle().draw(graphics, font, -subtitleWidth / 2, 5, 16777215 | trueAlpha);
                 }
             }

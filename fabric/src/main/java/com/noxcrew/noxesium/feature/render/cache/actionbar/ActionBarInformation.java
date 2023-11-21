@@ -19,4 +19,9 @@ public record ActionBarInformation(
      * The fallback contents if the action bar is absent.
      */
     public static final ActionBarInformation EMPTY = new ActionBarInformation(BakedComponent.EMPTY, 255);
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

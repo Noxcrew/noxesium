@@ -60,11 +60,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         return cache.objective() == objective;
     }
 
-    @Override
-    protected boolean isEmpty(ScoreboardInformation cache) {
-        return cache == ScoreboardInformation.EMPTY;
-    }
-
     /**
      * Creates newly cached scoreboard content information.
      * <p>
@@ -152,6 +147,11 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             }
         }
 
+        // Remove when porting to 1.20.3; do not draw empty scoreboards
+        if (lines.isEmpty()) {
+            return ScoreboardInformation.EMPTY;
+        }
+
         return new ScoreboardInformation(
                 objective,
                 players,
@@ -164,7 +164,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
+    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
@@ -173,7 +173,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
         // Draw the entire background at once
         var headerTop = bottom - cache.lines().size() * 9;
-        if (buffered) {
+        if (!dynamic) {
             var background = minecraft.options.getBackgroundColor(0.3f);
             graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
         }
@@ -186,25 +186,25 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             var text = cache.lines().get(line - 1);
             var lineTop = bottom - line * 9;
 
-            if (text.shouldDraw(buffered)) {
+            if (text.shouldDraw(dynamic)) {
                 text.draw(graphics, font, left, lineTop, -1);
             }
 
             // Only draw the numbers when buffered
             if (cache.numbers().size() >= line) {
                 var num = cache.numbers().get(line - 1);
-                if (num.shouldDraw(buffered)) {
+                if (num.shouldDraw(dynamic)) {
                     num.draw(graphics, font, backgroundRight - num.width, lineTop, -1);
                 }
             }
         }
 
         // Draw the header and its background
-        if (buffered) {
+        if (!dynamic) {
             var darkerBackground = minecraft.options.getBackgroundColor(0.4f);
             graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
         }
-        if (cache.header().shouldDraw(buffered)) {
+        if (cache.header().shouldDraw(dynamic)) {
             cache.header().draw(graphics, font, left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1);
         }
     }

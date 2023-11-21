@@ -23,4 +23,9 @@ public record ChatInformation(
      * The fallback contents if the chat is absent.
      */
     public static final ChatInformation EMPTY = new ChatInformation(List.of(), 0, false, false, BakedComponent.EMPTY, List.of(), List.of());
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

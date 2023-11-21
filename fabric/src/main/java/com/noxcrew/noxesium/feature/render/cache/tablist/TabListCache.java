@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
@@ -25,10 +24,8 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -136,8 +133,8 @@ public class TabListCache extends ElementCache<TabListInformation> {
     }
 
     @Override
-    protected boolean isEmpty(TabListInformation cache) {
-        return false;
+    protected boolean shouldForceBlending() {
+        return true;
     }
 
     /**
@@ -250,7 +247,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
+    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
 
@@ -262,11 +259,11 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var height = BASE_OFFSET;
 
         if (cache.header() != null) {
-            if (buffered) {
+            if (!dynamic) {
                 graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.header().size() * font.lineHeight, Integer.MIN_VALUE);
             }
             for (var line : cache.header()) {
-                if (line.shouldDraw(buffered)) {
+                if (line.shouldDraw(dynamic)) {
                     line.draw(graphics, font, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;
@@ -275,7 +272,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             ++height;
         }
 
-        if (buffered) {
+        if (!dynamic) {
             graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + playersPerColumn * 9, Integer.MIN_VALUE);
         }
 
@@ -294,7 +291,8 @@ public class TabListCache extends ElementCache<TabListInformation> {
             var x = left + column * columnWidth + column * 5;
             var y = height + row * 9;
 
-            if (buffered) {
+            // Draw this onto a second layer to properly blend with the layer below
+            if (!dynamic) {
                 graphics.fill(x, y, x + columnWidth, y + 8, highlightBackground);
             }
 
@@ -303,10 +301,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             var profile = playerInfo.getProfile();
 
             if (cache.showSkins()) {
-                if (buffered) {
-                    // Turn on blending after the background drawing for the player heads
-                    RenderSystem.enableBlend();
-
+                if (!dynamic) {
                     var player = minecraft.level.getPlayerByUUID(profile.getId());
                     var upsideDown = player != null && LivingEntityRenderer.isEntityUpsideDown(player);
                     PlayerFaceRenderer.draw(graphics, playerInfo.getSkin().texture(), x, y, 8, true, upsideDown);
@@ -315,17 +310,17 @@ public class TabListCache extends ElementCache<TabListInformation> {
             }
 
             var name = cache.names().get(playerInfo.getProfile().getId());
-            if (name.shouldDraw(buffered)) {
+            if (name.shouldDraw(dynamic)) {
                 name.draw(graphics, font, x, y, playerInfo.getGameMode() == GameType.SPECTATOR ? -1862270977 : -1);
             }
 
             if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
                 // Render the score outside the buffer when in a blinking animation!
-                if (cache.blinking().contains(playerInfo.getProfile().getId()) != buffered) {
+                if (cache.blinking().contains(playerInfo.getProfile().getId()) == dynamic) {
                     this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
                 }
             }
-            if (buffered) {
+            if (!dynamic) {
                 this.renderPingIcon(graphics, columnWidth, x - (cache.showSkins() ? 9 : 0), y, getLatencyBucket(playerInfo.getLatency()));
             }
         }
@@ -333,11 +328,11 @@ public class TabListCache extends ElementCache<TabListInformation> {
         if (cache.footer() != null) {
             height += playersPerColumn * 9 + 1;
             if (height >= screenHeight) return;
-            if (buffered) {
+            if (!dynamic) {
                 graphics.fill(screenWidth / 2 - width / 2 - 1, height - 1, screenWidth / 2 + width / 2 + 1, height + cache.footer().size() * font.lineHeight, Integer.MIN_VALUE);
             }
             for (var line : cache.footer()) {
-                if (line.shouldDraw(buffered)) {
+                if (line.shouldDraw(dynamic)) {
                     line.draw(graphics, font, screenWidth / 2 - line.width / 2, height, -1);
                 }
                 height += font.lineHeight;

@@ -16,4 +16,9 @@ public record BossBarInformation(
      */
     public static final BossBarInformation EMPTY =
             new BossBarInformation(List.of());
+
+    @Override
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
 }

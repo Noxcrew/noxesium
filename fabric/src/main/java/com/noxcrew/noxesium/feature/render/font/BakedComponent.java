@@ -78,15 +78,14 @@ public class BakedComponent {
     }
 
     /**
-     * Returns whether this element should be drawn in the given layer.
-     * If custom rendering is necessary this will be outside the buffer,
-     * otherwise this will be drawn in the buffer.
+     * Returns whether this element should be drawn based on whether the
+     * layer is being drawn each tick.
      */
-    public boolean shouldDraw(boolean buffered) {
+    public boolean shouldDraw(boolean dynamic) {
         if (needsCustomReRendering) {
-            return !buffered;
+            return dynamic;
         } else {
-            return buffered;
+            return !dynamic;
         }
     }
 

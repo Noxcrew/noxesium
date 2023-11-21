@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.feature.render.cache;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -23,11 +24,14 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public abstract class ElementCache<T extends ElementInformation> implements Closeable {
 
+    public static boolean hasDrawnSomething = false;
+    public static boolean allowBlendChanges = true;
+
     private static final Set<ElementCache<?>> caches = new HashSet<>();
 
     private final Map<String, BiFunction<Minecraft, Float, Object>> variables = new HashMap<>();
     private final Map<String, Object> values = new HashMap<>();
-    private ElementBuffer buffer = null;
+    private ElementBuffer buffer;
     private boolean needsRedraw = true;
     protected T cache = null;
 
@@ -63,31 +67,44 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Creates a new buffer. Can be modified to disable blending of the drawn element.
      */
     protected ElementBuffer createBuffer() {
-        return new ElementBuffer(getClass());
+        return new ElementBuffer(true);
     }
 
     /**
-     * Returns whether cache is empty and nothing should be drawn.
+     * Whether this element has a dynamic layer that should be drawn.
      */
-    protected abstract boolean isEmpty(T cache);
+    protected boolean hasDynamicLayer() {
+        return true;
+    }
+
+    /**
+     * Whether this element should enforce blending.
+     */
+    protected boolean shouldForceBlending() {
+        return false;
+    }
 
     /**
      * Renders the UI element.
      */
     public void render(GuiGraphics graphics, int screenWidth, int screenHeight, float partialTicks, Minecraft minecraft) {
         var cache = getCache(minecraft, partialTicks);
-        if (isEmpty(cache)) return;
+        if (cache.isEmpty()) return;
 
         try {
             // Flush any remaining buffer from a previous element
             graphics.flush();
 
             // Draw the buffered contents of the element to the screen as a base!
-            var screenBuffer = getBuffer(graphics, cache);
-            screenBuffer.draw();
+            var buffer = getBuffer(graphics, cache);
+            if (buffer.isValid() && !buffer.isEmpty()) {
+                buffer.draw();
+            }
 
-            // Draw the direct parts on top each tick
-            render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, partialTicks, false);
+            // Draw the direct parts on top each tick if requested
+            if (hasDynamicLayer()) {
+                render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, partialTicks, true);
+            }
         } finally {
             // Ensure we always properly flush the graphics after drawing a component!
             graphics.flush();
@@ -97,7 +114,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the UI element using the same logic whether we are in the buffer or not.
      */
-    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered);
+    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic);
 
     /**
      * Returns the value of the variable called name cast as T.
@@ -133,7 +150,6 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 break;
             }
         }
-
         if (cache == null) {
             cache = createCache(minecraft, minecraft.font);
         }
@@ -152,18 +168,37 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
         if (buffer == null) {
             buffer = createBuffer();
         }
+
+        // Try to re-size the buffer
         if (buffer.resize(minecraft.getWindow())) {
             needsRedraw = true;
         }
 
-        // Redraw into the buffer if we have to
+        // Redraw into the buffers if we have to
         if (needsRedraw && buffer.isValid()) {
-            var target = this.buffer.getTarget();
+            var target = buffer.getTarget();
             try {
                 target.setClearColor(0, 0, 0, 0);
                 target.clear(ON_OSX);
                 target.bindWrite(false);
-                render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, true);
+                buffer.setEmpty(false);
+
+                // Determine if something gets drawn, if not we mark this buffer as empty and don't render it at all later.
+                hasDrawnSomething = false;
+                if (shouldForceBlending()) {
+                    withBlend(() -> {
+                        RenderSystem.enableBlend();
+                        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                    }, () -> {
+                        render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, false);
+                    });
+                } else {
+                    render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, false);
+                }
+                if (!hasDrawnSomething) {
+                    buffer.setEmpty(true);
+                }
             } finally {
                 graphics.flush();
                 needsRedraw = false;
@@ -171,7 +206,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 minecraft.getMainRenderTarget().bindWrite(true);
             }
         }
-        return this.buffer;
+        return buffer;
     }
 
     /**
@@ -196,6 +231,32 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     public void close() {
         if (buffer != null) {
             buffer.close();
+            buffer = null;
         }
+    }
+
+    /**
+     * Runs the given runnable and sets back the blending state after.
+     */
+    public static void withBlend(Runnable configure, Runnable runnable) {
+        // Cache the current blend state so we can return to it
+        final var currentBlend = GlStateManager.BLEND.mode.enabled;
+        final var srcRgb = GlStateManager.BLEND.srcRgb;
+        final var dstRgb = GlStateManager.BLEND.dstRgb;
+        final var srcAlpha = GlStateManager.BLEND.srcAlpha;
+        final var dstAlpha = GlStateManager.BLEND.dstAlpha;
+
+        configure.run();
+        allowBlendChanges = false;
+        runnable.run();
+        allowBlendChanges = true;
+
+        // Restore the original state
+        if (currentBlend) {
+            RenderSystem.enableBlend();
+        } else {
+            RenderSystem.disableBlend();
+        }
+        GlStateManager._blendFuncSeparate(srcRgb, dstRgb, srcAlpha, dstAlpha);
     }
 }

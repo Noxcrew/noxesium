@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
@@ -36,11 +35,6 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     }
 
     @Override
-    protected boolean isEmpty(ActionBarInformation cache) {
-        return cache == ActionBarInformation.EMPTY;
-    }
-
-    @Override
     protected ActionBarInformation createCache(Minecraft minecraft, Font font) {
         var gui = minecraft.gui;
         if (gui.overlayMessageString == null || gui.overlayMessageTime <= 0) {
@@ -51,7 +45,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
+    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var gui = minecraft.gui;
         var remainingTicks = (float) gui.overlayMessageTime - partialTicks;
 
@@ -67,8 +61,8 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             if (gui.animateOverlayMessageColor) {
                 textColor = Mth.hsvToRgb(remainingTicks / 50.0F, 0.7F, 0.6F) & 16777215;
 
-                // Don't draw if changing color and in buffer!
-                if (buffered) return;
+                // Don't draw to anything but the dynamic layer if the text is changing!
+                if (!dynamic) return;
             }
 
             var trueAlpha = alpha << 24 & -16777216;
@@ -77,11 +71,11 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
             var backgroundColor = FastColor.ARGB32.multiply(background, 16777215 | trueAlpha);
             var offset = -4;
 
-            if (buffered && background != 0) {
+            if (!dynamic && background != 0) {
                 var left = -width / 2;
                 graphics.fill(left - 2, offset - 2, left + width + 2, offset + 9 + 2, backgroundColor);
             }
-            if (gui.animateOverlayMessageColor || cache.component().shouldDraw(buffered)) {
+            if (gui.animateOverlayMessageColor || cache.component().shouldDraw(dynamic)) {
                 cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
             }
             pose.popPose();

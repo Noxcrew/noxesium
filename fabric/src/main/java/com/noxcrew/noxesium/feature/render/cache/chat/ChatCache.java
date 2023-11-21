@@ -57,11 +57,6 @@ public class ChatCache extends ElementCache<ChatInformation> {
         });
     }
 
-    @Override
-    protected boolean isEmpty(ChatInformation cache) {
-        return Minecraft.getInstance().gui.getChat().isChatHidden() || cache.trimmedMessages().isEmpty();
-    }
-
     /**
      * Creates newly cached chat information.
      * <p>
@@ -77,6 +72,10 @@ public class ChatCache extends ElementCache<ChatInformation> {
     @Override
     protected ChatInformation createCache(Minecraft minecraft, Font font) {
         var chatOverlay = minecraft.gui.getChat();
+        if (chatOverlay.isChatHidden() || chatOverlay.trimmedMessages.isEmpty()) {
+            return ChatInformation.EMPTY;
+        }
+
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
         var focused = chatOverlay.isChatFocused();
@@ -99,7 +98,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean buffered) {
+    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var chatOverlay = minecraft.gui.getChat();
         var messageCount = cache.trimmedMessages().size();
         int lineBottom;
@@ -142,38 +141,43 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 ++shownLineCount;
                 if (alpha <= 3) continue;
 
-                if (buffered || cache.lines().get(messageIndex).needsCustomReRendering || cache.fading().contains(messageIndex)) {
-                    lineBottom = scaledHeight - currentLine * lineHeight;
-                    var lineDrawTop = lineBottom + lineSize;
+                lineBottom = scaledHeight - currentLine * lineHeight;
+                var lineDrawTop = lineBottom + lineSize;
 
-                    pose.pushPose();
-                    pose.translate(0.0f, 0.0f, 50.0f);
-                    var guiMessageTag = line.tag();
+                pose.pushPose();
+                pose.translate(0.0f, 0.0f, 50.0f);
+                var guiMessageTag = line.tag();
 
-                    if (cache.fading().contains(messageIndex) != buffered) {
-                        graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
-                        if (guiMessageTag != null) {
-                            var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
-                            graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
-                        }
+                // If fading we draw on the dynamic layer, otherwise not
+                if (cache.fading().contains(messageIndex) == dynamic) {
+                    graphics.fill(-4, lineBottom - lineHeight, scaledWidth + 4 + 4, lineBottom, backgroundAlpha << 24);
+                    if (guiMessageTag != null) {
+                        var tagColor = guiMessageTag.indicatorColor() | alpha << 24;
+                        graphics.fill(-4, lineBottom - lineHeight, -2, lineBottom, tagColor);
                     }
-                    if (!buffered) {
-                        if (guiMessageTag != null && messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
-                            var tagIconLeft = cache.lines().get(messageIndex).width + 4;
-                            var tagIconTop = lineDrawTop + font.lineHeight;
-                            var drawTop = tagIconTop - guiMessageTag.icon().height - 1;
-                            guiMessageTag.icon().draw(graphics, tagIconLeft, drawTop);
-                        }
-                    }
-                    if (!buffered || (!cache.fading().contains(messageIndex) && !cache.lines().get(messageIndex).needsCustomReRendering)) {
-                        pose.translate(0.0f, 0.0f, 50.0f);
-                        cache.lines().get(messageIndex).draw(graphics, font, 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
-                    }
-                    pose.popPose();
                 }
+
+
+                // Always draw the hover text on the dynamic layer
+                if (dynamic) {
+                    if (guiMessageTag != null && messageIndex == highlightedMessage && guiMessageTag.icon() != null) {
+                        var tagIconLeft = cache.lines().get(messageIndex).width + 4;
+                        var tagIconTop = lineDrawTop + font.lineHeight;
+                        var drawTop = tagIconTop - guiMessageTag.icon().height - 1;
+                        guiMessageTag.icon().draw(graphics, tagIconLeft, drawTop);
+                    }
+                }
+
+                // If fading we draw the text dynamically, otherwise we draw whatever layer it needs to be on
+                if (cache.fading().contains(messageIndex) ? dynamic : cache.lines().get(messageIndex).shouldDraw(dynamic)) {
+                    pose.translate(0.0f, 0.0f, 50.0f);
+                    cache.lines().get(messageIndex).draw(graphics, font, 0, lineDrawTop, 0xFFFFFF + (alpha << 24));
+                }
+                pose.popPose();
             }
 
-            if (buffered) {
+            // Always draw the queue message and scroll bar on the background layer
+            if (!dynamic) {
                 // Draw the queue message
                 var queueSize = minecraft.getChatListener().queueSize();
                 if (queueSize > 0L) {
