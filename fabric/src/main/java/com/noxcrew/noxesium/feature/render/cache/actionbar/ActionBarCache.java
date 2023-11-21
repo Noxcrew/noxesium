@@ -40,10 +40,10 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     protected ActionBarInformation createCache(Minecraft minecraft, Font font) {
         var gui = minecraft.gui;
         var guiExt = (GuiExt) gui;
-        if (guiExt.getOverlayMessage() == null || guiExt.getOverlayMessageTime() <= 0) {
+        if (guiExt.getOverlayMessageString() == null || guiExt.getOverlayMessageTime() <= 0) {
             return ActionBarInformation.EMPTY;
         }
-        var baked = new BakedComponent(guiExt.getOverlayMessage(), font);
+        var baked = new BakedComponent(guiExt.getOverlayMessageString(), font);
         return new ActionBarInformation(baked, getVariable("alpha"));
     }
 
@@ -62,7 +62,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
 
             // If the text is being animated we alter the color (used by jukeboxes)
             var textColor = 16777215;
-            if (guiExt.getShouldAnimateOverlayMessageColor()) {
+            if (guiExt.getAnimateOverlayMessageColor()) {
                 textColor = Mth.hsvToRgb(remainingTicks / 50.0F, 0.7F, 0.6F) & 16777215;
 
                 // Don't draw to anything but the dynamic layer if the text is changing!
@@ -79,7 +79,7 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
                 var left = -width / 2;
                 graphics.fill(left - 2, offset - 2, left + width + 2, offset + 9 + 2, backgroundColor);
             }
-            if (guiExt.getShouldAnimateOverlayMessageColor() || cache.component().shouldDraw(dynamic)) {
+            if (guiExt.getAnimateOverlayMessageColor() || cache.component().shouldDraw(dynamic)) {
                 cache.component().draw(graphics, font, -width / 2, -4, textColor | trueAlpha);
             }
             pose.popPose();

@@ -196,9 +196,10 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                 } else {
                     render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, false);
                 }
-                if (!hasDrawnSomething) {
-                    buffer.setEmpty(true);
-                }
+                // FIXME: Re-add this detection as it's not 100% accurate!
+                //if (!hasDrawnSomething) {
+                //    buffer.setEmpty(true);
+                //}
             } finally {
                 graphics.flush();
                 needsRedraw = false;

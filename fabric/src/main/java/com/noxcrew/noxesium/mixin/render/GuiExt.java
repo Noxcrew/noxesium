@@ -30,8 +30,8 @@ public interface GuiExt {
     int getOverlayMessageTime();
 
     @Accessor("animateOverlayMessageColor")
-    boolean getShouldAnimateOverlayMessageColor();
+    boolean getAnimateOverlayMessageColor();
 
     @Accessor("overlayMessageString")
-    Component getOverlayMessage();
+    Component getOverlayMessageString();
 }

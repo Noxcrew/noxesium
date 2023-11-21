@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.render.font;
 
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -101,6 +102,11 @@ public class BakedComponent {
             matrixCopy = new Matrix4f(matrix);
             renderOutput.finish(font, x, y, newColor, true, matrix, bufferSource);
             matrixCopy.translate(SHADOW_OFFSET);
+        }
+
+        // Ensure the buffer is not ignored!
+        if (!ElementCache.hasDrawnSomething) {
+            ElementCache.hasDrawnSomething = true;
         }
 
         var fx = renderOutput.finish(font, x, y, newColor, false, matrixCopy, bufferSource);
