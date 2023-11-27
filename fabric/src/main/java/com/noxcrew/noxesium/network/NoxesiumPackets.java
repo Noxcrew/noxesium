@@ -100,7 +100,19 @@ public class NoxesiumPackets {
     public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, String group, Function<FriendlyByteBuf, T> constructor) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = PacketType.create(new ResourceLocation(PACKET_NAMESPACE, id), constructor);
+        var type = PacketType.create(new ResourceLocation(PACKET_NAMESPACE, id), (buffer) -> {
+            var result = constructor.apply(buffer);
+
+            // Figure out if there are any lingering bytes and remove them
+            var dangling = buffer.readableBytes();
+            if (dangling > 0) {
+                // These bytes are often empty, probably a remnant of plugin messages in general.
+                // We just ignore all of it.
+                buffer.readBytes(dangling);
+            }
+
+            return result;
+        });
         clientboundPackets.put(id, Pair.of(group, type));
         return type;
     }
