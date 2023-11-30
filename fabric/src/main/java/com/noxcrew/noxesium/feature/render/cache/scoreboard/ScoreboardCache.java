@@ -3,25 +3,26 @@ package com.noxcrew.noxesium.feature.render.cache.scoreboard;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.render.font.BakedComponentBuilder;
-import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.Score;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 
 /**
  * Manages the current cache of the scoreboard.
  */
 public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
+    private static final Comparator<PlayerScoreEntry> SCORE_DISPLAY_ORDER = Comparator.comparing(PlayerScoreEntry::value)
+            .reversed()
+            .thenComparing(PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER);
     private static ScoreboardCache instance;
     private static final int RIGHT = 3;
 
@@ -92,8 +93,8 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         if (objective == null) {
             return ScoreboardInformation.EMPTY;
         }
+        var numberFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
 
-        var drawNumbers = !ServerRules.DISABLE_SCOREBOARD_NUMBER_RENDERING.getValue();
         var players = new ArrayList<String>();
         var teams = new ArrayList<String>();
         players.add(player.getScoreboardName());
@@ -101,7 +102,10 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             teams.add(localPlayerTeam.getName());
         }
 
-        var scores = (List<Score>) scoreboard.getPlayerScores(objective);
+        // Get all player scores and sort them correctly
+        var scores = new ArrayList<>(scoreboard.listPlayerScores(objective));
+        scores.sort(SCORE_DISPLAY_ORDER);
+
         var lines = new ArrayList<BakedComponent>();
         var numbers = new ArrayList<BakedComponent>();
 
@@ -109,12 +113,12 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var headerBuilder = new BakedComponentBuilder(objective.getDisplayName(), font);
         headerBuilder.shadow = false;
         var baked = headerBuilder.build();
+        var extraWidth = font.width(": ");
         var maxWidth = baked.width;
-        var extraWidth = drawNumbers ? font.width(": ") : 0;
 
         for (var index = scores.size() - 1; index >= lowerLimit && index >= 0; index--) {
             var score = scores.get(index);
-            if (score.getOwner() == null || score.getOwner().startsWith("#")) {
+            if (score.isHidden()) {
                 // If we skip a line we can continue iterating further down
                 lowerLimit--;
                 continue;
@@ -122,29 +126,25 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
             // We are iterating in reverse order, so we add at the start of the list.
             // We want to end up with the last 15 entries of scores.
-            var playerTeam = scoreboard.getPlayersTeam(score.getOwner());
-            players.add(score.getOwner());
+            var playerTeam = scoreboard.getPlayersTeam(score.owner());
+            players.add(score.owner());
             if (playerTeam != null) {
                 teams.add(playerTeam.getName());
             }
-            var text = PlayerTeam.formatNameForTeam(playerTeam, Component.literal(score.getOwner()));
-
+            var text = PlayerTeam.formatNameForTeam(playerTeam, score.ownerName());
             var lineTextBuilder = new BakedComponentBuilder(text, font);
             lineTextBuilder.shadow = false;
             var bakedText = lineTextBuilder.build();
             lines.add(0, bakedText);
 
-            if (drawNumbers) {
-                // Update the maximum width we've found, if numbers are being omitted we
-                // move the whole background right.
-                var component = Component.literal(String.valueOf(score.getScore())).withStyle(ChatFormatting.RED);
-                var numberTextBuilder = new BakedComponentBuilder(component, font);
-                numberTextBuilder.forceRenderCharactersSeparate = true;
-                numberTextBuilder.shadow = false;
-                var bakedNumber = numberTextBuilder.build();
-                maxWidth = Math.max(maxWidth, bakedText.width + extraWidth + bakedNumber.width);
-                numbers.add(0, bakedNumber);
-            }
+            // Update the maximum width we've found, if numbers are being omitted we
+            // move the whole background right.
+            var component = score.formatValue(numberFormat);
+            var numberTextBuilder = new BakedComponentBuilder(component, font);
+            numberTextBuilder.shadow = false;
+            var bakedNumber = numberTextBuilder.build();
+            maxWidth = Math.max(maxWidth, bakedText.width + (bakedNumber.width > 0 ? bakedNumber.width + extraWidth : 0));
+            numbers.add(0, bakedNumber);
         }
 
         return new ScoreboardInformation(
@@ -163,14 +163,22 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;
-
         var backgroundRight = screenWidth - RIGHT + 2;
-
-        // Draw the entire background at once
         var headerTop = bottom - cache.lines().size() * 9;
+
         if (!dynamic) {
+            // Draw the header and its background
+            var darkerBackground = minecraft.options.getBackgroundColor(0.4f);
+            graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
+
+            // Draw the entire regular background
             var background = minecraft.options.getBackgroundColor(0.3f);
             graphics.fill(left - 2, bottom, backgroundRight, headerTop - 1, background);
+        }
+
+        // Draw the header itself
+        if (cache.header().shouldDraw(dynamic)) {
+            cache.header().draw(graphics, font, left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1);
         }
 
         // Line 1 here is the bottom line, this is because the
@@ -192,15 +200,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
                     num.draw(graphics, font, backgroundRight - num.width, lineTop, -1);
                 }
             }
-        }
-
-        // Draw the header and its background
-        if (!dynamic) {
-            var darkerBackground = minecraft.options.getBackgroundColor(0.4f);
-            graphics.fill(left - 2, headerTop - 9 - 1, backgroundRight, headerTop - 1, darkerBackground);
-        }
-        if (cache.header().shouldDraw(dynamic)) {
-            cache.header().draw(graphics, font, left + cache.maxWidth() / 2 - cache.header().width / 2, headerTop - 9, -1);
         }
     }
 }

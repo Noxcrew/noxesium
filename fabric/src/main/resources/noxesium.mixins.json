@@ -21,7 +21,6 @@
     "component.FontSetExt",
     "component.MinecraftExt",
     "component.SkinManagerExt",
-    "component.SkullBlockEntityExt",
     "component.TextureCacheExt",
     "debug.KeyboardHandlerMixin",
     "entity.BoatMixin",
@@ -62,5 +61,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "component.TranslatableContentsMixin"
   ]
 }

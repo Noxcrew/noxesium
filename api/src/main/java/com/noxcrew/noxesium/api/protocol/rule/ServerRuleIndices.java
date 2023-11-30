@@ -42,8 +42,5 @@ public class ServerRuleIndices {
      */
     public static final int DISABLE_BOAT_COLLISIONS = 6;
 
-    /**
-     * Disables rendering of the numbers in the scoreboard.
-     */
-    public static final int DISABLE_SCOREBOARD_NUMBER_RENDERING = 7;
+    // Rule id 7 is taken by a now removed rule.
 }

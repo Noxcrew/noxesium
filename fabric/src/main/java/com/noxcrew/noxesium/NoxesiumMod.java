@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -34,7 +35,7 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * Whether to enable experimental performance patches.
      */
-    public static Boolean enableExperimentalPatches = null;
+    public static Boolean enableExperimentalPatches = SharedConstants.IS_RUNNING_IN_IDE ? true : null;
 
     /**
      * Whether to show the FPS overlay.
@@ -47,11 +48,6 @@ public class NoxesiumMod implements ClientModInitializer {
      * ít is recommended to work with >= comparisons.
      */
     public static final int VERSION = 4;
-
-    /**
-     * Whether this is a development version of Noxesium.
-     */
-    public static final boolean DEVELOPMENT_VERSION = false;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String NAMESPACE = "noxesium";
@@ -107,13 +103,10 @@ public class NoxesiumMod implements ClientModInitializer {
      * Whether the experimental performance patches should be used.
      */
     public static boolean shouldDisableExperimentalPerformancePatches() {
-        if (hasConfiguredPerformancePatches()) {
-            if (enableExperimentalPatches != null) {
-                return !enableExperimentalPatches;
-            }
-            return false;
+        if (enableExperimentalPatches != null) {
+            return !enableExperimentalPatches;
         }
-        return true;
+        return !hasConfiguredPerformancePatches();
     }
 
     /**

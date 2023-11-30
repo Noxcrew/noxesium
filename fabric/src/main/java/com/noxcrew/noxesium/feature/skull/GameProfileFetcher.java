@@ -3,9 +3,8 @@ package com.noxcrew.noxesium.feature.skull;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.noxcrew.noxesium.mixin.component.SkullBlockEntityExt;
 import net.minecraft.Util;
-import net.minecraft.client.resources.SkinManager;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -20,9 +19,7 @@ public class GameProfileFetcher {
      */
     public static void updateGameProfile(@Nullable GameProfile profile, Consumer<GameProfile> consumer) {
         // If anything is missing or we already have data we just keep what we have.
-        if (profile == null ||
-                profile.getId() == null ||
-                SkullBlockEntityExt.getSessionService() == null) {
+        if (profile == null || profile.getId() == null) {
             consumer.accept(profile);
             return;
         }
@@ -32,7 +29,7 @@ public class GameProfileFetcher {
             var newProfile = profile;
             Property property = Iterables.getFirst(newProfile.getProperties().get(PROPERTY_TEXTURES), null);
             if (property == null) {
-                newProfile = SkullBlockEntityExt.getSessionService().fetchProfile(newProfile.getId(), true).profile();
+                newProfile = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(newProfile.getId(), true).profile();
             }
             consumer.accept(newProfile);
         }, Util.backgroundExecutor());

@@ -2,23 +2,33 @@ package com.noxcrew.noxesium.mixin.render;
 
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
-import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.PlayerScores;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Score;
+import net.minecraft.world.scores.ScoreAccess;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Map;
 
 /**
  * Listens to changes to the scoreboard relevant to the caches.
  */
 @Mixin(Scoreboard.class)
 public class ScoreboardMixin {
+
+    @Shadow
+    @Final
+    private Map<String, PlayerScores> playerScores;
 
     @Inject(method = "addPlayerToTeam", at = @At(value = "TAIL"))
     private void addPlayerToTeam(String string, PlayerTeam playerTeam, CallbackInfoReturnable<Boolean> cir) {
@@ -56,8 +66,8 @@ public class ScoreboardMixin {
         ScoreboardCache.getInstance().clearCache();
     }
 
-    @Inject(method = "getOrCreatePlayerScore", at = @At(value = "TAIL"))
-    private void getOrCreatePlayerScore(String string, Objective objective, CallbackInfoReturnable<Score> cir) {
+    @Inject(method = "getOrCreatePlayerScore(Lnet/minecraft/world/scores/ScoreHolder;Lnet/minecraft/world/scores/Objective;Z)Lnet/minecraft/world/scores/ScoreAccess;", at = @At(value = "TAIL"))
+    private void getOrCreatePlayerScore(ScoreHolder scoreHolder, Objective objective, boolean bl, CallbackInfoReturnable<ScoreAccess> cir) {
         if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
             ScoreboardCache.getInstance().clearCache();
         }
@@ -66,8 +76,20 @@ public class ScoreboardMixin {
         }
     }
 
-    @Inject(method = "resetPlayerScore", at = @At(value = "TAIL"))
-    private void resetPlayerScore(String string, Objective objective, CallbackInfo ci) {
+    @Inject(method = "resetAllPlayerScores", at = @At(value = "HEAD"))
+    private void resetAllPlayerScores(ScoreHolder scoreHolder, CallbackInfo ci) {
+        var playerScores = this.playerScores.get(scoreHolder.getScoreboardName());
+
+        if (playerScores.listScores().keySet().stream().anyMatch(f -> ScoreboardCache.getInstance().isObjectiveRelevant(f))) {
+            ScoreboardCache.getInstance().clearCache();
+        }
+        if (playerScores.listScores().keySet().stream().anyMatch(f -> TabListCache.getInstance().isObjectiveRelevant(f))) {
+            TabListCache.getInstance().clearCache();
+        }
+    }
+
+    @Inject(method = "resetSinglePlayerScore", at = @At(value = "TAIL"))
+    private void resetSinglePlayerScore(ScoreHolder scoreHolder, Objective objective, CallbackInfo ci) {
         if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
             ScoreboardCache.getInstance().clearCache();
         }
@@ -77,11 +99,21 @@ public class ScoreboardMixin {
     }
 
     @Inject(method = "onScoreChanged", at = @At(value = "TAIL"))
-    private void onScoreChanged(Score score, CallbackInfo ci) {
-        if (ScoreboardCache.getInstance().isObjectiveRelevant(score.getObjective())) {
+    private void onScoreChanged(ScoreHolder scoreHolder, Objective objective, Score score, CallbackInfo ci) {
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
             ScoreboardCache.getInstance().clearCache();
         }
-        if (TabListCache.getInstance().isObjectiveRelevant(score.getObjective())) {
+        if (TabListCache.getInstance().isObjectiveRelevant(objective)) {
+            TabListCache.getInstance().clearCache();
+        }
+    }
+
+    @Inject(method = "onScoreLockChanged", at = @At(value = "TAIL"))
+    private void onScoreLockChanged(ScoreHolder scoreHolder, Objective objective, CallbackInfo ci) {
+        if (ScoreboardCache.getInstance().isObjectiveRelevant(objective)) {
+            ScoreboardCache.getInstance().clearCache();
+        }
+        if (TabListCache.getInstance().isObjectiveRelevant(objective)) {
             TabListCache.getInstance().clearCache();
         }
     }

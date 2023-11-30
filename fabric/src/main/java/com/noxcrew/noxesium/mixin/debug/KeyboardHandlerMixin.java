@@ -35,10 +35,6 @@ public abstract class KeyboardHandlerMixin {
     private long debugCrashKeyTime;
 
     @Shadow
-    @Final
-    private Minecraft minecraft;
-
-    @Shadow
     protected abstract void debugFeedbackTranslated(String string, Object... objects);
 
     @Redirect(method = "handleDebugKeys", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
@@ -47,7 +43,6 @@ public abstract class KeyboardHandlerMixin {
             if (translatableContents.getKey().equals("debug.pause.help")) {
                 if (NoxesiumMod.hasConfiguredPerformancePatches()) instance.addMessage(Component.translatable("debug.experimental_patches.help"));
                 if (!NoxesiumMod.isUsingClothConfig) instance.addMessage(Component.translatable("debug.fps_overlay.help"));
-                if (NoxesiumMod.DEVELOPMENT_VERSION) instance.addMessage(Component.translatable("debug.dump_ui.help"));
             }
         }
         instance.addMessage(component);
@@ -78,62 +73,6 @@ public abstract class KeyboardHandlerMixin {
             } else {
                 NoxesiumMod.enableExperimentalPatches = false;
                 this.debugFeedbackTranslated("debug.experimental_patches.disabled");
-            }
-        } else if (keyCode == InputConstants.KEY_Z && NoxesiumMod.DEVELOPMENT_VERSION) {
-            cir.setReturnValue(true);
-
-            try {
-                var name = "ui_" + System.currentTimeMillis();
-                var debugFolder = this.minecraft.gameDirectory.toPath().resolve("debug");
-                Files.createDirectories(debugFolder);
-                var path = debugFolder.resolve(name + ".mcfunction").toAbsolutePath();
-
-                var scoreboard = this.minecraft.player.getScoreboard();
-                var objective = scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
-
-                var text = new StringBuilder();
-                if (objective != null) {
-                    text.append("scoreboard objectives add " + name + " dummy " + Component.Serializer.toJson(objective.getDisplayName())).append("\n");
-                    text.append("scoreboard objectives setdisplay sidebar " + name).append("\n");
-
-                    var scores = scoreboard.getPlayerScores(objective).stream()
-                            .sorted(Comparator.comparing(f -> -f.getScore()))
-                            .limit(15)
-                            .collect(Collectors.toList());
-                    for (var score : scores) {
-                        var team = System.currentTimeMillis() + "_" + score.getScore();
-                        text.append("scoreboard players set " + score.getOwner() + " " + name + " " + score.getScore()).append("\n");
-
-                        var ownerTeam = scoreboard.getPlayersTeam(score.getOwner());
-                        if (ownerTeam != null) {
-                            text.append("team add " + team).append("\n");
-                            text.append("team join " + team + " " + score.getOwner()).append("\n");
-                            text.append("team modify " + team + " prefix " + Component.Serializer.toJson(ownerTeam.getPlayerPrefix())).append("\n");
-                            text.append("team modify " + team + " suffix " + Component.Serializer.toJson(ownerTeam.getPlayerSuffix())).append("\n");
-                        }
-                    }
-                }
-
-                // Determine all current boss bars
-                var bossBarOverlay = minecraft.gui.getBossOverlay();
-                if (!bossBarOverlay.events.isEmpty()) {
-                    for (var event : bossBarOverlay.events.entrySet()) {
-                        var bar = "minecraft:" + event.getKey();
-                        text.append("bossbar add " + bar + " " + Component.Serializer.toJson(event.getValue().getName())).append("\n");
-                        text.append("bossbar set " + bar + " color " + event.getValue().getColor().getName()).append("\n");
-                        text.append("bossbar set " + bar + " style " + event.getValue().getOverlay().getName()).append("\n");
-                        text.append("bossbar set " + bar + " max " + 10000).append("\n");
-                        text.append("bossbar set " + bar + " value " + event.getValue().getProgress() * 10000).append("\n");
-                        text.append("bossbar set " + bar + " players @a").append("\n");
-                    }
-                }
-
-                Files.writeString(path, text.toString(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-                Component component = Component.literal(path.toString()).withStyle(ChatFormatting.UNDERLINE).withStyle((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().toString())));
-                this.debugFeedbackTranslated("debug.dump_ui.success", component);
-            } catch (Exception x) {
-                x.printStackTrace();
-                this.debugFeedbackTranslated("debug.dump_ui.error");
             }
         }
     }

@@ -19,6 +19,8 @@ accessible field com/mojang/blaze3d/platform/GlStateManager$BooleanState enabled
 
 accessible class net/minecraft/client/resources/SkinManager$TextureInfo
 
+accessible class net/minecraft/world/scores/PlayerScores
+
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides bakeModel (Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Lnet/minecraft/client/renderer/block/model/ItemOverride;)Lnet/minecraft/client/resources/model/BakedModel;
 

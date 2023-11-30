@@ -54,7 +54,6 @@ public class BakedComponent {
      */
     public final boolean needsCustomReRendering;
 
-    private final boolean forceRenderCharactersSeparate;
     private final boolean shadow;
 
     public BakedComponent(Component component) {
@@ -66,15 +65,14 @@ public class BakedComponent {
     }
 
     public BakedComponent(FormattedCharSequence component, Font font) {
-        this(component, font, false, true);
+        this(component, font, true);
     }
 
-    public BakedComponent(FormattedCharSequence component, Font font, boolean forceRenderCharactersSeparate, boolean shadow) {
-        renderOutput = new StringRenderOutput(font, forceRenderCharactersSeparate);
+    public BakedComponent(FormattedCharSequence component, Font font, boolean shadow) {
+        renderOutput = new StringRenderOutput(font);
         component.accept(renderOutput);
         this.width = font.width(component);
         this.needsCustomReRendering = renderOutput.doesContainObfuscation();
-        this.forceRenderCharactersSeparate = forceRenderCharactersSeparate;
         this.shadow = shadow;
     }
 
@@ -129,15 +127,13 @@ public class BakedComponent {
         private final List<FontCharacter> characters = new ArrayList<>();
         private final Font font;
         private final BakedGlyph baseBakedGlyph;
-        private final boolean forceFlush;
 
         private float x;
         private boolean containsObfuscation = false;
 
-        public StringRenderOutput(Font font, boolean forceFlush) {
+        public StringRenderOutput(Font font) {
             this.font = font;
             this.baseBakedGlyph = font.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
-            this.forceFlush = forceFlush;
         }
 
         /**
@@ -213,21 +209,8 @@ public class BakedComponent {
                     var boldOffset = character.bold ? character.glyphInfo.getBoldOffset() : 0.0F;
                     var shadowOffset = shadow ? character.glyphInfo.getShadowOffset() : 0.0F;
                     var renderType = bakedglyph.renderType(DISPLAY_MODE);
-                    if (forceFlush && bufferSource instanceof MultiBufferSource.BufferSource source) {
-                        // Ensure the batch has ended properly!
-                        source.endBatch(renderType);
-                    }
                     var vertexconsumer = bufferSource.getBuffer(renderType);
                     font.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, PACKED_LIGHT_COORDS);
-
-                    // Forcefully fix an issue with scoreboard number removal shaders where the
-                    // most common one on GitHub checks for the first 4 vertices for some reason??
-                    // Because of this we want to flush after every character (4 vertices per char)
-                    // to ensure the shader catches and removes them all.
-                    if (forceFlush && bufferSource instanceof MultiBufferSource.BufferSource source) {
-                        source.endBatch(renderType);
-                        baseVertexconsumer = bufferSource.getBuffer(baseBakedGlyph.renderType(DISPLAY_MODE));
-                    }
                 }
 
                 if (character.strikethrough) {

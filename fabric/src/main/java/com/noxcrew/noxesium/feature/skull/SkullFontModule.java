@@ -15,7 +15,6 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.mixin.component.FontManagerExt;
 import com.noxcrew.noxesium.mixin.component.MinecraftExt;
 import com.noxcrew.noxesium.mixin.component.SkinManagerExt;
-import com.noxcrew.noxesium.mixin.component.SkullBlockEntityExt;
 import com.noxcrew.noxesium.mixin.component.TextureCacheExt;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.Util;
@@ -152,7 +151,7 @@ public class SkullFontModule implements NoxesiumModule {
                 gameProfile.getProperties().put(GameProfileFetcher.PROPERTY_TEXTURES, new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, ""));
 
                 // Let the session servers extract the texture, don't check the signature
-                var information = SkullBlockEntityExt.getSessionService().getTextures(gameProfile, false).get(MinecraftProfileTexture.Type.SKIN);
+                var information = Minecraft.getInstance().getMinecraftSessionService().getTextures(gameProfile).skin();
                 if (information != null) {
                     String string = Hashing.sha1().hashUnencodedChars(information.getHash()).toString();
 

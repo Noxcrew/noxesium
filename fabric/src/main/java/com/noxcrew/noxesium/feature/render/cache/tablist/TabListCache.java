@@ -1,7 +1,5 @@
 package com.noxcrew.noxesium.feature.render.cache.tablist;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.noxcrew.noxesium.feature.render.cache.ElementBuffer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import net.minecraft.ChatFormatting;
@@ -13,12 +11,15 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.ReadOnlyScoreInfo;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.ibm.icu.text.PluralRules.Operand.j;
 
 /**
  * Manages the current cache of the tab list.
@@ -83,7 +86,8 @@ public class TabListCache extends ElementCache<TabListInformation> {
                     // This means we can now draw the hearts into the buffer next time. This does mean it starts a tick for
                     // any heart blinking to become visible because we need to clear the buffer the tick after.
                     for (var player : players) {
-                        var score = objective.getScoreboard().getOrCreatePlayerScore(player.getProfile().getName(), objective).getScore();
+                        var scoreHolder = ScoreHolder.fromGameProfile(player.getProfile());
+                        var score = objective.getScoreboard().getOrCreatePlayerScore(scoreHolder, objective).get();
                         var state = healthStates.computeIfAbsent(player.getProfile().getId(), (playerId) -> new TabListInformation.HealthState(score));
                         if (state.update(score, minecraft.gui.getGuiTicks())) {
                             blinking.add(player.getProfile().getId());
@@ -165,15 +169,31 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var baseScoreWidth = 0;
 
         var names = new HashMap<UUID, BakedComponent>();
+        var scoreValues = new HashMap<UUID, Integer>();
+        var scores = new HashMap<UUID, BakedComponent>();
+        var extraWidth = font.width(" ");
+
         for (var playerInfo : players) {
             var name = playerTabOverlay.getNameForDisplay(playerInfo);
             var baked = new BakedComponent(name);
             names.put(playerInfo.getProfile().getId(), baked);
             maxNameWidth = Math.max(maxNameWidth, baked.width);
 
-            if (objective != null && objective.getRenderType() != ObjectiveCriteria.RenderType.HEARTS) {
-                var score = scoreboard.getOrCreatePlayerScore(playerInfo.getProfile().getName(), objective);
-                baseScoreWidth = Math.max(baseScoreWidth, font.width(" " + score.getScore()));
+            if (objective != null) {
+                var numberFormat = objective.numberFormatOrDefault(StyledFormat.PLAYER_LIST_DEFAULT);
+                var scoreHolder = ScoreHolder.fromGameProfile(playerInfo.getProfile());
+                var readOnlyScoreInfo = scoreboard.getPlayerScoreInfo(scoreHolder, objective);
+                if (readOnlyScoreInfo != null) {
+                    scoreValues.put(playerInfo.getProfile().getId(), readOnlyScoreInfo.value());
+                }
+
+                if (objective.getRenderType() != ObjectiveCriteria.RenderType.HEARTS) {
+                    var score = ReadOnlyScoreInfo.safeFormatValue(readOnlyScoreInfo, numberFormat);
+                    var bakedScore = new BakedComponent(score);
+                    scores.put(playerInfo.getProfile().getId(), bakedScore);
+                    var scoreWidth = bakedScore.width;
+                    baseScoreWidth = Math.max(baseScoreWidth, scoreWidth > 0 ? extraWidth + scoreWidth : 0);
+                }
             }
         }
 
@@ -235,6 +255,8 @@ public class TabListCache extends ElementCache<TabListInformation> {
                 players,
                 blinking,
                 names,
+                scoreValues,
+                scores,
                 columnWidth,
                 maxNameWidth,
                 maxScoreWidth,
@@ -317,7 +339,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
             if (objective != null && playerInfo.getGameMode() != GameType.SPECTATOR && (scoreWidth = (scoreX = x + cache.maxNameWidth() + 1) + cache.maxScoreWidth()) - scoreX > 5) {
                 // Render the score outside the buffer when in a blinking animation!
                 if (cache.blinking().contains(playerInfo.getProfile().getId()) == dynamic) {
-                    this.renderTablistScore(objective, y, profile.getName(), scoreX, scoreWidth, profile.getId(), graphics, font);
+                    this.renderTablistScore(objective, cache.scores().get(playerInfo.getProfile().getId()), cache.scoreValues().get(playerInfo.getProfile().getId()), y, scoreX, scoreWidth, profile.getId(), graphics, font);
                 }
             }
             if (!dynamic) {
@@ -347,13 +369,11 @@ public class TabListCache extends ElementCache<TabListInformation> {
         graphics.pose().popPose();
     }
 
-    private void renderTablistScore(Objective objective, int y, String pUsername, int x, int width, UUID playerId, GuiGraphics graphics, Font font) {
-        var score = objective.getScoreboard().getOrCreatePlayerScore(pUsername, objective).getScore();
+    private void renderTablistScore(Objective objective, BakedComponent component, Integer score, int y, int x, int width, UUID playerId, GuiGraphics graphics, Font font) {
         if (objective.getRenderType() == ObjectiveCriteria.RenderType.HEARTS) {
             renderTablistHearts(y, x, width, playerId, graphics, score, font);
         } else {
-            var scoreString = "" + ChatFormatting.YELLOW + score;
-            graphics.drawString(font, scoreString, width - font.width(scoreString), y, 16777215);
+            component.draw(graphics, font, width - component.width, y, 16777215);
         }
     }
 

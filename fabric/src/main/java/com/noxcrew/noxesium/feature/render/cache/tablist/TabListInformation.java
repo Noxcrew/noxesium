@@ -19,6 +19,8 @@ public record TabListInformation(
         List<PlayerInfo> players,
         List<UUID> blinking,
         Map<UUID, BakedComponent> names,
+        Map<UUID, Integer> scoreValues,
+        Map<UUID, BakedComponent> scores,
         int columnWidth,
         int maxNameWidth,
         int maxScoreWidth,
@@ -32,7 +34,7 @@ public record TabListInformation(
     /**
      * The fallback contents if the tab list is empty.
      */
-    public static final TabListInformation EMPTY = new TabListInformation(List.of(), List.of(), List.of(), List.of(), Map.of(), 0, 0, 0, 0, 0, 0, true, null);
+    public static final TabListInformation EMPTY = new TabListInformation(List.of(), List.of(), List.of(), List.of(), Map.of(), Map.of(), Map.of(), 0, 0, 0, 0, 0, 0, true, null);
 
     /**
      * Stores the current state of a player's health, as shown in the tab list.
