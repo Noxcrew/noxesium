@@ -15,6 +15,13 @@ public class BakedComponentBuilder {
     private final Font font;
 
     /**
+     * If `true` this component will render each character using a separate render call.
+     * This mimics how vanilla sometimes inefficiently renders text and makes
+     * this text more compatible with more text shaders that make bad assumptions.
+     */
+    public boolean forceRenderCharactersSeparate = false;
+
+    /**
      * If `true` a second instance of the font is drawn slightly down
      * and behind the original text in a darker color.
      */
@@ -37,6 +44,6 @@ public class BakedComponentBuilder {
      * Creates the baked component.
      */
     public BakedComponent build() {
-        return new BakedComponent(component, font, shadow);
+        return new BakedComponent(component, font, forceRenderCharactersSeparate, shadow);
     }
 }

@@ -104,7 +104,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
 
         // Get all player scores and sort them correctly
         var scores = new ArrayList<>(scoreboard.listPlayerScores(objective));
-        scores.sort(SCORE_DISPLAY_ORDER);
+        scores.sort(SCORE_DISPLAY_ORDER.reversed());
 
         var lines = new ArrayList<BakedComponent>();
         var numbers = new ArrayList<BakedComponent>();
@@ -141,6 +141,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             // move the whole background right.
             var component = score.formatValue(numberFormat);
             var numberTextBuilder = new BakedComponentBuilder(component, font);
+            numberTextBuilder.forceRenderCharactersSeparate = true;
             numberTextBuilder.shadow = false;
             var bakedNumber = numberTextBuilder.build();
             maxWidth = Math.max(maxWidth, bakedText.width + (bakedNumber.width > 0 ? bakedNumber.width + extraWidth : 0));

@@ -79,6 +79,7 @@ public class ScoreboardMixin {
     @Inject(method = "resetAllPlayerScores", at = @At(value = "HEAD"))
     private void resetAllPlayerScores(ScoreHolder scoreHolder, CallbackInfo ci) {
         var playerScores = this.playerScores.get(scoreHolder.getScoreboardName());
+        if (playerScores == null) return;
 
         if (playerScores.listScores().keySet().stream().anyMatch(f -> ScoreboardCache.getInstance().isObjectiveRelevant(f))) {
             ScoreboardCache.getInstance().clearCache();

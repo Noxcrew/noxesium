@@ -2,16 +2,11 @@ package com.noxcrew.noxesium.mixin.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.NoxesiumMod;
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.world.scores.DisplaySlot;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,11 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
-import java.util.Comparator;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Adds various debug hotkeys for Noxesium.

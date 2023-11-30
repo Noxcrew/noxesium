@@ -90,7 +90,7 @@ public class ElementBuffer implements Closeable {
                     var buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
                     buffer.bind();
 
-                    var builder = new BufferBuilder(4);
+                    var builder = new BufferBuilder(4 * 6);
                     builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
                     builder.vertex(0.0f, screenHeight, 0.0f).uv(0.0f, 0.0f).endVertex();
                     builder.vertex(screenWidth, screenHeight, 0.0f).uv(1.0f, 0.0f).endVertex();

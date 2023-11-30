@@ -32,8 +32,8 @@ import java.util.concurrent.CompletableFuture;
 public class SkullContents extends TranslatableContents {
     public static final MapCodec<SkullContents> INNER_CODEC = RecordCodecBuilder.mapCodec((instance) -> instance
             .group(
-                    UUIDUtil.CODEC.optionalFieldOf("uuid", null).forGetter(SkullContents::getUuid),
-                    Codec.STRING.optionalFieldOf("texture", null).forGetter(SkullContents::getTexture),
+                    UUIDUtil.STRING_CODEC.optionalFieldOf("uuid").forGetter((skull) -> Optional.ofNullable(skull.getUuid())),
+                    Codec.STRING.optionalFieldOf("texture").forGetter((skull) -> Optional.ofNullable(skull.getTexture())),
                     Codec.BOOL.optionalFieldOf("grayscale", false).forGetter(SkullContents::isGrayscale),
                     Codec.INT.optionalFieldOf("advance", 0).forGetter(SkullContents::getAdvance),
                     Codec.INT.optionalFieldOf("ascent", 0).forGetter(SkullContents::getAscent),
@@ -63,14 +63,14 @@ public class SkullContents extends TranslatableContents {
         this.config = new SkullConfig(texture, new SkullProperties(this));
     }
 
-    public SkullContents(@Nullable UUID uuid, @Nullable String textureIn, boolean grayscale, int advance, int ascent, float scale) {
+    public SkullContents(Optional<UUID> uuid, Optional<String> textureIn, boolean grayscale, int advance, int ascent, float scale) {
         super("", null, new Object[]{});
         CompletableFuture<String> texture = new CompletableFuture<>();
-        if (textureIn != null) {
-            texture.complete(textureIn);
-        } else if (uuid != null) {
+        if (textureIn.isPresent()) {
+            texture.complete(textureIn.get());
+        } else if (uuid.isPresent()) {
             try {
-                GameProfile gameprofile = new GameProfile(uuid, "dummy_mcdummyface");
+                GameProfile gameprofile = new GameProfile(uuid.get(), "dummy_mcdummyface");
                 GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
                     var property = Iterables.getFirst(profile.getProperties().get(GameProfileFetcher.PROPERTY_TEXTURES), null);
                     if (property != null) {
@@ -82,7 +82,7 @@ public class SkullContents extends TranslatableContents {
             }
         }
 
-        this.uuid = uuid;
+        this.uuid = uuid.orElse(null);
         this.texture = texture;
         this.grayscale = grayscale;
         this.advance = advance;

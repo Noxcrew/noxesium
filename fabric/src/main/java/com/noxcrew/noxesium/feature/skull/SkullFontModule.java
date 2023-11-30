@@ -6,7 +6,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.NoxesiumMod;
@@ -43,6 +42,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class SkullFontModule implements NoxesiumModule {
 
+    /**
+     * The signature used when checking the skin. We do not care if this signature is correct, but
+     * the signature needs to be of a valid length to not throw an error.
+     */
+    private static final String RANDOM_SIGNATURE = "Lcgr04dLPH0GHOPFdI2/JdFM3wpXEEt2PGh0uc8P7AcUb+PLOpyazC7VWhtT2H2TyKA5qK6Qeg04pJ3dnFWW+ToRnnVkLxhk1pv7tZEVIj98d1eRy6BxQ4A6eihplyquSAjrb1xMii9W5PM0HcwHiai5yo/1keey9Sq4Nk3bI3DWzJjNGEEACAhsCdezYTzwPsIa8xqnXPi0r2vVQe0nLkgDInDWslyp+UbzKxmMx5IK920iEZhrHhDkmj9yC1Sn7L7lPW0kz7iRlXsnpVJ36JSCma/i57dOWDJbEWpZTnH8TqsyHLPY+voFU+D1UzUkgvOWXL3YAJfajhBZsk0NhFyio9iRh8delBksYdd87q7eu9q35gwUMiooaMxkJupz9tuS1MKMtalYTWXak3pxROMIBiS6kp85fpSd1a18JN6WivvjdDGjC6azL8zf2/ie2GFhSeo+a2HkaXqcuuYcWUTo2CDmTsgCYiTC0GpHA0rClFfpLaVVCZU9TPG4ErUy1HOXhc9R5+CRd4qQG+1LGbfddxsnNpp5Vv8DGS6roQw7zW4DwL7AOQZuw5QrEc6cqqEp/7/gejRSiYj2CXHw4wlVfhPqG+7w7waLHfq/5ZTCVXNLW/kCOD18vVFsNIc6oZjNgtDuwRrUjMX8LIFL2ERKx76FPlzUV40GQ4ZjJeE=";
     public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation(NoxesiumMod.NAMESPACE, "skulls");
     private static SkullFontModule instance;
 
@@ -148,7 +152,7 @@ public class SkullFontModule implements NoxesiumModule {
 
             try {
                 var gameProfile = new GameProfile(Util.NIL_UUID, "dummy_mcdummyface");
-                gameProfile.getProperties().put(GameProfileFetcher.PROPERTY_TEXTURES, new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, ""));
+                gameProfile.getProperties().put(GameProfileFetcher.PROPERTY_TEXTURES, new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, RANDOM_SIGNATURE));
 
                 // Let the session servers extract the texture, don't check the signature
                 var information = Minecraft.getInstance().getMinecraftSessionService().getTextures(gameProfile).skin();

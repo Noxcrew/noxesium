@@ -33,7 +33,7 @@
     "fabric": "*",
     "fabricloader": ">=0.15.0",
     "fabric-api": ">=0.91.1",
-    "minecraft": ">=1.20.3-rc1"
+    "minecraft": ">=1.20.3-rc.1"
   },
   "suggests": {
     "sodium": ">=0.5.3",

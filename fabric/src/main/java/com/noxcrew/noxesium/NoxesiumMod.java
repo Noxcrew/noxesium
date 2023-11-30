@@ -96,6 +96,10 @@ public class NoxesiumMod implements ClientModInitializer {
         if (isUsingClothConfig) {
             return ClothConfigIntegration.getExperimentalPerformancePatches();
         }
+        // Fallback when testing without Cloth Config in IDE
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
+            return true;
+        }
         return false;
     }
 
@@ -103,10 +107,13 @@ public class NoxesiumMod implements ClientModInitializer {
      * Whether the experimental performance patches should be used.
      */
     public static boolean shouldDisableExperimentalPerformancePatches() {
-        if (enableExperimentalPatches != null) {
-            return !enableExperimentalPatches;
+        if (hasConfiguredPerformancePatches()) {
+            if (enableExperimentalPatches != null) {
+                return !enableExperimentalPatches;
+            }
+            return false;
         }
-        return !hasConfiguredPerformancePatches();
+        return true;
     }
 
     /**
