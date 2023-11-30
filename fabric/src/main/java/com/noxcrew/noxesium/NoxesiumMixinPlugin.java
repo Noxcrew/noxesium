@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
 
-    private boolean isUsingSodium, isUsingIris;
+    private boolean isUsingSodium, isUsingIris, isUsingChime;
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
@@ -22,6 +22,8 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
             // using iris as it makes changes that provide better performance
             case "com.noxcrew.noxesium.mixin.beacon.SodiumWorldRendererMixin" -> isUsingSodium && !isUsingIris;
             case "com.noxcrew.noxesium.mixin.model.SodiumMixinItemRendererMixin" -> isUsingSodium;
+            // Disable ItemOverrides changes if Chime is being used (which changes item overrides)
+            case "com.noxcrew.noxesium.mixin.model.ItemOverridesMixin" -> !isUsingChime;
             // We don't disable the other beacon patches as they simply get made useless by Sodium removing
             // all default global block entities.
             default -> true;
@@ -32,6 +34,7 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
     public void onLoad(String mixinPackage) {
         isUsingSodium = FabricLoader.getInstance().isModLoaded("sodium");
         isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
+        isUsingChime = FabricLoader.getInstance().isModLoaded("chime");
     }
 
     @Override

@@ -18,6 +18,8 @@ import java.util.List;
  * quite bad considering the vast majority of overrides are single overrides based
  * on custom model data. Instead, we optimize based on the amount of overrides and
  * treat all non-only custom model data ones as non-essential.
+ * <p>
+ * Disabled when using <a href="https://github.com/emilyploszaj/chime/tree/main">Chime</a>.
  */
 @Mixin(BlockModel.class)
 public class ItemOverridesMixin {
