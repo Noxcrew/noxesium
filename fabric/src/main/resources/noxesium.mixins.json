@@ -38,8 +38,6 @@
     "mouse.MouseHandlerAccessor",
     "mouse.MouseHandlerMixin",
     "music.MusicManagerMixin",
-    "music.SoundOptionsMixin",
-    "music.SoundSourceMixin",
     "render.BossHealthOverlayMixin",
     "render.ChatComponentExt",
     "render.ChatComponentMixin",

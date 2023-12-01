@@ -42,9 +42,7 @@ public class ServerRules {
     public static ClientServerRule<Boolean> CAMERA_LOCKED = new CameraLockedRule(ServerRuleIndices.CAMERA_LOCKED);
 
     /**
-     * Whether the custom music system should be enabled. When enabled vanilla background music is fully disabled and
-     * additional music sliders become available to play music in. This can be used by servers that wish to play their
-     * own music.
+     * Whether custom music is being used. When enabled vanilla background music is fully disabled.
      */
     public static ClientServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(ServerRuleIndices.ENABLE_CUSTOM_MUSIC);
 

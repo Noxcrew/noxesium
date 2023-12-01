@@ -1,7 +1,4 @@
 {
-  "soundCategory.core_music_noxesium": "Core Music",
-  "soundCategory.game_music_noxesium": "Game Music",
-
   "debug.experimental_patches.disabled": "Noxesium UI performance patches are now off",
   "debug.experimental_patches.enabled": "Noxesium UI performance patches are now on",
   "debug.experimental_patches.help": "F3 + W = Toggle Noxesium UI performance patches",
