@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.noxcrew.noxesium.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
@@ -125,7 +126,7 @@ public abstract class GuiMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
         // Override the super-method
-        if (NoxesiumMod.shouldDisableExperimentalPerformancePatches()) return;
+        if (NoxesiumConfig.shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
         
         /*
@@ -311,7 +312,7 @@ public abstract class GuiMixin {
             this.renderSavingIndicator(graphics);
 
             // (TODO Optimize) Draw the fps counter and overlay
-            if (NoxesiumMod.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
+            if (NoxesiumConfig.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
                 // Draw the current fps
                 var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
                 var lineOffset = font.lineHeight + 5;
@@ -320,7 +321,7 @@ public abstract class GuiMixin {
                 graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
 
                 // Draw the state of experimental patches if the keybind is being used
-                if (NoxesiumMod.enableExperimentalPatches != null) {
+                if (NoxesiumConfig.enableExperimentalPatches != null) {
                     var text2 = Component.translatable("debug.noxesium_overlay.on");
                     graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
                     graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
@@ -334,10 +335,10 @@ public abstract class GuiMixin {
         var font = minecraft.font;
 
         // If experimental patches are applied we don't render here
-        if (!NoxesiumMod.shouldDisableExperimentalPerformancePatches()) return;
+        if (!NoxesiumConfig.shouldDisableExperimentalPerformancePatches()) return;
 
         // Don't render when the debug screen is shown as it would overlap
-        if (NoxesiumMod.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
+        if (NoxesiumConfig.shouldShowFpsOverlay() && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
             // Draw the current fps
             var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
             var lineOffset = font.lineHeight + 5;
@@ -348,7 +349,7 @@ public abstract class GuiMixin {
             graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
 
             // Draw the state of experimental patches if they are enabled in the config but disabled with the keybind!
-            if (NoxesiumMod.hasConfiguredPerformancePatches()) {
+            if (NoxesiumConfig.hasConfiguredPerformancePatches()) {
                 var text2 = Component.translatable("debug.noxesium_overlay.off");
                 graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
                 graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);

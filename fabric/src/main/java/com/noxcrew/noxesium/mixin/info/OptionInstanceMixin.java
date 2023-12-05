@@ -27,6 +27,6 @@ public class OptionInstanceMixin {
         if (instance == options.chatLineSpacing()) {
             ChatCache.getInstance().clearCache();
         }
-        return ((OptionInstanceExt) ((Object) instance)).getOnValudUpdate();
+        return ((OptionInstanceExt) ((Object) instance)).getOnValueUpdate();
     }
 }

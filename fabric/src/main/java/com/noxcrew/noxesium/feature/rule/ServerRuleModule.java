@@ -11,18 +11,6 @@ import java.util.Map;
  */
 public class ServerRuleModule implements NoxesiumModule {
 
-    private static ServerRuleModule instance;
-
-    /**
-     * Returns the singleton instance of the server rule module.
-     */
-    public static ServerRuleModule getInstance() {
-        if (instance == null) {
-            instance = new ServerRuleModule();
-        }
-        return instance;
-    }
-
     private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
 
     @Override

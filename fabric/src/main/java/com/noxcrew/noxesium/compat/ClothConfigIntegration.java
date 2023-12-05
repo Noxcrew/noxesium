@@ -13,21 +13,21 @@ public class ClothConfigIntegration {
      * Registers the configuration file.
      */
     public static void register() {
-        AutoConfig.register(NoxesiumConfig.class, Toml4jConfigSerializer::new);
+        AutoConfig.register(NoxesiumAutoConfig.class, Toml4jConfigSerializer::new);
     }
 
     /**
      * Returns the configuration screen with the given parent.
      */
     public static Screen getMenu(Screen parent) {
-        return AutoConfig.getConfigScreen(NoxesiumConfig.class, parent).get();
+        return AutoConfig.getConfigScreen(NoxesiumAutoConfig.class, parent).get();
     }
 
     /**
      * Returns the instance of the Noxesium configuration.
      */
-    public static NoxesiumConfig getConfig() {
-        return AutoConfig.getConfigHolder(NoxesiumConfig.class).getConfig();
+    public static NoxesiumAutoConfig getConfig() {
+        return AutoConfig.getConfigHolder(NoxesiumAutoConfig.class).getConfig();
     }
 
     public static boolean getFpsOverlay() {

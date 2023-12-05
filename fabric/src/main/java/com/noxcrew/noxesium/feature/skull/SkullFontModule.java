@@ -42,23 +42,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class SkullFontModule implements NoxesiumModule {
 
+    public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation(NoxesiumMod.NAMESPACE, "skulls");
+
     /**
      * The signature used when checking the skin. We do not care if this signature is correct, but
      * the signature needs to be of a valid length to not throw an error.
      */
     private static final String RANDOM_SIGNATURE = "Lcgr04dLPH0GHOPFdI2/JdFM3wpXEEt2PGh0uc8P7AcUb+PLOpyazC7VWhtT2H2TyKA5qK6Qeg04pJ3dnFWW+ToRnnVkLxhk1pv7tZEVIj98d1eRy6BxQ4A6eihplyquSAjrb1xMii9W5PM0HcwHiai5yo/1keey9Sq4Nk3bI3DWzJjNGEEACAhsCdezYTzwPsIa8xqnXPi0r2vVQe0nLkgDInDWslyp+UbzKxmMx5IK920iEZhrHhDkmj9yC1Sn7L7lPW0kz7iRlXsnpVJ36JSCma/i57dOWDJbEWpZTnH8TqsyHLPY+voFU+D1UzUkgvOWXL3YAJfajhBZsk0NhFyio9iRh8delBksYdd87q7eu9q35gwUMiooaMxkJupz9tuS1MKMtalYTWXak3pxROMIBiS6kp85fpSd1a18JN6WivvjdDGjC6azL8zf2/ie2GFhSeo+a2HkaXqcuuYcWUTo2CDmTsgCYiTC0GpHA0rClFfpLaVVCZU9TPG4ErUy1HOXhc9R5+CRd4qQG+1LGbfddxsnNpp5Vv8DGS6roQw7zW4DwL7AOQZuw5QrEc6cqqEp/7/gejRSiYj2CXHw4wlVfhPqG+7w7waLHfq/5ZTCVXNLW/kCOD18vVFsNIc6oZjNgtDuwRrUjMX8LIFL2ERKx76FPlzUV40GQ4ZjJeE=";
-    public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation(NoxesiumMod.NAMESPACE, "skulls");
-    private static SkullFontModule instance;
-
-    /**
-     * Returns the singleton instance of the server rule module.
-     */
-    public static SkullFontModule getInstance() {
-        if (instance == null) {
-            instance = new SkullFontModule();
-        }
-        return instance;
-    }
 
     private final BiMap<SkullProperties, Character> claims = HashBiMap.create();
     private final Map<SkullProperties, SkullConfig> lastConfig = new HashMap<>();

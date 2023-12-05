@@ -11,14 +11,6 @@ import java.util.Map;
  * Manages and stores the currently playing sounds
  */
 public class NoxesiumSoundModule implements NoxesiumModule {
-    private static NoxesiumSoundModule instance;
-
-    public static NoxesiumSoundModule getInstance() {
-        if (instance == null) {
-            instance = new NoxesiumSoundModule();
-        }
-        return instance;
-    }
 
     private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
 

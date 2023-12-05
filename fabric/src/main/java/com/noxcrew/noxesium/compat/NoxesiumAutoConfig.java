@@ -7,7 +7,7 @@ import me.shedaniel.autoconfig.annotation.Config;
  * Stores the Noxesium configuration.
  */
 @Config(name = "noxesium")
-public class NoxesiumConfig implements ConfigData {
+public class NoxesiumAutoConfig implements ConfigData {
     boolean fpsOverlay = false;
     boolean experimentalPerformanceChanges = false;
 }

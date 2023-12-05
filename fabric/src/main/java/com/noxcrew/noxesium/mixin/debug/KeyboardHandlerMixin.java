@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium.mixin.debug;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.CompatibilityReferences;
+import com.noxcrew.noxesium.NoxesiumConfig;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.components.ChatComponent;
@@ -32,8 +33,12 @@ public abstract class KeyboardHandlerMixin {
     public void redirect(ChatComponent instance, Component component) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
-                if (NoxesiumMod.hasConfiguredPerformancePatches()) instance.addMessage(Component.translatable("debug.experimental_patches.help"));
-                if (!NoxesiumMod.isUsingClothConfig) instance.addMessage(Component.translatable("debug.fps_overlay.help"));
+                if (NoxesiumConfig.hasConfiguredPerformancePatches()) {
+                    instance.addMessage(Component.translatable("debug.experimental_patches.help"));
+                }
+                if (!CompatibilityReferences.isUsingClothConfig()) {
+                    instance.addMessage(Component.translatable("debug.fps_overlay.help"));
+                }
             }
         }
         instance.addMessage(component);
@@ -45,25 +50,26 @@ public abstract class KeyboardHandlerMixin {
             return;
         }
 
-        if (keyCode == InputConstants.KEY_Y && !NoxesiumMod.isUsingClothConfig) {
+        if (keyCode == InputConstants.KEY_W && NoxesiumConfig.hasConfiguredPerformancePatches()) {
             cir.setReturnValue(true);
 
-            if (!NoxesiumMod.fpsOverlay) {
-                NoxesiumMod.fpsOverlay = true;
-                this.debugFeedbackTranslated("debug.fps_overlay.enabled");
-            } else {
-                NoxesiumMod.fpsOverlay = false;
-                this.debugFeedbackTranslated("debug.fps_overlay.disabled");
-            }
-        } else if (keyCode == InputConstants.KEY_W && NoxesiumMod.hasConfiguredPerformancePatches()) {
-            cir.setReturnValue(true);
-
-            if (Objects.equals(NoxesiumMod.enableExperimentalPatches, false)) {
-                NoxesiumMod.enableExperimentalPatches = true;
+            if (Objects.equals(NoxesiumConfig.enableExperimentalPatches, false)) {
+                NoxesiumConfig.enableExperimentalPatches = true;
                 this.debugFeedbackTranslated("debug.experimental_patches.enabled");
             } else {
-                NoxesiumMod.enableExperimentalPatches = false;
+                NoxesiumConfig.enableExperimentalPatches = false;
                 this.debugFeedbackTranslated("debug.experimental_patches.disabled");
+            }
+        }
+        if (keyCode == InputConstants.KEY_Y && !CompatibilityReferences.isUsingClothConfig()) {
+            cir.setReturnValue(true);
+
+            if (NoxesiumConfig.fpsOverlay) {
+                NoxesiumConfig.fpsOverlay = false;
+                this.debugFeedbackTranslated("debug.fps_overlay.disabled");
+            } else {
+                NoxesiumConfig.fpsOverlay = true;
+                this.debugFeedbackTranslated("debug.fps_overlay.enabled");
             }
         }
     }

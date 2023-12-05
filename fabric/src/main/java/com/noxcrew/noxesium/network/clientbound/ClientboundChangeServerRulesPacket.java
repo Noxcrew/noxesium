@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -25,7 +26,7 @@ public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacke
         this.values = new ArrayList<>(indices.size());
 
         for (var index : indices) {
-            var rule = ServerRuleModule.getInstance().getIndex(index);
+            var rule = NoxesiumMod.getInstance().getModule(ServerRuleModule.class).getIndex(index);
 
             // If we don't know one rule the whole packet is useless
             if (rule == null) return;
@@ -38,7 +39,7 @@ public class ClientboundChangeServerRulesPacket extends ClientboundNoxesiumPacke
     public void receive(LocalPlayer player, PacketSender responseSender) {
         for (var idx = 0; idx < indices.size(); idx++) {
             var index = indices.getInt(idx);
-            var rule = ServerRuleModule.getInstance().getIndex(index);
+            var rule = NoxesiumMod.getInstance().getModule(ServerRuleModule.class).getIndex(index);
             if (rule == null) return;
             rule.setUnsafe(values.get(idx));
         }

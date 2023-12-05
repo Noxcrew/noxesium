@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -127,7 +128,7 @@ public class SkullContents extends TranslatableContents {
      * Returns the plain-text representation of this skull in the skull font.
      */
     public String getText() {
-        return Character.toString(SkullFontModule.getInstance().claim(config));
+        return Character.toString(NoxesiumMod.getInstance().getModule(SkullFontModule.class).claim(config));
     }
 
     public SkullConfig getConfig() {

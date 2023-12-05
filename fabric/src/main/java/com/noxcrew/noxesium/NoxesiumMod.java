@@ -13,42 +13,18 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The main file for the client-side implementation of Noxesium.
  */
 public class NoxesiumMod implements ClientModInitializer {
-
-    /**
-     * Whether cloth configs are being used.
-     * Enables a custom config UI where experimental performance changes can be enabled.
-     */
-    public final static boolean isUsingClothConfig = FabricLoader.getInstance().isModLoaded("cloth-config");
-
-    /**
-     * Whether feather client is being used.
-     * Prevents the experimental performance patches from being usable because of Feather's
-     * movable UI components.
-     */
-    public final static boolean isUsingFeatherClient = FabricLoader.getInstance().isModLoaded("feather");
-
-    /**
-     * Whether to enable experimental performance patches.
-     */
-    public static Boolean enableExperimentalPatches = SharedConstants.IS_RUNNING_IN_IDE ? true : null;
-
-    /**
-     * Whether to show the FPS overlay.
-     */
-    public static boolean fpsOverlay = false;
 
     /**
      * The current protocol version of the mod. Servers can use this version to determine which functionality
@@ -61,87 +37,65 @@ public class NoxesiumMod implements ClientModInitializer {
     public static final String NAMESPACE = "noxesium";
     public static final String IMMOVABLE_TAG = new ResourceLocation(NAMESPACE, "immovable").toString();
 
+    private static NoxesiumMod instance;
+
     /**
-     * All modules known to Noxesium that need to be registered.
+     * All modules known to Noxesium that have been registered.
      */
-    private static final Set<NoxesiumModule> modules = new HashSet<>(Set.of(
-            ServerRuleModule.getInstance(),
-            SkullFontModule.getInstance(),
-            NoxesiumSoundModule.getInstance()
-    ));
+    private final Map<Class<? extends NoxesiumModule>, NoxesiumModule> modules = new HashMap<>();
 
     /**
      * The current maximum supported protocol version.
      */
-    private static int currentMaxProtocol = VERSION;
+    private int currentMaxProtocol = VERSION;
+
+    /**
+     * Returns the known Noxesium instance.
+     */
+    public static NoxesiumMod getInstance() {
+        return instance;
+    }
 
     /**
      * Adds a new module to the list of modules that should have
      * their hooks called. Available for other mods to use.
      */
-    public static void registerModule(NoxesiumModule module) {
-        modules.add(module);
+    public void registerModule(NoxesiumModule module) {
+        modules.put(module.getClass(), module);
+    }
+
+    /**
+     * Returns the module of type [T] if one is registered.
+     */
+    @Nullable
+    public <T extends NoxesiumModule> T getModule(Class<T> clazz) {
+        return (T) modules.get(clazz);
     }
 
     /**
      * Returns the latest protocol version that is currently supported.
      */
-    public static int getMaxProtocolVersion() {
+    public int getMaxProtocolVersion() {
         return currentMaxProtocol;
     }
 
     /**
      * Stores the maximum protocol version of the current server.
      */
-    public static void setServerVersion(int maxProtocolVersion) {
+    public void setServerVersion(int maxProtocolVersion) {
         currentMaxProtocol = maxProtocolVersion;
-    }
-
-    /**
-     * Returns whether experimental performance are enabled in the configuration.
-     */
-    public static boolean hasConfiguredPerformancePatches() {
-        // Never allow the custom patches when using feather
-        if (isUsingFeatherClient) {
-            return false;
-        }
-        if (isUsingClothConfig) {
-            return ClothConfigIntegration.getExperimentalPerformancePatches();
-        }
-        // Fallback when testing without Cloth Config in IDE
-        if (SharedConstants.IS_RUNNING_IN_IDE) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Whether the experimental performance patches should be used.
-     */
-    public static boolean shouldDisableExperimentalPerformancePatches() {
-        if (hasConfiguredPerformancePatches()) {
-            if (enableExperimentalPatches != null) {
-                return !enableExperimentalPatches;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Whether the fps overlay should be shown.
-     */
-    public static boolean shouldShowFpsOverlay() {
-        if (isUsingClothConfig) {
-            return ClothConfigIntegration.getFpsOverlay();
-        }
-        return fpsOverlay;
     }
 
     @Override
     public void onInitializeClient() {
+        // Store the instance and register all modules
+        instance = this;
+        registerModule(new ServerRuleModule());
+        registerModule(new SkullFontModule());
+        registerModule(new NoxesiumSoundModule());
+
         // Register the config
-        if (isUsingClothConfig) {
+        if (CompatibilityReferences.isUsingClothConfig()) {
             ClothConfigIntegration.register();
         }
 
@@ -159,7 +113,7 @@ public class NoxesiumMod implements ClientModInitializer {
                 syncGuiScale();
 
                 // Call connection hooks
-                modules.forEach(NoxesiumModule::onJoinServer);
+                modules.values().forEach(NoxesiumModule::onJoinServer);
             }
         });
 
@@ -168,14 +122,14 @@ public class NoxesiumMod implements ClientModInitializer {
             // Reset the current max protocol version
             currentMaxProtocol = VERSION;
 
-            modules.forEach(NoxesiumModule::onQuitServer);
+            modules.values().forEach(NoxesiumModule::onQuitServer);
         });
 
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
 
         // Call initialisation on all modules
-        modules.forEach(NoxesiumModule::onStartup);
+        modules.values().forEach(NoxesiumModule::onStartup);
 
         // Register the resource listener
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new NoxesiumReloadListener());
