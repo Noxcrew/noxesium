@@ -34,17 +34,15 @@ dependencies {
     api(project(":api"))
 
     // Compatibility with other mods
-    modImplementation(files("libs/sodium-fabric-mc1.20.3-pre2-0.5.3+unknown.jar"))
-    //modImplementation("maven.modrinth:sodium:${property("sodium")}")
+    modImplementation("maven.modrinth:sodium:${property("sodium")}")
     //modImplementation("maven.modrinth:iris:${property("iris")}") {
     //    isTransitive = false
     //}
 
     // Optional dependency on Modmenu for the config screen
-    modApi(files("libs/modmenu-unknown.jar"))
-    //modApi("com.terraformersmc:modmenu:${property("modmenu")}") {
-    //    exclude(group = "net.fabricmc.fabric-api")
-    //}
+    modApi("com.terraformersmc:modmenu:${property("modmenu")}") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
 
     // Optional dependency on Cloth Config API
     modApi(files("libs/cloth-config-8.3.9999-fabric.jar"))

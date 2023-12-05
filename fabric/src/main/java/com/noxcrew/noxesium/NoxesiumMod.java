@@ -29,8 +29,16 @@ public class NoxesiumMod implements ClientModInitializer {
 
     /**
      * Whether cloth configs are being used.
+     * Enables a custom config UI where experimental performance changes can be enabled.
      */
     public final static boolean isUsingClothConfig = FabricLoader.getInstance().isModLoaded("cloth-config");
+
+    /**
+     * Whether feather client is being used.
+     * Prevents the experimental performance patches from being usable because of Feather's
+     * movable UI components.
+     */
+    public final static boolean isUsingFeatherClient = FabricLoader.getInstance().isModLoaded("feather");
 
     /**
      * Whether to enable experimental performance patches.
@@ -93,6 +101,10 @@ public class NoxesiumMod implements ClientModInitializer {
      * Returns whether experimental performance are enabled in the configuration.
      */
     public static boolean hasConfiguredPerformancePatches() {
+        // Never allow the custom patches when using feather
+        if (isUsingFeatherClient) {
+            return false;
+        }
         if (isUsingClothConfig) {
             return ClothConfigIntegration.getExperimentalPerformancePatches();
         }
