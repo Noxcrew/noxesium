@@ -35,20 +35,14 @@ dependencies {
 
     // Compatibility with other mods
     modImplementation("maven.modrinth:sodium:${property("sodium")}")
-    //modImplementation("maven.modrinth:iris:${property("iris")}") {
-    //    isTransitive = false
-    //}
-
-    // Optional dependency on Modmenu for the config screen
-    modApi("com.terraformersmc:modmenu:${property("modmenu")}") {
-        exclude(group = "net.fabricmc.fabric-api")
+    modImplementation("maven.modrinth:iris:${property("iris")}") {
+        isTransitive = false
     }
 
-    // Optional dependency on Cloth Config API
-    modApi(files("libs/cloth-config-8.3.9999-fabric.jar"))
-    //modApi("me.shedaniel.cloth:cloth-config-fabric:${property("clothconfig")}") {
-    //    exclude(group = "net.fabricmc.fabric-api")
-    //}
+    // Add modmenu at local runtime for testing, we don't need it as a dependency though.
+    modLocalRuntime("com.terraformersmc:modmenu:${property("modmenu")}") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
 }
 
 java {

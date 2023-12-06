@@ -3,7 +3,7 @@
   "id": "noxesium",
   "version": "${version}",
   "name": "Noxesium",
-  "description": "A client-side mod with various additions, changes and performance improvements.",
+  "description": "Improves client performance and play experience on large multiplayer servers.",
   "authors": [
     "Noxcrew"
   ],
@@ -20,9 +20,6 @@
       "com.noxcrew.noxesium.NoxesiumMod"
     ],
     "main": [
-    ],
-    "modmenu": [
-      "com.noxcrew.noxesium.compat.ModMenuIntegration"
     ]
   },
   "accessWidener": "noxesium.accesswidener",
@@ -33,16 +30,13 @@
     "fabric": "*",
     "fabricloader": ">=0.15.0",
     "fabric-api": ">=0.91.1",
-    "minecraft": ">=1.20.3-rc.1"
+    "minecraft": ">=1.20.3"
   },
   "suggests": {
-    "sodium": ">=0.5.3",
-    "iris": ">=1.6.9",
-    "modmenu": ">=8.0.0",
-    "cloth-config": ">=12.0.109"
+    "sodium": ">=0.5.4",
+    "iris": ">=1.6.11"
   },
   "breaks": {
-    "optifabric": "*",
-    "sodium": "<0.5.1"
+    "optifabric": "*"
   }
 }

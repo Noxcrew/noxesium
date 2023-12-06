@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.mixin.performance;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.noxcrew.noxesium.util.CompatibilityReferences;
 import com.noxcrew.noxesium.NoxesiumConfig;
+import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.gui.components.ChatComponent;
@@ -33,11 +33,8 @@ public abstract class KeyboardHandlerMixin {
     public void redirect(ChatComponent instance, Component component) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
-                if (NoxesiumConfig.hasConfiguredPerformancePatches()) {
+                if (NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches()) {
                     instance.addMessage(Component.translatable("debug.experimental_patches.help"));
-                }
-                if (!CompatibilityReferences.isUsingClothConfig()) {
-                    instance.addMessage(Component.translatable("debug.fps_overlay.help"));
                 }
             }
         }
@@ -50,26 +47,15 @@ public abstract class KeyboardHandlerMixin {
             return;
         }
 
-        if (keyCode == InputConstants.KEY_W && NoxesiumConfig.hasConfiguredPerformancePatches()) {
+        if (keyCode == InputConstants.KEY_W && NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches()) {
             cir.setReturnValue(true);
 
-            if (Objects.equals(NoxesiumConfig.enableExperimentalPatches, false)) {
-                NoxesiumConfig.enableExperimentalPatches = true;
+            if (Objects.equals(NoxesiumConfig.experimentalPatchesHotkey, false)) {
+                NoxesiumConfig.experimentalPatchesHotkey = true;
                 this.debugFeedbackTranslated("debug.experimental_patches.enabled");
             } else {
-                NoxesiumConfig.enableExperimentalPatches = false;
+                NoxesiumConfig.experimentalPatchesHotkey = false;
                 this.debugFeedbackTranslated("debug.experimental_patches.disabled");
-            }
-        }
-        if (keyCode == InputConstants.KEY_Y && !CompatibilityReferences.isUsingClothConfig()) {
-            cir.setReturnValue(true);
-
-            if (NoxesiumConfig.fpsOverlay) {
-                NoxesiumConfig.fpsOverlay = false;
-                this.debugFeedbackTranslated("debug.fps_overlay.disabled");
-            } else {
-                NoxesiumConfig.fpsOverlay = true;
-                this.debugFeedbackTranslated("debug.fps_overlay.enabled");
             }
         }
     }

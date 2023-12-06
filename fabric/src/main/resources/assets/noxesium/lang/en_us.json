@@ -11,7 +11,9 @@
   "debug.noxesium_overlay.on": "Noxesium: §aOn",
   "debug.noxesium_overlay.off": "Noxesium: §cOff",
 
-  "text.autoconfig.noxesium.title": "Noxesium Configuration Settings",
-  "text.autoconfig.noxesium.option.fpsOverlay": "Enable FPS overlay",
-  "text.autoconfig.noxesium.option.experimentalPerformanceChanges": "Enable experimental performance improvements (warning: unstable!)"
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "FPS Overlay",
+  "noxesium.options.fps_overlay.tooltip": "If enabled, a small overlay is added that shows the current fps in the top left corner of your screen.",
+  "noxesium.options.experimental_patches.name": "Enable Experimental Optimizations",
+  "noxesium.options.experimental_patches.tooltip": "§c(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code with a more efficient replacement.\n\n§cWarning: §7This will break all UI elements added by other mods. Do not use this setting if you are using mods that add additional UI elements."
 }

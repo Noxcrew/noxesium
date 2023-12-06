@@ -2,7 +2,6 @@ package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
-import com.noxcrew.noxesium.compat.ClothConfigIntegration;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
@@ -10,7 +9,6 @@ import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
-import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -52,10 +50,22 @@ public class NoxesiumMod implements ClientModInitializer {
     private int currentMaxProtocol = VERSION;
 
     /**
+     * The configuration file used by the mod.
+     */
+    private final NoxesiumConfig config = NoxesiumConfig.load();
+
+    /**
      * Returns the known Noxesium instance.
      */
     public static NoxesiumMod getInstance() {
         return instance;
+    }
+
+    /**
+     * Returns the configuration used by Noxesium.
+     */
+    public NoxesiumConfig getConfig() {
+        return config;
     }
 
     /**
@@ -95,11 +105,6 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new ServerRuleModule());
         registerModule(new SkullFontModule());
         registerModule(new NoxesiumSoundModule());
-
-        // Register the config
-        if (CompatibilityReferences.isUsingClothConfig()) {
-            ClothConfigIntegration.register();
-        }
 
         // Every time the client joins a server we send over information on the version being used
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {

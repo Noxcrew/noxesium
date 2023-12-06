@@ -26,6 +26,7 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "performance.KeyboardHandlerMixin",
+    "performance.SodiumVideoSettingsMenuMixin",
     "performance.model.DyeableLeatherItemMixin",
     "performance.model.ItemOverridesMixin",
     "performance.model.SodiumMixinItemRendererMixin",
