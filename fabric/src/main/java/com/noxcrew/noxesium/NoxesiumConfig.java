@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium;
 
 import com.noxcrew.noxesium.compat.ClothConfigIntegration;
+import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.minecraft.SharedConstants;
 
 /**

@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -36,7 +37,7 @@ public class ClientboundCustomSoundModifyPacket extends ClientboundNoxesiumPacke
 
     @Override
     public void receive(LocalPlayer player, PacketSender responseSender) {
-        var manager = NoxesiumSoundModule.getInstance();
+        var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
         var sound = manager.getSound(id);
         if (sound == null) return;
 

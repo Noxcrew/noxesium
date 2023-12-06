@@ -14,7 +14,7 @@ import static com.noxcrew.noxesium.NoxesiumMod.BUKKIT_COMPOUND_ID;
 import static com.noxcrew.noxesium.NoxesiumMod.IMMOVABLE_TAG;
 
 /**
- * Mixin for preventing items dropped from the Hotbar.
+ * Mixin for preventing items dropped from the hotbar.
  * This only prevent items with the {@link NoxesiumMod#IMMOVABLE_TAG} from being moved.
  */
 @Mixin(Inventory.class)

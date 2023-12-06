@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
@@ -86,7 +87,7 @@ public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket
 
     @Override
     public void receive(LocalPlayer player, PacketSender responseSender) {
-        var manager = NoxesiumSoundModule.getInstance();
+        var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
 
         // Determine the sound instance to play
         NoxesiumSoundInstance sound = null;

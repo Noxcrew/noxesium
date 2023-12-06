@@ -87,7 +87,7 @@ public abstract class SoundEngineMixin {
             this.soundBuffers.getStream(sound.getPath(), isLooping).thenAccept(audioStream -> channelHandle.execute(channel -> {
                 // Preloads `startOffset` amount of buffers but never reads them, so when minecraft loads
                 // the first 4 buffers, it's already offset by our `startOffset`
-                int bufferSize = Channel.calculateBufferSize(audioStream.getFormat(), 1);
+                int bufferSize = ChannelExt.calculateBufferSize(audioStream.getFormat(), 1);
                 int startOffset = Mth.floor(soundInstance1.getStartOffset());
                 try {
                     audioStream.read(startOffset * bufferSize);

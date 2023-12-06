@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -22,8 +23,9 @@ public class ClientboundResetServerRulesPacket extends ClientboundNoxesiumPacket
 
     @Override
     public void receive(LocalPlayer player, PacketSender responseSender) {
+        var module = NoxesiumMod.getInstance().getModule(ServerRuleModule.class);
         for (var index : indices) {
-            var rule = ServerRuleModule.getInstance().getIndex(index);
+            var rule = module.getIndex(index);
             if (rule == null) continue;
             rule.reset();
         }

@@ -66,7 +66,7 @@ public abstract class ServerboundNoxesiumPacket extends NoxesiumPacket {
     public boolean send() {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (ClientPlayNetworking.canSend(getType()) && NoxesiumPackets.canSend(getType())) {
-            var maxProtocol = NoxesiumMod.getMaxProtocolVersion();
+            var maxProtocol = NoxesiumMod.getInstance().getMaxProtocolVersion();
             var maxVersion = getVersion(maxProtocol);
             if (maxVersion == null) {
                 // If the server does not know how to handle this packet we don't send it!

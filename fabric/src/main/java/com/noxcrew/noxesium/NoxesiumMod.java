@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium;
 
+import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.compat.ClothConfigIntegration;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
@@ -9,6 +10,7 @@ import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -16,7 +18,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,9 +69,9 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * Returns the module of type [T] if one is registered.
      */
-    @Nullable
+    @NotNull
     public <T extends NoxesiumModule> T getModule(Class<T> clazz) {
-        return (T) modules.get(clazz);
+        return (T) Preconditions.checkNotNull(modules.get(clazz), "Could not get module " + clazz.getSimpleName());
     }
 
     /**

@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.tablist;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import net.minecraft.ChatFormatting;
+import com.noxcrew.noxesium.mixin.performance.render.ext.PlayerTabOverlayExt;
 import net.minecraft.Optionull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.ibm.icu.text.PluralRules.Operand.j;
 
 /**
  * Manages the current cache of the tab list.
@@ -155,12 +153,13 @@ public class TabListCache extends ElementCache<TabListInformation> {
     @Override
     protected TabListInformation createCache(Minecraft minecraft, Font font) {
         var playerTabOverlay = minecraft.gui.getTabList();
+        var ext = (PlayerTabOverlayExt) playerTabOverlay;
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
         var screenWidth = minecraft.getWindow().getGuiScaledWidth();
 
-        var header = playerTabOverlay.header;
-        var footer = playerTabOverlay.footer;
+        var header = ext.getHeader();
+        var footer = ext.getFooter();
         List<PlayerInfo> players = minecraft.player == null ? List.of() : minecraft.player.connection.getListedOnlinePlayers().stream().sorted(PLAYER_COMPARATOR).limit(80L).toList();
         List<UUID> blinking = getVariable("blinking");
 

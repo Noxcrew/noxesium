@@ -25,7 +25,7 @@ public class ClientboundServerInformationPacket extends ClientboundNoxesiumPacke
         // Whenever the server sends information about the supported protocol version we store
         // that and can use it to downgrade server-side packets based on the newest version
         // that can be sent.
-        NoxesiumMod.setServerVersion(maxProtocolVersion);
+        NoxesiumMod.getInstance().setServerVersion(maxProtocolVersion);
     }
 
     @Override

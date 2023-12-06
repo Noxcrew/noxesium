@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.compat;
 
-import com.noxcrew.noxesium.CompatibilityReferences;
+import com.noxcrew.noxesium.util.CompatibilityReferences;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 

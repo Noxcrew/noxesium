@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.chat;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import com.noxcrew.noxesium.mixin.render.ChatComponentExt;
+import com.noxcrew.noxesium.mixin.performance.render.ext.ChatComponentExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,7 +39,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
         registerVariable("fading", (minecraft, partialTicks) -> {
             var chatOverlay = minecraft.gui.getChat();
             var chatExt = (ChatComponentExt) chatOverlay;
-            var focused = chatOverlay.isChatFocused();
+            var focused = chatExt.isChatFocused();
             var messages = new ArrayList<>(chatExt.getTrimmedMessages());
             if (messages.isEmpty()) return List.of();
 
@@ -50,7 +50,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 index++;
 
                 var ticksSinceMessageSend = lastTick - line.addedTime();
-                var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
+                var timeFactor = focused ? 1.0 : ChatComponentExt.getTimeFactor(ticksSinceMessageSend);
                 if (timeFactor < 1.0) {
                     fading.add(index - 1);
                 }
@@ -75,13 +75,13 @@ public class ChatCache extends ElementCache<ChatInformation> {
     protected ChatInformation createCache(Minecraft minecraft, Font font) {
         var chatOverlay = minecraft.gui.getChat();
         var chatExt = (ChatComponentExt) chatOverlay;
-        if (chatOverlay.isChatHidden() || chatExt.getTrimmedMessages().isEmpty()) {
+        if (chatExt.isChatHidden() || chatExt.getTrimmedMessages().isEmpty()) {
             return ChatInformation.EMPTY;
         }
 
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
-        var focused = chatOverlay.isChatFocused();
+        var focused = chatExt.isChatFocused();
         var messages = new ArrayList<>(chatExt.getTrimmedMessages());
         List<Integer> fading = getVariable("fading");
 
@@ -103,6 +103,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
     @Override
     protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
         var chatOverlay = minecraft.gui.getChat();
+        var chatExt = (ChatComponentExt) chatOverlay;
         var messageCount = cache.trimmedMessages().size();
         int lineBottom;
         int backgroundAlpha;
@@ -123,11 +124,11 @@ public class ChatCache extends ElementCache<ChatInformation> {
             pose.translate(4.0f, 0.0f, 0.0f);
 
             var scaledHeight = Mth.floor((float) (height - 40) / scale);
-            var highlightedMessage = chatOverlay.getMessageEndIndexAt(chatOverlay.screenToChatX(mouseX), chatOverlay.screenToChatY(mouseY));
+            var highlightedMessage = chatExt.getMessageEndIndexAt(chatExt.screenToChatX(mouseX), chatExt.screenToChatY(mouseY));
             var opacity = minecraft.options.chatOpacity().get() * (double) 0.9f + (double) 0.1f;
             double backgroundOpacity = minecraft.options.textBackgroundOpacity().get();
             double lineSpacing = minecraft.options.chatLineSpacing().get();
-            var lineHeight = chatOverlay.getLineHeight();
+            var lineHeight = chatExt.getLineHeight();
             var lineSize = (int) Math.round(-8.0 * (lineSpacing + 1.0) + 4.0 * lineSpacing);
             var shownLineCount = 0;
 
@@ -138,7 +139,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
                 var line = cache.trimmedMessages().get(messageIndex);
                 if (line == null || (ticksSinceMessageSend = lastTick - line.addedTime()) >= 200 && !focused) continue;
 
-                var timeFactor = focused ? 1.0 : ChatComponent.getTimeFactor(ticksSinceMessageSend);
+                var timeFactor = focused ? 1.0 : ChatComponentExt.getTimeFactor(ticksSinceMessageSend);
                 alpha = (int) (255.0 * timeFactor * opacity);
                 backgroundAlpha = (int) (255.0 * timeFactor * backgroundOpacity);
                 ++shownLineCount;

@@ -1,7 +1,9 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
+import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
@@ -28,10 +30,10 @@ public class ClientboundResetPacket extends ClientboundNoxesiumPacket {
     @Override
     public void receive(LocalPlayer player, PacketSender responseSender) {
         if (hasFlag(flags, 0)) {
-            ServerRuleModule.getInstance().clearAll();
+            NoxesiumMod.getInstance().getModule(ServerRuleModule.class).clearAll();
         }
         if (hasFlag(flags, 1)) {
-            SkullFontModule.getInstance().resetCaches();
+            NoxesiumMod.getInstance().getModule(SkullFontModule.class).resetCaches();
         }
     }
 

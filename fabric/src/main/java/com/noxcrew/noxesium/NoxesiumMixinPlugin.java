@@ -21,9 +21,9 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
             // Enable custom sodium compatibility for the beacon performance changes, but disable when
             // using iris as it makes changes that provide better performance
             case "com.noxcrew.noxesium.mixin.beacon.SodiumWorldRendererMixin" -> isUsingSodium && !isUsingIris;
-            case "com.noxcrew.noxesium.mixin.model.SodiumMixinItemRendererMixin" -> isUsingSodium;
+            case "com.noxcrew.noxesium.mixin.performance.model.SodiumMixinItemRendererMixin" -> isUsingSodium;
             // Disable ItemOverrides changes if Chime is being used (which changes item overrides)
-            case "com.noxcrew.noxesium.mixin.model.ItemOverridesMixin" -> !isUsingChime;
+            case "com.noxcrew.noxesium.mixin.performance.model.ItemOverridesMixin" -> !isUsingChime;
             // We don't disable the other beacon patches as they simply get made useless by Sodium removing
             // all default global block entities.
             default -> true;

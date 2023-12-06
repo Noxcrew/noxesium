@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.noxcrew.noxesium.feature.render.CustomShaderManager;
+import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -146,14 +146,7 @@ public class ElementBuffer implements Closeable {
                 RenderSystem.disableBlend();
             }
         }, () -> {
-            /*
-                Using a custom shader here is in practice completely useless. The custom shader does
-                nothing that the built-in position-tex shader does not do. At best, it prevents any
-                servers from messing with this shader, but that shouldn't really matter anyway.
-
-                It's more a remnant of many, many attempts to fix blending issues.
-             */
-            RenderSystem.setShader(CustomShaderManager::getPositionTexBlendShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getTextureId());
             buffer.bind();

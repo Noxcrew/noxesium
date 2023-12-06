@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
-import com.noxcrew.noxesium.mixin.mouse.MouseHandlerAccessor;
+import com.noxcrew.noxesium.mixin.rules.mouse.MouseHandlerExt;
 import net.minecraft.client.Minecraft;
 
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class CameraLockedRule extends BooleanServerRule {
         // Using comparison here to avoid unboxing since the booleans are nullable
         if (Objects.equals(oldValue, true) && !Objects.equals(newValue, true)) {
             // Remove all accumulated mouse movement whenever the camera stops being locked
-            var mouseHandler = (MouseHandlerAccessor) Minecraft.getInstance().mouseHandler;
+            var mouseHandler = (MouseHandlerExt) Minecraft.getInstance().mouseHandler;
             mouseHandler.setAccumulatedDeltaX(0.0);
             mouseHandler.setAccumulatedDeltaY(0.0);
         }

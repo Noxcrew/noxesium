@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.feature.render.cache.actionbar;
 
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
-import com.noxcrew.noxesium.mixin.render.GuiExt;
+import com.noxcrew.noxesium.mixin.performance.render.ext.GuiExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

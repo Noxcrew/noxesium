@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.feature.skull;
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.font.SheetGlyphInfo;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.noxcrew.noxesium.mixin.component.FontSetExt;
+import com.noxcrew.noxesium.mixin.component.ext.FontSetExt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;

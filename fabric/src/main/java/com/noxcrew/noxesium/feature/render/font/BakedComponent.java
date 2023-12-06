@@ -3,6 +3,9 @@ package com.noxcrew.noxesium.feature.render.font;
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
+import com.noxcrew.noxesium.mixin.component.ext.FontSetExt;
+import com.noxcrew.noxesium.mixin.performance.render.ext.BakedGlyphExt;
+import com.noxcrew.noxesium.mixin.performance.render.ext.FontExt;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -44,17 +47,18 @@ public class BakedComponent {
      * The partial render output of this component, re-used between render calls.
      */
     private final StringRenderOutput renderOutput;
+
     /**
      * The width of this component.
      */
     public final int width;
+
     /**
      * Whether this component performs some kind of re-rendering that require it to be drawn
      * directly each tick.
      */
     public final boolean needsCustomReRendering;
 
-    private final boolean forceRenderCharactersSeparate;
     private final boolean shadow;
 
     public BakedComponent(Component component) {
@@ -74,7 +78,6 @@ public class BakedComponent {
         component.accept(renderOutput);
         this.width = font.width(component);
         this.needsCustomReRendering = renderOutput.doesContainObfuscation();
-        this.forceRenderCharactersSeparate = forceRenderCharactersSeparate;
         this.shadow = shadow;
     }
 
@@ -127,16 +130,18 @@ public class BakedComponent {
 
         private static final RandomSource RANDOM = RandomSource.create();
         private final List<FontCharacter> characters = new ArrayList<>();
-        private final Font font;
+        private final FontExt font;
         private final BakedGlyph baseBakedGlyph;
+        private final BakedGlyphExt baseBakedGlyphExt;
         private final boolean forceFlush;
 
         private float x;
         private boolean containsObfuscation = false;
 
         public StringRenderOutput(Font font, boolean forceFlush) {
-            this.font = font;
-            this.baseBakedGlyph = font.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+            this.font = (FontExt) font;
+            this.baseBakedGlyph = this.font.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+            this.baseBakedGlyphExt = (BakedGlyphExt) baseBakedGlyph;
             this.forceFlush = forceFlush;
         }
 
@@ -152,7 +157,7 @@ public class BakedComponent {
          */
         public boolean accept(int position, Style style, int codePoint) {
             var fontset = font.getFontSet(style.getFont());
-            var glyphinfo = fontset.getGlyphInfo(codePoint, font.filterFishyGlyphs);
+            var glyphinfo = fontset.getGlyphInfo(codePoint, font.getFilterFishyGlyphs());
 
             // Determine information about the character
             var bold = style.isBold();
@@ -197,6 +202,7 @@ public class BakedComponent {
          * Finishes creation of this string and draws it to the given buffer.
          */
         public float finish(Font font, float x, float y, int color, boolean shadow, Matrix4f matrix, MultiBufferSource bufferSource) {
+            var ext = (FontExt) font;
             var right = x;
             var dimFactor = shadow ? 0.25F : 1.0F;
             var decorationOffset = shadow ? 1f : 0f;
@@ -218,7 +224,7 @@ public class BakedComponent {
                         source.endBatch(renderType);
                     }
                     var vertexconsumer = bufferSource.getBuffer(renderType);
-                    font.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, PACKED_LIGHT_COORDS);
+                    ext.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, PACKED_LIGHT_COORDS);
 
                     // Forcefully fix an issue with scoreboard number removal shaders where the
                     // most common one on GitHub checks for the first 4 vertices for some reason??
@@ -231,24 +237,15 @@ public class BakedComponent {
                 }
 
                 if (character.strikethrough) {
-                    render(baseBakedGlyph, x + character.left + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.right + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, PACKED_LIGHT_COORDS);
+                    render(x + character.left + decorationOffset - 1.0F, y + decorationOffset + 4.5F, x + character.right + decorationOffset, y + decorationOffset + 4.5F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, PACKED_LIGHT_COORDS);
                 }
                 if (character.underline) {
-                    render(baseBakedGlyph, x + character.left + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.right + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, PACKED_LIGHT_COORDS);
+                    render(x + character.left + decorationOffset - 1.0F, y + decorationOffset + 9.0F, x + character.right + decorationOffset, y + decorationOffset + 9.0F - 1.0F, 0.01F, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, matrix, baseVertexconsumer, PACKED_LIGHT_COORDS);
                 }
 
                 // Store the furthest right we have drawn!
                 right = Math.max(right, character.right + x);
             }
-
-            /*if (background != 0) {
-                var br = (float) (background >> 24 & 255) / 255.0F;
-                var bg = (float) (background >> 16 & 255) / 255.0F;
-                var bb = (float) (background >> 8 & 255) / 255.0F;
-                var ba = (float) (background & 255) / 255.0F;
-
-                render(baseBakedGlyph, x - 1.0F, y + 9.0F, x + 1.0F, y - 1.0F, 0.01F, br, bg, bb, ba, matrix, baseVertexconsumer, PACKED_LIGHT_COORDS);
-            }*/
 
             return right;
         }
@@ -258,8 +255,8 @@ public class BakedComponent {
          */
         private ResourceLocation getTexture(RenderType type) {
             if (type instanceof RenderType.CompositeRenderType composite) {
-                if (composite.state.textureState instanceof RenderType.CompositeRenderType.TextureStateShard textureShard) {
-                    return (textureShard.texture.orElse(new ResourceLocation(""))).withSuffix("/" + type.name);
+                if (composite.state().textureState instanceof RenderType.CompositeRenderType.TextureStateShard textureShard) {
+                    return (textureShard.cutoutTexture().orElse(new ResourceLocation(""))).withSuffix("/" + type.name);
                 }
             }
             return new ResourceLocation("/" + type.name);
@@ -269,18 +266,19 @@ public class BakedComponent {
          * Returns a random glyph in the given font set with the given advance.
          */
         private BakedGlyph getRandomGlyph(FontSet fontSet, int advance) {
-            IntList intList = fontSet.glyphsByWidth.get(advance);
-            return intList != null && !intList.isEmpty() ? fontSet.getGlyph(intList.getInt(RANDOM.nextInt(intList.size()))) : fontSet.missingGlyph;
+            var ext = (FontSetExt) fontSet;
+            var intList = ext.getGlyphsByWidth().get(advance);
+            return intList != null && !intList.isEmpty() ? fontSet.getGlyph(intList.getInt(RANDOM.nextInt(intList.size()))) : ext.getMissingGlyph();
         }
 
         /**
          * Renders a new effect to the given vertex consumer.
          */
-        private void render(BakedGlyph glyph, float x, float y, float x2, float y2, float depth, Float r, Float g, Float b, float a, Matrix4f matrix, VertexConsumer vertexConsumer, int i) {
-            vertexConsumer.vertex(matrix, x, y, depth).color(r, g, b, a).uv(glyph.u0, glyph.v0).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x2, y, depth).color(r, g, b, a).uv(glyph.u0, glyph.v1).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x2, y2, depth).color(r, g, b, a).uv(glyph.u1, glyph.v1).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x, y2, depth).color(r, g, b, a).uv(glyph.u1, glyph.v0).uv2(i).endVertex();
+        private void render(float x, float y, float x2, float y2, float depth, Float r, Float g, Float b, float a, Matrix4f matrix, VertexConsumer vertexConsumer, int i) {
+            vertexConsumer.vertex(matrix, x, y, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV0()).uv2(i).endVertex();
+            vertexConsumer.vertex(matrix, x2, y, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV1()).uv2(i).endVertex();
+            vertexConsumer.vertex(matrix, x2, y2, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV1()).uv2(i).endVertex();
+            vertexConsumer.vertex(matrix, x, y2, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV0()).uv2(i).endVertex();
         }
 
         /**
