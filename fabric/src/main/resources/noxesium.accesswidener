@@ -8,7 +8,6 @@ accessible class net/minecraft/client/renderer/chunk/SectionRenderDispatcher$Ren
 accessible class net/minecraft/client/renderer/RenderType$CompositeState
 accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
 accessible class net/minecraft/client/renderer/RenderStateShard$TextureStateShard
-accessible class net/minecraft/client/resources/SkinManager$TextureInfo
 accessible class net/minecraft/world/scores/PlayerScores
 
 accessible method net/minecraft/client/renderer/block/model/ItemOverrides <init> ()V
