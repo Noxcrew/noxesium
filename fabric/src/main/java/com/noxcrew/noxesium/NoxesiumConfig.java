@@ -23,29 +23,21 @@ public class NoxesiumConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public boolean showFpsOverlay = false;
-    private boolean enableExperimentalPerformancePatches = false;
+    public boolean enableExperimentalPerformancePatches = false;
 
     /**
-     * Changes the current configured state of the experimental performance patches.
+     * Returns whether experimental patches are available. This will return false if
+     * any mods are detected that are known to have compatibility issues.
      */
-    public void setEnableExperimentalPerformancePatches(boolean value) {
-        // Never allow the custom patches when using feather
-        if (CompatibilityReferences.isUsingFeatherClient()) {
-            this.enableExperimentalPerformancePatches = false;
-            return;
-        }
-        this.enableExperimentalPerformancePatches = value;
+    public boolean areExperimentalPatchesAvailable() {
+        return !CompatibilityReferences.isUsingFeatherClient();
     }
 
     /**
      * Returns whether experimental performance are enabled in the configuration.
      */
     public boolean hasConfiguredPerformancePatches() {
-        // Never allow the custom patches when using feather
-        if (CompatibilityReferences.isUsingFeatherClient()) {
-            return false;
-        }
-        return enableExperimentalPerformancePatches;
+        return areExperimentalPatchesAvailable() && enableExperimentalPerformancePatches;
     }
 
     /**
