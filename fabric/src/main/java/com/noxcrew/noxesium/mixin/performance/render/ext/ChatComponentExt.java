@@ -21,25 +21,25 @@ public interface ChatComponentExt {
     boolean getNewMessageSinceScroll();
 
     @Invoker("isChatHidden")
-    boolean isChatHidden();
+    boolean invokeIsChatHidden();
 
     @Invoker("isChatFocused")
-    boolean isChatFocused();
+    boolean invokeIsChatFocused();
 
     @Invoker("getLineHeight")
-    int getLineHeight();
+    int invokeGetLineHeight();
 
     @Invoker("getTimeFactor")
-    static double getTimeFactor(int time) {
+    static double invokeGetTimeFactor(int time) {
         throw new AssertionError("Unimplemented");
     }
 
     @Invoker("screenToChatX")
-    double screenToChatX(double screenX);
+    double invokeScreenToChatX(double screenX);
 
     @Invoker("screenToChatY")
-    double screenToChatY(double screenY);
+    double invokeScreenToChatY(double screenY);
 
     @Invoker("getMessageEndIndexAt")
-    int getMessageEndIndexAt(double x, double y);
+    int invokeGetMessageEndIndexAt(double x, double y);
 }

@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.mixin.component.ext.FontSetExt;
 import com.noxcrew.noxesium.mixin.performance.render.ext.BakedGlyphExt;
 import com.noxcrew.noxesium.mixin.performance.render.ext.FontExt;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -140,7 +139,7 @@ public class BakedComponent {
 
         public StringRenderOutput(Font font, boolean forceFlush) {
             this.font = (FontExt) font;
-            this.baseBakedGlyph = this.font.getFontSet(Style.DEFAULT_FONT).whiteGlyph();
+            this.baseBakedGlyph = this.font.invokeGetFontSet(Style.DEFAULT_FONT).whiteGlyph();
             this.baseBakedGlyphExt = (BakedGlyphExt) baseBakedGlyph;
             this.forceFlush = forceFlush;
         }
@@ -156,7 +155,7 @@ public class BakedComponent {
          * Accepts a new character in the given position and style.
          */
         public boolean accept(int position, Style style, int codePoint) {
-            var fontset = font.getFontSet(style.getFont());
+            var fontset = font.invokeGetFontSet(style.getFont());
             var glyphinfo = fontset.getGlyphInfo(codePoint, font.getFilterFishyGlyphs());
 
             // Determine information about the character
@@ -224,7 +223,7 @@ public class BakedComponent {
                         source.endBatch(renderType);
                     }
                     var vertexconsumer = bufferSource.getBuffer(renderType);
-                    ext.renderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, PACKED_LIGHT_COORDS);
+                    ext.invokeRenderChar(bakedglyph, character.bold, character.italic, boldOffset, x + character.left + shadowOffset, y + shadowOffset, matrix, vertexconsumer, character.r == null ? r : (character.r * dimFactor), character.g == null ? g : (character.g * dimFactor), character.b == null ? b : (character.b * dimFactor), a, PACKED_LIGHT_COORDS);
 
                     // Forcefully fix an issue with scoreboard number removal shaders where the
                     // most common one on GitHub checks for the first 4 vertices for some reason??

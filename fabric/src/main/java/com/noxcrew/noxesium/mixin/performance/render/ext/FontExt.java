@@ -17,8 +17,8 @@ public interface FontExt {
     boolean getFilterFishyGlyphs();
 
     @Invoker("getFontSet")
-    FontSet getFontSet(ResourceLocation resourceLocation);
+    FontSet invokeGetFontSet(ResourceLocation resourceLocation);
 
     @Invoker("renderChar")
-    void renderChar(BakedGlyph bakedGlyph, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, VertexConsumer vertexConsumer, float i, float j, float k, float l, int m);
+    void invokeRenderChar(BakedGlyph bakedGlyph, boolean bl, boolean bl2, float f, float g, float h, Matrix4f matrix4f, VertexConsumer vertexConsumer, float i, float j, float k, float l, int m);
 }

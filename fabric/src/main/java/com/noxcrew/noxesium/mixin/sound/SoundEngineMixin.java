@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.mixin.sound;
 
-import com.mojang.blaze3d.audio.Channel;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.resources.sounds.Sound;
@@ -87,7 +86,7 @@ public abstract class SoundEngineMixin {
             this.soundBuffers.getStream(sound.getPath(), isLooping).thenAccept(audioStream -> channelHandle.execute(channel -> {
                 // Preloads `startOffset` amount of buffers but never reads them, so when minecraft loads
                 // the first 4 buffers, it's already offset by our `startOffset`
-                int bufferSize = ChannelExt.calculateBufferSize(audioStream.getFormat(), 1);
+                int bufferSize = ChannelExt.invokeCalculateBufferSize(audioStream.getFormat(), 1);
                 int startOffset = Mth.floor(soundInstance1.getStartOffset());
                 try {
                     audioStream.read(startOffset * bufferSize);
