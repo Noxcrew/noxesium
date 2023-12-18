@@ -7,8 +7,9 @@ import com.noxcrew.noxesium.feature.skull.GameProfileFetcher;
 import com.noxcrew.noxesium.feature.skull.SkullContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,17 +22,12 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(TranslatableContents.class)
 public abstract class TranslatableContentsMixin {
 
-    @Shadow
-    private static Object[] adjustArgs(Optional<List<Object>> optional) {
-        throw new AssertionError("Unimplemented");
-    }
-
     /**
      * @author Aeltumn
      * @reason Allow defining a DisguisedSkullContents object.
      */
-    @Overwrite
-    private static TranslatableContents create(String string, Optional<String> optional, Optional<List<Object>> optional2) {
+    @Inject(method = "create", at = @At("HEAD"), cancellable = true)
+    private static void createSkullContents(String string, Optional<String> optional, Optional<List<Object>> optional2, CallbackInfoReturnable<TranslatableContents> cir) {
         // We allow custom servers to use a custom translate component since it renders as the fallback if the value is not found.
         if (string.startsWith("%nox_uuid%") || string.startsWith("%nox_raw%")) {
             var info = SkullStringFormatter.parse(string);
@@ -57,11 +53,10 @@ public abstract class TranslatableContentsMixin {
                         // We ignore any errors from fetching the player data.
                     }
                 }
-                return new SkullContents(uuid, texture, info.grayscale(), info.advance(), info.ascent(), info.scale());
+                cir.setReturnValue(new SkullContents(uuid, texture, info.grayscale(), info.advance(), info.ascent(), info.scale()));
             } catch (Exception x) {
                 // Ignore exceptions while loading
             }
         }
-        return new TranslatableContents(string, optional.orElse(null), adjustArgs(optional2));
     }
 }

@@ -32,10 +32,6 @@ import java.util.Objects;
  */
 public class CustomItemOverrides extends ItemOverrides {
 
-    /**
-     * A pre-built empty overrides instance.
-     */
-    public static final CustomItemOverrides EMPTY = new CustomItemOverrides();
     private static final ResourceLocation CUSTOM_MODEL_DATA_ID = new ResourceLocation("custom_model_data");
 
     private ResourceLocation[] properties;
@@ -65,10 +61,6 @@ public class CustomItemOverrides extends ItemOverrides {
      * The highest valid custom model data integer. Any values above this use this value.
      */
     private Integer highestCustomModelData;
-
-    public CustomItemOverrides() {
-        super();
-    }
 
     public CustomItemOverrides(ModelBaker modelBaker, BlockModel blockModel, List<ItemOverride> list) {
         super(modelBaker, blockModel, list);

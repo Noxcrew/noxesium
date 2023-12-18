@@ -7,8 +7,9 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.ModelBaker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.List;
 
@@ -24,17 +25,12 @@ import java.util.List;
 @Mixin(BlockModel.class)
 public class ItemOverridesMixin {
 
-    @Shadow
-    @Final
-    private List<ItemOverride> overrides;
-
     /**
      * @author Aeltumn
      * @reason Vanilla overrides are incredibly slow, best to replace the whole system here
      */
-    @Overwrite
-    public ItemOverrides getItemOverrides(ModelBaker baker, BlockModel model) {
-        // Re-use the same empty instance whenever possible
-        return this.overrides.isEmpty() ? CustomItemOverrides.EMPTY : new CustomItemOverrides(baker, model, this.overrides);
+    @Redirect(method = "getItemOverrides", at = @At(value = "NEW", target = "(Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Ljava/util/List;)Lnet/minecraft/client/renderer/block/model/ItemOverrides;"))
+    public ItemOverrides getItemOverrides(ModelBaker modelBaker, BlockModel blockModel, List list) {
+        return new CustomItemOverrides(modelBaker, blockModel, list);
     }
 }
