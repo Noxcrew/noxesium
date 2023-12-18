@@ -5,7 +5,11 @@ import net.minecraft.nbt.NumericTag;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import static net.minecraft.world.item.DyeableLeatherItem.DEFAULT_LEATHER_COLOR;
 
 @Mixin(DyeableLeatherItem.class)
 public interface DyeableLeatherItemMixin {
@@ -14,22 +18,30 @@ public interface DyeableLeatherItemMixin {
      * @author Aeltumn
      * @reason Optimize NBT lookup, particularly effective when using lots of colored models
      */
-    @Overwrite
-    public default int getColor(ItemStack item) {
-        final int defaultColor = 10511680;
-        var itemTag = item.getTag();
-        if (itemTag == null) return defaultColor;
+    @Inject(method = "getColor", at = @At("HEAD"), cancellable = true)
+    public default void getColor(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+        var itemTag = itemStack.getTag();
+        if (itemTag == null) {
+            cir.setReturnValue(DEFAULT_LEATHER_COLOR);
+            return;
+        }
         var tag = itemTag.get("display");
 
         // We check if the id is 10 which is a compound tag
-        if (tag == null || tag.getId() != 10) return defaultColor;
+        if (tag == null || tag.getId() != 10) {
+            cir.setReturnValue(DEFAULT_LEATHER_COLOR);
+            return;
+        }
         var compoundTag = (CompoundTag) tag;
         var color = compoundTag.get("color");
 
         // This is equal to a 99 contains check, effectively if the id is not one of the first 6
         // it's not a numeric tag
-        if (color == null || color.getId() > 6) return defaultColor;
+        if (color == null || color.getId() > 6) {
+            cir.setReturnValue(DEFAULT_LEATHER_COLOR);
+            return;
+        }
         var numericTag = (NumericTag) color;
-        return numericTag.getAsInt();
+        cir.setReturnValue(numericTag.getAsInt());
     }
 }
