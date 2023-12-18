@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.config;
+package com.noxcrew.noxesium.config.sodium;
 
 import com.google.common.collect.ImmutableList;
 import com.noxcrew.noxesium.NoxesiumConfig;

@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.config;
+package com.noxcrew.noxesium.config.sodium;
 
 import com.noxcrew.noxesium.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;

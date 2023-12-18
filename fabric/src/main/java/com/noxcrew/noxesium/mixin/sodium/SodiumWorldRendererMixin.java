@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.beacon;
+package com.noxcrew.noxesium.mixin.sodium;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.render.GlobalBlockEntityRenderer;

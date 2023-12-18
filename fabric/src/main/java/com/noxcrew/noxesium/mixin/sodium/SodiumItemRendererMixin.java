@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.performance.model;
+package com.noxcrew.noxesium.mixin.sodium;
 
 import com.noxcrew.noxesium.feature.model.ItemColorWrapper;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 // Set a priority higher than Sodium
 @Mixin(value = ItemColors.class, priority = 1001)
-public class SodiumMixinItemRendererMixin implements ItemColorsExtended {
+public class SodiumItemRendererMixin implements ItemColorsExtended {
 
     // This field is created by Sodium in ItemColorsMixin
     @Shadow
