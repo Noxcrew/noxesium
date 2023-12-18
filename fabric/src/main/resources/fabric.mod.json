@@ -24,7 +24,8 @@
   },
   "accessWidener": "noxesium.accesswidener",
   "mixins": [
-    "noxesium.mixins.json"
+    "noxesium.mixins.json",
+    "noxesium-sodium.mixins.json"
   ],
   "depends": {
     "fabric": "*",
