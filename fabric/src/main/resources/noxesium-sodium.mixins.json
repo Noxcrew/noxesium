@@ -1,0 +1,16 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.noxcrew.noxesium.mixin.sodium",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "SodiumItemRendererMixin",
+    "SodiumVideoSettingsMenuMixin",
+    "SodiumWorldRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ]
+}

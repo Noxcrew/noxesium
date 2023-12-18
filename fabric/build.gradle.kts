@@ -68,6 +68,7 @@ tasks {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
 
+        // Exclude sodium java classes when it's disabled
         if (project.property("enableSodium") != "true") {
             exclude("**/sodium/**.java")
         }
