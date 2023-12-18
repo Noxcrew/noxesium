@@ -9,7 +9,6 @@
     "PlayerTabOverlayMixin",
     "beacon.BeaconRenderingMixin",
     "beacon.PreventDoubleBeaconRenderingMixin",
-    "beacon.SodiumWorldRendererMixin",
     "component.ComponentSerializerMixin",
     "component.TranslatableContentsMixin",
     "component.ext.FontManagerExt",
@@ -26,10 +25,8 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "performance.KeyboardHandlerMixin",
-    "performance.SodiumVideoSettingsMenuMixin",
     "performance.model.DyeableLeatherItemMixin",
     "performance.model.ItemOverridesMixin",
-    "performance.model.SodiumMixinItemRendererMixin",
     "performance.render.BossHealthOverlayMixin",
     "performance.render.ChatComponentMixin",
     "performance.render.ChatListenerMixin",
@@ -57,7 +54,10 @@
     "rules.mouse.MouseHandlerMixin",
     "sound.ChannelExt",
     "sound.MusicManagerMixin",
-    "sound.SoundEngineMixin"
+    "sound.SoundEngineMixin",
+    "sodium.SodiumItemRendererMixin",
+    "sodium.SodiumVideoSettingsMenuMixin",
+    "sodium.SodiumWorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

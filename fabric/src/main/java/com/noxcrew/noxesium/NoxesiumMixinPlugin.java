@@ -14,18 +14,24 @@ import java.util.Set;
 public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
 
     private static final String PREFIX = "com.noxcrew.noxesium.mixin.";
+    private static final String SODIUM_PREFIX = "com.noxcrew.noxesium.mixin.sodium.";
     private boolean isUsingSodium, isUsingIris, isUsingChime;
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (!mixinClassName.startsWith(PREFIX)) return false;
+
+        // If it's a sodium mixin we do specific checks
+        if (mixinClassName.startsWith(SODIUM_PREFIX)) {
+            // Disable beacon optimizations when using Iris as Iris already has
+            // comparable performance optimizations.
+            if (mixinClassName.endsWith(".SodiumWorldRendererMixin")) return !isUsingIris;
+
+            // Use all other Sodium mixins when Sodium is installed.
+            return isUsingSodium;
+        }
+
         return switch (mixinClassName.substring(PREFIX.length())) {
-            // Enable custom sodium compatibility for the beacon performance changes, but disable when
-            // using iris as it makes changes that provide better performance
-            case "beacon.SodiumWorldRendererMixin" -> isUsingSodium && !isUsingIris;
-            case "performance.model.SodiumMixinItemRendererMixin" -> isUsingSodium;
-            // Enable custom tab in Sodium video settings when possible
-            case "performance.SodiumVideoSettingsMenuMixin" -> isUsingSodium;
             // Disable ItemOverrides changes if Chime is being used (which changes item overrides)
             case "performance.model.ItemOverridesMixin" -> !isUsingChime;
             // We don't disable the other beacon patches as they simply get made useless by Sodium removing

@@ -34,14 +34,13 @@ dependencies {
     api(project(":api"))
 
     // Compatibility with other mods
-    modImplementation("maven.modrinth:sodium:${property("sodium")}")
-    modImplementation("maven.modrinth:iris:${property("iris")}") {
-        isTransitive = false
+    if (property("enableSodium") == "true") {
+        modImplementation("maven.modrinth:sodium:${property("sodium")}")
     }
-
-    // Add modmenu at local runtime for testing, we don't need it as a dependency though.
-    modLocalRuntime("com.terraformersmc:modmenu:${property("modmenu")}") {
-        exclude(group = "net.fabricmc.fabric-api")
+    if (property("enableIris") == "true") {
+        modImplementation("maven.modrinth:iris:${property("iris")}") {
+            isTransitive = false
+        }
     }
 }
 
@@ -68,6 +67,10 @@ tasks {
     withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
+
+        if (project.property("enableSodium") != "true") {
+            exclude("**/sodium/**.java")
+        }
     }
 
     withType<AbstractArchiveTask> {

@@ -1,6 +1,6 @@
-package com.noxcrew.noxesium.mixin.performance;
+package com.noxcrew.noxesium.mixin.sodium;
 
-import com.noxcrew.noxesium.config.NoxesiumConfigMenu;
+import com.noxcrew.noxesium.config.sodium.NoxesiumConfigMenu;
 import me.jellysquid.mods.sodium.client.gui.SodiumOptionsGUI;
 import me.jellysquid.mods.sodium.client.gui.options.OptionPage;
 import net.minecraft.client.gui.screens.Screen;
