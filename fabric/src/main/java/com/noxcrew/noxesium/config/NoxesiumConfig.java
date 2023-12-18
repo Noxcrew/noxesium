@@ -1,9 +1,11 @@
-package com.noxcrew.noxesium;
+package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.network.chat.Component;
 
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -24,6 +26,26 @@ public class NoxesiumConfig {
 
     public boolean showFpsOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
+
+    // Also create vanilla option instances to use in the video settings menu.
+    public OptionInstance<Boolean> vanillaExperimentalPatches = OptionInstance.createBoolean(
+            "options.experimental_patches",
+            OptionInstance.cachedConstantTooltip(Component.translatable("options.experimental_patches.tooltip")),
+            hasConfiguredPerformancePatches(),
+            (newValue) -> {
+                experimentalPatchesHotkey = newValue;
+                save();
+            }
+    );
+    public OptionInstance<Boolean> vanillaFpsOverlay = OptionInstance.createBoolean(
+            "options.fps_overlay",
+            OptionInstance.cachedConstantTooltip(Component.translatable("options.fps_overlay.tooltip")),
+            showFpsOverlay,
+            (newValue) -> {
+                showFpsOverlay = newValue;
+                save();
+            }
+    );
 
     /**
      * Returns whether experimental patches are available. This will return false if

@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.noxcrew.noxesium.NoxesiumConfig;
+import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
