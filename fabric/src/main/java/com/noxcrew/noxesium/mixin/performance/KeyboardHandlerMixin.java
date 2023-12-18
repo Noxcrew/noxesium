@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.performance;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.noxcrew.noxesium.NoxesiumConfig;
+import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;

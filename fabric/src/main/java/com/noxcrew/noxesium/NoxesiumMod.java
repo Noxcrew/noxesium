@@ -2,6 +2,7 @@ package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
+import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;

@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.config.sodium;
 
-import com.noxcrew.noxesium.NoxesiumConfig;
+import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
 import me.jellysquid.mods.sodium.client.gui.options.storage.OptionStorage;
 

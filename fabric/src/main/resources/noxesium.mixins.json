@@ -25,6 +25,7 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "performance.KeyboardHandlerMixin",
+    "performance.VideoSettingsScreenMixin",
     "performance.model.DyeableLeatherItemMixin",
     "performance.model.ItemOverridesMixin",
     "performance.render.BossHealthOverlayMixin",
@@ -52,12 +53,12 @@
     "rules.adventure.PlayerMixin",
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseHandlerMixin",
-    "sound.ChannelExt",
-    "sound.MusicManagerMixin",
-    "sound.SoundEngineMixin",
     "sodium.SodiumItemRendererMixin",
     "sodium.SodiumVideoSettingsMenuMixin",
-    "sodium.SodiumWorldRendererMixin"
+    "sodium.SodiumWorldRendererMixin",
+    "sound.ChannelExt",
+    "sound.MusicManagerMixin",
+    "sound.SoundEngineMixin"
   ],
   "injectors": {
     "defaultRequire": 1
