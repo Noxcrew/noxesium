@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.performance;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.config.VanillaOptions;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.VideoSettingsScreen;
@@ -21,11 +22,10 @@ public class VideoSettingsScreenMixin {
         var showExperimentalPatches = NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable();
         var newArray = new OptionInstance<?>[oldArray.length + (showExperimentalPatches ? 2 : 1)];
         System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
-        var config = NoxesiumMod.getInstance().getConfig();
         if (showExperimentalPatches) {
-            newArray[newArray.length - 2] = config.vanillaExperimentalPatches;
+            newArray[newArray.length - 2] = VanillaOptions.experimentalPatches();
         }
-        newArray[newArray.length - 1] = config.vanillaFpsOverlay;
+        newArray[newArray.length - 1] = VanillaOptions.fpsOverlay();
         cir.setReturnValue(newArray);
     }
 }
