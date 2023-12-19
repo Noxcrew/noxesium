@@ -14,40 +14,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Mixes in to Gui to trigger refreshes of various cached elements.
  */
 @Mixin(Gui.class)
-public abstract class GuiRefreshMixin {
+public class GuiRefreshMixin {
 
     @Inject(method = "setOverlayMessage", at = @At(value = "TAIL"))
-    private void refreshActionBarOnSetOverlayMessage(Component component, boolean bl, CallbackInfo ci) {
+    private void setOverlayMessage(Component component, boolean bl, CallbackInfo ci) {
         ActionBarCache.getInstance().clearCache();
     }
 
     @Inject(method = "resetTitleTimes", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnResetTitleTimes(CallbackInfo ci) {
+    private void resetTitleTimes(CallbackInfo ci) {
         TitleCache.getInstance().clearCache();
     }
 
     @Inject(method = "setTimes", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnSetTimes(CallbackInfo ci) {
+    private void setTimes(CallbackInfo ci) {
         TitleCache.getInstance().clearCache();
     }
 
     @Inject(method = "setSubtitle", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnSetSubtitle(CallbackInfo ci) {
+    private void setSubtitle(CallbackInfo ci) {
         TitleCache.getInstance().clearCache();
     }
 
     @Inject(method = "setTitle", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnSetTitle(CallbackInfo ci) {
+    private void setTitle(CallbackInfo ci) {
         TitleCache.getInstance().clearCache();
     }
 
     @Inject(method = "clear", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnClear(CallbackInfo ci) {
+    private void clear(CallbackInfo ci) {
         TitleCache.getInstance().clearCache();
     }
 
     @Inject(method = "onDisconnected", at = @At(value = "TAIL"))
-    private void refreshElementsOnDisconnect(CallbackInfo ci) {
+    private void onDisconnect(CallbackInfo ci) {
         ElementCache.getAllCaches().forEach(ElementCache::clearCache);
     }
 }

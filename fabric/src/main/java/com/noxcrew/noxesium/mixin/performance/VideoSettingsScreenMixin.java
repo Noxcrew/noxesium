@@ -17,12 +17,12 @@ public abstract class VideoSettingsScreenMixin {
     @ModifyReturnValue(method = "options", at = @At("TAIL"))
     private static OptionInstance<?>[] changeOptions(OptionInstance<?>[] original) {
         var showExperimentalPatches = NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable();
-        var newArray = new OptionInstance<?>[original.length + (showExperimentalPatches ? 2 : 1)];
-        System.arraycopy(original, 0, newArray, 0, original.length);
+        var newArray = new OptionInstance<?>[oldArray.length + (showExperimentalPatches ? 2 : 1)];
+        System.arraycopy(oldArray, 0, newArray, 0, oldArray.length);
         if (showExperimentalPatches) {
             newArray[newArray.length - 2] = VanillaOptions.experimentalPatches();
         }
         newArray[newArray.length - 1] = VanillaOptions.fpsOverlay();
-        return newArray;
+        cir.setReturnValue(newArray);
     }
 }

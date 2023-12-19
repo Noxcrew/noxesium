@@ -26,6 +26,13 @@ public class FpsOverlayCache extends ElementCache<FpsOverlayInformation> {
         return instance;
     }
 
+    /**
+     * Renders the fps overlay through its cache.
+     */
+    public static void renderFpsOverlay(GuiGraphics graphics, float partialTicks) {
+        getInstance().render(graphics, partialTicks);
+    }
+
     public FpsOverlayCache() {
         registerVariable("fps", (minecraft, partialTicks) -> Minecraft.getInstance().getFps());
     }

@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
@@ -59,7 +60,6 @@ public abstract class KeyboardHandlerMixin {
 
             // Update the fps overlay to show the Noxesium state
             FpsOverlayCache.getInstance().clearCache();
-            return true;
         }
         return original;
     }
