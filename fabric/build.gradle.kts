@@ -35,13 +35,11 @@ dependencies {
     api(project(":api"))
 
     // Compatibility with other mods
-    modCompileOnly("maven.modrinth:sodium:${property("sodium")}")
-    modCompileOnly("maven.modrinth:iris:${property("iris")}")
     if (property("enableSodium") == "true") {
-        modRuntimeOnly("maven.modrinth:sodium:${property("sodium")}")
+        modImplementation("maven.modrinth:sodium:${property("sodium")}")
     }
     if (property("enableIris") == "true") {
-        modRuntimeOnly("maven.modrinth:iris:${property("iris")}") {
+        modImplementation("maven.modrinth:iris:${property("iris")}") {
             isTransitive = false
         }
     }

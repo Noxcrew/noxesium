@@ -31,16 +31,4 @@ public abstract class ItemOverridesMixin {
     public ItemOverrides replaceItemOverrides(ModelBaker baker, BlockModel model, List<ItemOverride> overrides) {
         return new CustomItemOverrides(baker, model, overrides);
     }
-
-    @Redirect(
-            method = "getItemOverrides",
-            at = @At(
-                    value = "FIELD",
-                    opcode = Opcodes.GETSTATIC,
-                    target = "Lnet/minecraft/client/renderer/block/model/ItemOverrides;EMPTY:Lnet/minecraft/client/renderer/block/model/ItemOverrides;"
-            )
-    )
-    public ItemOverrides replaceEmptyItemOverrides() {
-        return CustomItemOverrides.EMPTY;
-    }
 }

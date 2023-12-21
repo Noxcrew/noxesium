@@ -112,14 +112,4 @@ public abstract class GuiHookMixin {
     public void renderSavingIndicator(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
         // TODO implement optimizations
     }
-
-    @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;push(Ljava/lang/String;)V"), require = 0)
-    private boolean ignoreProfilerPush(ProfilerFiller profilerFiller, String name) {
-        return false;
-    }
-
-    @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"), require = 0)
-    private boolean ignoreProfilerPop(ProfilerFiller profilerFiller) {
-        return false;
-    }
 }
