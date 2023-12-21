@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(DisplayRenderer.TextDisplayRenderer.class)
-public class TextDisplayRenderer {
+public abstract class TextDisplayRenderer {
 
     /**
      * Normal text backgrounds like on name tags render the background as see-through and the text as whatever the selected mode is. However,

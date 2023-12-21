@@ -16,10 +16,10 @@ import java.util.concurrent.CompletableFuture;
  * Listens to skins being loaded and re-loads the tab list when it happens.
  */
 @Mixin(SkinManager.class)
-public class SkinManagerMixin {
+public abstract class SkinManagerMixin {
 
-    @Inject(method = "registerTextures", at = @At(value = "TAIL"))
-    private void registerTextures(UUID uUID, MinecraftProfileTextures minecraftProfileTextures, CallbackInfoReturnable<CompletableFuture<PlayerSkin>> cir) {
+    @Inject(method = "registerTextures", at = @At("TAIL"))
+    private void clearTabSkinCache(UUID uUID, MinecraftProfileTextures minecraftProfileTextures, CallbackInfoReturnable<CompletableFuture<PlayerSkin>> cir) {
         cir.getReturnValue().whenComplete((a, b) -> {
             // Whenever we finish loading a skin we make sure to update the tab list so we can show the actual skin!
             TabListCache.getInstance().clearCache();

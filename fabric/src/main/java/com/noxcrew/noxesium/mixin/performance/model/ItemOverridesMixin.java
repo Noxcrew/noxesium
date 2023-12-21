@@ -5,9 +5,8 @@ import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.ModelBaker;
-import org.spongepowered.asm.mixin.Final;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -22,15 +21,26 @@ import java.util.List;
  * <p>
  * Disabled when using <a href="https://github.com/emilyploszaj/chime/tree/main">Chime</a>.
  */
-@Mixin(BlockModel.class)
-public class ItemOverridesMixin {
-
+@Mixin(value = BlockModel.class, priority = 500)
+public abstract class ItemOverridesMixin {
     /**
      * @author Aeltumn
      * @reason Vanilla overrides are incredibly slow, best to replace the whole system here
      */
     @Redirect(method = "getItemOverrides", at = @At(value = "NEW", target = "(Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/renderer/block/model/BlockModel;Ljava/util/List;)Lnet/minecraft/client/renderer/block/model/ItemOverrides;"))
-    public ItemOverrides getItemOverrides(ModelBaker modelBaker, BlockModel blockModel, List list) {
-        return new CustomItemOverrides(modelBaker, blockModel, list);
+    public ItemOverrides replaceItemOverrides(ModelBaker baker, BlockModel model, List<ItemOverride> overrides) {
+        return new CustomItemOverrides(baker, model, overrides);
+    }
+
+    @Redirect(
+            method = "getItemOverrides",
+            at = @At(
+                    value = "FIELD",
+                    opcode = Opcodes.GETSTATIC,
+                    target = "Lnet/minecraft/client/renderer/block/model/ItemOverrides;EMPTY:Lnet/minecraft/client/renderer/block/model/ItemOverrides;"
+            )
+    )
+    public ItemOverrides replaceEmptyItemOverrides() {
+        return CustomItemOverrides.EMPTY;
     }
 }

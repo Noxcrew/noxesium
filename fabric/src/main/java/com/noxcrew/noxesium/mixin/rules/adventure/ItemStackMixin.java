@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.mixin.rules.adventure;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.ItemStack;
@@ -15,9 +17,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
 
-    @Redirect(method = "useOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hasAdventureModePlaceTagForBlock(Lnet/minecraft/core/Registry;Lnet/minecraft/world/level/block/state/pattern/BlockInWorld;)Z"))
-    private boolean injected(ItemStack instance, Registry<Block> registry, BlockInWorld blockInWorld) {
-        if (instance.hasAdventureModePlaceTagForBlock(registry, blockInWorld)) {
+    @WrapOperation(method = "useOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hasAdventureModePlaceTagForBlock(Lnet/minecraft/core/Registry;Lnet/minecraft/world/level/block/state/pattern/BlockInWorld;)Z"))
+    private boolean checkIfServerAllowsItemUsage(ItemStack instance, Registry<Block> registry, BlockInWorld blockInWorld, Operation<Boolean> original) {
+        if (original.call(instance, registry, blockInWorld)) {
             return true;
         }
 

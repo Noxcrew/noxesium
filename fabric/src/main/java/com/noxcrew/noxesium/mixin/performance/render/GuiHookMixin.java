@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
@@ -109,5 +110,15 @@ public abstract class GuiHookMixin {
     @Inject(method = "renderSavingIndicator", at = @At("HEAD"), cancellable = true)
     public void renderSavingIndicator(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
         // TODO implement optimizations
+    }
+
+    @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;push(Ljava/lang/String;)V"), require = 0)
+    private boolean ignoreProfilerPush() {
+        return false;
+    }
+
+    @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"), require = 0)
+    private boolean ignoreProfilerPop() {
+        return false;
     }
 }

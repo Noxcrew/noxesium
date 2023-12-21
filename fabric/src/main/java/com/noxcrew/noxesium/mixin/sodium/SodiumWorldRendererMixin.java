@@ -27,7 +27,7 @@ import java.util.SortedSet;
  * and replaces it with the custom beacon rendering logic.
  */
 @Mixin(SodiumWorldRenderer.class)
-public class SodiumWorldRendererMixin {
+public abstract class SodiumWorldRendererMixin {
 
     @Shadow
     private RenderSectionManager renderSectionManager;
@@ -37,7 +37,7 @@ public class SodiumWorldRendererMixin {
      * @reason Replace normal logic to render all block entities at once instead.
      */
     @Inject(method = "renderGlobalBlockEntities", at = @At("HEAD"), cancellable = true)
-    public void renderGlobalBlockEntities(PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher blockEntityRenderer, CallbackInfo ci) {
+    public void removeSodiumBlockEntityRendering(PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher blockEntityRenderer, CallbackInfo ci) {
         // Remove the normal method. We add a custom call because we need the camera instance.
         ci.cancel();
     }

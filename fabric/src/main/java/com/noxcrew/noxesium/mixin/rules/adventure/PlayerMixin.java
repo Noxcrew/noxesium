@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.mixin.rules.adventure;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -27,22 +30,23 @@ public abstract class PlayerMixin {
     @Shadow
     public abstract boolean mayBuild();
 
-    @Inject(method = "blockActionRestricted", at = @At("RETURN"), cancellable = true)
-    private void injected(Level level, BlockPos blockPos, GameType gameType, CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "blockActionRestricted", at = @At("RETURN"))
+    private boolean checkIfServerAllowsBlockModificationWithItem(boolean original, Level level, BlockPos blockPos, GameType gameType) {
         // Don't change the return value in general cases
         if (!gameType.isBlockPlacingRestricted() || gameType == GameType.SPECTATOR || mayBuild()) {
-            return;
+            return original;
         }
 
         // Only override it if you're being denied the block modification
-        if (cir.getReturnValue()) {
-            cir.setReturnValue(!ServerRules.GLOBAL_CAN_DESTROY.getValue().test(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, blockPos, false)));
+        if (original) {
+            return !ServerRules.GLOBAL_CAN_DESTROY.getValue().test(level.registryAccess().registryOrThrow(Registries.BLOCK), new BlockInWorld(level, blockPos, false));
         }
+        return false;
     }
 
-    @Redirect(method = "mayUseItemAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hasAdventureModePlaceTagForBlock(Lnet/minecraft/core/Registry;Lnet/minecraft/world/level/block/state/pattern/BlockInWorld;)Z"))
-    private boolean injected(ItemStack instance, Registry<Block> registry, BlockInWorld blockInWorld) {
-        if (instance.hasAdventureModePlaceTagForBlock(registry, blockInWorld)) {
+    @WrapOperation(method = "mayUseItemAt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;hasAdventureModePlaceTagForBlock(Lnet/minecraft/core/Registry;Lnet/minecraft/world/level/block/state/pattern/BlockInWorld;)Z"))
+    private boolean checkIfServerAllowsItemUsage(ItemStack instance, Registry<Block> registry, BlockInWorld blockInWorld, Operation<Boolean> original) {
+        if (original.call(instance, registry, blockInWorld)) {
             return true;
         }
 

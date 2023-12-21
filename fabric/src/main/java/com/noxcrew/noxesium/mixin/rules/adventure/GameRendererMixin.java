@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.mixin.rules.adventure;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * CanDestroy tags.
  */
 @Mixin(GameRenderer.class)
-public class GameRendererMixin {
+public abstract class GameRendererMixin {
 
     @Shadow
     @Final
@@ -35,32 +36,31 @@ public class GameRendererMixin {
     private boolean renderBlockOutline;
 
 
-    @Inject(method = "shouldRenderBlockOutline", at = @At("RETURN"), cancellable = true)
-    public void shouldRenderBlockOutline(CallbackInfoReturnable<Boolean> cir) {
+    @ModifyReturnValue(method = "shouldRenderBlockOutline", at = @At("RETURN"))
+    public boolean shouldRenderBlockOutline(boolean original) {
         // Ignore if the return value is true
-        if (cir.getReturnValue()) return;
+        if (original) return true;
 
         // Ignore if we aren't rendering the outline
-        if (!this.renderBlockOutline) return;
+        if (!this.renderBlockOutline) return false;
 
         // Ignore if we're not rendering the GUI
         Entity entity = this.minecraft.getCameraEntity();
-        if (!(entity instanceof Player) || this.minecraft.options.hideGui) return;
+        if (!(entity instanceof Player player) || this.minecraft.options.hideGui) return false;
+        if (player.getAbilities().mayBuild) return false;
 
-        if (!((Player) entity).getAbilities().mayBuild) {
-            HitResult hitResult = this.minecraft.hitResult;
-            if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
-                BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
-                if (this.minecraft.gameMode.getPlayerMode() != GameType.SPECTATOR) {
-                    BlockInWorld blockInWorld = new BlockInWorld(this.minecraft.level, blockPos, false);
-                    Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registries.BLOCK);
+        HitResult hitResult = this.minecraft.hitResult;
+        if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) return false;
 
-                    // Allow global can destroy or can place on to override and render the outline anyway
-                    if (ServerRules.GLOBAL_CAN_DESTROY.getValue().test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.getValue().test(registry, blockInWorld)) {
-                        cir.setReturnValue(true);
-                    }
-                }
-            }
-        }
+        BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
+        if (this.minecraft.gameMode.getPlayerMode() == GameType.SPECTATOR) return false;
+
+        BlockInWorld blockInWorld = new BlockInWorld(this.minecraft.level, blockPos, false);
+        Registry<Block> registry = this.minecraft.level.registryAccess().registryOrThrow(Registries.BLOCK);
+
+        // Allow global can destroy or can place on to override and render the outline anyway
+        return ServerRules.GLOBAL_CAN_DESTROY.getValue()
+                .test(registry, blockInWorld) || ServerRules.GLOBAL_CAN_PLACE_ON.getValue()
+                .test(registry, blockInWorld);
     }
 }

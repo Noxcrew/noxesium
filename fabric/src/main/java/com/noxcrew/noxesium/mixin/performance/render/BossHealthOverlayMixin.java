@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Mixin(BossHealthOverlay.class)
-public class BossHealthOverlayMixin {
+public abstract class BossHealthOverlayMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics graphics, CallbackInfo ci) {
@@ -27,13 +27,13 @@ public class BossHealthOverlayMixin {
         BossBarCache.getInstance().render(graphics, 0f);
     }
 
-    @Inject(method = "update", at = @At(value = "TAIL"))
-    private void update(ClientboundBossEventPacket packet, CallbackInfo ci) {
+    @Inject(method = "update", at = @At("TAIL"))
+    private void refreshBossBarOnUpdate(CallbackInfo ci) {
         BossBarCache.getInstance().clearCache();
     }
 
-    @Inject(method = "reset", at = @At(value = "TAIL"))
-    private void reset(CallbackInfo ci) {
+    @Inject(method = "reset", at = @At("TAIL"))
+    private void refreshBossBarOnReset(CallbackInfo ci) {
         BossBarCache.getInstance().clearCache();
     }
 }

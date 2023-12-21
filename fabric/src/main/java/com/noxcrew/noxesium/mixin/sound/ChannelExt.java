@@ -14,12 +14,6 @@ public interface ChannelExt {
     @Accessor("source")
     int getSource();
 
-    @Accessor("streamingBufferSize")
-    int getStreamingBufferSize();
-
-    @Accessor("stream")
-    AudioStream getStream();
-
     @Invoker("calculateBufferSize")
     static int invokeCalculateBufferSize(AudioFormat audioFormat, int i) {
         throw new AssertionError("Unimplemented");

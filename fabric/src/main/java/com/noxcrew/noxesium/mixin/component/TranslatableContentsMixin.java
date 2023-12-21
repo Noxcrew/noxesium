@@ -49,14 +49,10 @@ public abstract class TranslatableContentsMixin {
                                 texture.complete(property.value());
                             }
                         });
-                    } catch (Exception x) {
-                        // We ignore any errors from fetching the player data.
-                    }
+                    } catch (Exception ignored) {}
                 }
                 cir.setReturnValue(new SkullContents(uuid, texture, info.grayscale(), info.advance(), info.ascent(), info.scale()));
-            } catch (Exception x) {
-                // Ignore exceptions while loading
-            }
+            } catch (Exception ignored) {}
         }
     }
 }

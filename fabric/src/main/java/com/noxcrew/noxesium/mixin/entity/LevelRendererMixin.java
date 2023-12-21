@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LevelRendererMixin {
 
     @Inject(method = "allChanged", at = @At("RETURN"))
-    public void allChanged(CallbackInfo ci) {
+    public void updateArmorStandCullingBounds(CallbackInfo ci) {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
 

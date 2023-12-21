@@ -12,17 +12,16 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 // Set a priority higher than Sodium
-@Mixin(value = ItemColors.class, priority = 1001)
+@Mixin(value = ItemColors.class, priority = 1500)
 public class SodiumItemRendererMixin implements ItemColorsExtended {
-
     // This field is created by Sodium in ItemColorsMixin
     @Shadow
     @Final
     private Reference2ReferenceMap<ItemLike, ItemColor> itemsToColor;
 
     /**
-     * @reason Cache color provider lookups, more details in ItemColorWrapper docs
      * @author Aeltumn
+     * @reason Cache color provider lookups, more details in ItemColorWrapper docs
      */
     @Override
     public ItemColor sodium$getColorProvider(ItemStack stack) {

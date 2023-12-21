@@ -13,6 +13,7 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -25,9 +26,10 @@ import java.util.Set;
  * it completely with a segment where all beacons are rendered together.
  */
 @Mixin(LevelRenderer.class)
-public class BeaconRenderingMixin {
+public abstract class BeaconRenderingMixin {
 
-    private static final Set<BlockEntity> EMPTY_SET = Set.of();
+    @Unique
+    private static final Set<BlockEntity> noxesium$EMPTY_SET = Set.of();
 
     @Shadow
     @Final
@@ -40,7 +42,7 @@ public class BeaconRenderingMixin {
     @Redirect(method = "renderLevel", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/LevelRenderer;globalBlockEntities:Ljava/util/Set;", opcode = Opcodes.GETFIELD, ordinal = 1))
     private Set<BlockEntity> getGlobalBlockEntities(LevelRenderer instance) {
         // Return nothing to the default renderer of global block entities so we can do it custom
-        return EMPTY_SET;
+        return noxesium$EMPTY_SET;
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 1, shift = At.Shift.BEFORE))

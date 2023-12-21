@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SubtitleOverlay.class)
-public class SubTitlesOverlayMixin {
+public abstract class SubTitlesOverlayMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     public void render(GuiGraphics graphics, CallbackInfo ci) {
