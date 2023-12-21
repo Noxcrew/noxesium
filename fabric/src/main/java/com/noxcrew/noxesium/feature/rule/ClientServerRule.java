@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule;
+import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Objects;

@@ -2,9 +2,9 @@ package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
-import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;

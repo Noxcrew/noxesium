@@ -4,7 +4,12 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
 
-import static net.minecraft.client.renderer.RenderStateShard.*;
+import static net.minecraft.client.renderer.RenderStateShard.COLOR_WRITE;
+import static net.minecraft.client.renderer.RenderStateShard.LEQUAL_DEPTH_TEST;
+import static net.minecraft.client.renderer.RenderStateShard.LIGHTMAP;
+import static net.minecraft.client.renderer.RenderStateShard.NO_TEXTURE;
+import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_TEXT_BACKGROUND_SEE_THROUGH_SHADER;
+import static net.minecraft.client.renderer.RenderStateShard.TRANSLUCENT_TRANSPARENCY;
 import static net.minecraft.client.renderer.RenderType.create;
 
 /**

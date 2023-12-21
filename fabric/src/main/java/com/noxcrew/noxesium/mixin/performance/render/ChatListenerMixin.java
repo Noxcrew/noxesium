@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
+import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.chat.ChatListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

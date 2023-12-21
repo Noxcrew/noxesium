@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.feature.render.cache.bossbar;
 
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
+import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.world.BossEvent;
 
 /**
