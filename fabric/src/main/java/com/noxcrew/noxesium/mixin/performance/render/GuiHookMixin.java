@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -113,12 +114,12 @@ public abstract class GuiHookMixin {
     }
 
     @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;push(Ljava/lang/String;)V"), require = 0)
-    private boolean ignoreProfilerPush() {
+    private boolean ignoreProfilerPush(ProfilerFiller profilerFiller, String name) {
         return false;
     }
 
     @WrapWithCondition(method = "*", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"), require = 0)
-    private boolean ignoreProfilerPop() {
+    private boolean ignoreProfilerPop(ProfilerFiller profilerFiller) {
         return false;
     }
 }

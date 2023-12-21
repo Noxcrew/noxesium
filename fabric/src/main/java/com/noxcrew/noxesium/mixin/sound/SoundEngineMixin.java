@@ -74,8 +74,8 @@ public abstract class SoundEngineMixin {
     )
     private void handleNoxesiumSounds(SoundInstance soundInstance, CallbackInfo ci,
                                       @Local Sound sound,
-                                      @Local(ordinal = 0, print = true) boolean isLooping,
-                                      @Local(ordinal = 1) boolean streaming,
+                                      @Local(ordinal = 1) boolean isLooping,
+                                      @Local(ordinal = 2) boolean streaming,
                                       @Local ChannelAccess.ChannelHandle channelHandle) {
         if (!(soundInstance instanceof NoxesiumSoundInstance noxesiumSoundInstance)) return;
         if (noxesiumSoundInstance.getStartOffset() <= 0) return;

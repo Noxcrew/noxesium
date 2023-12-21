@@ -48,7 +48,6 @@
     "performance.render.ext.ChatComponentExt",
     "performance.render.ext.FontExt",
     "performance.render.ext.GuiExt",
-    "performance.render.ext.OptionInstanceExt",
     "performance.render.ext.PlayerTabOverlayExt",
     "rules.GuiSelectedNameOffsetMixin",
     "rules.adventure.GameRendererMixin",

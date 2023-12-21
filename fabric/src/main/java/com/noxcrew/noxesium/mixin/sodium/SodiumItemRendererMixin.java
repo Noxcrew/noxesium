@@ -9,11 +9,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 
 // Set a priority higher than Sodium
+@Pseudo
 @Mixin(value = ItemColors.class, priority = 1500)
-public class SodiumItemRendererMixin implements ItemColorsExtended {
+public abstract class SodiumItemRendererMixin implements ItemColorsExtended {
     // This field is created by Sodium in ItemColorsMixin
     @Shadow
     @Final
