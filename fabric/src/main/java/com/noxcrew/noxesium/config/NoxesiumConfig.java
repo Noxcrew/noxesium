@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.network.chat.Component;
 
 import java.io.FileReader;
 import java.nio.file.Files;

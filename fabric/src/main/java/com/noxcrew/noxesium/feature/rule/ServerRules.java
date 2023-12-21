@@ -1,12 +1,7 @@
 package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
-import com.noxcrew.noxesium.feature.rule.impl.AdventureModeCheckServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
-import com.noxcrew.noxesium.feature.rule.impl.CustomAdventureModeCheck;
-import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
-import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.*;
 
 /**
  * A class that stores all known server rules.
