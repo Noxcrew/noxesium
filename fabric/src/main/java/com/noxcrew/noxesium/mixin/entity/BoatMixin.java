@@ -2,12 +2,9 @@ package com.noxcrew.noxesium.mixin.entity;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.Boat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Hooks into the code for boats colliding with other entities to fully

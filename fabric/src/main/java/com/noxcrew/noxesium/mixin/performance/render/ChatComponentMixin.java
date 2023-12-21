@@ -1,9 +1,7 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.gui.components.PlayerTabOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

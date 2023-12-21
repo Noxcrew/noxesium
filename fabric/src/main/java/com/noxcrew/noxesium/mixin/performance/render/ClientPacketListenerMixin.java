@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
-import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
