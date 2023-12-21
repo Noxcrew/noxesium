@@ -1,9 +1,10 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
+import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
+import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

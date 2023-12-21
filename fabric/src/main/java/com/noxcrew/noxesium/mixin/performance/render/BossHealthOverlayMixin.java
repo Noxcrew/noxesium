@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +19,8 @@ public abstract class BossHealthOverlayMixin {
         BossBarCache.getInstance().render(graphics, 0f);
     }
 
-    @Inject(method = "update", at = @At(value = "TAIL"))
-    private void update(ClientboundBossEventPacket packet, CallbackInfo ci) {
+    @Inject(method = "update", at = @At("TAIL"))
+    private void refreshBossBarOnUpdate(CallbackInfo ci) {
         BossBarCache.getInstance().clearCache();
     }
 
