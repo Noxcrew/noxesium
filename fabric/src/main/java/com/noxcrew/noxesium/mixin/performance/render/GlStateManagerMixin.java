@@ -11,34 +11,34 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Overrides the blending state to enforce blending to be on for some part of the code.
  */
 @Mixin(value = GlStateManager.class, remap = false)
-public class GlStateManagerMixin {
+public abstract class GlStateManagerMixin {
 
     @Inject(method = "_enableBlend", at = @At("HEAD"), cancellable = true)
-    private static void _enableBlend(CallbackInfo ci) {
+    private static void checkElementCacheForEnableBlend(CallbackInfo ci) {
         if (ElementCache.allowBlendChanges) return;
         ci.cancel();
     }
 
     @Inject(method = "_disableBlend", at = @At("HEAD"), cancellable = true)
-    private static void _disableBlend(CallbackInfo ci) {
+    private static void checkElementCacheForDisableBlend(CallbackInfo ci) {
         if (ElementCache.allowBlendChanges) return;
         ci.cancel();
     }
 
     @Inject(method = "_blendFunc", at = @At("HEAD"), cancellable = true)
-    private static void _blendFunc(int i, int j, CallbackInfo ci) {
+    private static void checkElementCacheForBlendFunc(CallbackInfo ci) {
         if (ElementCache.allowBlendChanges) return;
         ci.cancel();
     }
 
     @Inject(method = "_blendFuncSeparate", at = @At("HEAD"), cancellable = true)
-    private static void _blendFuncSeparate(int i, int j, int k, int l, CallbackInfo ci) {
+    private static void checkElementCacheForBlendFuncSeparate(CallbackInfo ci) {
         if (ElementCache.allowBlendChanges) return;
         ci.cancel();
     }
 
     @Inject(method = "_drawElements", at = @At("HEAD"))
-    private static void _drawElements(int i, int j, int k, long l, CallbackInfo ci) {
+    private static void checkElementCacheForDrawElements(CallbackInfo ci) {
         if (!ElementCache.hasDrawnSomething) {
             ElementCache.hasDrawnSomething = true;
         }

@@ -1,13 +1,13 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
-import com.noxcrew.noxesium.mixin.performance.render.ext.OptionInstanceExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.function.Consumer;
 
@@ -16,10 +16,10 @@ import java.util.function.Consumer;
  * Or whenever the chat spacing is changed we re-render chat.
  */
 @Mixin(OptionInstance.class)
-public class OptionInstanceMixin {
+public abstract class OptionInstanceMixin<T> {
 
-    @Redirect(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
-    private Consumer setOption(OptionInstance instance) {
+    @WrapOperation(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
+    private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
         var options = Minecraft.getInstance().options;
         if (instance == options.touchscreen() ||
                 instance == options.notificationDisplayTime()) {
@@ -28,6 +28,6 @@ public class OptionInstanceMixin {
         if (instance == options.chatLineSpacing()) {
             ChatCache.getInstance().clearCache();
         }
-        return ((OptionInstanceExt) ((Object) instance)).getOnValueUpdate();
+        return original.call(instance);
     }
 }

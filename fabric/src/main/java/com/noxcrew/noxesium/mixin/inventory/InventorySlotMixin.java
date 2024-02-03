@@ -25,8 +25,8 @@ public abstract class InventorySlotMixin {
     @Shadow
     public abstract ItemStack getItem();
 
-    @Inject(method = "mayPickup", at = @At(value = "HEAD"), cancellable = true)
-    public void mayPickup(final Player player, final CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
+    public void preventMovingImmovables(final Player player, final CallbackInfoReturnable<Boolean> cir) {
         final ItemStack itemStack = getItem();
         if (itemStack == null) return;
 

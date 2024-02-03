@@ -18,10 +18,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * This patch never triggers when Sodium is used.
  */
 @Mixin(SectionRenderDispatcher.RenderSection.RebuildTask.class)
-public class PreventDoubleBeaconRenderingMixin {
+public abstract class PreventDoubleBeaconRenderingMixin {
 
     @Inject(method = "handleBlockEntity", at = @At("HEAD"), cancellable = true)
-    public <E extends BlockEntity> void render(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
+    public <E extends BlockEntity> void omitBeaconFromChunkEntities(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
         if (blockEntity instanceof BeaconBlockEntity) {
             ci.cancel();
 

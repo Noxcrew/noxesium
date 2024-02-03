@@ -19,7 +19,7 @@ public interface DyeableLeatherItemMixin {
      * @reason Optimize NBT lookup, particularly effective when using lots of colored models
      */
     @Inject(method = "getColor", at = @At("HEAD"), cancellable = true)
-    public default void getColor(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
+    default void getColorOptimized(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
         var itemTag = itemStack.getTag();
         if (itemTag == null) {
             cir.setReturnValue(DEFAULT_LEATHER_COLOR);

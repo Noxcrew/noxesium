@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Rotations;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -22,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -43,47 +45,49 @@ import java.util.Objects;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
 
-    private AABB cullingBoundingBox;
-    private float lastYBodyRot = 0f;
+    @Unique
+    private AABB noxesium$cullingBoundingBox;
+    @Unique
+    private float noxesium$lastYBodyRot = 0f;
 
     @Inject(method = "onSyncedDataUpdated", at = @At("RETURN"))
-    public void onSyncedDataUpdated(EntityDataAccessor<?> entityDataAccessor, CallbackInfo ci) {
+    public void updateBoundingBoxOnSyncedData(EntityDataAccessor<?> entityDataAccessor, CallbackInfo ci) {
         // Update the bounding box whenever any of the body poses change (called by ClientboundSetEntityDataPacket)
         if (Objects.equals(entityDataAccessor, ArmorStand.DATA_HEAD_POSE) ||
                 Objects.equals(entityDataAccessor, ArmorStand.DATA_BODY_POSE) ||
                 Objects.equals(entityDataAccessor, ArmorStand.DATA_LEFT_ARM_POSE) ||
                 Objects.equals(entityDataAccessor, ArmorStand.DATA_RIGHT_ARM_POSE)) {
 
-            cullingBoundingBox = null;
+            noxesium$cullingBoundingBox = null;
         }
     }
 
     @Inject(method = "onEquipItem", at = @At("RETURN"))
-    public void onEquipItem(EquipmentSlot equipmentSlot, ItemStack itemStack, ItemStack itemStack2, CallbackInfo ci) {
+    public void updateBoundingBoxOnEquip(EquipmentSlot equipmentSlot, ItemStack itemStack, ItemStack itemStack2, CallbackInfo ci) {
         // Update the items in the head or hand slots change (called by ClientboundSetEquipmentPacket)
         if (Objects.equals(equipmentSlot, EquipmentSlot.HEAD) ||
                 Objects.equals(equipmentSlot, EquipmentSlot.MAINHAND) ||
                 Objects.equals(equipmentSlot, EquipmentSlot.OFFHAND)) {
 
-            cullingBoundingBox = null;
+            noxesium$cullingBoundingBox = null;
         }
     }
 
     @Inject(method = "getBoundingBoxForCulling", at = @At("HEAD"), cancellable = true)
-    public void getBoundingBoxForCulling(CallbackInfoReturnable<AABB> cir) {
+    public void extendedBoundingBoxToIncludeNoxesiumModel(CallbackInfoReturnable<AABB> cir) {
         if (((Entity) (Object) this) instanceof ArmorStand armorStand) {
             // Invalidate if the y rotation changed
-            if (lastYBodyRot != armorStand.yBodyRot) {
-                cullingBoundingBox = null;
+            if (noxesium$lastYBodyRot != armorStand.yBodyRot) {
+                noxesium$cullingBoundingBox = null;
             }
 
             // Re-calculate the bounding box if necessary
-            if (cullingBoundingBox == null) {
-                lastYBodyRot = armorStand.yBodyRot;
-                cullingBoundingBox = updateBoundingBox(armorStand);
+            if (noxesium$cullingBoundingBox == null) {
+                noxesium$lastYBodyRot = armorStand.yBodyRot;
+                noxesium$cullingBoundingBox = noxesium$updateBoundingBox(armorStand);
             }
-            if (cullingBoundingBox != null) {
-                cir.setReturnValue(cullingBoundingBox.move(((Entity) (Object) this).position()));
+            if (noxesium$cullingBoundingBox != null) {
+                cir.setReturnValue(noxesium$cullingBoundingBox.move(((Entity) (Object) this).position()));
             }
         }
     }
@@ -91,7 +95,8 @@ public abstract class LivingEntityMixin {
     /**
      * Recalculates the bounding box for [armorStand].
      */
-    private AABB updateBoundingBox(ArmorStand armorStand) {
+    @Unique
+    private AABB noxesium$updateBoundingBox(ArmorStand armorStand) {
         // Only go through this entity if it has some item in its hand or head slot
         if (armorStand.hasItemInSlot(EquipmentSlot.HEAD) ||
                 armorStand.hasItemInSlot(EquipmentSlot.MAINHAND) ||
@@ -123,18 +128,7 @@ public abstract class LivingEntityMixin {
 
                 // Rotate the bounding box following the rotation of the entity
                 var pose = armorStand.getEntityData().get(ArmorStand.DATA_HEAD_POSE);
-                var xRot = ((float) Math.PI / 180F) * pose.getX();
-                var yRot = ((float) Math.PI / 180F) * pose.getY();
-                var zRot = ((float) Math.PI / 180F) * pose.getZ();
-                if (zRot != 0.0F) {
-                    poseStack.mulPose(Axis.ZP.rotation(zRot));
-                }
-                if (yRot != 0.0F) {
-                    poseStack.mulPose(Axis.YP.rotation(yRot));
-                }
-                if (xRot != 0.0F) {
-                    poseStack.mulPose(Axis.XP.rotation(xRot));
-                }
+                noxesium$setRotations(poseStack, pose);
                 CustomHeadLayer.translateToHead(poseStack, false);
                 itemModel.getTransforms().getTransform(ItemDisplayContext.HEAD).apply(false, poseStack);
                 poseStack.translate(-0.5D, -0.5D, -0.5D);
@@ -150,22 +144,11 @@ public abstract class LivingEntityMixin {
                 } else {
                     poseStack.translate(-5.0 / 16.0, 0.0, 0.0);
                 }
-                var xRot = ((float) Math.PI / 180F) * pose.getX();
-                var yRot = ((float) Math.PI / 180F) * pose.getY();
-                var zRot = ((float) Math.PI / 180F) * pose.getZ();
-                if (zRot != 0.0F) {
-                    poseStack.mulPose(Axis.ZP.rotation(zRot));
-                }
-                if (yRot != 0.0F) {
-                    poseStack.mulPose(Axis.YP.rotation(yRot));
-                }
-                if (xRot != 0.0F) {
-                    poseStack.mulPose(Axis.XP.rotation(xRot));
-                }
+                noxesium$setRotations(poseStack, pose);
 
                 poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                poseStack.translate((double) ((float) (flag2 ? -1 : 1) / 16.0F), 0.125D, -0.625D);
+                poseStack.translate((float) (flag2 ? -1 : 1) / 16.0F, 0.125D, -0.625D);
                 itemModel = itemRenderer.getModel(flag2 ? leftItem : rightItem, armorStand.level(), armorStand, 0);
             }
 
@@ -179,10 +162,10 @@ public abstract class LivingEntityMixin {
             // Go through all quads and extend the bounding box
             for (var direction : Direction.values()) {
                 var quads = itemModel.getQuads(null, direction, randomSource);
-                boundingBox = iterateQuads(poseStack, boundingBox, bytebuffer, intbuffer, quads);
+                boundingBox = noxesium$iterateQuads(poseStack, boundingBox, bytebuffer, intbuffer, quads);
             }
             var quads = itemModel.getQuads(null, null, randomSource);
-            boundingBox = iterateQuads(poseStack, boundingBox, bytebuffer, intbuffer, quads);
+            boundingBox = noxesium$iterateQuads(poseStack, boundingBox, bytebuffer, intbuffer, quads);
             memorystack.close();
 
             return boundingBox;
@@ -190,10 +173,27 @@ public abstract class LivingEntityMixin {
         return null;
     }
 
+    @Unique
+    private void noxesium$setRotations(PoseStack poseStack, Rotations pose) {
+        var xRot = ((float) Math.PI / 180F) * pose.getX();
+        var yRot = ((float) Math.PI / 180F) * pose.getY();
+        var zRot = ((float) Math.PI / 180F) * pose.getZ();
+        if (zRot != 0.0F) {
+            poseStack.mulPose(Axis.ZP.rotation(zRot));
+        }
+        if (yRot != 0.0F) {
+            poseStack.mulPose(Axis.YP.rotation(yRot));
+        }
+        if (xRot != 0.0F) {
+            poseStack.mulPose(Axis.XP.rotation(xRot));
+        }
+    }
+
     /**
      * Iterate through all quads in the int buffer to update the bounding box.
      */
-    private static AABB iterateQuads(PoseStack poseStack, AABB boundingBox, ByteBuffer bytebuffer, IntBuffer intbuffer, List<BakedQuad> quads) {
+    @Unique
+    private static AABB noxesium$iterateQuads(PoseStack poseStack, AABB boundingBox, ByteBuffer bytebuffer, IntBuffer intbuffer, List<BakedQuad> quads) {
         var matrix4f = poseStack.last().pose();
         for (var quad : quads) {
             int j = quad.getVertices().length / 8;
@@ -203,7 +203,7 @@ public abstract class LivingEntityMixin {
                 float f = bytebuffer.getFloat(0);
                 float f1 = bytebuffer.getFloat(4);
                 float f2 = bytebuffer.getFloat(8);
-                boundingBox = expandToInclude(boundingBox, matrix4f.transform(new Vector4f(f, f1, f2, 1.0F)));
+                boundingBox = noxesium$expandToInclude(boundingBox, matrix4f.transform(new Vector4f(f, f1, f2, 1.0F)));
             }
         }
         return boundingBox;
@@ -212,7 +212,8 @@ public abstract class LivingEntityMixin {
     /**
      * Expands the given [boundingBox] if necessary to include [vector].
      */
-    private static AABB expandToInclude(AABB boundingBox, Vector4f vector) {
+    @Unique
+    private static AABB noxesium$expandToInclude(AABB boundingBox, Vector4f vector) {
         // Avoid creating a new object if possible
         if (boundingBox.contains(vector.x(), vector.y(), vector.z())) return boundingBox;
 

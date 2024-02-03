@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
  * faction icons overlapping.
  */
 @Mixin(Gui.class)
-public class GuiSelectedNameOffsetMixin {
+public abstract class GuiSelectedNameOffsetMixin {
 
     @ModifyConstant(
             method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",
             constant = @Constant(intValue = 59)
     )
-    public int modify(int constant) {
+    public int raiseHeldItemHeight(int constant) {
         return constant + ServerRules.HELD_ITEM_NAME_OFFSET.getValue();
     }
 }
