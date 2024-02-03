@@ -1,11 +1,12 @@
 package com.noxcrew.noxesium.feature.island;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import com.noxcrew.noxesium.config.NoxesiumConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
 
@@ -20,21 +21,21 @@ import java.util.Map;
  */
 public class MccIslandTracker implements NoxesiumModule {
 
-    private static final Map<String, Integer> GLOW_TEAMS = Map.of(
-            "red", GLFW.GLFW_KEY_KP_7,
-            "orange", GLFW.GLFW_KEY_KP_8,
-            "yellow", GLFW.GLFW_KEY_KP_9,
-            "lime", GLFW.GLFW_KEY_KP_4,
-            "green", GLFW.GLFW_KEY_KP_5,
-            "cyan", GLFW.GLFW_KEY_KP_6,
-            "aqua", GLFW.GLFW_KEY_KP_1,
-            "blue", GLFW.GLFW_KEY_KP_2,
-            "purple", GLFW.GLFW_KEY_KP_3,
-            "pink", GLFW.GLFW_KEY_KP_0
+    private static final Map<ChatFormatting, Pair<String, Integer>> GLOW_TEAMS = Map.of(
+            ChatFormatting.RED, Pair.of("red", GLFW.GLFW_KEY_KP_7),
+            ChatFormatting.GOLD, Pair.of("orange", GLFW.GLFW_KEY_KP_8),
+            ChatFormatting.YELLOW, Pair.of("yellow", GLFW.GLFW_KEY_KP_9),
+            ChatFormatting.GREEN, Pair.of("lime", GLFW.GLFW_KEY_KP_4),
+            ChatFormatting.DARK_GREEN, Pair.of("green", GLFW.GLFW_KEY_KP_5),
+            ChatFormatting.DARK_AQUA, Pair.of("cyan", GLFW.GLFW_KEY_KP_6),
+            ChatFormatting.AQUA, Pair.of("aqua", GLFW.GLFW_KEY_KP_1),
+            ChatFormatting.BLUE, Pair.of("blue", GLFW.GLFW_KEY_KP_2),
+            ChatFormatting.DARK_PURPLE, Pair.of("purple", GLFW.GLFW_KEY_KP_3),
+            ChatFormatting.LIGHT_PURPLE, Pair.of("pink", GLFW.GLFW_KEY_KP_0)
     );
 
     private final Map<KeyMapping, Runnable> keybinds = new HashMap<>();
-    private final List<String> glowingTeams = new ArrayList<>();
+    private final List<ChatFormatting> glowingTeams = new ArrayList<>();
     private boolean onMccIsland;
 
     public MccIslandTracker() {
@@ -43,8 +44,8 @@ public class MccIslandTracker implements NoxesiumModule {
 
         for (var team : GLOW_TEAMS.entrySet()) {
             register(
-                    "key.noxesium.glow." + team.getKey(),
-                    team.getValue(),
+                    "key.noxesium.glow." + team.getValue().getFirst(),
+                    team.getValue().getSecond(),
                     () -> {
                         if (glowingTeams.contains(team.getKey())) {
                             glowingTeams.remove(team.getKey());
@@ -84,11 +85,11 @@ public class MccIslandTracker implements NoxesiumModule {
     }
 
     /**
-     * The ids of all teams that should be made to glow.
+     * The colors of all teams that should be made to glow.
      *
-     * @return a list of team names
+     * @return a list of team colors
      */
-    public List<String> getGlowingTeams() {
+    public List<ChatFormatting> getGlowingTeams() {
         return glowingTeams;
     }
 
