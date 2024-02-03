@@ -1,15 +1,14 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
+import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.client.gui.components.SubtitleOverlay;
 import net.minecraft.client.gui.components.spectator.SpectatorGui;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -35,8 +33,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * Entire contents of this file will be replaced in 1.20.5.
+ */
 @Mixin(Gui.class)
-public abstract class GuiMixin {
+public abstract class GuiHookMixin {
 
     @Shadow
     private int screenHeight;
@@ -128,7 +129,7 @@ public abstract class GuiMixin {
         // Override the super-method
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        
+
         /*
             General notes:
             - Profiler calls have been removed as optimizations make individual
@@ -310,80 +311,13 @@ public abstract class GuiMixin {
 
             // (TODO Optimize) Render the saving indicator
             this.renderSavingIndicator(graphics);
-
-            // (TODO Optimize) Draw the fps counter and overlay
-            if (NoxesiumMod.getInstance().getConfig().showFpsOverlay && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
-                // Draw the current fps
-                var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
-                var lineOffset = font.lineHeight + 5;
-                var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
-                graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
-                graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
-
-                // Draw the state of experimental patches if the keybind is being used
-                if (NoxesiumConfig.experimentalPatchesHotkey != null) {
-                    var text2 = Component.translatable("debug.noxesium_overlay.on");
-                    graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
-                    graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
-                }
-            }
         }
     }
 
     @Inject(method = "renderSavingIndicator", at = @At("RETURN"))
     private void injected(GuiGraphics graphics, CallbackInfo ci) {
-        var font = minecraft.font;
-
-        // If experimental patches are applied we don't render here
-        if (!NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
-
-        // Don't render when the debug screen is shown as it would overlap
         if (NoxesiumMod.getInstance().getConfig().showFpsOverlay && !this.minecraft.gui.getDebugOverlay().showDebugScreen()) {
-            // Draw the current fps
-            var text = Component.translatable("debug.fps_overlay", Minecraft.getInstance().getFps());
-            var lineOffset = font.lineHeight + 5;
-
-            // FIXME Can't just check for a different mod like this that's trash
-            var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;
-            graphics.fill(3, 3 + offset, 6 + font.width(text), 6 + font.lineHeight + offset, -1873784752);
-            graphics.drawString(font, text, 5, 5 + offset, 0xE0E0E0, false);
-
-            // Draw the state of experimental patches if they are enabled in the config but disabled with the keybind!
-            if (NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches()) {
-                var text2 = Component.translatable("debug.noxesium_overlay.off");
-                graphics.fill(3, 3 + offset + lineOffset, 6 + font.width(text2), 6 + font.lineHeight + offset + lineOffset, -1873784752);
-                graphics.drawString(font, text2, 5, 5 + offset + lineOffset, 0xE0E0E0, false);
-            }
+            FpsOverlayCache.getInstance().render(graphics, graphics.guiWidth(), graphics.guiHeight(), 0f, minecraft);
         }
-    }
-
-    @Inject(method = "setOverlayMessage", at = @At(value = "TAIL"))
-    private void setOverlayMessage(Component component, boolean bl, CallbackInfo ci) {
-        ActionBarCache.getInstance().clearCache();
-    }
-
-    @Inject(method = "resetTitleTimes", at = @At(value = "TAIL"))
-    private void resetTitleTimes(CallbackInfo ci) {
-        TitleCache.getInstance().clearCache();
-    }
-
-    @Inject(method = "setTimes", at = @At(value = "TAIL"))
-    private void setTimes(CallbackInfo ci) {
-        TitleCache.getInstance().clearCache();
-    }
-
-    @Inject(method = "setSubtitle", at = @At(value = "TAIL"))
-    private void setSubtitle(CallbackInfo ci) {
-        TitleCache.getInstance().clearCache();
-    }
-
-    @Inject(method = "setTitle", at = @At(value = "TAIL"))
-    private void setTitle(CallbackInfo ci) {
-        TitleCache.getInstance().clearCache();
-    }
-
-    @Inject(method = "clear", at = @At(value = "TAIL"))
-    private void clear(CallbackInfo ci) {
-        TitleCache.getInstance().clearCache();
     }
 }

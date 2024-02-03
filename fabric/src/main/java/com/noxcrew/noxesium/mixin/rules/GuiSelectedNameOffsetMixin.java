@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
  * faction icons overlapping.
  */
 @Mixin(Gui.class)
-public class GuiMixin {
+public class GuiSelectedNameOffsetMixin {
 
     @ModifyConstant(
             method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",

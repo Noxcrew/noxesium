@@ -136,6 +136,10 @@ public class ElementBuffer implements Closeable {
      */
     public void draw() {
         // Set the texture and draw the buffer using the render texture
+        // We can safely disable and re-enable the depth test because we know
+        // the depth test is on through all UI rendering. We want to nicely
+        // set the blending state back to what it was though to avoid causing
+        // issues with other components.
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         ElementCache.withBlend(() -> {
