@@ -27,26 +27,6 @@ public class NoxesiumConfig {
     public boolean showFpsOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
 
-    // Also create vanilla option instances to use in the video settings menu
-    public transient OptionInstance<Boolean> vanillaExperimentalPatches = OptionInstance.createBoolean(
-            "noxesium.options.experimental_patches.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.experimental_patches.tooltip")),
-            hasConfiguredPerformancePatches(),
-            (newValue) -> {
-                experimentalPatchesHotkey = newValue;
-                save();
-            }
-    );
-    public transient OptionInstance<Boolean> vanillaFpsOverlay = OptionInstance.createBoolean(
-            "noxesium.options.fps_overlay.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.fps_overlay.tooltip")),
-            showFpsOverlay,
-            (newValue) -> {
-                showFpsOverlay = newValue;
-                save();
-            }
-    );
-
     /**
      * Returns whether experimental patches are available. This will return false if
      * any mods are detected that are known to have compatibility issues.
