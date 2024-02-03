@@ -9,13 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerInfo.class)
-public class PlayerInfoMixin {
+public abstract class PlayerInfoMixin {
 
     @Shadow
     private int latency;
 
-    @Inject(method = "setLatency", at = @At(value = "HEAD"))
-    private void setLatency(int newLatency, CallbackInfo ci) {
+    @Inject(method = "setLatency", at = @At("HEAD"))
+    private void refreshTabListOnLatencyChange(int newLatency, CallbackInfo ci) {
         int currentLatency = this.latency;
 
         // Only clear the cache if the latency bucket changes! So we don't update

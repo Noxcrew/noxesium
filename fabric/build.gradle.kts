@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.3-SNAPSHOT"
+    id("fabric-loom") version "1.4-SNAPSHOT"
     id("noxesium.publishing")
 }
 
@@ -18,6 +18,7 @@ repositories {
     }
     maven { url = uri("https://maven.shedaniel.me/") }
     maven { url = uri("https://maven.terraformersmc.com/releases/") }
+    mavenCentral()
 }
 
 dependencies {

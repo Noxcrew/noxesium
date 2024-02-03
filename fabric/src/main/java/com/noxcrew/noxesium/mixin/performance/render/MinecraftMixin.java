@@ -16,19 +16,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Syncs up with the server whenever the GUI scale is updated.
  */
 @Mixin(Minecraft.class)
-public class MinecraftMixin {
+public abstract class MinecraftMixin {
 
     @Shadow
     @Nullable
     public Screen screen;
 
-    @Inject(method = "resizeDisplay", at = @At(value = "TAIL"))
-    private void resizeDisplay(CallbackInfo ci) {
+    @Inject(method = "resizeDisplay", at = @At("TAIL"))
+    private void refreshElements(CallbackInfo ci) {
         ElementCache.getAllCaches().forEach(ElementCache::clearCache);
     }
 
-    @Inject(method = "setScreen", at = @At(value = "HEAD"))
-    private void setScreen(Screen newScreen, CallbackInfo ci) {
+    @Inject(method = "setScreen", at = @At("HEAD"))
+    private void refreshChat(Screen newScreen, CallbackInfo ci) {
         if (newScreen instanceof ChatScreen || this.screen instanceof ChatScreen) {
             ChatCache.getInstance().clearCache();
         }

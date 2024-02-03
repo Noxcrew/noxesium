@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Hooks into vanilla's music manager to fully disable vanilla music while its active.
  */
 @Mixin(MusicManager.class)
-public class MusicManagerMixin {
+public abstract class MusicManagerMixin {
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(CallbackInfo ci) {

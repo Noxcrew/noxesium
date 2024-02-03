@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.server.level.BlockDestructionProgress;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,8 +27,9 @@ import java.util.SortedSet;
  * Hooks into Sodium's WorldRenderer logic for rendering global block entities (which all beacons are)
  * and replaces it with the custom beacon rendering logic.
  */
+@Pseudo
 @Mixin(SodiumWorldRenderer.class)
-public class SodiumWorldRendererMixin {
+public abstract class SodiumWorldRendererMixin {
 
     @Shadow
     private RenderSectionManager renderSectionManager;
@@ -37,7 +39,7 @@ public class SodiumWorldRendererMixin {
      * @reason Replace normal logic to render all block entities at once instead.
      */
     @Inject(method = "renderGlobalBlockEntities", at = @At("HEAD"), cancellable = true)
-    public void renderGlobalBlockEntities(PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher blockEntityRenderer, CallbackInfo ci) {
+    public void removeSodiumBlockEntityRendering(PoseStack matrices, RenderBuffers bufferBuilders, Long2ObjectMap<SortedSet<BlockDestructionProgress>> blockBreakingProgressions, float tickDelta, MultiBufferSource.BufferSource immediate, double x, double y, double z, BlockEntityRenderDispatcher blockEntityRenderer, CallbackInfo ci) {
         // Remove the normal method. We add a custom call because we need the camera instance.
         ci.cancel();
     }

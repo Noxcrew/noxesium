@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.mixin.inventory;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
@@ -8,7 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static com.noxcrew.noxesium.NoxesiumMod.BUKKIT_COMPOUND_ID;
 import static com.noxcrew.noxesium.NoxesiumMod.IMMOVABLE_TAG;
@@ -26,11 +26,11 @@ public abstract class InventoryMixin {
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"
             ),
-            locals = LocalCapture.CAPTURE_FAILHARD,
             cancellable = true
     )
-    public void removeFromSelected(final boolean bl, final CallbackInfoReturnable<ItemStack> cir, final ItemStack itemStack) {
-        final CompoundTag tag = itemStack.getTag();
+    public void preventMovingImmovables(final boolean bl, final CallbackInfoReturnable<ItemStack> cir,
+                                        @Local final ItemStack stack) {
+        final CompoundTag tag = stack.getTag();
         if (tag == null) return;
 
         final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);

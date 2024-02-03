@@ -8,25 +8,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerTabOverlay.class)
-public class PlayerTabOverlayMixin {
+public abstract class PlayerTabOverlayMixin {
 
-    @Inject(method = "setHeader", at = @At(value = "TAIL"))
-    private void setHeader(CallbackInfo ci) {
+    @Inject(method = "setHeader", at = @At("TAIL"))
+    private void refreshTabListOnSetHeader(CallbackInfo ci) {
         TabListCache.getInstance().clearCache();
     }
 
-    @Inject(method = "setFooter", at = @At(value = "TAIL"))
-    private void setFooter(CallbackInfo ci) {
+    @Inject(method = "setFooter", at = @At("TAIL"))
+    private void refreshTabListOnSetFooter(CallbackInfo ci) {
         TabListCache.getInstance().clearCache();
     }
 
-    @Inject(method = "reset", at = @At(value = "TAIL"))
-    private void reset(CallbackInfo ci) {
+    @Inject(method = "reset", at = @At("TAIL"))
+    private void refreshTabListOnReset(CallbackInfo ci) {
         TabListCache.getInstance().clearCache();
     }
 
     @Inject(method = "setVisible", at = @At(value = "INVOKE", target = "Ljava/util/Map;clear()V"))
-    private void setVisible(CallbackInfo ci) {
+    private void refreshTabListOnSetVisible(CallbackInfo ci) {
         TabListCache.getInstance().resetHearts();
     }
 }

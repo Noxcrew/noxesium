@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MouseHandlerExt {
 
     @Accessor("accumulatedDX")
-    public void setAccumulatedDeltaX(double accumulatedDX);
+    void setAccumulatedDeltaX(double accumulatedDX);
 
     @Accessor("accumulatedDY")
-    public void setAccumulatedDeltaY(double accumulatedDY);
+    void setAccumulatedDeltaY(double accumulatedDY);
 }
