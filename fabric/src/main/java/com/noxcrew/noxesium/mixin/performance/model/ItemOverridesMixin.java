@@ -23,6 +23,7 @@ import java.util.List;
  */
 @Mixin(value = BlockModel.class, priority = 500)
 public abstract class ItemOverridesMixin {
+
     /**
      * @author Aeltumn
      * @reason Vanilla overrides are incredibly slow, best to replace the whole system here

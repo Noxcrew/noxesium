@@ -3,6 +3,7 @@ package com.noxcrew.noxesium;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
+import com.noxcrew.noxesium.feature.island.MccIslandTracker;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
@@ -106,6 +107,7 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new ServerRuleModule());
         registerModule(new SkullFontModule());
         registerModule(new NoxesiumSoundModule());
+        registerModule(new MccIslandTracker());
 
         // Every time the client joins a server we send over information on the version being used
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
@@ -130,6 +132,7 @@ public class NoxesiumMod implements ClientModInitializer {
             // Reset the current max protocol version
             currentMaxProtocol = VERSION;
 
+            // Handle quitting the server
             modules.values().forEach(NoxesiumModule::onQuitServer);
         });
 
