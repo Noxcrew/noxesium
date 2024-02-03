@@ -44,7 +44,7 @@ public abstract class MinecraftMixin {
         return entity.getTeam() != null &&
                 // Only allow using the glowing outlines when flying is allowed == they are spectating
                 Minecraft.getInstance().player.getAbilities().mayfly &&
-                // Check that the team name is in the glowing teams list
-                NoxesiumMod.getInstance().getModule(MccIslandTracker.class).getGlowingTeams().contains(entity.getTeam().getName());
+                // Check that the team color is in the glowing teams list
+                NoxesiumMod.getInstance().getModule(MccIslandTracker.class).getGlowingTeams().contains(entity.getTeam().getColor());
     }
 }
