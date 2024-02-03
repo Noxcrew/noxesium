@@ -1,7 +1,9 @@
 package com.noxcrew.noxesium.feature.island;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
+import com.noxcrew.noxesium.config.NoxesiumConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
@@ -36,8 +38,8 @@ public class MccIslandTracker implements NoxesiumModule {
     private boolean onMccIsland;
 
     public MccIslandTracker() {
-        // Ideally these keybinds would only be shown when on Island but vanilla's
-        // menu system is not made to temporarily hide objects.
+        // Optionally disable the glowing settings if the config is in use
+        if (!NoxesiumMod.getInstance().getConfig().shouldShowGlowingSettings()) return;
 
         for (var team : GLOW_TEAMS.entrySet()) {
             register(
