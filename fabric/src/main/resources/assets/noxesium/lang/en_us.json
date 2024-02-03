@@ -15,5 +15,21 @@
   "noxesium.options.fps_overlay.name": "FPS Overlay",
   "noxesium.options.fps_overlay.tooltip": "If enabled, a small overlay is added that shows the current fps in the top left corner of your screen.",
   "noxesium.options.experimental_patches.name": "Experimental Optimizations",
-  "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fThis will break any UI elements added by other mods. Do not use this setting if you are using mods that add additional UI elements."
+  "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fThis will break any UI elements added by other mods. Do not use this setting if you are using mods that add additional UI elements.",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "Toggle Red Glowing",
+  "key.noxesium.glow.orange": "Toggle Orange Glowing",
+  "key.noxesium.glow.yellow": "Toggle Yellow Glowing",
+  "key.noxesium.glow.lime": "Toggle Lime Glowing",
+  "key.noxesium.glow.green": "Toggle Green Glowing",
+  "key.noxesium.glow.cyan": "Toggle Cyan Glowing",
+  "key.noxesium.glow.aqua": "Toggle Aqua Glowing",
+  "key.noxesium.glow.blue": "Toggle Blue Glowing",
+  "key.noxesium.glow.purple": "Toggle Purple Glowing",
+  "key.noxesium.glow.pink": "Toggle Pink Glowing",
+
+  "key.noxesium.glow.all": "Enable Glowing for All Teams",
+  "key.noxesium.glow.none": "Disable All Glowing"
 }
