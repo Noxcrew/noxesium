@@ -41,6 +41,10 @@ public abstract class MinecraftMixin {
     @ModifyReturnValue(method = "shouldEntityAppearGlowing", at = @At("RETURN"))
     private boolean checkIfToggledTeamGlowing(boolean original, Entity entity) {
         if (original) return true;
-        return entity.getTeam() != null && NoxesiumMod.getInstance().getModule(MccIslandTracker.class).getGlowingTeams().contains(entity.getTeam().getName());
+        return entity.getTeam() != null &&
+                // Only allow using the glowing outlines when flying is allowed == they are spectating
+                Minecraft.getInstance().player.getAbilities().mayfly &&
+                // Check that the team name is in the glowing teams list
+                NoxesiumMod.getInstance().getModule(MccIslandTracker.class).getGlowingTeams().contains(entity.getTeam().getName());
     }
 }

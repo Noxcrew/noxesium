@@ -26,6 +26,7 @@ public class NoxesiumConfig {
 
     public boolean showFpsOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
+    public boolean showGlowingSettings = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if
@@ -40,6 +41,13 @@ public class NoxesiumConfig {
      */
     public boolean hasConfiguredPerformancePatches() {
         return areExperimentalPatchesAvailable() && enableExperimentalPerformancePatches;
+    }
+
+    /**
+     * Whether custom keybinds for making teams glow should be shown.
+     */
+    public boolean shouldShowGlowingSettings() {
+        return showGlowingSettings;
     }
 
     /**
