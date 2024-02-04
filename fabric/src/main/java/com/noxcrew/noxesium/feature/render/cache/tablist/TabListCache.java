@@ -158,6 +158,11 @@ public class TabListCache extends ElementCache<TabListInformation> {
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
         var screenWidth = minecraft.getWindow().getGuiScaledWidth();
 
+        // Check if the tab list is actually being highlighted or not, if not we keep an empty cache
+        if (!(minecraft.options.keyPlayerList.isDown() && (!minecraft.isLocalServer() || minecraft.player.connection.getListedOnlinePlayers().size() > 1 || objective != null))) {
+            return TabListInformation.EMPTY;
+        }
+
         var header = ext.getHeader();
         var footer = ext.getFooter();
         List<PlayerInfo> players = minecraft.player == null ? List.of() : minecraft.player.connection.getListedOnlinePlayers().stream().sorted(PLAYER_COMPARATOR).limit(80L).toList();

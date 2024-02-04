@@ -74,10 +74,11 @@ public class ChatCache extends ElementCache<ChatInformation> {
     protected ChatInformation createCache(Minecraft minecraft, Font font) {
         var chatOverlay = minecraft.gui.getChat();
         var chatExt = (ChatComponentExt) chatOverlay;
-        if (chatExt.invokeIsChatHidden() || chatExt.getTrimmedMessages().isEmpty()) {
+        if (chatExt.invokeIsChatFocused() || chatExt.invokeIsChatHidden() || chatExt.getTrimmedMessages().isEmpty()) {
             return ChatInformation.EMPTY;
         }
 
+        // We technically support the chat being focussed but that does not use this method anyway.
         var queueSize = minecraft.getChatListener().queueSize();
         var lines = new ArrayList<BakedComponent>();
         var focused = chatExt.invokeIsChatFocused();
