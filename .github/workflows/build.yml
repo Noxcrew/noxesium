@@ -42,7 +42,7 @@ jobs:
 
             - name: Determine Status
               run: |
-                  if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+                  if [ "$(./gradlew properties | awk '/^mod_version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
                     echo "STATUS=snapshot" >> $GITHUB_ENV
                   else
                     echo "STATUS=release" >> $GITHUB_ENV
