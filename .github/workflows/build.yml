@@ -1,33 +1,63 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - '**'
-  workflow_dispatch:
+    push:
+        branches: ["**"]
+        tags-ignore: ["**"]
+    pull_request:
+    release:
+        types: [published]
+    workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Java JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: temurin
-          
-      - name: Gradle Wrapper Validation
-        uses: gradle/wrapper-validation-action@v1
-      
-      - name: Setup Gradle Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
-        
-      - uses: actions/upload-artifact@v3
-        with:
-          name: noxesium-artifacts
-          path: "**/build/libs/*.jar"
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Java JDK
+              uses: actions/setup-java@v4
+              with:
+                  java-version: 17
+                  distribution: temurin
+
+            - name: Gradle Wrapper Validation
+              uses: gradle/wrapper-validation-action@v1
+
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v3
+
+            - name: Gradle Build
+              run: ./gradlew build
+
+            - name: Clean Up Artifacts
+              run: rm fabric/build/libs/*-sources.jar
+
+            - name: Upload Artifacts
+              uses: actions/upload-artifact@v3
+              with:
+                name: noxesium-artifacts
+                path: "**/build/libs/*.jar"
+
+            - name: Determine Status
+              run: |
+                  if [ "$(./gradlew properties | awk '/^version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
+                    echo "STATUS=snapshot" >> $GITHUB_ENV
+                  else
+                    echo "STATUS=release" >> $GITHUB_ENV
+                  fi
+
+            - name: Publish Snapshot
+              if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}"
+              run: ./gradlew publish
+              env:
+                  NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
+                  NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
+
+            - name: Publish Release
+              if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+              run: ./gradlew publish
+              env:
+                  NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
+                  NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
