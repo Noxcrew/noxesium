@@ -32,7 +32,7 @@ Optimizes client performance when playing on multiplayer servers such as MCC Isl
 
 - Recent versions contain experimental UI optimizations which can be enabled in the Video Settings. These optimizations currently don't support 3rd party mods yet but will in a future release. After these are stable they will be automatically enabled and should improve client fps on servers with custom UI elements.
 - Various small optimizations to rendering custom entity models
-- Optimizes beacon beam rendering (only when not using Iris Shaders)
+- Speeds up beacon beam rendering (only when not using Iris Shaders)
 
 ### Additions
 
@@ -48,14 +48,16 @@ Noxesium provides various additional features focussed around giving servers mor
 
 ### Bugfixes
 
-Noxesium also fixes various small bugs in Vanilla Minecraft that relate to multiplayer servers.
+Noxesium also fixes various small client bugs that relate to multiplayer servers.
 
-- Fixes jiterry behavior of teleporting entities on mounts
+- Fixes jittery behavior of teleporting entities on mounts
 - Fixes lighting issues with moving piston walls
 - Music properly resumes playing when setting the volume to 0% and back up
 - Fixes the backgrounds of text displays not being transparent
 
 ### MCC Island-specific Features
+
+There are also a few features specific to MCC Island as Noxesium is developed alongside it:
 
 - Adds a setting to show player heads in UIs
 - Provides access to additional information sent by the server regarding the current server and current game state
