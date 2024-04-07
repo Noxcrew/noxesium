@@ -1,7 +1,7 @@
 Noxesium
 ---
 A fabric mod centered around improving the user experience when playing on multiplayer servers.
-This mod will bring no notable performance improvements in single player.
+This mod brings no notable performance improvements in single player.
 
 Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
 
