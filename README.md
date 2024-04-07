@@ -1,6 +1,7 @@
 Noxesium
 ---
-A fabric mod with feature additions, bugfixes, and performance improvements. It allows servers to offer a better experience to clients through access to additional features beyond vanilla limitations.
+A fabric mod centered around improving the user experience when playing on multiplayer servers.
+This mod will bring no notable performance improvements in single player.
 
 Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
 
@@ -25,28 +26,31 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 
 # Features
 
+### Performance
+
+Optimizes client performance when playing on multiplayer servers such as MCC Island or Origin Realms. Optimizations are focussed on areas that other mods normally don't optimize as they usually focus on regular survival mode gameplay.
+
+- Recent versions contain experimental UI optimizations which can be enabled in the Video Settings. These optimizations currently don't support 3rd party mods yet but will in a future release. After these are stable they will be automatically enabled and should improve client fps on servers with custom UI elements.
+- Various small optimizations to rendering custom entity models
+- Optimizes beacon beam rendering (only when not using Iris Shaders)
+
 ### Additions
 
-- Sends information about GUI scale to connected servers to allow better server-side UI design
-- Allow servers to disable riptide trident collisions
-- Allow servers to define a global CanDestroy and CanPlaceOn tag that applies to all items
-- Allow servers to show player heads in chat messages
-- Allow servers to prevent picking up items in GUIs
-- Allow servers to prevent camera movement temporarily
-- Allow servers to disable vanilla Minecraft music and play custom music in custom categories
-- Allow servers to play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
+Noxesium provides various additional features focussed around giving servers more control over how the client behaves. Some examples of additional things servers can do:
 
-### Performance
-- (Experimental, disabled by default) Massively optimizes UI rendering by buffering components and optimizing text rendering
-- Optimizes CustomModelData lookups for item models
-- Optimizes color lookups for leather armor
-- Caches color provider results in Sodium
-- Optimizes Beacon block entity rendering (disabled when using Iris Shaders)
+- Draw player heads in text messages
+- Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
+- Use information about the GUI scale of clients
+- Disable various minor mechanics such as trident or boat collisions
+- Define a global CanDestroy and CanPlaceOn tag that applies to all items
+- Prevent moving items in GUIs
+- Locking camera movement
 
 ### Bugfixes
 
-- Always display head layer in TAB menu
-- Change teleport packets to teleport vehicle passengers to their vehicle
+Noxesium also fixes various small bugs in Vanilla Minecraft that relate to multiplayer servers.
+
+- Fixes jiterry behavior of teleporting entities on mounts
 - Fixes lighting issues with moving piston walls
 - Music properly resumes playing when setting the volume to 0% and back up
 - Fixes the backgrounds of text displays not being transparent
