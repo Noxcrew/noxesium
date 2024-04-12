@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 /**
  * Raises the height of the held item name in the HUD to avoid
  * faction icons overlapping.
- *
+ * <p>
  * Also overrides the selected item for hover to ignore the rule override.
  */
 @Mixin(Gui.class)

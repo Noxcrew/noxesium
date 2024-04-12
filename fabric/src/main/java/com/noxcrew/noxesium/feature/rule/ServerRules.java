@@ -7,7 +7,6 @@ import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 /**
  * A class that stores all known server rules.
@@ -44,5 +43,5 @@ public class ServerRules {
     /**
      * Allows overriding the item that is used when resolving the capabilities of an empty item slot.
      */
-    public static ClientServerRule<ItemStack> HAND_ITEM_OVERRIDE = new ItemStackServerRule(ServerRuleIndices.HAND_ITEM_OVERRIDE, new ItemStack(Items.COBBLED_DEEPSLATE));
+    public static ClientServerRule<ItemStack> HAND_ITEM_OVERRIDE = new ItemStackServerRule(ServerRuleIndices.HAND_ITEM_OVERRIDE);
 }

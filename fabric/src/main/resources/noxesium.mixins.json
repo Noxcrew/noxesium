@@ -50,6 +50,8 @@
     "performance.render.ext.PlayerTabOverlayExt",
     "rules.GuiRulesMixin",
     "rules.InventoryMixin",
+    "rules.ItemInHandLayerMixin",
+    "rules.ItemInHandRendererMixin",
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseHandlerMixin",
     "sound.ChannelExt",

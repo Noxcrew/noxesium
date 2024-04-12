@@ -46,10 +46,11 @@ public abstract class BeaconRenderingMixin {
     }
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;checkPoseStack(Lcom/mojang/blaze3d/vertex/PoseStack;)V", ordinal = 1, shift = At.Shift.BEFORE))
-    private void renderGlobalBlockEntities(PoseStack poseStack, float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, CallbackInfo ci) {
+    private void renderGlobalBlockEntities(float f, long l, boolean bl, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f matrix4f, Matrix4f matrix4f2, CallbackInfo ci) {
         // Synchronise on the global block entities because vanilla does as well, this list will be empty
         // when using Sodium
         if (globalBlockEntities.isEmpty()) return;
+        PoseStack poseStack = new PoseStack();
         synchronized (globalBlockEntities) {
             GlobalBlockEntityRenderer.render(globalBlockEntities, camera, poseStack, renderBuffers.bufferSource(), camera.getPosition(), f);
         }
