@@ -33,7 +33,7 @@ public class NoxesiumConfig {
      * any mods are detected that are known to have compatibility issues.
      */
     public boolean areExperimentalPatchesAvailable() {
-        return !CompatibilityReferences.isUsingFeatherClient();
+        return !CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient();
     }
 
     /**
@@ -44,7 +44,7 @@ public class NoxesiumConfig {
     }
 
     /**
-     * Whether custom keybinds for making teams glow should be shown.
+     * Whether custom key bindings for making teams glow should be shown.
      */
     public boolean shouldShowGlowingSettings() {
         return showGlowingSettings;

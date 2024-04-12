@@ -1,14 +1,11 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
-import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
-import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
@@ -16,97 +13,142 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Sent by a server to start a Noxesium custom sound. If a sound with the same id
  * is already playing, that sound will be stopped.
+ *
+ * @param position        The position where the sound is playing, can be null.
+ * @param entityId        The entity that the sound is playing relative to, can be null.
+ * @param attenuation     Whether this sound has attenuation. If `false`, the sound is played at the same
+ *                        volume regardless of distance to the position. Should be `true` for most sounds.
+ * @param ignoreIfPlaying Whether to ignore playing the sound if the id is already playing another sound.
+ * @param offset          The offset of the sound in seconds.
  */
-public class ClientboundCustomSoundStartPacket extends ClientboundNoxesiumPacket {
+public record ClientboundCustomSoundStartPacket(
+        int id,
+        ResourceLocation sound,
+        SoundSource source,
+        boolean looping,
+        boolean attenuation,
+        boolean ignoreIfPlaying,
+        float volume,
+        float pitch,
+        Vec3 position,
+        Integer entityId,
+        Long unix,
+        Float offset
+) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> TYPE = NoxesiumPackets.client("start_sound", STREAM_CODEC);
 
-    public final int id;
-    public final ResourceLocation sound;
-    public final SoundSource source;
-
-    /**
-     * The position where the sound is playing, can be null.
-     */
-    public final Vec3 position;
-
-    /**
-     * The entity that the sound is playing relative to, can be null.
-     */
-    public final Integer entityId;
-
-    public final boolean looping;
-
-    /**
-     * Whether this sound has attenuation. If `false`, the sound is played at the same
-     * volume regardless of distance to the position. Should be `true` for most sounds.
-     */
-    public final boolean attenuation;
-    /**
-     * Whether to ignore playing the sound if the id is already playing
-     * another sound.
-     */
-    public final boolean ignoreIfPlaying;
-    public final float volume;
-    public final float pitch;
-
-    /**
-     * The offset of the sound in seconds.
-     */
-    public final float offset;
-
-    public ClientboundCustomSoundStartPacket(FriendlyByteBuf buf) {
-        super(buf.readVarInt());
-        this.id = buf.readVarInt();
-        this.sound = buf.readResourceLocation();
-        this.source = buf.readEnum(SoundSource.class);
-        this.looping = buf.readBoolean();
-        this.attenuation = buf.readBoolean();
-        this.ignoreIfPlaying = buf.readBoolean();
-        this.volume = buf.readFloat();
-        this.pitch = buf.readFloat();
-
-        var mode = buf.readVarInt();
-        if (mode == 0) {
-            this.position = buf.readVec3();
-            this.entityId = null;
-        } else if (mode == 1) {
-            this.position = null;
-            this.entityId = buf.readVarInt();
-        } else {
-            this.position = null;
-            this.entityId = null;
-        }
-
-        if (buf.readBoolean()) {
-            var unix = buf.readLong();
-            var passed = System.currentTimeMillis() - unix;
-            this.offset = Math.max(0, passed) / 1000f;
-        } else {
-            this.offset = buf.readFloat();
-        }
+    private ClientboundCustomSoundStartPacket(FriendlyByteBuf buf) {
+        this(
+                buf,
+                buf.readVarInt(),
+                buf.readResourceLocation(),
+                buf.readEnum(SoundSource.class),
+                buf.readBoolean(),
+                buf.readBoolean(),
+                buf.readBoolean(),
+                buf.readFloat(),
+                buf.readFloat(),
+                buf.readVarInt()
+        );
     }
 
-    @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
+    private ClientboundCustomSoundStartPacket(
+            FriendlyByteBuf buf,
+            int id,
+            ResourceLocation sound,
+            SoundSource source,
+            boolean looping,
+            boolean attenuation,
+            boolean ignoreIfPlaying,
+            float volume,
+            float pitch,
+            int mode
+    ) {
+        this(
+                buf,
+                id,
+                sound,
+                source,
+                looping,
+                attenuation,
+                ignoreIfPlaying,
+                volume,
+                pitch,
+                mode == 0 ? buf.readVec3() : null,
+                mode == 1 ? buf.readVarInt() : null,
+                buf.readBoolean()
+        );
+    }
 
-        // Determine the sound instance to play
-        NoxesiumSoundInstance sound = null;
+    private ClientboundCustomSoundStartPacket(
+            FriendlyByteBuf buf,
+            int id,
+            ResourceLocation sound,
+            SoundSource source,
+            boolean looping,
+            boolean attenuation,
+            boolean ignoreIfPlaying,
+            float volume,
+            float pitch,
+            Vec3 position,
+            Integer entityId,
+            boolean unix
+    ) {
+        this(
+                id,
+                sound,
+                source,
+                looping,
+                attenuation,
+                ignoreIfPlaying,
+                volume,
+                pitch,
+                position,
+                entityId,
+                unix ? buf.readLong() : null,
+                !unix ? buf.readFloat() : null
+        );
+    }
+
+    private void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(id);
+        buf.writeResourceLocation(sound);
+        buf.writeEnum(source);
+        buf.writeBoolean(looping);
+        buf.writeBoolean(attenuation);
+        buf.writeBoolean(ignoreIfPlaying);
+        buf.writeFloat(volume);
+        buf.writeFloat(pitch);
+
         if (position != null) {
-            sound = new NoxesiumSoundInstance(this.sound, this.source, this.position, this.volume, this.pitch, this.looping, this.attenuation, this.offset);
+            buf.writeVarInt(0);
+            buf.writeVec3(position);
         } else if (entityId != null) {
-            var entity = player.connection.getLevel().getEntity(this.entityId);
-            if (entity != null) {
-                sound = new EntityNoxesiumSoundInstance(this.sound, this.source, entity, this.volume, this.pitch, this.looping, this.attenuation, this.offset);
-            }
+            buf.writeVarInt(1);
+            buf.writeVarInt(entityId);
+        } else {
+            buf.writeVarInt(2);
         }
-        if (sound == null) {
-            sound = new EntityNoxesiumSoundInstance(this.sound, this.source, player, this.volume, this.pitch, this.looping, this.attenuation, this.offset);
+        if (unix != null) {
+            buf.writeBoolean(true);
+            buf.writeLong(unix);
+        } else {
+            buf.writeBoolean(false);
+            buf.writeFloat(offset);
         }
-        manager.play(id, sound, this.ignoreIfPlaying);
+    }
+
+    /**
+     * Determines the offset to start the sound at. This can be defined through either a unix
+     * timestamp or an offset value.
+     */
+    public float determineOffset() {
+        return unix != null ? Math.max(0, System.currentTimeMillis() - unix) / 1000f : offset;
     }
 
     @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_START_SOUND;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

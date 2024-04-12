@@ -1,29 +1,29 @@
 package com.noxcrew.noxesium.network.serverbound;
 
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent to the server when the client first joins to establish the version of the
  * client being used.
  */
-public class ServerboundClientInformationPacket extends ServerboundNoxesiumPacket {
+public record ServerboundClientInformationPacket(int protocolVersion) implements ServerboundNoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ServerboundClientInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientInformationPacket::write, ServerboundClientInformationPacket::new);
+    public static final NoxesiumPayloadType<ServerboundClientInformationPacket> TYPE = NoxesiumPackets.server("client_info", STREAM_CODEC);
 
-    private final int protocolVersion;
+    private ServerboundClientInformationPacket(FriendlyByteBuf buf) {
+        this(buf.readInt());
+    }
 
-    public ServerboundClientInformationPacket(int protocolVersion) {
-        super(1);
-        this.protocolVersion = protocolVersion;
+    private void write(FriendlyByteBuf buf) {
+        buf.writeByte(protocolVersion);
     }
 
     @Override
-    public void serialize(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(protocolVersion);
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.SERVER_CLIENT_INFO;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
@@ -33,7 +34,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * of Noxesium is available on the client. The protocol version will increment every full release, as such
      * ít is recommended to work with >= comparisons.
      */
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String NAMESPACE = "noxesium";
@@ -108,11 +109,12 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new SkullFontModule());
         registerModule(new NoxesiumSoundModule());
         registerModule(new MccIslandTracker());
+        registerModule(new NoxesiumPacketHandling());
 
         // Every time the client joins a server we send over information on the version being used
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             // Find the packet that includes the server asking for the information packet
-            if (!channels.contains(NoxesiumPackets.SERVER_CLIENT_INFO.getId())) return;
+            if (!channels.contains(ServerboundClientInformationPacket.TYPE.id())) return;
 
             // Check if the connection has been established first, just in case
             if (Minecraft.getInstance().getConnection() != null) {

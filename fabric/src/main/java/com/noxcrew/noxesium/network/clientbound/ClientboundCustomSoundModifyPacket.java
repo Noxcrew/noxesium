@@ -1,51 +1,40 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent by a server to change the volume of a sound. The interpolation time can be
- * used to fade the sound up or down over an amount of ticks
+ * used to fade the sound up or down over an amount of ticks.
+ *
+ * @param startVolume An optional volume to start the interpolation from. If absent the current volume of the sound is used instead.
  */
-public class ClientboundCustomSoundModifyPacket extends ClientboundNoxesiumPacket {
+public record ClientboundCustomSoundModifyPacket(int id, float volume, int interpolationTicks, Float startVolume) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> TYPE = NoxesiumPackets.client("modify_sound", STREAM_CODEC);
 
-    public final int id;
-    public final float volume;
-    /**
-     * An optional volume to start the interpolation from. If absent the current
-     * volume of the sound is used instead.
-     */
-    public final Float startVolume;
-    public final int interpolationTicks;
+    private ClientboundCustomSoundModifyPacket(FriendlyByteBuf buf) {
+        this(buf.readVarInt(), buf.readFloat(), buf.readVarInt(), buf.readBoolean() ? buf.readFloat() : null);
+    }
 
-    public ClientboundCustomSoundModifyPacket(FriendlyByteBuf buf) {
-        super(buf.readVarInt());
-        this.id = buf.readVarInt();
-        this.volume = buf.readFloat();
-        this.interpolationTicks = buf.readVarInt();
-        if (buf.readBoolean()) {
-            this.startVolume = buf.readFloat();
+    private void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(id);
+        buf.writeFloat(volume);
+        buf.writeVarInt(interpolationTicks);
+        if (startVolume == null) {
+            buf.writeBoolean(false);
         } else {
-            this.startVolume = null;
+            buf.writeBoolean(true);
+            buf.writeFloat(startVolume);
         }
     }
 
     @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
-        var sound = manager.getSound(id);
-        if (sound == null) return;
-
-        sound.setVolume(this.volume, this.startVolume, this.interpolationTicks);
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_MODIFY_SOUND;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

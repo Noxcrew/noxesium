@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.5-SNAPSHOT"
+    id("fabric-loom") version "1.6-SNAPSHOT"
     id("noxesium.publishing")
 }
 
@@ -50,7 +50,7 @@ java {
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 loom {
@@ -67,7 +67,7 @@ tasks {
 
     withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
 
         // Exclude sodium java classes when it's disabled
         if (project.property("enableSodium") != "true") {

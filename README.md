@@ -42,7 +42,7 @@ Noxesium provides various additional features focussed around giving servers mor
 - Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
 - Use information about the GUI scale of clients
 - Disable various minor mechanics such as trident or boat collisions
-- Define a global CanDestroy and CanPlaceOn tag that applies to all items
+- Define an override for the empty hand item
 - Prevent moving items in GUIs
 - Locking camera movement
 

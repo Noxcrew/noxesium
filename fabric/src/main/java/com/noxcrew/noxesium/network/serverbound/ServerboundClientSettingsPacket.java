@@ -2,35 +2,43 @@ package com.noxcrew.noxesium.network.serverbound;
 
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent to the server to inform it about various settings configured by the client,
  * mostly geared towards the size of their GUI and other visual-related settings.
  */
-public class ServerboundClientSettingsPacket extends ServerboundNoxesiumPacket {
+public record ServerboundClientSettingsPacket(ClientSettings settings) implements ServerboundNoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ServerboundClientSettingsPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientSettingsPacket::write, ServerboundClientSettingsPacket::new);
+    public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> TYPE = NoxesiumPackets.server("client_settings", STREAM_CODEC);
 
-    private final ClientSettings settings;
+    private ServerboundClientSettingsPacket(FriendlyByteBuf buf) {
+        this(new ClientSettings(
+                buf.readVarInt(),
+                buf.readDouble(),
+                buf.readVarInt(),
+                buf.readVarInt(),
+                buf.readBoolean(),
+                buf.readBoolean(),
+                buf.readDouble()
+        ));
+    }
 
-    public ServerboundClientSettingsPacket(ClientSettings settings) {
-        super(1);
-        this.settings = settings;
+    private void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(settings.configuredGuiScale());
+        buf.writeDouble(settings.trueGuiScale());
+        buf.writeVarInt(settings.width());
+        buf.writeVarInt(settings.height());
+        buf.writeBoolean(settings.enforceUnicode());
+        buf.writeBoolean(settings.touchScreenMode());
+        buf.writeDouble(settings.notificationDisplayTime());
     }
 
     @Override
-    public void serialize(FriendlyByteBuf buffer) {
-        buffer.writeVarInt(settings.configuredGuiScale());
-        buffer.writeDouble(settings.trueGuiScale());
-        buffer.writeVarInt(settings.width());
-        buffer.writeVarInt(settings.height());
-        buffer.writeBoolean(settings.enforceUnicode());
-        buffer.writeBoolean(settings.touchScreenMode());
-        buffer.writeDouble(settings.notificationDisplayTime());
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.SERVER_CLIENT_SETTINGS;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

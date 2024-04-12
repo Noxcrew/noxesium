@@ -1,21 +1,18 @@
 package com.noxcrew.noxesium.network;
 
-import com.noxcrew.noxesium.network.clientbound.ClientboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * A simple packet handler used by Noxesium which defers the result of the packet
  * to the packet instance itself.
  */
-public class NoxesiumPacketHandler implements ClientPlayNetworking.PlayPacketHandler<FabricPacket> {
+public class NoxesiumPacketHandler<T extends CustomPacketPayload> implements ClientPlayNetworking.PlayPayloadHandler<T> {
 
     @Override
-    public void receive(FabricPacket packet, LocalPlayer player, PacketSender responseSender) {
-        if (packet instanceof ClientboundNoxesiumPacket clientboundNoxesiumPacket) {
-            clientboundNoxesiumPacket.receive(player, responseSender);
+    public void receive(T payload, ClientPlayNetworking.Context context) {
+        if (payload instanceof NoxesiumPacket noxesiumPacket) {
+            noxesiumPacket.noxesiumType().handle(context, payload);
         }
     }
 }

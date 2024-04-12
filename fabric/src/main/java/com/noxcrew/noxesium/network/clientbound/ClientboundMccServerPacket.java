@@ -1,49 +1,31 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.island.MccIslandTracker;
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent by MCC Island whenever you switch servers. All values are dynamic and may change over time.
  */
-public class ClientboundMccServerPacket extends ClientboundNoxesiumPacket {
+public record ClientboundMccServerPacket(String serverType, String subType, String associatedGame) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundMccServerPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccServerPacket::write, ClientboundMccServerPacket::new);
+    public static final NoxesiumPayloadType<ClientboundMccServerPacket> TYPE = NoxesiumPackets.client("mcc_server", STREAM_CODEC);
 
-    public final String type;
-    public final String subType;
-    public final String associatedGame;
+    private ClientboundMccServerPacket(FriendlyByteBuf buf) {
+        this(buf.readUtf(), buf.readUtf(), buf.readUtf());
+    }
 
-    /**
-     * The legacy id of this game, these are only used by mcc.live.
-     *
-     * These are provided for completeness and comparison, but you should not ever
-     * depend on these as future games will not receive one.
-     */
-    public final String legacyGameId;
-
-    public ClientboundMccServerPacket(FriendlyByteBuf buf) {
-        super(buf.readVarInt());
-        this.type = buf.readUtf();
-        this.subType = buf.readUtf();
-        this.associatedGame = buf.readUtf();
-        this.legacyGameId = buf.readUtf();
+    private void write(FriendlyByteBuf buf) {
+        buf.writeUtf(serverType);
+        buf.writeUtf(subType);
+        buf.writeUtf(associatedGame);
     }
 
     @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        // This packet is sent to be handled by any other users of the MCC Island API.
-        // TODO Set up a public packet handler API here?
-
-        // Mark down that the player is on MCC Island (we assume no other server sends these)
-        NoxesiumMod.getInstance().getModule(MccIslandTracker.class).markOnMccIsland();
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_MCC_SERVER;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

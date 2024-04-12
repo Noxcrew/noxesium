@@ -1,12 +1,13 @@
 package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
-import com.noxcrew.noxesium.feature.rule.impl.AdventureModeCheckServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
-import com.noxcrew.noxesium.feature.rule.impl.CustomAdventureModeCheck;
 import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 /**
  * A class that stores all known server rules.
@@ -17,18 +18,6 @@ public class ServerRules {
      * useful for non-pvp mini-games where the trident is used as a movement tool.
      */
     public static ClientServerRule<Boolean> DISABLE_SPIN_ATTACK_COLLISIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_SPIN_ATTACK_COLLISIONS, false);
-
-    /**
-     * A global value for the "CanPlaceOn" item tag that applies to players in adventure mode,
-     * allowing the server to define which blocks are placeable globally regardless of tool.
-     */
-    public static ClientServerRule<CustomAdventureModeCheck> GLOBAL_CAN_PLACE_ON = new AdventureModeCheckServerRule(ServerRuleIndices.GLOBAL_CAN_PLACE_ON);
-
-    /**
-     * A global value for the "CanDestroy" item tag that applies to players in adventure mode,
-     * allowing the server to define which blocks are breakable globally regardless of tool.
-     */
-    public static ClientServerRule<CustomAdventureModeCheck> GLOBAL_CAN_DESTROY = new AdventureModeCheckServerRule(ServerRuleIndices.GLOBAL_CAN_DESTROY);
 
     /**
      * An integer pixel amount to vertically offset the HUD held item name.
@@ -44,11 +33,16 @@ public class ServerRules {
     /**
      * Whether custom music is being used. When enabled vanilla background music is fully disabled.
      */
-    public static ClientServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(ServerRuleIndices.ENABLE_CUSTOM_MUSIC);
+    public static ClientServerRule<Boolean> ENABLE_CUSTOM_MUSIC = new EnableMusicRule(ServerRuleIndices.DISABLE_VANILLA_MUSIC);
 
     /**
      * When true, disables boat collision on the client side, useful for movement games involving
      * boats and other entities in one area. Similar mechanism must exist server side to prevent lagbacks with this enabled.
      */
     public static ClientServerRule<Boolean> DISABLE_BOAT_COLLISIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_BOAT_COLLISIONS, false);
+
+    /**
+     * Allows overriding the item that is used when resolving the capabilities of an empty item slot.
+     */
+    public static ClientServerRule<ItemStack> HAND_ITEM_OVERRIDE = new ItemStackServerRule(ServerRuleIndices.HAND_ITEM_OVERRIDE, new ItemStack(Items.COBBLED_DEEPSLATE));
 }

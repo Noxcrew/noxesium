@@ -3,23 +3,13 @@ package com.noxcrew.noxesium.network;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundNoxesiumPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -27,8 +17,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Defines all different packet types used by Noxesium. Noxesium uses the approach of serializing all incoming plugin channel
@@ -37,82 +25,39 @@ import java.util.function.Function;
  */
 public class NoxesiumPackets {
 
-    private static final Map<String, Pair<String, PacketType<?>>> clientboundPackets = new HashMap<>();
+    private static final Map<String, Pair<String, NoxesiumPayloadType<?>>> clientboundPackets = new HashMap<>();
     private static final Map<String, String> serverboundPackets = new HashMap<>();
     private static final Set<String> registeredGroups = new HashSet<>();
 
     /**
      * The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium.
      */
-    public static final String PACKET_NAMESPACE = NoxesiumMod.NAMESPACE + "-v1";
-
-    public static final PacketType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES = client("change_server_rules", ClientboundChangeServerRulesPacket::new);
-    public static final PacketType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES = client("reset_server_rules", ClientboundResetServerRulesPacket::new);
-    public static final PacketType<ClientboundResetPacket> CLIENT_RESET = client("reset", ClientboundResetPacket::new);
-    public static final PacketType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO = client("server_info", ClientboundServerInformationPacket::new);
-
-    public static final PacketType<ClientboundMccServerPacket> CLIENT_MCC_SERVER = client("mcc_server", ClientboundMccServerPacket::new);
-    public static final PacketType<ClientboundMccGameStatePacket> CLIENT_MCC_GAME_STATE = client("mcc_game_state", ClientboundMccGameStatePacket::new);
-
-    public static final PacketType<ClientboundCustomSoundStartPacket> CLIENT_START_SOUND = client("start_sound", ClientboundCustomSoundStartPacket::new);
-    public static final PacketType<ClientboundCustomSoundModifyPacket> CLIENT_MODIFY_SOUND = client("modify_sound", ClientboundCustomSoundModifyPacket::new);
-    public static final PacketType<ClientboundCustomSoundStopPacket> CLIENT_STOP_SOUND = client("stop_sound", ClientboundCustomSoundStopPacket::new);
-
-    public static final PacketType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = server("client_info");
-    public static final PacketType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = server("client_settings");
+    public static final String PACKET_NAMESPACE = NoxesiumMod.NAMESPACE + "-v2";
 
     /**
      * Registers a new clientbound Noxesium packet.
      *
-     * @param id          The identifier of this packet.
-     * @param constructor A constructor that creates this packet when given a byte buffer.
-     * @param <T>         The type of packet.
+     * @param id  The identifier of this packet.
+     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, Function<FriendlyByteBuf, T> constructor) {
-        return client(id, "universal", constructor);
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, StreamCodec<FriendlyByteBuf, T> codec) {
+        return client(id, "universal", codec);
     }
 
     /**
      * Registers a new clientbound Noxesium packet.
      *
-     * @param id          The identifier of this packet.
-     * @param constructor A constructor that creates this packet when given a byte buffer and a version.
-     * @param <T>         The type of packet.
+     * @param id    The identifier of this packet.
+     * @param group The group this packet belongs to, this can be used to selectively register packets based on the server being used.
+     * @param <T>   The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, BiFunction<FriendlyByteBuf, Integer, T> constructor) {
-        return client(id, "universal", (buffer) -> {
-            var version = buffer.readVarInt();
-            return constructor.apply(buffer, version);
-        });
-    }
-
-    /**
-     * Registers a new clientbound Noxesium packet.
-     *
-     * @param id          The identifier of this packet.
-     * @param group       The group this packet belongs to, this can be used to selectively register packets based on the server being used.
-     * @param constructor A constructor that creates this packet when given a byte buffer.
-     * @param <T>         The type of packet.
-     * @return The PacketType instance.
-     */
-    public static <T extends ClientboundNoxesiumPacket> PacketType<T> client(String id, String group, Function<FriendlyByteBuf, T> constructor) {
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = PacketType.create(new ResourceLocation(PACKET_NAMESPACE, id), (buffer) -> {
-            var result = constructor.apply(buffer);
-
-            // Figure out if there are any lingering bytes and remove them
-            var dangling = buffer.readableBytes();
-            if (dangling > 0) {
-                // These bytes are often empty, probably a remnant of plugin messages in general.
-                // We just ignore all of it.
-                buffer.readBytes(dangling);
-            }
-
-            return result;
-        });
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
         return type;
     }
@@ -124,8 +69,8 @@ public class NoxesiumPackets {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ServerboundNoxesiumPacket> PacketType<T> server(String id) {
-        return server(id, "universal");
+    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, StreamCodec<FriendlyByteBuf, T> codec) {
+        return server(id, "universal", codec);
     }
 
     /**
@@ -136,13 +81,12 @@ public class NoxesiumPackets {
      * @param <T>   The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ServerboundNoxesiumPacket> PacketType<T> server(String id, String group) {
+    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = PacketType.<T>create(new ResourceLocation(PACKET_NAMESPACE, id), (buffer) -> {
-            throw new UnsupportedOperationException("Serverbound Noxesium packets cannot be de-serialized!");
-        });
-        serverboundPackets.put(type.getId().toString(), group);
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        PayloadTypeRegistry.playC2S().register(type.type, codec);
+        serverboundPackets.put(type.id().toString(), group);
         return type;
     }
 
@@ -160,12 +104,11 @@ public class NoxesiumPackets {
         for (var packet : clientboundPackets.values()) {
             if (!Objects.equals(group, packet.getFirst())) continue;
 
-            var type = (PacketType<FabricPacket>) packet.getSecond();
-            var handler = new NoxesiumPacketHandler();
+            var type = packet.getSecond();
             if (universal) {
-                ClientPlayNetworking.registerGlobalReceiver(type, handler);
+                registerGlobalReceiver(type.type);
             } else {
-                ClientPlayNetworking.registerReceiver(type, handler);
+                registerReceiver(type.type);
             }
         }
 
@@ -180,9 +123,25 @@ public class NoxesiumPackets {
      * @param type The packet type
      * @return Whether the connected server should be receiving the packet
      */
-    public static boolean canSend(PacketType<?> type) {
-        var group = serverboundPackets.get(type.getId().toString());
-        Preconditions.checkNotNull(group, "Could not find the packet type " + type.getId().toString());
+    public static boolean canSend(NoxesiumPayloadType<?> type) {
+        var group = serverboundPackets.get(type.id().toString());
+        Preconditions.checkNotNull(group, "Could not find the packet type " + type.id().toString());
         return registeredGroups.contains(group);
+    }
+
+    /**
+     * Registers a new regular receiver.
+     */
+    private static <T extends CustomPacketPayload> void registerReceiver(CustomPacketPayload.Type<T> type) {
+        var handler = new NoxesiumPacketHandler<T>();
+        ClientPlayNetworking.registerReceiver(type, handler);
+    }
+
+    /**
+     * Registers a new global receiver.
+     */
+    private static <T extends CustomPacketPayload> void registerGlobalReceiver(CustomPacketPayload.Type<T> type) {
+        var handler = new NoxesiumPacketHandler<T>();
+        ClientPlayNetworking.registerGlobalReceiver(type, handler);
     }
 }

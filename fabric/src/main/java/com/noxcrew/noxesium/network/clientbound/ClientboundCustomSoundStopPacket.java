@@ -1,33 +1,29 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent by a server to stop a custom Noxesium sound by its id.
  */
-public class ClientboundCustomSoundStopPacket extends ClientboundNoxesiumPacket {
+public record ClientboundCustomSoundStopPacket(int id) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundStopPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStopPacket::write, ClientboundCustomSoundStopPacket::new);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> TYPE = NoxesiumPackets.client("stop_sound", STREAM_CODEC);
 
-    public final int id;
+    private ClientboundCustomSoundStopPacket(FriendlyByteBuf buf) {
+        this(buf.readVarInt());
+    }
 
-    public ClientboundCustomSoundStopPacket(FriendlyByteBuf buf) {
-        super(buf.readVarInt());
-        this.id = buf.readVarInt();
+    private void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(id);
     }
 
     @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
-        manager.stopSound(id);
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_STOP_SOUND;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

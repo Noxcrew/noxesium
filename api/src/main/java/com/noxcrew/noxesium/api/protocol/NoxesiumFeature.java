@@ -43,6 +43,16 @@ public enum NoxesiumFeature {
      * Allows usage of the optimized UI rendering-related server rules.
      */
     OPTIMIZED_UI(4),
+    /**
+     * Allows the hand item to be overridden.
+     *
+     * @see [ServerRuleIndices.HAND_ITEM_OVERRIDE]
+     */
+    OVERRIDABLE_HAND_ITEM(5),
+    /**
+     * Supports the V2 API of Noxesium.
+     */
+    API_V2(5),
     ;
 
     private final int minProtocolVersion;

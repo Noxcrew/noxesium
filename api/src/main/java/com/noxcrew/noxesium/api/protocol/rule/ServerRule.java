@@ -44,9 +44,17 @@ public abstract class ServerRule<ValueT, BufferT> {
 
     /**
      * Sets the value of this rule to the given value, performs
-     * an unsafe cast to the ValueT!
+     * an unsafe cast to ValueT!
      */
     public void setUnsafe(Object value) {
         setValue((ValueT) value);
+    }
+
+    /**
+     * Writes the given value to the buffer, performs an unsafe
+     * cast to ValueT!
+     */
+    public void writeUnsafe(Object value, BufferT buffer) {
+        write((ValueT) value, buffer);
     }
 }

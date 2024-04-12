@@ -1,27 +1,25 @@
 package com.noxcrew.noxesium.network;
 
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * The basis for a fabric packet as used by Noxesium, these always contain
- * a version varint which allows different versions of the mod to communicate.
+ * The basis for a custom payload as used by Noxesium.
  */
-public abstract class NoxesiumPacket implements FabricPacket {
+public interface NoxesiumPacket extends CustomPacketPayload {
 
     /**
-     * The version of this packet.
+     * Returns the Noxesium payload type of this packet.
      */
-    public final int version;
+    NoxesiumPayloadType<?> noxesiumType();
 
     /**
-     * Creates a new Noxesium packet with the given version.
-     *
-     * @param version The version of this packet, this is always
-     *                the first varint of any Noxesium packet and
-     *                allows the contents of packets to change
-     *                over time without much issue.
+     * Override the super-method's type.
      */
-    public NoxesiumPacket(int version) {
-        this.version = version;
+    @NotNull
+    @Override
+    default Type<? extends CustomPacketPayload> type() {
+        return noxesiumType().type;
     }
 }

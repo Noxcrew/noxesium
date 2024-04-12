@@ -1,38 +1,30 @@
 package com.noxcrew.noxesium.network.clientbound;
 
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Resets the stored value for one or more server rules.
  */
-public class ClientboundResetServerRulesPacket extends ClientboundNoxesiumPacket {
+public record ClientboundResetServerRulesPacket(IntList indices) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundResetServerRulesPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetServerRulesPacket::write, ClientboundResetServerRulesPacket::new);
+    public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> TYPE = NoxesiumPackets.client("reset_server_rules", STREAM_CODEC);
 
-    private final IntList indices;
+    private ClientboundResetServerRulesPacket(FriendlyByteBuf buf) {
+        this(buf.readIntIdList());
+    }
 
-    public ClientboundResetServerRulesPacket(FriendlyByteBuf buf) {
-        super(buf.readVarInt());
-        this.indices = buf.readIntIdList();
+    private void write(FriendlyByteBuf buf) {
+        buf.writeIntIdList(indices);
     }
 
     @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        var module = NoxesiumMod.getInstance().getModule(ServerRuleModule.class);
-        for (var index : indices) {
-            var rule = module.getIndex(index);
-            if (rule == null) continue;
-            rule.reset();
-        }
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_RESET_SERVER_RULES;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }

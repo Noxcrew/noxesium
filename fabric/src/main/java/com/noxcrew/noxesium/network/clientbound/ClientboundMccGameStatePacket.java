@@ -1,10 +1,11 @@
 package com.noxcrew.noxesium.network.clientbound;
 
+import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.client.player.LocalPlayer;
+import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 /**
  * Sent by MCC Island whenever the game state changes.
@@ -24,59 +25,40 @@ import net.minecraft.network.FriendlyByteBuf;
  * <p>
  * Clients should be able to parse any version of the packet so any server
  * can send any version.
+ *
+ * @param phaseType   The current type of phase.
+ * @param stage       The current stage id.
+ * @param round       The current round of the game.
+ * @param totalRounds The total amount of rounds in the game.
+ * @param mapId       The internal id assigned to the current map.
+ * @param mapName     The display name of the current map localised to the client's language.
  */
-public class ClientboundMccGameStatePacket extends ClientboundNoxesiumPacket {
+public record ClientboundMccGameStatePacket(
+        String phaseType,
+        String stage,
+        int round,
+        int totalRounds,
+        String mapId,
+        String mapName
+) implements NoxesiumPacket {
+    public static final StreamCodec<FriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
+    public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> TYPE = NoxesiumPackets.client("mcc_game_state", STREAM_CODEC);
 
-    public final String phaseType;
-    public final String stage;
+    private ClientboundMccGameStatePacket(FriendlyByteBuf buf) {
+        this(buf.readUtf(), buf.readUtf(), buf.readVarInt(), buf.readVarInt(), buf.readUtf(), buf.readUtf());
+    }
 
-    /**
-     * The current round of the game.
-     */
-    public final int round;
-
-    /**
-     * The total amount of rounds in the game.
-     */
-    public final int totalRounds;
-
-    /**
-     * The internal id assigned to the current map.
-     */
-    public final String mapId;
-
-    /**
-     * The display name of the current map localised to the client's language.
-     */
-    public final String mapName;
-
-    public ClientboundMccGameStatePacket(FriendlyByteBuf buf, int version) {
-        super(version);
-
-        this.phaseType = buf.readUtf();
-        this.stage = buf.readUtf();
-
-        if (version >= 2) {
-            this.round = buf.readVarInt();
-            this.totalRounds = buf.readVarInt();
-            this.mapId = buf.readUtf();
-            this.mapName = buf.readUtf();
-        } else {
-            this.round = 0;
-            this.totalRounds = 0;
-            this.mapId = "";
-            this.mapName = "";
-        }
+    private void write(FriendlyByteBuf buf) {
+        buf.writeUtf(phaseType);
+        buf.writeUtf(stage);
+        buf.writeVarInt(round);
+        buf.writeVarInt(totalRounds);
+        buf.writeUtf(mapId);
+        buf.writeUtf(mapName);
     }
 
     @Override
-    public void receive(LocalPlayer player, PacketSender responseSender) {
-        // This packet is sent to be handled by any other users of the MCC Island API.
-        // TODO Set up a public packet handler API here?
-    }
-
-    @Override
-    public PacketType<?> getType() {
-        return NoxesiumPackets.CLIENT_MCC_GAME_STATE;
+    public NoxesiumPayloadType<?> noxesiumType() {
+        return TYPE;
     }
 }
