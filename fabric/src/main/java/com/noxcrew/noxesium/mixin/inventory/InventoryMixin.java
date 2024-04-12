@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.inventory;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +31,7 @@ public abstract class InventoryMixin {
     )
     public void preventMovingImmovables(final boolean bl, final CallbackInfoReturnable<ItemStack> cir,
                                         @Local final ItemStack stack) {
-        final CompoundTag tag = stack.getTag();
+        final CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).getUnsafe();
         if (tag == null) return;
 
         final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);

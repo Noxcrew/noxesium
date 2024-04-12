@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.inventory;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
@@ -30,7 +31,7 @@ public abstract class InventorySlotMixin {
         final ItemStack itemStack = getItem();
         if (itemStack == null) return;
 
-        final CompoundTag tag = itemStack.getTag();
+        final CompoundTag tag = itemStack.get(DataComponents.CUSTOM_DATA).getUnsafe();
         if (tag == null) return;
 
         final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);

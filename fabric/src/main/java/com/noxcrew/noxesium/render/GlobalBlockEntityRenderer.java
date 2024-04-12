@@ -15,8 +15,6 @@ import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -158,22 +156,20 @@ public class GlobalBlockEntityRenderer {
 
     private static void renderPart(PoseStack poseStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
         PoseStack.Pose pose = poseStack.last();
-        Matrix4f matrix4f = pose.pose();
-        Matrix3f matrix3f = pose.normal();
-        renderQuad(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
-        renderQuad(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
-        renderQuad(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, n, o, r, s, t, u, v, w);
-        renderQuad(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, k, p, q, l, m, t, u, v, w);
+        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
+        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
+        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, n, o, r, s, t, u, v, w);
+        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, p, q, l, m, t, u, v, w);
     }
 
-    private static void renderQuad(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s) {
-        addVertex(matrix4f, matrix3f, vertexConsumer, f, g, h, i, k, l, m, q, r);
-        addVertex(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, l, m, q, s);
-        addVertex(matrix4f, matrix3f, vertexConsumer, f, g, h, i, j, n, o, p, s);
-        addVertex(matrix4f, matrix3f, vertexConsumer, f, g, h, i, k, n, o, p, r);
+    private static void renderQuad(PoseStack.Pose pose, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s) {
+        addVertex(pose, vertexConsumer, f, g, h, i, k, l, m, q, r);
+        addVertex(pose, vertexConsumer, f, g, h, i, j, l, m, q, s);
+        addVertex(pose, vertexConsumer, f, g, h, i, j, n, o, p, s);
+        addVertex(pose, vertexConsumer, f, g, h, i, k, n, o, p, r);
     }
 
-    private static void addVertex(Matrix4f matrix4f, Matrix3f matrix3f, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, float k, float l, float m, float n) {
-        vertexConsumer.vertex(matrix4f, k, j, l).color(f, g, h, i).uv(m, n).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(matrix3f, 0.0f, 1.0f, 0.0f).endVertex();
+    private static void addVertex(PoseStack.Pose pose, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, float k, float l, float m, float n) {
+        vertexConsumer.vertex(pose, k, j, l).color(f, g, h, i).uv(m, n).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(pose, 0.0f, 1.0f, 0.0f).endVertex();
     }
 }

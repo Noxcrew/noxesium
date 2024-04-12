@@ -164,8 +164,8 @@ public class CustomSkullFont extends FontSet {
                 }
 
                 @Override
-                public float getBearingY() {
-                    return SheetGlyphInfo.super.getBearingY() + (float) ascent;
+                public float getBearingTop() {
+                    return (float) ascent;
                 }
 
                 @Override

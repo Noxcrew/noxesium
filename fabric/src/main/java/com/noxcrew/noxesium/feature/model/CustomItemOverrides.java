@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
-import net.minecraft.nbt.NumericTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -164,14 +164,12 @@ public class CustomItemOverrides extends ItemOverrides {
     public BakedModel resolve(BakedModel fallback, ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int i) {
         // Try to test individual overrides if possible
         if (overrides != null) {
-            var item = itemStack.getItem();
-
             // Determine the values for each property, this is decently slow but we assume
             // few overrides need this behaviour.
             var values = new float[properties.length];
             for (int index = 0; index < properties.length; ++index) {
                 var resourcelocation = properties[index];
-                var itempropertyfunction = ItemProperties.getProperty(item, resourcelocation);
+                var itempropertyfunction = ItemProperties.getProperty(itemStack, resourcelocation);
                 if (itempropertyfunction != null) {
                     values[index] = itempropertyfunction.call(itemStack, clientLevel, livingEntity, i);
                 } else {
@@ -188,12 +186,8 @@ public class CustomItemOverrides extends ItemOverrides {
             }
         } else if (customModelDatas != null) {
             // Determine the custom model of the item as fast as possible (this code is called a lot per tick if there's many models)
-            var customTag = itemStack.getTag();
-            if (customTag == null) return fallback;
-            var customModelData = customTag.get("CustomModelData");
-            if (customModelData == null || customModelData.getId() > 6) return fallback;
-            var numericTag = (NumericTag) customModelData;
-            var id = numericTag.getAsInt();
+            if (!itemStack.has(DataComponents.CUSTOM_MODEL_DATA)) return fallback;
+            var id = itemStack.get(DataComponents.CUSTOM_MODEL_DATA).value();
 
             // Snap to the highest valid id
             if (highestCustomModelData != null && id > highestCustomModelData) {

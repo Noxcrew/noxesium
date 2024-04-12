@@ -23,16 +23,16 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -203,7 +203,7 @@ public class SkullFontModule implements NoxesiumModule {
             currentFont = new CustomSkullFont(this, instance.getTextureManager(), RESOURCE_LOCATION);
 
             // Reload to stitch in missing and blank glyphs
-            currentFont.reload(List.of());
+            currentFont.reload(Set.of());
 
             // Manually input the font into the font manager's map of sets
             var current = ((FontManagerExt) fontManager).getFontSets();
