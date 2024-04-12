@@ -87,7 +87,8 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the UI element.
      */
-    public void render(GuiGraphics graphics, int screenWidth, int screenHeight, float partialTicks, Minecraft minecraft) {
+    public void render(GuiGraphics graphics, float partialTicks) {
+        var minecraft = Minecraft.getInstance();
         var cache = getCache(minecraft, partialTicks);
         if (cache.isEmpty()) return;
 
@@ -103,7 +104,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
             // Draw the direct parts on top each tick if requested
             if (hasDynamicLayer()) {
-                render(graphics, cache, minecraft, screenWidth, screenHeight, minecraft.font, partialTicks, true);
+                render(graphics, cache, minecraft, graphics.guiWidth(), graphics.guiHeight(), minecraft.font, partialTicks, true);
             }
         } finally {
             // Ensure we always properly flush the graphics after drawing a component!
