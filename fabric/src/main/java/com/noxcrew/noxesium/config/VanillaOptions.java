@@ -29,11 +29,25 @@ public class VanillaOptions {
             }
     );
 
+    private static final OptionInstance<Boolean> resetToggleKeys = OptionInstance.createBoolean(
+            "noxesium.options.reset_toggle_keys.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.reset_toggle_keys.tooltip")),
+            NoxesiumMod.getInstance().getConfig().resetToggleKeys,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().resetToggleKeys = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            }
+    );
+
     public static OptionInstance<Boolean> fpsOverlay() {
         return fpsOverlay;
     }
 
     public static OptionInstance<Boolean> experimentalPatches() {
         return experimentalPatches;
+    }
+
+    public static OptionInstance<Boolean> resetToggleKeys() {
+        return resetToggleKeys;
     }
 }

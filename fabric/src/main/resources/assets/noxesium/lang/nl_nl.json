@@ -16,6 +16,8 @@
   "noxesium.options.fps_overlay.tooltip": "Voegt een kleine teller toe in de linker bovenhoek van je scherm die laat zien hoeveel fps je hebt.",
   "noxesium.options.experimental_patches.name": "Experimentele verbeteringen",
   "noxesium.options.experimental_patches.tooltip": "§4(waarschuwing: instabiel!)\n§fSchakelt experimentele UI verbeteringen in die alle code voor het weergeven van de gebruikersinterface vervangen om efficienter te zijn.\n\n§cWaarschuwing: §fAls er enige fouten zitten in het weergeven van de gebruikersinterface, rapporteer deze dan bij Noxesium, niet bij andere mods die je gebruikt.",
+  "noxesium.options.reset_toggle_keys.name": "Omschakelende toetsen uitzetten na dood",
+  "noxesium.options.reset_toggle_keys.tooltip": "Of omschakelende toetsen voor sluipen of sprinten uit moeten gaan als je herspawned. Staat normaal uit in vanilla.",
 
   "category.noxesium": "Noxesium",
 
