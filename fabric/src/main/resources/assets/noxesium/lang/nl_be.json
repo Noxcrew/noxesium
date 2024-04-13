@@ -1,0 +1,35 @@
+{
+  "debug.experimental_patches.disabled": "Noxesium UI verbeteringen staan nu uit",
+  "debug.experimental_patches.enabled": "Noxesium UI verbeteringen staan nu aan",
+  "debug.experimental_patches.help": "F3 + W = Schakel Noxesium UI verbeteringen aan/uit",
+
+  "debug.fps_overlay.disabled": "FPS teller staat nu uit",
+  "debug.fps_overlay.enabled": "FPS teller staat nu aan (zet uit met F3 + Y)",
+  "debug.fps_overlay.help": "F3 + Y = Schakel fps teller op scherm aan/uit",
+  "debug.fps_overlay": "%s fps",
+
+  "debug.noxesium_overlay.on": "Noxesium: §aAan",
+  "debug.noxesium_overlay.off": "Noxesium: §cUit",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "Fps teller",
+  "noxesium.options.fps_overlay.tooltip": "Voegt een kleine teller toe in de linker bovenhoek van je scherm die laat zien hoeveel fps je hebt.",
+  "noxesium.options.experimental_patches.name": "Experimentele verbeteringen",
+  "noxesium.options.experimental_patches.tooltip": "§4(waarschuwing: instabiel!)\n§fSchakelt experimentele UI verbeteringen in die alle code voor het weergeven van de gebruikersinterface vervangen om efficienter te zijn.\n\n§cWaarschuwing: §fAls er enige fouten zitten in het weergeven van de gebruikersinterface, rapporteer deze dan bij Noxesium, niet bij andere mods die je gebruikt.",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "Rode spelers markeren (toeschouwers)",
+  "key.noxesium.glow.orange": "Oranje spelers markeren (toeschouwers)",
+  "key.noxesium.glow.yellow": "Gele spelers markeren (toeschouwers)",
+  "key.noxesium.glow.lime": "Limoengroene spelers markeren (toeschouwers)",
+  "key.noxesium.glow.green": "Groene spelers markeren (toeschouwers)",
+  "key.noxesium.glow.cyan": " Cyaan spelers markeren (toeschouwers)",
+  "key.noxesium.glow.aqua": "Lichtblauwe spelers markeren (toeschouwers)",
+  "key.noxesium.glow.blue": "Blauwe spelers markeren (toeschouwers)",
+  "key.noxesium.glow.purple": "Paarse spelers markeren (toeschouwers)",
+  "key.noxesium.glow.pink": "Roze spelers markeren (toeschouwers)",
+
+  "key.noxesium.glow.all": "Markeer alle spelers (toeschouwers)",
+  "key.noxesium.glow.none": "Stop markeren van alle spelers (toeschouwers)"
+}
