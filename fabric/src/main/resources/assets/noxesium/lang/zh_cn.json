@@ -1,0 +1,19 @@
+{
+  "debug.experimental_patches.disabled": "Noxesium UI 性能补丁现已关闭",
+  "debug.experimental_patches.enabled": "Noxesium UI 性能补丁现已开启",
+  "debug.experimental_patches.help": "F3 + W = 切换 Noxesium UI 性能补丁状态",
+
+  "debug.fps_overlay.disabled": "FPS 计数器现已关闭",
+  "debug.fps_overlay.enabled": "FPS 计数器现已打开（按 F3 + Y 关闭）",
+  "debug.fps_overlay.help": "F3 + Y = 切换屏幕上的 fps 计数器状态",
+  "debug.fps_overlay": "%s FPS",
+
+  "debug.noxesium_overlay.on": "Noxesium：§a开",
+  "debug.noxesium_overlay.off": "Noxesium：§c关",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "FPS 叠加层",
+  "noxesium.options.fps_overlay.tooltip": "如果启用，则会在屏幕左上角添加一个小的叠加层，用来显示当前的 fps。",
+  "noxesium.options.experimental_patches.name": "启用实验性优化",
+  "noxesium.options.experimental_patches.tooltip": "§4（警告：不稳定！）\n§f启用实验性UI性能改进，将会完全取代所有UI渲染代码，使其运行速度更快。\n\n§c警告：§f但这会破坏其他模组添加的任何UI元素。 如果您使用添加额外UI元素的模组，请勿使用此设置。"
+}
