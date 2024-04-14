@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.performance;
+package com.noxcrew.noxesium.mixin.general;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.NoxesiumMod;

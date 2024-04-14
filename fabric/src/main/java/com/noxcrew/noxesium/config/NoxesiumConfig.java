@@ -27,6 +27,7 @@ public class NoxesiumConfig {
     public boolean showFpsOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
+    public boolean resetToggleKeys = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if

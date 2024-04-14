@@ -16,6 +16,8 @@
   "noxesium.options.fps_overlay.tooltip": "If enabled, a small overlay is added that shows the current fps in the top left corner of your screen.",
   "noxesium.options.experimental_patches.name": "Experimental Optimizations",
   "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fIf you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
+  "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
+  "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
 
   "category.noxesium": "Noxesium",
 
