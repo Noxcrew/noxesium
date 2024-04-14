@@ -79,7 +79,7 @@ public abstract class LivingEntityMixin {
     public void extendedBoundingBoxToIncludeNoxesiumModel(CallbackInfoReturnable<AABB> cir) {
         if (((Entity) (Object) this) instanceof ArmorStand armorStand) {
             // Invalidate if the y rotation changed
-            if (noxesium$lastYBodyRot != armorStand.yBodyRot) {
+            if (Math.abs(noxesium$lastYBodyRot - armorStand.yBodyRot) > 0.1) {
                 noxesium$cullingBoundingBox = null;
             }
 
