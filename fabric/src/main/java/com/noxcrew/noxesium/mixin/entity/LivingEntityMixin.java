@@ -49,6 +49,8 @@ public abstract class LivingEntityMixin {
     private AABB noxesium$cullingBoundingBox;
     @Unique
     private float noxesium$lastYBodyRot = 0f;
+    @Unique
+    private long noxesium$lastRender = 0;
 
     @Inject(method = "onSyncedDataUpdated", at = @At("RETURN"))
     public void updateBoundingBoxOnSyncedData(EntityDataAccessor<?> entityDataAccessor, CallbackInfo ci) {
@@ -81,8 +83,9 @@ public abstract class LivingEntityMixin {
                 noxesium$cullingBoundingBox = null;
             }
 
-            // Re-calculate the bounding box if necessary
-            if (noxesium$cullingBoundingBox == null) {
+            // Re-calculate the bounding box if necessary (and not more than once per second)
+            if (noxesium$cullingBoundingBox == null && (System.currentTimeMillis() - noxesium$lastRender) >= 1000) {
+                noxesium$lastRender = System.currentTimeMillis();
                 noxesium$lastYBodyRot = armorStand.yBodyRot;
                 noxesium$cullingBoundingBox = noxesium$updateBoundingBox(armorStand);
             }
