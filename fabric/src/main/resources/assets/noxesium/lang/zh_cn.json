@@ -1,0 +1,37 @@
+{
+  "debug.experimental_patches.disabled": "Noxesium UI 性能补丁现已关闭",
+  "debug.experimental_patches.enabled": "Noxesium UI 性能补丁现已开启",
+  "debug.experimental_patches.help": "F3 + W = 切换 Noxesium UI 性能补丁状态",
+
+  "debug.fps_overlay.disabled": "FPS 计数器现已关闭",
+  "debug.fps_overlay.enabled": "FPS 计数器现已打开（按 F3 + Y 关闭）",
+  "debug.fps_overlay.help": "F3 + Y = 切换屏幕上的 fps 计数器状态",
+  "debug.fps_overlay": "%s FPS",
+
+  "debug.noxesium_overlay.on": "Noxesium：§a开",
+  "debug.noxesium_overlay.off": "Noxesium：§c关",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "FPS 叠加层",
+  "noxesium.options.fps_overlay.tooltip": "如果启用，则会在屏幕左上角添加一个小的叠加层，用来显示当前的 fps。",
+  "noxesium.options.experimental_patches.name": "启用实验性优化",
+  "noxesium.options.experimental_patches.tooltip": "§4（警告：不稳定！）\n§f启用实验性UI性能改进，将会完全取代所有UI渲染代码，使UI渲染速度变得更快。\n\n§c警告：§f如果您在启用此设置时遇到任何UI渲染问题，请先向 Noxesium 报告，而不是其他涉及的模组。",
+  "noxesium.options.reset_toggle_keys.name": "死亡后重置行动状态",
+  "noxesium.options.reset_toggle_keys.tooltip": "死亡后是否重置行动状态（疾跑/潜行）。 默认启用。",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "切换红色突出显示（观察者模式）",
+  "key.noxesium.glow.orange": "切换橙色突出显示 (观察者模式)",
+  "key.noxesium.glow.yellow": "切换黄色突出显示 (观察者模式)",
+  "key.noxesium.glow.lime": "切换石灰色突出显示 (观察者模式)",
+  "key.noxesium.glow.green": "切换绿色突出显示 (观察者模式)",
+  "key.noxesium.glow.cyan": "切换青色突出显示 (观察者模式)",
+  "key.noxesium.glow.aqua": "切换水绿色突出显示 (观察者模式)",
+  "key.noxesium.glow.blue": "切换蓝色突出显示 (观察者模式)",
+  "key.noxesium.glow.purple": "切换紫色突出显示 (观察者模式)",
+  "key.noxesium.glow.pink": "切换粉红色突出显示 (观察者模式)",
+
+  "key.noxesium.glow.all": "启用所有突出显示 (观察者模式)",
+  "key.noxesium.glow.none": "禁用所有突出显示 (观察者模式)"
+}
