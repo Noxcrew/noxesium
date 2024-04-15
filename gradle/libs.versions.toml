@@ -1,0 +1,20 @@
+[versions]
+# Plugins
+shadow = "8.1.5"
+
+# Tooling
+kotlin = "1.7.10"
+kotlin-coroutines = "1.6.4"
+guava = "21.0"
+slf4j = "1.7.36"
+caffeine = "3.1.6"
+
+[plugins]
+shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
+
+[libraries]
+# Tooling
+kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }

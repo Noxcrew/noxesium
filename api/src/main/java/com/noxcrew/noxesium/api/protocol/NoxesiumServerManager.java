@@ -10,6 +10,10 @@ import java.util.UUID;
  * multiple versions of clients at the same time. It is expected that this manager re-routes calls into
  * legacy implementations of a manager. The methods in this manager represent all functionality a Noxesium
  * server is expected to be able to use to interact with a client.
+ *
+ * It is generally expected that servers take the burden of updating first. Clients will change to expect
+ * the latest protocol, where possible supporting older deprecated packets. Servers should continue implementing
+ * legacy support for older versions going back as far as they allow to join, however.
  */
 public interface NoxesiumServerManager<PlayerT> {
 

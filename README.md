@@ -67,4 +67,6 @@ There are also a few features specific to MCC Island as Noxesium is developed al
 Any developers interested in writing code that interacts with Noxesium should have a look at the `api` module which contains various structures useful for setting up a server-side implementation that interacts with Noxesium. This modules
 does not have a dependency on fabric and can thus be used as a dependency in server software.
 
+We also provide the `paper` module which contains our own server-side implementation written in Kotlin which allows you to interface with Noxesium clients. This also implements backwards compatibility for older Noxesium clients.
+
 Further information about specific features of the mod can be found on the [Wiki](https://github.com/Noxcrew/noxesium/wiki) page.

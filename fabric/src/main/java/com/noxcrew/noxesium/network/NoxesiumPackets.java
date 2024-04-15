@@ -2,8 +2,7 @@ package com.noxcrew.noxesium.network;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
+import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -32,7 +31,7 @@ public class NoxesiumPackets {
     /**
      * The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium.
      */
-    public static final String PACKET_NAMESPACE = NoxesiumMod.NAMESPACE + "-v2";
+    public static final String PACKET_NAMESPACE = ProtocolVersion.NAMESPACE + "-v2";
 
     /**
      * Registers a new clientbound Noxesium packet.

@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.network.clientbound;
 
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
-import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
+import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

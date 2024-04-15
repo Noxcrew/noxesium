@@ -1,6 +1,5 @@
-package com.noxcrew.noxesium.network.payload;
+package com.noxcrew.noxesium.network;
 
-import com.noxcrew.noxesium.network.NoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;

@@ -2,6 +2,7 @@ package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
+import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.island.MccIslandTracker;
 import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
@@ -29,16 +30,8 @@ import java.util.Map;
  */
 public class NoxesiumMod implements ClientModInitializer {
 
-    /**
-     * The current protocol version of the mod. Servers can use this version to determine which functionality
-     * of Noxesium is available on the client. The protocol version will increment every full release, as such
-     * ít is recommended to work with >= comparisons.
-     */
-    public static final int VERSION = 5;
-
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-    public static final String NAMESPACE = "noxesium";
-    public static final String IMMOVABLE_TAG = new ResourceLocation(NAMESPACE, "immovable").toString();
+    public static final String IMMOVABLE_TAG = new ResourceLocation(ProtocolVersion.NAMESPACE, "immovable").toString();
 
     private static NoxesiumMod instance;
 
@@ -50,7 +43,7 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * The current maximum supported protocol version.
      */
-    private int currentMaxProtocol = VERSION;
+    private int currentMaxProtocol = ProtocolVersion.VERSION;
 
     /**
      * The configuration file used by the mod.
@@ -119,7 +112,7 @@ public class NoxesiumMod implements ClientModInitializer {
             // Check if the connection has been established first, just in case
             if (Minecraft.getInstance().getConnection() != null) {
                 // Send a packet containing information about the client version of Noxesium
-                new ServerboundClientInformationPacket(VERSION).send();
+                new ServerboundClientInformationPacket(ProtocolVersion.VERSION).send();
 
                 // Inform the player about the GUI scale of the client
                 syncGuiScale();
@@ -132,7 +125,7 @@ public class NoxesiumMod implements ClientModInitializer {
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
             // Reset the current max protocol version
-            currentMaxProtocol = VERSION;
+            currentMaxProtocol = ProtocolVersion.VERSION;
 
             // Handle quitting the server
             modules.values().forEach(NoxesiumModule::onQuitServer);

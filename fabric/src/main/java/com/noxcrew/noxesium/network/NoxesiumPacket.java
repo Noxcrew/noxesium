@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.network;
 
-import com.noxcrew.noxesium.network.payload.NoxesiumPayloadType;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import org.jetbrains.annotations.NotNull;
 

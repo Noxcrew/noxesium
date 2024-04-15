@@ -9,3 +9,4 @@ pluginManagement {
 
 include("api")
 include("fabric")
+include("paper")
