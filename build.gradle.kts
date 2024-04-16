@@ -10,7 +10,6 @@ fun getGitCommit(): String {
 }
 
 plugins {
-    id("java-library") apply false
     id("noxesium.publishing") apply false
 }
 
@@ -36,7 +35,7 @@ subprojects {
         targetCompatibility = javaVersion.toString()
     }
 
-    java {
+    extensions.configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
