@@ -10,8 +10,8 @@ fun getGitCommit(): String {
 }
 
 plugins {
-    id("java-library")
-    id("noxesium.publishing")
+    id("java-library") apply false
+    id("noxesium.publishing") apply false
 }
 
 val javaVersion: Int = 21
