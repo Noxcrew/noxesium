@@ -2,10 +2,9 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.network.chat.Component;
 
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -34,7 +33,7 @@ public class NoxesiumConfig {
      * any mods are detected that are known to have compatibility issues.
      */
     public boolean areExperimentalPatchesAvailable() {
-        return !CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient();
+        return !CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient() && !ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue();
     }
 
     /**

@@ -61,6 +61,18 @@ public class ServerRules(
         ItemStackServerRule(player, index)
     }
 
+    /**
+     * Disables the UI optimizations temporarily which can be used to
+     * temporarily allow using shader animated text.
+     *
+     * Notice: This is a temporary server rule as the goal is to have
+     * the UI optimizations not cause any issues, but they currently
+     * don't support animated text with shaders.
+     */
+    public val disableUiOptimizations: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)

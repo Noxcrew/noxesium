@@ -41,4 +41,14 @@ public class ServerRuleIndices {
      * breaking/placing restrictions as well as tool modifications.
      */
     public static final int HAND_ITEM_OVERRIDE = 8;
+
+    /**
+     * Disables the UI optimizations temporarily which can be used to
+     * temporarily allow using shader animated text.
+     * <p>
+     * Notice: This is a temporary server rule as the goal is to have
+     * the UI optimizations not cause any issues, but they currently
+     * don't support animated text with shaders.
+     */
+    public static final int DISABLE_UI_OPTIMIZATIONS = 9;
 }
