@@ -42,6 +42,9 @@ public class NoxesiumListenerV1(
         for (type in serverboundPackets.values) {
             registerIncomingPluginChannel(Key.key(PACKET_NAMESPACE, type.id)) { _, player, data ->
                 data.readPluginMessage { buffer ->
+                    // Read legacy version integer
+                    buffer.readVarInt()
+
                     type.reader?.let { it(buffer) }?.handle(player)
                 }
             }

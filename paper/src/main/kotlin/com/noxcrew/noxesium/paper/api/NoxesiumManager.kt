@@ -24,7 +24,7 @@ import java.util.UUID
 /**
  * An instance of the Noxesium manager that handles management regardless of client protocol version.
  */
-public abstract class NoxesiumManager(
+public open class NoxesiumManager(
     public val plugin: Plugin,
     public val logger: Logger,
 ) : NoxesiumServerManager<Player> {
