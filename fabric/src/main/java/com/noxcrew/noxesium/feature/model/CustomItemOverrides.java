@@ -202,6 +202,7 @@ public class CustomItemOverrides extends ItemOverrides {
                     }
                 }
             }
+            return fallback;
         }
         return super.resolve(fallback, itemStack, clientLevel, livingEntity, i);
     }
