@@ -19,27 +19,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
- * A complete re-implementation of the item overrides system. We do diverge slightly from vanilla behaviour because
- * it doesn't really make sense. Vanilla's algorithm goes as follows:
- * - Start iterating over all overrides bottom up
- * - Find the first override that is exceeded by the values, e.g. if the bottom model has custom model data 5, an item
- * with custom model data 6 will match that override. Even if another override exists for model data 6.
- * <p>
- * Instead, this patch uses a hashmap for custom model data, if and only if, such a hashmap will not cause any differences
- * to vanilla behaviour.
+ * Determines if custom item overrides are solely for key/value mappings of custom model
+ * data, in which case we build a hash map representation for them and use that instead.
  */
 public class CustomItemOverrides extends ItemOverrides {
 
-    private static final ResourceLocation CUSTOM_MODEL_DATA_ID = new ResourceLocation("custom_model_data");
-
-    private ResourceLocation[] properties;
+    /**
+     * The maximum level of precision available. Any values beyond this
+     * cannot be optimized.
+     */
+    private final static int MAXIMUM_PRECISION = 16777216;
 
     /**
-     * All basic fallback overrides.
+     * The identifier of the custom model data tag.
      */
-    private List<BakedOverride> overrides;
+    private static final ResourceLocation CUSTOM_MODEL_DATA_ID = new ResourceLocation("custom_model_data");
 
     /**
      * All models that are directly determined by a single custom model data in the correct order.
@@ -68,93 +67,104 @@ public class CustomItemOverrides extends ItemOverrides {
         // Ignore empty inputs
         if (list.isEmpty()) return;
 
-        // Determine all properties used
-        properties = list.stream()
-                .flatMap(ItemOverride::getPredicates)
-                .map(ItemOverride.Predicate::getProperty)
-                .distinct()
-                .toArray(ResourceLocation[]::new);
-
-        // Cache the indices for each property
-        var indices = new HashMap<ResourceLocation, Integer>();
-        Integer customModelIndex = null;
-        for (var i = 0; i < properties.length; i++) {
-            if (Objects.equals(properties[i], CUSTOM_MODEL_DATA_ID)) {
-                customModelIndex = i;
-            }
-            indices.put(properties[i], i);
-        }
-
         // Iterate through the list in reverse order
         var canOptimize = true;
         var modelCache = new HashMap<ResourceLocation, BakedModel>();
         for (var i = list.size() - 1; i >= 0; --i) {
             var override = list.get(i);
 
-            // Micro-optimization: cache the model in case it's used multiple times per model, we ditch this hashmap after
-            // this constructor anyway, and it only stores references. But if we had to make the model multiple times it'd be
-            // much more costly!
-            var bakedmodel = modelCache.computeIfAbsent(override.getModel(), (t) -> bakeModel(modelBaker, blockModel, override));
-            var properties = override.getPredicates().map((predicate) -> {
-                var index = indices.get(predicate.getProperty());
-                return new Property(index, predicate.getValue());
-            }).toArray(Property[]::new);
+            // Determine if this override has one predicate and if it's a custom model data
+            var first = new AtomicBoolean(false);
+            var invalid = new AtomicBoolean(false);
+            var customModelData = new AtomicReference<Float>(null);
+            override.getPredicates().forEach(predicate -> {
+                // If we find any second element it's invalid
+                if (first.get()) {
+                    invalid.set(true);
+                    return;
+                }
 
-            // Test if this is a custom model property
-            if (properties.length == 1 && customModelIndex != null && Objects.equals(customModelIndex, properties[0].index)) {
+                // Mark down whenever we find the first element
+                first.set(true);
+
+                // If this is custom model data we set the value
+                if (Objects.equals(predicate.getProperty(), CUSTOM_MODEL_DATA_ID)) {
+                    customModelData.set(predicate.getValue());
+                }
+            });
+
+            // If there's more no element or more than one element, it's invalid
+            if (!first.get() || invalid.get()) {
+                canOptimize = false;
+                break;
+            }
+
+            // If the one value is not a custom model data value, it's invalid
+            var rawValue = customModelData.get();
+            if (rawValue == null) {
+                canOptimize = false;
+                break;
+            }
+
+            // Cast the value to the closest integer
+            var value = (int) rawValue.floatValue();
+
+            // If the value exceeds the precision threshold when the property is cast
+            // to a float it mismatches and becomes a higher number which no longer
+            // matches with the true value we check later, so we need to mark the entire
+            // overrides as non-optimizable!
+            if (rawValue >= MAXIMUM_PRECISION || rawValue <= -MAXIMUM_PRECISION) {
+                canOptimize = false;
+                break;
+            }
+
+            // We only enter the custom model data if it's the new minimum. Otherwise any of the other
+            // models would have taken up this model instead.
+            if (lowestCustomModelData == null || value < lowestCustomModelData) {
+                // Micro-optimization: cache the model in case it's used multiple times per model, we ditch this hashmap after
+                // this constructor anyway, and it only stores references. But if we had to make the model multiple times it'd be
+                // much more costly!
+                var bakedmodel = modelCache.computeIfAbsent(override.getModel(), (t) -> bakeModel(modelBaker, blockModel, override));
+
+                // Only create the hashmap if we're using it
                 if (customModelDatas == null) {
-                    // Only create the hashmap if we're using it
                     customModelDatas = new HashMap<>();
                 }
-                var value = (int) properties[0].minimum;
 
-                // We only enter the custom model data if it's the new minimum. Otherwise any of the other
-                // models would have taken up this model instead.
-                if (lowestCustomModelData == null || value < lowestCustomModelData) {
-                    customModelDatas.put(value, bakedmodel);
-                    lowestCustomModelData = value;
+                customModelDatas.put(value, bakedmodel);
+                lowestCustomModelData = value;
 
-                    // Cache the highest value
-                    if (highestCustomModelData == null || value > highestCustomModelData) {
-                        highestCustomModelData = value;
-                    }
+                // Cache the highest value
+                if (highestCustomModelData == null || value > highestCustomModelData) {
+                    highestCustomModelData = value;
                 }
-            } else {
-                // Indicate that there is a non-custom model data override!
-                canOptimize = false;
             }
-
-            // Add this model to the overrides list
-            if (overrides == null) {
-                overrides = new ArrayList<>();
-            }
-            overrides.add(new BakedOverride(bakedmodel, properties));
         }
 
-        // Determine if we can optimize and clear the appropriate maps
+        // If we cannot optimize we delete all data and return
         if (!canOptimize) {
             customModelDatas = null;
-        } else {
-            overrides = null;
+            lowestCustomModelData = null;
+            highestCustomModelData = null;
+        }
 
-            if (customModelDatas != null) {
-                // Fill in the gaps in the custom model data, so we can fetch them all properly
-                Map.Entry<Integer, BakedModel> lastPair = null;
-                var copy = new ArrayList<>(new HashMap<>(customModelDatas).entrySet());
-                copy.sort(Map.Entry.comparingByKey());
-                for (var pair : copy) {
-                    if (lastPair != null) {
-                        // Go over each index between these two pairs
-                        var distance = (pair.getKey() - 1) - (lastPair.getKey() + 1);
-                        if (distance > 0) {
-                            if (optionalRanges == null) {
-                                optionalRanges = new ArrayList<>();
-                            }
-                            optionalRanges.add(Triple.of(lastPair.getKey() + 1, pair.getKey() - 1, lastPair.getValue()));
+        // Fill in the gaps in the custom model data, so we can fetch them all properly
+        if (customModelDatas != null) {
+            Map.Entry<Integer, BakedModel> lastPair = null;
+            var copy = new ArrayList<>(new HashMap<>(customModelDatas).entrySet());
+            copy.sort(Map.Entry.comparingByKey());
+            for (var pair : copy) {
+                if (lastPair != null) {
+                    // Go over each index between these two pairs
+                    var distance = (pair.getKey() - 1) - (lastPair.getKey() + 1);
+                    if (distance > 0) {
+                        if (optionalRanges == null) {
+                            optionalRanges = new ArrayList<>();
                         }
+                        optionalRanges.add(Triple.of(lastPair.getKey() + 1, pair.getKey() - 1, lastPair.getValue()));
                     }
-                    lastPair = pair;
                 }
+                lastPair = pair;
             }
         }
     }
@@ -162,29 +172,7 @@ public class CustomItemOverrides extends ItemOverrides {
     @Nullable
     @Override
     public BakedModel resolve(BakedModel fallback, ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int i) {
-        // Try to test individual overrides if possible
-        if (overrides != null) {
-            // Determine the values for each property, this is decently slow but we assume
-            // few overrides need this behaviour.
-            var values = new float[properties.length];
-            for (int index = 0; index < properties.length; ++index) {
-                var resourcelocation = properties[index];
-                var itempropertyfunction = ItemProperties.getProperty(itemStack, resourcelocation);
-                if (itempropertyfunction != null) {
-                    values[index] = itempropertyfunction.call(itemStack, clientLevel, livingEntity, i);
-                } else {
-                    values[index] = Float.NEGATIVE_INFINITY;
-                }
-            }
-
-            // Go through all baked overrides in order and find one that applies
-            for (var baked : overrides) {
-                if (baked.test(values)) {
-                    var bakedmodel = baked.model;
-                    return bakedmodel == null ? fallback : bakedmodel;
-                }
-            }
-        } else if (customModelDatas != null) {
+        if (customModelDatas != null) {
             // Determine the custom model of the item as fast as possible (this code is called a lot per tick if there's many models)
             if (!itemStack.has(DataComponents.CUSTOM_MODEL_DATA)) return fallback;
             var id = itemStack.get(DataComponents.CUSTOM_MODEL_DATA).value();
@@ -215,31 +203,6 @@ public class CustomItemOverrides extends ItemOverrides {
                 }
             }
         }
-        return fallback;
-    }
-
-    /**
-     * Stores a single model and its properties.
-     */
-    private record BakedOverride(BakedModel model, Property[] properties) {
-        /**
-         * Tests the required properties for this override against
-         * the inputs.
-         */
-        boolean test(float[] values) {
-            for (var property : properties) {
-                var value = values[property.index];
-                if (value < property.minimum) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    /**
-     * The minimum value for each property.
-     */
-    private record Property(int index, float minimum) {
+        return super.resolve(fallback, itemStack, clientLevel, livingEntity, i);
     }
 }

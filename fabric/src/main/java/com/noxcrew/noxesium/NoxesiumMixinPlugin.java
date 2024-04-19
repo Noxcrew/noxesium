@@ -15,7 +15,7 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
 
     private static final String PREFIX = "com.noxcrew.noxesium.mixin.";
     private static final String SODIUM_PREFIX = "com.noxcrew.noxesium.mixin.sodium.";
-    private boolean isUsingSodium, isUsingIris, isUsingChime;
+    private boolean isUsingSodium, isUsingIris;
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
@@ -31,20 +31,13 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
             return isUsingSodium;
         }
 
-        return switch (mixinClassName.substring(PREFIX.length())) {
-            // Disable ItemOverrides changes if Chime is being used (which changes item overrides)
-            case "performance.model.ItemOverridesMixin" -> !isUsingChime;
-            // We don't disable the other beacon patches as they simply get made useless by Sodium removing
-            // all default global block entities.
-            default -> true;
-        };
+        return true;
     }
 
     @Override
     public void onLoad(String mixinPackage) {
         isUsingSodium = FabricLoader.getInstance().isModLoaded("sodium");
         isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
-        isUsingChime = FabricLoader.getInstance().isModLoaded("chime");
     }
 
     @Override
