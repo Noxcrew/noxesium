@@ -13,13 +13,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.List;
 
 /**
- * This completely replaces vanilla's item overrides system as it's quite bad. Vanilla
- * supports tons of different overrides but treats them all completely equal. This is
- * quite bad considering the vast majority of overrides are single overrides based
- * on custom model data. Instead, we optimize based on the amount of overrides and
- * treat all non-only custom model data ones as non-essential.
- * <p>
- * Disabled when using <a href="https://github.com/emilyploszaj/chime/tree/main">Chime</a>.
+ * Replaces vanilla custom item overrides whenever just custom model
+ * data values are being used as we can replace vanilla's for-loop
+ * implementation with a far more efficient map lookup.
  */
 @Mixin(BlockModel.class)
 public class ItemOverridesMixin {
@@ -30,11 +26,10 @@ public class ItemOverridesMixin {
 
     /**
      * @author Aeltumn
-     * @reason Vanilla overrides are incredibly slow, best to replace the whole system here
+     * @reason Replace item overrides that solely contain custom model data values
      */
     @Overwrite
     public ItemOverrides getItemOverrides(ModelBaker baker, BlockModel model) {
-        // Re-use the same empty instance whenever possible
-        return this.overrides.isEmpty() ? CustomItemOverrides.EMPTY : new CustomItemOverrides(baker, model, this.overrides);
+        return this.overrides.isEmpty() ? ItemOverrides.EMPTY : new CustomItemOverrides(baker, model, this.overrides);
     }
 }
