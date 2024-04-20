@@ -4,13 +4,14 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 /**
  * Determines if custom item overrides are solely for key/value mappings of custom model
@@ -74,33 +72,33 @@ public class CustomItemOverrides extends ItemOverrides {
             var override = list.get(i);
 
             // Determine if this override has one predicate and if it's a custom model data
-            var first = new AtomicBoolean(false);
-            var invalid = new AtomicBoolean(false);
-            var customModelData = new AtomicReference<Float>(null);
+            var first = new MutableBoolean(false);
+            var invalid = new MutableBoolean(false);
+            var customModelData = new MutableObject<Float>(null);
             override.getPredicates().forEach(predicate -> {
                 // If we find any second element it's invalid
-                if (first.get()) {
-                    invalid.set(true);
+                if (first.getValue()) {
+                    invalid.setValue(true);
                     return;
                 }
 
                 // Mark down whenever we find the first element
-                first.set(true);
+                first.setValue(true);
 
                 // If this is custom model data we set the value
                 if (Objects.equals(predicate.getProperty(), CUSTOM_MODEL_DATA_ID)) {
-                    customModelData.set(predicate.getValue());
+                    customModelData.setValue(predicate.getValue());
                 }
             });
 
             // If there's more no element or more than one element, it's invalid
-            if (!first.get() || invalid.get()) {
+            if (!first.getValue() || invalid.getValue()) {
                 canOptimize = false;
                 break;
             }
 
             // If the one value is not a custom model data value, it's invalid
-            var rawValue = customModelData.get();
+            var rawValue = customModelData.getValue();
             if (rawValue == null) {
                 canOptimize = false;
                 break;
