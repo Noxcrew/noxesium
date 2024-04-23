@@ -107,7 +107,7 @@ public class NoxesiumMod implements ClientModInitializer {
         // Every time the client joins a server we send over information on the version being used
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             // Find the packet that includes the server asking for the information packet
-            if (!channels.contains(ServerboundClientInformationPacket.TYPE.id())) return;
+            if (!channels.contains(NoxesiumPackets.CLIENT_INFO.id())) return;
 
             // Check if the connection has been established first, just in case
             if (Minecraft.getInstance().getConnection() != null) {

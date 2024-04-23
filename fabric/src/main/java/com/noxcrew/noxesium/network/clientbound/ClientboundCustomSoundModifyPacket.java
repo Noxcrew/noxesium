@@ -15,7 +15,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ClientboundCustomSoundModifyPacket(int id, float volume, int interpolationTicks, Float startVolume) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
-    public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> TYPE = NoxesiumPackets.client("modify_sound", STREAM_CODEC);
 
     private ClientboundCustomSoundModifyPacket(FriendlyByteBuf buf) {
         this(buf.readVarInt(), buf.readFloat(), buf.readVarInt(), buf.readBoolean() ? buf.readFloat() : null);
@@ -35,6 +34,6 @@ public record ClientboundCustomSoundModifyPacket(int id, float volume, int inter
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CUSTOM_SOUND_MODIFY;
     }
 }

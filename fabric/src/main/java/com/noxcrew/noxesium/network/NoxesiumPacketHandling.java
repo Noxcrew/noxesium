@@ -24,13 +24,13 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        ClientboundServerInformationPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.SERVER_INFO.addListener(this, (reference, packet, context) -> {
             // Whenever the server sends information about the supported protocol version we store
             // that so we know what kind of packets to expect
             NoxesiumMod.getInstance().setServerVersion(packet.maxProtocolVersion());
         });
 
-        ClientboundResetPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.RESET.addListener(this, (reference, packet, context) -> {
             var flags = packet.flags();
             if (hasFlag(flags, 0)) {
                 NoxesiumMod.getInstance().getModule(ServerRuleModule.class).clearAll();
@@ -40,7 +40,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        ClientboundChangeServerRulesPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CHANGE_SERVER_RULES.addListener(this, (reference, packet, context) -> {
             var indices = packet.indices();
             for (var idx = 0; idx < indices.size(); idx++) {
                 var index = indices.getInt(idx);
@@ -50,7 +50,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        ClientboundResetServerRulesPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.RESET_SERVER_RULES.addListener(this, (reference, packet, context) -> {
             var module = NoxesiumMod.getInstance().getModule(ServerRuleModule.class);
             for (var index : packet.indices()) {
                 var rule = module.getIndex(index);
@@ -59,7 +59,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        ClientboundCustomSoundStartPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
 
             // Determine the sound instance to play
@@ -78,14 +78,14 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             manager.play(packet.id(), sound, packet.ignoreIfPlaying());
         });
 
-        ClientboundCustomSoundModifyPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             var sound = manager.getSound(packet.id());
             if (sound == null) return;
             sound.setVolume(packet.volume(), packet.startVolume(), packet.interpolationTicks());
         });
 
-        ClientboundCustomSoundStopPacket.TYPE.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             manager.stopSound(packet.id());
         });

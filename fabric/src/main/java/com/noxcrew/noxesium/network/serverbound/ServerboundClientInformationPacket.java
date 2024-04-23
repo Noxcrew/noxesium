@@ -12,7 +12,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ServerboundClientInformationPacket(int protocolVersion) implements ServerboundNoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ServerboundClientInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientInformationPacket::write, ServerboundClientInformationPacket::new);
-    public static final NoxesiumPayloadType<ServerboundClientInformationPacket> TYPE = NoxesiumPackets.server("client_info", STREAM_CODEC);
 
     private ServerboundClientInformationPacket(FriendlyByteBuf buf) {
         this(buf.readInt());
@@ -24,6 +23,6 @@ public record ServerboundClientInformationPacket(int protocolVersion) implements
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CLIENT_INFO;
     }
 }

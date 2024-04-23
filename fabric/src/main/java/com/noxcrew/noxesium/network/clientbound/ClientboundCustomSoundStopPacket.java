@@ -12,7 +12,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ClientboundCustomSoundStopPacket(int id) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundStopPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStopPacket::write, ClientboundCustomSoundStopPacket::new);
-    public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> TYPE = NoxesiumPackets.client("stop_sound", STREAM_CODEC);
 
     private ClientboundCustomSoundStopPacket(FriendlyByteBuf buf) {
         this(buf.readVarInt());
@@ -24,6 +23,6 @@ public record ClientboundCustomSoundStopPacket(int id) implements NoxesiumPacket
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CUSTOM_SOUND_STOP;
     }
 }

@@ -13,7 +13,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ClientboundResetServerRulesPacket(IntList indices) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundResetServerRulesPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetServerRulesPacket::write, ClientboundResetServerRulesPacket::new);
-    public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> TYPE = NoxesiumPackets.client("reset_server_rules", STREAM_CODEC);
 
     private ClientboundResetServerRulesPacket(FriendlyByteBuf buf) {
         this(buf.readIntIdList());
@@ -25,6 +24,6 @@ public record ClientboundResetServerRulesPacket(IntList indices) implements Noxe
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.RESET_SERVER_RULES;
     }
 }

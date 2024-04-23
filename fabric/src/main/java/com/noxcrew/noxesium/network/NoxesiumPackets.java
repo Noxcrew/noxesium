@@ -3,6 +3,17 @@ package com.noxcrew.noxesium.network;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
+import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
+import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
+import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -33,6 +44,22 @@ public class NoxesiumPackets {
      */
     public static final String PACKET_NAMESPACE = ProtocolVersion.NAMESPACE + "-v2";
 
+    // Packet types are listed here to ensure they are properly registered!
+    public static final NoxesiumPayloadType<ServerboundClientInformationPacket> CLIENT_INFO = NoxesiumPackets.server("client_info", ServerboundClientInformationPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> CLIENT_SETTINGS = NoxesiumPackets.server("client_settings", ServerboundClientSettingsPacket.STREAM_CODEC);
+
+    public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CUSTOM_SOUND_MODIFY = NoxesiumPackets.client("modify_sound", ClientboundCustomSoundModifyPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> CUSTOM_SOUND_START = NoxesiumPackets.client("start_sound", ClientboundCustomSoundStartPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> CUSTOM_SOUND_STOP = NoxesiumPackets.client("stop_sound", ClientboundCustomSoundStopPacket.STREAM_CODEC);
+
+    public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> MCC_GAME_STATE = NoxesiumPackets.client("mcc_game_state", ClientboundMccGameStatePacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundMccServerPacket> MCC_SERVER = NoxesiumPackets.client("mcc_server", ClientboundMccServerPacket.STREAM_CODEC);
+
+    public static final NoxesiumPayloadType<ClientboundChangeServerRulesPacket> CHANGE_SERVER_RULES = NoxesiumPackets.client("change_server_rules", ClientboundChangeServerRulesPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> RESET_SERVER_RULES = NoxesiumPackets.client("reset_server_rules", ClientboundResetServerRulesPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetPacket> RESET = NoxesiumPackets.client("reset", ClientboundResetPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundServerInformationPacket> SERVER_INFO = NoxesiumPackets.client("server_info", ClientboundServerInformationPacket.STREAM_CODEC);
+
     /**
      * Registers a new clientbound Noxesium packet.
      *
@@ -56,6 +83,7 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        PayloadTypeRegistry.configurationS2C().register(type.type, codec);
         PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
         return type;
@@ -84,6 +112,7 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        PayloadTypeRegistry.configurationC2S().register(type.type, codec);
         PayloadTypeRegistry.playC2S().register(type.type, codec);
         serverboundPackets.put(type.id().toString(), group);
         return type;

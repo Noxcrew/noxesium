@@ -18,7 +18,6 @@ import java.util.List;
  */
 public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> values) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundChangeServerRulesPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundChangeServerRulesPacket::write, ClientboundChangeServerRulesPacket::new);
-    public static final NoxesiumPayloadType<ClientboundChangeServerRulesPacket> TYPE = NoxesiumPackets.client("change_server_rules", STREAM_CODEC);
 
     private ClientboundChangeServerRulesPacket(FriendlyByteBuf buf) {
         this(buf, buf.readIntIdList());
@@ -56,6 +55,6 @@ public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> v
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CHANGE_SERVER_RULES;
     }
 }

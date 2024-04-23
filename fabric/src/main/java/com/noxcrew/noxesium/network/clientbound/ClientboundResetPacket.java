@@ -15,7 +15,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ClientboundResetPacket(byte flags) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundResetPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetPacket::write, ClientboundResetPacket::new);
-    public static final NoxesiumPayloadType<ClientboundResetPacket> TYPE = NoxesiumPackets.client("reset", STREAM_CODEC);
 
     private ClientboundResetPacket(FriendlyByteBuf buf) {
         this(buf.readByte());
@@ -27,6 +26,6 @@ public record ClientboundResetPacket(byte flags) implements NoxesiumPacket {
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.RESET;
     }
 }

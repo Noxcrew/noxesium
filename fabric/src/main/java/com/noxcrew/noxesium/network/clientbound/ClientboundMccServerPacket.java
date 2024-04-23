@@ -12,7 +12,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ClientboundMccServerPacket(String serverType, String subType, String associatedGame) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundMccServerPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccServerPacket::write, ClientboundMccServerPacket::new);
-    public static final NoxesiumPayloadType<ClientboundMccServerPacket> TYPE = NoxesiumPackets.client("mcc_server", STREAM_CODEC);
 
     private ClientboundMccServerPacket(FriendlyByteBuf buf) {
         this(buf.readUtf(), buf.readUtf(), buf.readUtf());
@@ -26,6 +25,6 @@ public record ClientboundMccServerPacket(String serverType, String subType, Stri
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.MCC_SERVER;
     }
 }

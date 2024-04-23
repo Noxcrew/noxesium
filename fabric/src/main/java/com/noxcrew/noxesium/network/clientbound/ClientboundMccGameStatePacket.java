@@ -42,7 +42,6 @@ public record ClientboundMccGameStatePacket(
         String mapName
 ) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
-    public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> TYPE = NoxesiumPackets.client("mcc_game_state", STREAM_CODEC);
 
     private ClientboundMccGameStatePacket(FriendlyByteBuf buf) {
         this(buf.readUtf(), buf.readUtf(), buf.readVarInt(), buf.readVarInt(), buf.readUtf(), buf.readUtf());
@@ -59,6 +58,6 @@ public record ClientboundMccGameStatePacket(
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.MCC_GAME_STATE;
     }
 }

@@ -13,7 +13,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  */
 public record ServerboundClientSettingsPacket(ClientSettings settings) implements ServerboundNoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ServerboundClientSettingsPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientSettingsPacket::write, ServerboundClientSettingsPacket::new);
-    public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> TYPE = NoxesiumPackets.server("client_settings", STREAM_CODEC);
 
     private ServerboundClientSettingsPacket(FriendlyByteBuf buf) {
         this(new ClientSettings(
@@ -39,6 +38,6 @@ public record ServerboundClientSettingsPacket(ClientSettings settings) implement
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CLIENT_SETTINGS;
     }
 }

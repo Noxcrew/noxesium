@@ -36,7 +36,6 @@ public record ClientboundCustomSoundStartPacket(
         Float offset
 ) implements NoxesiumPacket {
     public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
-    public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> TYPE = NoxesiumPackets.client("start_sound", STREAM_CODEC);
 
     private ClientboundCustomSoundStartPacket(FriendlyByteBuf buf) {
         this(
@@ -149,6 +148,6 @@ public record ClientboundCustomSoundStartPacket(
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return TYPE;
+        return NoxesiumPackets.CUSTOM_SOUND_START;
     }
 }
