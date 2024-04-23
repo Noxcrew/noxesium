@@ -101,13 +101,6 @@ public abstract class GuiHookMixin {
         ChatCache.getInstance().render(graphics, partialTicks);
     }
 
-    @Inject(method = "renderTabList", at = @At("HEAD"), cancellable = true)
-    public void renderTabList(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
-        if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
-        ci.cancel();
-        TabListCache.getInstance().render(graphics, partialTicks);
-    }
-
     @Inject(method = "renderSavingIndicator", at = @At("HEAD"), cancellable = true)
     public void renderSavingIndicator(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
         // TODO implement optimizations
