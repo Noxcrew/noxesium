@@ -4,9 +4,13 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import io.netty.buffer.Unpooled
 import net.kyori.adventure.key.Key
 import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket
+import net.minecraft.resources.ResourceLocation
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.messaging.PluginMessageListener
+import org.bukkit.plugin.messaging.StandardMessenger
 import org.slf4j.Logger
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -76,11 +80,16 @@ public abstract class BaseNoxesiumListener(
 
     /** Sends a plugin message to a player. */
     public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
-        sendPluginMessage(
-            plugin,
-            channel.asString(),
-            FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer).array()
-        )
+        val craftPlayer = this as CraftPlayer
+        if (craftPlayer.handle.connection == null) return
+        if (channel.asString() in craftPlayer.listeningPluginChannels) {
+            val packet = ClientboundCustomPayloadPacket(
+                ResourceLocation(StandardMessenger.validateAndCorrectChannel(channel.asString())),
+                // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
+                FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
+            )
+            craftPlayer.handle.connection.send(packet)
+        }
     }
 
     /** Reads a byte array using [reader]. */
