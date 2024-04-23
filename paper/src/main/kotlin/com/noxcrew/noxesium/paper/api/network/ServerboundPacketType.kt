@@ -1,11 +1,9 @@
 package com.noxcrew.noxesium.paper.api.network
 
+import com.github.benmanes.caffeine.cache.Caffeine
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
-import net.kyori.adventure.key.Key
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.entity.Player
-import java.lang.ref.WeakReference
-import java.util.concurrent.ConcurrentHashMap
 
 /** A type of packet. */
 public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
@@ -15,21 +13,15 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
     public val reader: ((FriendlyByteBuf) -> T)? = null,
 ) : PacketType<T>(id) {
 
-    private val updateListeners = ConcurrentHashMap.newKeySet<Pair<WeakReference<Any>, Any.(T, Player) -> Unit>>()
+    private val updateListeners = Caffeine.newBuilder()
+        .weakKeys()
+        .build<Any, MutableList<Any.(T, Player) -> Unit>>()
+        .asMap()
 
     /** Handles a new packet from [player]. */
     public fun handle(player: Player, packet: T) {
-        val iterator = updateListeners.iterator()
-        while (iterator.hasNext()) {
-            val (reference, consumer) = iterator.next()
-            val obj = reference.get()
-            if (obj == null) {
-                iterator.remove()
-                continue
-            }
-            obj.apply {
-                consumer(packet, player)
-            }
+        updateListeners.forEach { (_, listeners) ->
+            listeners.forEach { it(packet, player) }
         }
     }
 
@@ -41,7 +33,9 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
      * captive, preventing it from being garbage collected.
      */
     public fun <R : Any> addListener(reference: R, listener: R.(T, Player) -> Unit) {
-        updateListeners.removeIf { it.first.get() == null }
-        updateListeners.add(WeakReference(reference) as WeakReference<Any> to listener as (Any.(T, Player) -> Unit))
+        @Suppress("UNCHECKED_CAST")
+        updateListeners.computeIfAbsent(reference) {
+            mutableListOf()
+        }.add(listener as (Any.(T, Player) -> Unit))
     }
 }
