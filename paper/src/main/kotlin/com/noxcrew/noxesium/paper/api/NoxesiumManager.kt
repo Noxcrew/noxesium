@@ -16,6 +16,8 @@ import com.noxcrew.noxesium.paper.v2.NoxesiumListenerV2
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.HandlerList
+import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.Logger
@@ -27,7 +29,7 @@ import java.util.UUID
 public open class NoxesiumManager(
     public val plugin: Plugin,
     public val logger: Logger,
-) : NoxesiumServerManager<Player> {
+) : NoxesiumServerManager<Player>, Listener {
 
     /** Stores information sent to a client. */
     public data class NoxesiumProfile(
@@ -72,12 +74,17 @@ public open class NoxesiumManager(
         NoxesiumPackets.SERVER_CLIENT_SETTINGS.addListener(this) { packet, player ->
             saveSettings(player, packet.settings)
         }
+
+        // Register the event handler
+        Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
     /**
      * Unregisters this manager.
      */
     public fun unregister() {
+        HandlerList.unregisterAll(this)
+
         v0.unregister()
         v1.unregister()
         v2.unregister()
