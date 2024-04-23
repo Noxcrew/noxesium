@@ -17,6 +17,11 @@ dependencies {
     api(project(":api"))
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks {
     withType<KotlinCompile> {
         kotlinOptions {
