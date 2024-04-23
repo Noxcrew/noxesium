@@ -20,8 +20,8 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
 
     /** Handles a new packet from [player]. */
     public fun handle(player: Player, packet: T) {
-        updateListeners.forEach { (_, listeners) ->
-            listeners.forEach { it(packet, player) }
+        updateListeners.forEach { (ref, listeners) ->
+            listeners.forEach { ref.it(packet, player) }
         }
     }
 
