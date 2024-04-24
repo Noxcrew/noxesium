@@ -141,7 +141,6 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
             // move the whole background right.
             var component = score.formatValue(numberFormat);
             var numberTextBuilder = new BakedComponentBuilder(component, font);
-            numberTextBuilder.forceRenderCharactersSeparate = true;
             numberTextBuilder.shadow = false;
             var bakedNumber = numberTextBuilder.build();
             maxWidth = Math.max(maxWidth, bakedText.width + (bakedNumber.width > 0 ? bakedNumber.width + extraWidth : 0));
