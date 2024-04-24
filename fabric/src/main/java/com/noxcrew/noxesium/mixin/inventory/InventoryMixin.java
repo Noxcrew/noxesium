@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,7 +32,9 @@ public abstract class InventoryMixin {
     )
     public void preventMovingImmovables(final boolean bl, final CallbackInfoReturnable<ItemStack> cir,
                                         @Local final ItemStack stack) {
-        final CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).getUnsafe();
+        final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) return;
+        final CompoundTag tag = data.getUnsafe();
         if (tag == null) return;
 
         final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);

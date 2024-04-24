@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +32,9 @@ public abstract class InventorySlotMixin {
         final ItemStack itemStack = getItem();
         if (itemStack == null) return;
 
-        final CompoundTag tag = itemStack.get(DataComponents.CUSTOM_DATA).getUnsafe();
+        final CustomData data = itemStack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) return;
+        final CompoundTag tag = data.getUnsafe();
         if (tag == null) return;
 
         final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);
