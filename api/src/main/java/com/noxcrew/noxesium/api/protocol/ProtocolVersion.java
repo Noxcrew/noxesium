@@ -10,7 +10,7 @@ public class ProtocolVersion {
      * of Noxesium is available on the client. The protocol version will increment every full release, as such
      * ít is recommended to work with >= comparisons.
      */
-    public static final int VERSION = 5;
+    public static final int VERSION = 6;
 
     /**
      * The name space to use for Noxesium.
