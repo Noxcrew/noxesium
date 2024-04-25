@@ -2,6 +2,7 @@ package com.noxcrew.noxesium;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -30,7 +31,7 @@ public class NoxesiumConfig {
      * any mods are detected that are known to have compatibility issues.
      */
     public boolean areExperimentalPatchesAvailable() {
-        return !CompatibilityReferences.isUsingFeatherClient();
+        return !CompatibilityReferences.isUsingFeatherClient() && !ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue();
     }
 
     /**

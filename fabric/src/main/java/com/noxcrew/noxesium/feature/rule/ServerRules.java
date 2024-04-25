@@ -51,4 +51,9 @@ public class ServerRules {
      * boats and other entities in one area. Similar mechanism must exist server side to prevent lagbacks with this enabled.
      */
     public static ClientServerRule<Boolean> DISABLE_BOAT_COLLISIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_BOAT_COLLISIONS, false);
+
+    /**
+     * Allows server to override whether experimental UI optimizations are on.
+     */
+    public static ClientServerRule<Boolean> DISABLE_UI_OPTIMIZATIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS, false);
 }

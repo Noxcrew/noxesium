@@ -43,6 +43,10 @@ public enum NoxesiumFeature {
      * Allows usage of the optimized UI rendering-related server rules.
      */
     OPTIMIZED_UI(4),
+    /**
+     * Allows disabling the optimized UI server rule by servers.
+     */
+    DISABLE_OPTIMIZED_UI_SERVER_RULE(5),
     ;
 
     private final int minProtocolVersion;

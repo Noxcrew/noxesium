@@ -31,7 +31,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * of Noxesium is available on the client. The protocol version will increment every full release, as such
      * ít is recommended to work with >= comparisons.
      */
-    public static final int VERSION = 4;
+    public static final int VERSION = 5;
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String NAMESPACE = "noxesium";

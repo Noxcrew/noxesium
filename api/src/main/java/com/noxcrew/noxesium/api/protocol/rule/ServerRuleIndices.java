@@ -43,4 +43,14 @@ public class ServerRuleIndices {
     public static final int DISABLE_BOAT_COLLISIONS = 6;
 
     // Rule id 7 is taken by a now removed rule.
+
+    /**
+     * Disables the UI optimizations temporarily which can be used to
+     * temporarily allow using shader animated text.
+     * <p>
+     * Notice: This is a temporary server rule as the goal is to have
+     * the UI optimizations not cause any issues, but they currently
+     * don't support animated text with shaders.
+     */
+    public static final int DISABLE_UI_OPTIMIZATIONS = 9;
 }
