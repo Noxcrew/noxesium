@@ -16,6 +16,7 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -44,6 +45,11 @@ public class NoxesiumMod implements ClientModInitializer {
      * The current maximum supported protocol version.
      */
     private int currentMaxProtocol = ProtocolVersion.VERSION;
+
+    /**
+     * Whether the server connection has been initialized correctly.
+     */
+    private boolean initialized = false;
 
     /**
      * The configuration file used by the mod.
@@ -104,28 +110,21 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new MccIslandTracker());
         registerModule(new NoxesiumPacketHandling());
 
-        // Every time the client joins a server we send over information on the version being used
+        // Every time the client joins a server we send over information on the version being used,
+        // we initialize when both packets are known ad we are in the PLAY phase, whenever both have
+        // happened.
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            // Find the packet that includes the server asking for the information packet
-            if (!channels.contains(NoxesiumPackets.CLIENT_INFO.id())) return;
-
-            // Check if the connection has been established first, just in case
-            if (Minecraft.getInstance().getConnection() != null) {
-                // Send a packet containing information about the client version of Noxesium
-                new ServerboundClientInformationPacket(ProtocolVersion.VERSION).send();
-
-                // Inform the player about the GUI scale of the client
-                syncGuiScale();
-
-                // Call connection hooks
-                modules.values().forEach(NoxesiumModule::onJoinServer);
-            }
+            initialize();
+        });
+        ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
+            initialize();
         });
 
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
             // Reset the current max protocol version
             currentMaxProtocol = ProtocolVersion.VERSION;
+            initialized = false;
 
             // Handle quitting the server
             modules.values().forEach(NoxesiumModule::onQuitServer);
@@ -139,6 +138,32 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Register the resource listener
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new NoxesiumReloadListener());
+    }
+
+    /**
+     * Initializes the connection with the current server if the connection has been established.
+     */
+    private void initialize() {
+        // Ignore if already initialized
+        if (initialized) return;
+
+        // Don't allow if the server doesn't support Noxesium
+        if (!ClientPlayNetworking.canSend(NoxesiumPackets.CLIENT_INFO.id())) return;
+
+        // Check if the connection has been established first, just in case
+        if (Minecraft.getInstance().getConnection() != null) {
+            // Mark down that we are initializing the connection
+            initialized = true;
+
+            // Send a packet containing information about the client version of Noxesium
+            new ServerboundClientInformationPacket(ProtocolVersion.VERSION).send();
+
+            // Inform the player about the GUI scale of the client
+            syncGuiScale();
+
+            // Call connection hooks
+            modules.values().forEach(NoxesiumModule::onJoinServer);
+        }
     }
 
     /**
