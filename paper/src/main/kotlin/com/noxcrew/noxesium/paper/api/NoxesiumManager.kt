@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.Logger
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * An instance of the Noxesium manager that handles management regardless of client protocol version.
@@ -34,7 +35,7 @@ public open class NoxesiumManager(
     /** Stores information sent to a client. */
     public data class NoxesiumProfile(
         /** All rules sent to this client. */
-        public val rules: MutableMap<Int, RemoteServerRule<*>> = mutableMapOf(),
+        public val rules: MutableMap<Int, RemoteServerRule<*>> = ConcurrentHashMap(),
     ) {
 
         /** Whether this profile has pending updates. */
@@ -42,10 +43,10 @@ public open class NoxesiumManager(
             get() = rules.values.any { it.changePending }
     }
 
-    private val players = mutableMapOf<UUID, Int>()
-    private val settings = mutableMapOf<UUID, ClientSettings>()
-    private val profiles = mutableMapOf<UUID, NoxesiumProfile>()
-    private val rules = mutableMapOf<Int, RuleFunction<*>>()
+    private val players = ConcurrentHashMap<UUID, Int>()
+    private val settings = ConcurrentHashMap<UUID, ClientSettings>()
+    private val profiles = ConcurrentHashMap<UUID, NoxesiumProfile>()
+    private val rules = ConcurrentHashMap<Int, RuleFunction<*>>()
 
     private lateinit var v0: BaseNoxesiumListener
     private lateinit var v1: BaseNoxesiumListener
@@ -161,7 +162,7 @@ public open class NoxesiumManager(
 
     /** Registers a new server rule with the given [index] and [ruleSupplier]. */
     internal fun registerServerRule(index: Int, ruleSupplier: RuleFunction<*>) {
-        require(index !in rules) { "Can't double register index $index" }
+        require(!rules.containsKey(index)) { "Can't double register index $index" }
         rules[index] = ruleSupplier
     }
 

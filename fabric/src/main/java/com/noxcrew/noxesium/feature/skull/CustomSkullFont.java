@@ -165,7 +165,7 @@ public class CustomSkullFont extends FontSet {
 
                 @Override
                 public float getBearingTop() {
-                    return (float) ascent;
+                    return 7f - (float) ascent;
                 }
 
                 @Override

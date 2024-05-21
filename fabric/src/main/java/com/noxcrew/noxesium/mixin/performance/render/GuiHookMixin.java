@@ -12,7 +12,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +39,12 @@ public abstract class GuiHookMixin {
     private LayeredDraw layers;
 
     @Shadow
+    private int tickCount;
+
+    @Shadow
     public abstract DebugScreenOverlay getDebugOverlay();
+
+    @Shadow public abstract ChatComponent getChat();
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
@@ -98,6 +105,16 @@ public abstract class GuiHookMixin {
     public void renderChat(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
+
+        // Only render when not focussed!
+        if (this.getChat().isChatFocused()) return;
+
+        // Store some variables on the cache before rendering
+        var minecraft = Minecraft.getInstance();
+        var window = minecraft.getWindow();
+        ChatCache.mouseX = Mth.floor(minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
+        ChatCache.mouseY = Mth.floor(minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
+        ChatCache.lastTick = this.tickCount;
         ChatCache.getInstance().render(graphics, partialTicks);
     }
 
