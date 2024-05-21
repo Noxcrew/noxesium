@@ -1,7 +1,7 @@
 {
-  "debug.experimental_patches.disabled": "Екпериментальні оптимізації Noxesium UI вимкнені",
-  "debug.experimental_patches.enabled": "Екпериментальні оптимізації Noxesium UI увімкнені",
-  "debug.experimental_patches.help": "F3 + W = Перемикання експериментальних оптимізацій Noxesium UI",
+  "debug.experimental_patches.disabled": "Екпериментальні оптимізації UI від Noxesium вимкнені",
+  "debug.experimental_patches.enabled": "Екпериментальні оптимізації UI від Noxesium увімкнені",
+  "debug.experimental_patches.help": "F3 + W = Перемикання експериментальних оптимізацій UI від Noxesium",
 
   "debug.fps_overlay.disabled": "Лічильник FPS вимкнуто",
   "debug.fps_overlay.enabled": "Лічильник FPS увімкнуто (можна вимнути через F3 + Y)",
@@ -15,23 +15,23 @@
   "noxesium.options.fps_overlay.name": "Лічильник FPS",
   "noxesium.options.fps_overlay.tooltip": "Якщо увімкнено, у лівому верхньому куті екрану з'явиться невеличкий оверлей, що показує поточний FPS.",
   "noxesium.options.experimental_patches.name": "Експериментальні оптимізації",
-  "noxesium.options.experimental_patches.tooltip": "§4(увага: нестабільно!)\n§fВмикає експериментальні покращення продуктивності UI, які повністю замінюють весь код рендерингу UI для значного прискорення роботи.\n\n§cПопередження: §fЯкщо ви помітите проблеми з рендерингом UI за використання цих оптимізацій, будь ласка, повідомте ці проблеми розробникам Noxesium, а не інших модів.",
-  "noxesium.options.reset_toggle_keys.name": "Скидання клавіш перемикання при смерті",
+  "noxesium.options.experimental_patches.tooltip": "§4(увага: нестабільно!)\n§fВмикає експериментальні покращення продуктивності UI, які повністю замінюють увесь код рендерингу UI для значного прискорення роботи.\n\n§cПопередження: §fЯкщо ви помітите проблеми з рендерингом UI за використання цих оптимізацій, будь ласка, повідомте про ці проблеми розробникам Noxesium, а не інших модів.",
+  "noxesium.options.reset_toggle_keys.name": "Скидання нажатих клавіш при смерті",
   "noxesium.options.reset_toggle_keys.tooltip": "Чи слід скидати нажаті клавіші (біг/присідання) при респавні. Зазвичай увімкнено у ванілі.",
 
   "category.noxesium": "Noxesium",
 
-  "key.noxesium.glow.red": "Перемкнути червоне підсвічення (Спостерігачі)",
-  "key.noxesium.glow.orange": "Перемкнути помаранчеве підсвічення (Спостерігачі)",
-  "key.noxesium.glow.yellow": "Перемкнути жовте підсвічення (Спостерігачі)",
-  "key.noxesium.glow.lime": "Перемкнути лаймове підсвічення (Спостерігачі)",
-  "key.noxesium.glow.green": "Перемкнути зелене підсвічення (Спостерігачі)",
-  "key.noxesium.glow.cyan": "Перемкнути бірюзове підсвічення (Спостерігачі)",
-  "key.noxesium.glow.aqua": "Перемкнути блакитне підсвічення (Спостерігачі)",
-  "key.noxesium.glow.blue": "Перемкнути синє підсвічення (Спостерігачі)",
-  "key.noxesium.glow.purple": "Перемкнути фіолетове підсвічення (Спостерігачі)",
-  "key.noxesium.glow.pink": "Перемкнути рожеве підсвічення (Спостерігачі)",
+  "key.noxesium.glow.red": "Перемикання червоного світіння (Спостерігачі)",
+  "key.noxesium.glow.orange": "Перемикання помаранчевого світіння (Спостерігачі)",
+  "key.noxesium.glow.yellow": "Перемикання жовтого світіння (Спостерігачі)",
+  "key.noxesium.glow.lime": "Перемикання лаймового світіння (Спостерігачі)",
+  "key.noxesium.glow.green": "Перемикання зеленого світіння (Спостерігачі)",
+  "key.noxesium.glow.cyan": "Перемикання бірюзового світіння (Спостерігачі)",
+  "key.noxesium.glow.aqua": "Перемикання блакитного світіння (Спостерігачі)",
+  "key.noxesium.glow.blue": "Перемикання синього світіння (Спостерігачі)",
+  "key.noxesium.glow.purple": "Перемикання фіолетового світіння (Спостерігачі)",
+  "key.noxesium.glow.pink": "Перемикання рожевого світіння (Спостерігачі)",
 
-  "key.noxesium.glow.all": "Увімкнути усі підсвічення (Спостерігачі)",
-  "key.noxesium.glow.none": "Вимкнути усі підсвічення (Спостерігачі)"
+  "key.noxesium.glow.all": "Увімкненя усіх кольорів світіння (Спостерігачі)",
+  "key.noxesium.glow.none": "Вимкнення усіх кольорів світіння (Спостерігачі)"
 }
