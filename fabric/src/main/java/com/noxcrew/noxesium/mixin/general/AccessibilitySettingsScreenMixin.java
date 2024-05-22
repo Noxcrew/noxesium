@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.mixin.general;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.config.VanillaOptions;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.screens.AccessibilityOptionsScreen;
+import net.minecraft.client.gui.screens.options.AccessibilityOptionsScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

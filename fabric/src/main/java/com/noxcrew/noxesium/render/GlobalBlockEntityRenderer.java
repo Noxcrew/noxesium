@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -99,40 +100,36 @@ public class GlobalBlockEntityRenderer {
         poseStack.popPose();
     }
 
-    private static void renderNonTransparent(BeaconBlockEntity beaconBlockEntity, float f, PoseStack poseStack, VertexConsumer buffer) {
+    private static void renderNonTransparent(BeaconBlockEntity beaconBlockEntity, float tickDelta, PoseStack poseStack, VertexConsumer buffer) {
         var h = 0.2f;
-        renderElement(beaconBlockEntity, f, 1.0f, poseStack, buffer, true, 0.0f, h, h, 0.0f, -h, 0.0f, 0.0f, -h, 0.5f / h);
+        renderElement(beaconBlockEntity, tickDelta, poseStack, buffer, true, 0.0f, h, h, 0.0f, -h, 0.0f, 0.0f, -h, 0.5f / h);
     }
 
-    private static void renderTransparent(BeaconBlockEntity beaconBlockEntity, float f, PoseStack poseStack, VertexConsumer buffer) {
+    private static void renderTransparent(BeaconBlockEntity beaconBlockEntity, float tickDelta, PoseStack poseStack, VertexConsumer buffer) {
         var k = 0.25f;
-        renderElement(beaconBlockEntity, f, 0.125f, poseStack, buffer, false, -k, -k, k, -k, -k, k, k, k, 1.0f);
+        renderElement(beaconBlockEntity, tickDelta, poseStack, buffer, false, -k, -k, k, -k, -k, k, k, k, 1.0f);
     }
 
-    private static void renderElement(BeaconBlockEntity beaconBlockEntity, float f, float f2, PoseStack poseStack, VertexConsumer buffer, boolean spin, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11) {
+    private static void renderElement(BeaconBlockEntity beaconBlockEntity, float tickDelta, PoseStack poseStack, VertexConsumer buffer, boolean spin, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11) {
         long l = beaconBlockEntity.getLevel().getGameTime();
         List<BeaconBlockEntity.BeaconBeamSection> list = beaconBlockEntity.getBeamSections();
         int i = 0;
         for (int sectionIndex = 0; sectionIndex < list.size(); ++sectionIndex) {
             BeaconBlockEntity.BeaconBeamSection beaconBeamSection = list.get(sectionIndex);
-            var g = 1.0f;
             var j = sectionIndex == list.size() - 1 ? BeaconRenderer.MAX_RENDER_Y : beaconBeamSection.getHeight();
-            var fs = beaconBeamSection.getColor();
-            int m = i + j;
 
-            float n = (float) Math.floorMod(l, 40) + f;
-            float o = j < 0 ? n : -n;
-            float p = Mth.frac(o * 0.2f - (float) Mth.floor(o * 0.1f));
-            float q = fs[0];
-            float r = fs[1];
-            float s = fs[2];
+            float o = (float)Math.floorMod(l, 40) + tickDelta;
+            float p = j < 0 ? o : -o;
+            float q = Mth.frac(p * 0.2F - (float)Mth.floor(p * 0.1F));
+
             if (spin) {
                 poseStack.pushPose();
-                poseStack.mulPose(Axis.YP.rotationDegrees(n * 2.25f - 45.0f));
+                poseStack.mulPose(Axis.YP.rotationDegrees(o * 2.25f - 45.0f));
             }
-            float ad = -1.0f + p;
-            float ae = (float) j * g * f11 + ad;
-            BeaconRendererExt.invokeRenderPart(poseStack, buffer, q, r, s, f2, i, m, f3, f4, f5, f6, f7, f8, f9, f10, 0.0f, 1.0f, ae, ad);
+            float ab = -1.0f + q;
+            float ac = (float)j * f11 + ab;
+            int color = spin ? beaconBeamSection.getColor() : FastColor.ARGB32.color(32, beaconBeamSection.getColor());
+            BeaconRendererExt.invokeRenderPart(poseStack, buffer, color, i, i + j, f3, f4, f5, f6, f7, f8, f9, f10, 0.0f, 1.0f, ac, ab);
             if (spin) {
                 poseStack.popPose();
             }

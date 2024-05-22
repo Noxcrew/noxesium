@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface BeaconRendererExt {
 
     @Invoker("renderPart")
-    static void invokeRenderPart(PoseStack poseStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
+    static void invokeRenderPart(PoseStack poseStack, VertexConsumer vertexConsumer, int i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
         throw new AssertionError("Unimplemented");
     }
 }

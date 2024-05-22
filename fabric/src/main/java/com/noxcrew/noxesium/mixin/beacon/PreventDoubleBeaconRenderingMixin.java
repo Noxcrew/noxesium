@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.beacon;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.chunk.SectionCompiler;
 import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -17,18 +18,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * <p>
  * This patch never triggers when Sodium is used.
  */
-@Mixin(SectionRenderDispatcher.RenderSection.RebuildTask.class)
+@Mixin(SectionCompiler.class)
 public abstract class PreventDoubleBeaconRenderingMixin {
 
     @Inject(method = "handleBlockEntity", at = @At("HEAD"), cancellable = true)
-    public <E extends BlockEntity> void omitBeaconFromChunkEntities(SectionRenderDispatcher.RenderSection.RebuildTask.CompileResults compileResults, E blockEntity, CallbackInfo ci) {
+    public <E extends BlockEntity> void omitBeaconFromChunkEntities(SectionCompiler.Results results, E blockEntity, CallbackInfo ci) {
         if (blockEntity instanceof BeaconBlockEntity) {
             ci.cancel();
 
-            // Only add the beacon to the global entities
+            // Only add the beacon to the global entities and not the regular ones
             BlockEntityRenderer<E> blockEntityRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(blockEntity);
             if (blockEntityRenderer != null) {
-                compileResults.globalBlockEntities.add(blockEntity);
+                results.globalBlockEntities.add(blockEntity);
             }
         }
     }
