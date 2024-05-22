@@ -28,6 +28,7 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "performance.KeyboardHandlerMixin",
+    "performance.ext.BeaconRendererExt",
     "performance.model.ItemOverridesMixin",
     "performance.render.BossHealthOverlayMixin",
     "performance.render.ChatComponentMixin",

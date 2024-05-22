@@ -3,13 +3,13 @@ package com.noxcrew.noxesium.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import com.noxcrew.noxesium.mixin.performance.ext.BeaconRendererExt;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -100,35 +100,16 @@ public class GlobalBlockEntityRenderer {
     }
 
     private static void renderNonTransparent(BeaconBlockEntity beaconBlockEntity, float f, PoseStack poseStack, VertexConsumer buffer) {
-        long l = beaconBlockEntity.getLevel().getGameTime();
-        List<BeaconBlockEntity.BeaconBeamSection> list = beaconBlockEntity.getBeamSections();
-        int i = 0;
-        for (int sectionIndex = 0; sectionIndex < list.size(); ++sectionIndex) {
-            BeaconBlockEntity.BeaconBeamSection beaconBeamSection = list.get(sectionIndex);
-            var g = 1.0f;
-            var j = sectionIndex == list.size() - 1 ? BeaconRenderer.MAX_RENDER_Y : beaconBeamSection.getHeight();
-            var fs = beaconBeamSection.getColor();
-            var h = 0.2f;
-            int m = i + j;
-
-            float n = (float) Math.floorMod(l, 40) + f;
-            float o = j < 0 ? n : -n;
-            float p = Mth.frac(o * 0.2f - (float) Mth.floor(o * 0.1f));
-            float q = fs[0];
-            float r = fs[1];
-            float s = fs[2];
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(n * 2.25f - 45.0f));
-            float ad = -1.0f + p;
-            float ae = (float) j * g * (0.5f / h) + ad;
-            renderPart(poseStack, buffer, q, r, s, 1.0f, i, m, 0.0f, h, h, 0.0f, -h, 0.0f, 0.0f, -h, 0.0f, 1.0f, ae, ad);
-            poseStack.popPose();
-
-            i += beaconBeamSection.getHeight();
-        }
+        var h = 0.2f;
+        renderElement(beaconBlockEntity, f, 1.0f, poseStack, buffer, true, 0.0f, h, h, 0.0f, -h, 0.0f, 0.0f, -h, 0.5f / h);
     }
 
     private static void renderTransparent(BeaconBlockEntity beaconBlockEntity, float f, PoseStack poseStack, VertexConsumer buffer) {
+        var k = 0.25f;
+        renderElement(beaconBlockEntity, f, 0.125f, poseStack, buffer, false, -k, -k, k, -k, -k, k, k, k, 1.0f);
+    }
+
+    private static void renderElement(BeaconBlockEntity beaconBlockEntity, float f, float f2, PoseStack poseStack, VertexConsumer buffer, boolean spin, float f3, float f4, float f5, float f6, float f7, float f8, float f9, float f10, float f11) {
         long l = beaconBlockEntity.getLevel().getGameTime();
         List<BeaconBlockEntity.BeaconBeamSection> list = beaconBlockEntity.getBeamSections();
         int i = 0;
@@ -137,7 +118,6 @@ public class GlobalBlockEntityRenderer {
             var g = 1.0f;
             var j = sectionIndex == list.size() - 1 ? BeaconRenderer.MAX_RENDER_Y : beaconBeamSection.getHeight();
             var fs = beaconBeamSection.getColor();
-            var k = 0.25f;
             int m = i + j;
 
             float n = (float) Math.floorMod(l, 40) + f;
@@ -146,30 +126,18 @@ public class GlobalBlockEntityRenderer {
             float q = fs[0];
             float r = fs[1];
             float s = fs[2];
+            if (spin) {
+                poseStack.pushPose();
+                poseStack.mulPose(Axis.YP.rotationDegrees(n * 2.25f - 45.0f));
+            }
             float ad = -1.0f + p;
-            float ae = (float) j * g + ad;
-            renderPart(poseStack, buffer, q, r, s, 0.125f, i, m, -k, -k, k, -k, -k, k, k, k, 0.0f, 1.0f, ae, ad);
+            float ae = (float) j * g * f11 + ad;
+            BeaconRendererExt.invokeRenderPart(poseStack, buffer, q, r, s, f2, i, m, f3, f4, f5, f6, f7, f8, f9, f10, 0.0f, 1.0f, ae, ad);
+            if (spin) {
+                poseStack.popPose();
+            }
 
             i += beaconBeamSection.getHeight();
         }
-    }
-
-    private static void renderPart(PoseStack poseStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s, float t, float u, float v, float w) {
-        PoseStack.Pose pose = poseStack.last();
-        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, l, m, n, o, t, u, v, w);
-        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, r, s, p, q, t, u, v, w);
-        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, n, o, r, s, t, u, v, w);
-        renderQuad(pose, vertexConsumer, f, g, h, i, j, k, p, q, l, m, t, u, v, w);
-    }
-
-    private static void renderQuad(PoseStack.Pose pose, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, int k, float l, float m, float n, float o, float p, float q, float r, float s) {
-        addVertex(pose, vertexConsumer, f, g, h, i, k, l, m, q, r);
-        addVertex(pose, vertexConsumer, f, g, h, i, j, l, m, q, s);
-        addVertex(pose, vertexConsumer, f, g, h, i, j, n, o, p, s);
-        addVertex(pose, vertexConsumer, f, g, h, i, k, n, o, p, r);
-    }
-
-    private static void addVertex(PoseStack.Pose pose, VertexConsumer vertexConsumer, float f, float g, float h, float i, int j, float k, float l, float m, float n) {
-        vertexConsumer.vertex(pose, k, j, l).color(f, g, h, i).uv(m, n).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(pose, 0.0f, 1.0f, 0.0f).endVertex();
     }
 }
