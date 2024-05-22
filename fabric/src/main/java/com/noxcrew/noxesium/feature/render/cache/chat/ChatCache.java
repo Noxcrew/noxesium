@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.render.cache.chat;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.mixin.performance.render.ext.ChatComponentExt;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -101,7 +102,7 @@ public class ChatCache extends ElementCache<ChatInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, ChatInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         var chatOverlay = minecraft.gui.getChat();
         var chatExt = (ChatComponentExt) chatOverlay;
         var messageCount = cache.trimmedMessages().size();

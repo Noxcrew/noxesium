@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.mixin.performance.render.ext.PlayerTabOverlayExt;
 import net.minecraft.Optionull;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,20 +36,20 @@ import java.util.stream.Collectors;
  */
 public class TabListCache extends ElementCache<TabListInformation> {
 
-    private static final ResourceLocation PING_UNKNOWN_SPRITE = new ResourceLocation("icon/ping_unknown");
-    private static final ResourceLocation PING_1_SPRITE = new ResourceLocation("icon/ping_1");
-    private static final ResourceLocation PING_2_SPRITE = new ResourceLocation("icon/ping_2");
-    private static final ResourceLocation PING_3_SPRITE = new ResourceLocation("icon/ping_3");
-    private static final ResourceLocation PING_4_SPRITE = new ResourceLocation("icon/ping_4");
-    private static final ResourceLocation PING_5_SPRITE = new ResourceLocation("icon/ping_5");
-    private static final ResourceLocation HEART_CONTAINER_BLINKING_SPRITE = new ResourceLocation("hud/heart/container_blinking");
-    private static final ResourceLocation HEART_CONTAINER_SPRITE = new ResourceLocation("hud/heart/container");
-    private static final ResourceLocation HEART_FULL_BLINKING_SPRITE = new ResourceLocation("hud/heart/full_blinking");
-    private static final ResourceLocation HEART_HALF_BLINKING_SPRITE = new ResourceLocation("hud/heart/half_blinking");
-    private static final ResourceLocation HEART_ABSORBING_FULL_BLINKING_SPRITE = new ResourceLocation("hud/heart/absorbing_full_blinking");
-    private static final ResourceLocation HEART_FULL_SPRITE = new ResourceLocation("hud/heart/full");
-    private static final ResourceLocation HEART_ABSORBING_HALF_BLINKING_SPRITE = new ResourceLocation("hud/heart/absorbing_half_blinking");
-    private static final ResourceLocation HEART_HALF_SPRITE = new ResourceLocation("hud/heart/half");
+    private static final ResourceLocation PING_UNKNOWN_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_unknown");
+    private static final ResourceLocation PING_1_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_1");
+    private static final ResourceLocation PING_2_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_2");
+    private static final ResourceLocation PING_3_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_3");
+    private static final ResourceLocation PING_4_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_4");
+    private static final ResourceLocation PING_5_SPRITE = ResourceLocation.withDefaultNamespace("icon/ping_5");
+    private static final ResourceLocation HEART_CONTAINER_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container_blinking");
+    private static final ResourceLocation HEART_CONTAINER_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/container");
+    private static final ResourceLocation HEART_FULL_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/full_blinking");
+    private static final ResourceLocation HEART_HALF_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/half_blinking");
+    private static final ResourceLocation HEART_ABSORBING_FULL_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/absorbing_full_blinking");
+    private static final ResourceLocation HEART_FULL_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/full");
+    private static final ResourceLocation HEART_ABSORBING_HALF_BLINKING_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/absorbing_half_blinking");
+    private static final ResourceLocation HEART_HALF_SPRITE = ResourceLocation.withDefaultNamespace("hud/heart/half");
     private static final Comparator<PlayerInfo> PLAYER_COMPARATOR = Comparator
             .<PlayerInfo>comparingInt((player) -> player.getGameMode() == GameType.SPECTATOR ? 1 : 0)
             .thenComparing((player) -> Optionull.mapOrDefault(player.getTeam(), PlayerTeam::getName, ""))
@@ -268,7 +269,7 @@ public class TabListCache extends ElementCache<TabListInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, TabListInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         var scoreboard = minecraft.level.getScoreboard();
         var objective = scoreboard.getDisplayObjective(DisplaySlot.LIST);
 

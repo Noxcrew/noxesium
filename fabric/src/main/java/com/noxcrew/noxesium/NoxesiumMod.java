@@ -32,7 +32,7 @@ import java.util.Map;
 public class NoxesiumMod implements ClientModInitializer {
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-    public static final String IMMOVABLE_TAG = new ResourceLocation(ProtocolVersion.NAMESPACE, "immovable").toString();
+    public static final String IMMOVABLE_TAG = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "immovable").toString();
 
     private static NoxesiumMod instance;
 

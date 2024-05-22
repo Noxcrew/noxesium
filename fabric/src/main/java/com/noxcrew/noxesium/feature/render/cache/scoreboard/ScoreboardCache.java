@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.render.cache.scoreboard;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.feature.render.font.BakedComponentBuilder;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -159,7 +160,7 @@ public class ScoreboardCache extends ElementCache<ScoreboardInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, ScoreboardInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         var height = cache.lines().size() * 9;
         var bottom = screenHeight / 2 + height / 3;
         var left = screenWidth - cache.maxWidth() - RIGHT;

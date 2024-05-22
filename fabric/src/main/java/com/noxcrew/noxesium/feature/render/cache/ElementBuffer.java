@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -73,7 +74,7 @@ public class ElementBuffer implements Closeable {
 
         // Do the screen size calculation manually so we can use doubles which
         // give necessary precision.
-        var guiScale = window.getGuiScale();
+        var guiScale = (float) window.getGuiScale();
         var screenWidth = ((float) width) / guiScale;
         var screenHeight = ((float) height) / guiScale;
 
@@ -90,13 +91,12 @@ public class ElementBuffer implements Closeable {
                     var buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
                     buffer.bind();
 
-                    var builder = new BufferBuilder(4 * 6);
-                    builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                    builder.vertex(0.0f, screenHeight, 0.0f).uv(0.0f, 0.0f).endVertex();
-                    builder.vertex(screenWidth, screenHeight, 0.0f).uv(1.0f, 0.0f).endVertex();
-                    builder.vertex(screenWidth, 0.0f, 0.0f).uv(1.0f, 1.0f).endVertex();
-                    builder.vertex(0.0f, 0.0f, 0.0f).uv(0.0f, 1.0f).endVertex();
-                    buffer.upload(builder.end());
+                    var builder = new BufferBuilder(new ByteBufferBuilder(4 * 6), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+                    builder.addVertex(0.0f, screenHeight, 0.0f).setUv(0.0f, 0.0f);
+                    builder.addVertex(screenWidth, screenHeight, 0.0f).setUv(1.0f, 0.0f);
+                    builder.addVertex(screenWidth, 0.0f, 0.0f).setUv(1.0f, 1.0f);
+                    builder.addVertex(0.0f, 0.0f, 0.0f).setUv(0.0f, 1.0f);
+                    buffer.upload(builder.build());
 
                     if (target == null) {
                         target = new TextureTarget(width, height, true, ON_OSX);

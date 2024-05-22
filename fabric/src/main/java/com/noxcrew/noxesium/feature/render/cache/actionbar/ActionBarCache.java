@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.render.cache.actionbar;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.mixin.performance.render.ext.GuiExt;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,10 +28,10 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     }
 
     public ActionBarCache() {
-        registerVariable("alpha", (minecraft, partialTicks) -> {
+        registerVariable("alpha", (minecraft, deltaTracker) -> {
             var gui = minecraft.gui;
             var guiExt = (GuiExt) gui;
-            var remainingTicks = (float) guiExt.getOverlayMessageTime() - partialTicks;
+            var remainingTicks = (float) guiExt.getOverlayMessageTime() - deltaTracker.getGameTimeDeltaPartialTick(false);
             var alpha = (int) (remainingTicks * 255.0F / 20.0F);
             return Mth.clamp(alpha, 0, 255);
         });
@@ -48,10 +49,10 @@ public class ActionBarCache extends ElementCache<ActionBarInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, ActionBarInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         var gui = minecraft.gui;
         var guiExt = (GuiExt) gui;
-        var remainingTicks = (float) guiExt.getOverlayMessageTime() - partialTicks;
+        var remainingTicks = (float) guiExt.getOverlayMessageTime() - deltaTracker.getGameTimeDeltaPartialTick(false);
 
         // If at least a transparency of 8 is left
         var alpha = cache.alpha();

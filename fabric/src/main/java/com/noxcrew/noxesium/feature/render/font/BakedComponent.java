@@ -240,10 +240,10 @@ public class BakedComponent {
         private ResourceLocation getTexture(RenderType type) {
             if (type instanceof RenderType.CompositeRenderType composite) {
                 if (composite.state().textureState instanceof RenderType.CompositeRenderType.TextureStateShard textureShard) {
-                    return (textureShard.cutoutTexture().orElse(new ResourceLocation(""))).withSuffix("/" + type.name);
+                    return (textureShard.cutoutTexture().orElse(ResourceLocation.withDefaultNamespace(""))).withSuffix("/" + type.name);
                 }
             }
-            return new ResourceLocation("/" + type.name);
+            return ResourceLocation.withDefaultNamespace("/" + type.name);
         }
 
         /**
@@ -259,10 +259,10 @@ public class BakedComponent {
          * Renders a new effect to the given vertex consumer.
          */
         private void render(float x, float y, float x2, float y2, float depth, Float r, Float g, Float b, float a, Matrix4f matrix, VertexConsumer vertexConsumer, int i) {
-            vertexConsumer.vertex(matrix, x, y, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV0()).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x2, y, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV1()).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x2, y2, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV1()).uv2(i).endVertex();
-            vertexConsumer.vertex(matrix, x, y2, depth).color(r, g, b, a).uv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV0()).uv2(i).endVertex();
+            vertexConsumer.addVertex(matrix, x, y, depth).setColor(r, g, b, a).setUv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV0()).setLight(i);
+            vertexConsumer.addVertex(matrix, x2, y, depth).setColor(r, g, b, a).setUv(baseBakedGlyphExt.getU0(), baseBakedGlyphExt.getV1()).setLight(i);
+            vertexConsumer.addVertex(matrix, x2, y2, depth).setColor(r, g, b, a).setUv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV1()).setLight(i);
+            vertexConsumer.addVertex(matrix, x, y2, depth).setColor(r, g, b, a).setUv(baseBakedGlyphExt.getU1(), baseBakedGlyphExt.getV0()).setLight(i);
         }
 
         /**

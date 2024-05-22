@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.world.scores.Objective;
@@ -18,7 +19,7 @@ public abstract class PlayerTabOverlayMixin {
     public void renderTabList(GuiGraphics graphics, int partialTicks, Scoreboard scoreboard, Objective objective, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        TabListCache.getInstance().render(graphics, partialTicks);
+        TabListCache.getInstance().render(graphics, DeltaTracker.ZERO);
     }
 
     @Inject(method = "setHeader", at = @At("TAIL"))

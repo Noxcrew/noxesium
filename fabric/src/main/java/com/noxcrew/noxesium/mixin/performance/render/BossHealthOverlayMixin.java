@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.performance.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.bossbar.BossBarCache;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,7 @@ public abstract class BossHealthOverlayMixin {
     public void render(GuiGraphics graphics, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        BossBarCache.getInstance().render(graphics, 0f);
+        BossBarCache.getInstance().render(graphics, DeltaTracker.ZERO);
     }
 
     @Inject(method = "update", at = @At("TAIL"))

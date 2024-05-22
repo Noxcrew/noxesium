@@ -1,13 +1,12 @@
 package com.noxcrew.noxesium.mixin.performance.render;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
 import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
-import com.noxcrew.noxesium.feature.render.cache.tablist.TabListCache;
 import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,7 +42,8 @@ public abstract class GuiHookMixin {
     @Shadow
     public abstract DebugScreenOverlay getDebugOverlay();
 
-    @Shadow public abstract ChatComponent getChat();
+    @Shadow
+    public abstract ChatComponent getChat();
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
@@ -61,48 +60,48 @@ public abstract class GuiHookMixin {
     }
 
     @Inject(method = "renderCameraOverlays", at = @At("HEAD"), cancellable = true)
-    public void renderCameraOverlays(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderCameraOverlays(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // TODO implement optimizations
     }
 
     @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
-    public void renderCrosshair(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // TODO implement optimizations
     }
 
     @Inject(method = "renderHotbarAndDecorations", at = @At("HEAD"), cancellable = true)
-    public void renderHotbarAndDecorations(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderHotbarAndDecorations(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // TODO implement optimizations
     }
 
     @Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
-    public void renderEffects(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderEffects(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // TODO implement optimizations
     }
 
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
-    public void renderScoreboardSidebar(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderScoreboardSidebar(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        ScoreboardCache.getInstance().render(graphics, partialTicks);
+        ScoreboardCache.getInstance().render(guiGraphics, deltaTracker);
     }
 
     @Inject(method = "renderOverlayMessage", at = @At("HEAD"), cancellable = true)
-    public void renderOverlayMessage(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderOverlayMessage(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        ActionBarCache.getInstance().render(graphics, partialTicks);
+        ActionBarCache.getInstance().render(guiGraphics, deltaTracker);
     }
 
     @Inject(method = "renderTitle", at = @At("HEAD"), cancellable = true)
-    public void renderTitle(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderTitle(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
-        TitleCache.getInstance().render(graphics, partialTicks);
+        TitleCache.getInstance().render(guiGraphics, deltaTracker);
     }
 
     @Inject(method = "renderChat", at = @At("HEAD"), cancellable = true)
-    public void renderChat(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderChat(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) return;
         ci.cancel();
 
@@ -112,14 +111,14 @@ public abstract class GuiHookMixin {
         // Store some variables on the cache before rendering
         var minecraft = Minecraft.getInstance();
         var window = minecraft.getWindow();
-        ChatCache.mouseX = Mth.floor(minecraft.mouseHandler.xpos() * (double)window.getGuiScaledWidth() / (double)window.getScreenWidth());
-        ChatCache.mouseY = Mth.floor(minecraft.mouseHandler.ypos() * (double)window.getGuiScaledHeight() / (double)window.getScreenHeight());
+        ChatCache.mouseX = Mth.floor(minecraft.mouseHandler.xpos() * (double) window.getGuiScaledWidth() / (double) window.getScreenWidth());
+        ChatCache.mouseY = Mth.floor(minecraft.mouseHandler.ypos() * (double) window.getGuiScaledHeight() / (double) window.getScreenHeight());
         ChatCache.lastTick = this.tickCount;
-        ChatCache.getInstance().render(graphics, partialTicks);
+        ChatCache.getInstance().render(guiGraphics, deltaTracker);
     }
 
     @Inject(method = "renderSavingIndicator", at = @At("HEAD"), cancellable = true)
-    public void renderSavingIndicator(GuiGraphics graphics, float partialTicks, CallbackInfo ci) {
+    public void renderSavingIndicator(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // TODO implement optimizations
     }
 }

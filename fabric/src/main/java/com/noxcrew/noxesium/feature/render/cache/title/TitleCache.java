@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.render.cache.title;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponent;
 import com.noxcrew.noxesium.mixin.performance.render.ext.GuiExt;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,11 +28,11 @@ public class TitleCache extends ElementCache<TitleInformation> {
     }
 
     public TitleCache() {
-        registerVariable("alpha", (minecraft, partialTicks) -> {
+        registerVariable("alpha", (minecraft, deltaTracker) -> {
             var gui = minecraft.gui;
             var guiExt = (GuiExt) gui;
             var alpha = 255;
-            var ticksElapsed = (float) guiExt.getTitleTime() - partialTicks;
+            var ticksElapsed = (float) guiExt.getTitleTime() - deltaTracker.getGameTimeDeltaPartialTick(false);
 
             if (guiExt.getTitleTime() > guiExt.getTitleFadeOutTime() + guiExt.getTitleStayTime()) {
                 var fadeFactor = (float) (guiExt.getTitleFadeInTime() + guiExt.getTitleStayTime() + guiExt.getTitleFadeOutTime()) - ticksElapsed;
@@ -65,7 +66,7 @@ public class TitleCache extends ElementCache<TitleInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, TitleInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, TitleInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         var alpha = cache.alpha();
         if (alpha > 8) {
             graphics.pose().pushPose();

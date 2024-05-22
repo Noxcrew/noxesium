@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SkullFontModule implements NoxesiumModule {
 
-    public static ResourceLocation RESOURCE_LOCATION = new ResourceLocation(ProtocolVersion.NAMESPACE, "skulls");
+    public static ResourceLocation RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "skulls");
 
     /**
      * The signature used when checking the skin. We do not care if this signature is correct, but
@@ -167,7 +167,7 @@ public class SkullFontModule implements NoxesiumModule {
                         }
                     } else {
                         // If this skin isn't known we download it first
-                        var resourceLocation = new ResourceLocation("skins/" + string);
+                        var resourceLocation = ResourceLocation.withDefaultNamespace("skins/" + string);
                         var httpTexture = new HttpTexture(file2, information.getUrl(), DefaultPlayerSkin.getDefaultTexture(), true, () -> {
                             // At this point the texture has been saved to the file, so we can read out the native image
                             try {

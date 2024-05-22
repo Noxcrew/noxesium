@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.render.cache;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,7 +30,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
     private static final Set<ElementCache<?>> caches = new HashSet<>();
 
-    private final Map<String, BiFunction<Minecraft, Float, Object>> variables = new HashMap<>();
+    private final Map<String, BiFunction<Minecraft, DeltaTracker, Object>> variables = new HashMap<>();
     private final Map<String, Object> values = new HashMap<>();
     private ElementBuffer buffer;
     private boolean needsRedraw = true;
@@ -51,7 +52,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
      * Registers a new variable that is re-evaluated each time the element is drawn which will
      * cause a cache clear if it changes.
      */
-    public void registerVariable(String name, BiFunction<Minecraft, Float, Object> function) {
+    public void registerVariable(String name, BiFunction<Minecraft, DeltaTracker, Object> function) {
         Preconditions.checkState(!variables.containsKey(name), "Variable called " + name + " already exists");
         variables.put(name, function);
     }
@@ -87,9 +88,9 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the UI element.
      */
-    public void render(GuiGraphics graphics, float partialTicks) {
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
-        var cache = getCache(minecraft, partialTicks);
+        var cache = getCache(minecraft, deltaTracker);
         if (cache.isEmpty()) return;
 
         try {
@@ -104,7 +105,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
 
             // Draw the direct parts on top each tick if requested
             if (hasDynamicLayer()) {
-                render(graphics, cache, minecraft, graphics.guiWidth(), graphics.guiHeight(), minecraft.font, partialTicks, true);
+                render(graphics, cache, minecraft, graphics.guiWidth(), graphics.guiHeight(), minecraft.font, deltaTracker, true);
             }
         } finally {
             // Ensure we always properly flush the graphics after drawing a component!
@@ -115,7 +116,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Renders the UI element using the same logic whether we are in the buffer or not.
      */
-    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic);
+    protected abstract void render(GuiGraphics graphics, T cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic);
 
     /**
      * Returns the value of the variable called name cast as T.
@@ -123,7 +124,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     public <V> V getVariable(String name) {
         // Fallback to ensure there is always some data!
         if (!values.containsKey(name)) {
-            return (V) variables.get(name).apply(Minecraft.getInstance(), 0f);
+            return (V) variables.get(name).apply(Minecraft.getInstance(), DeltaTracker.ZERO);
         }
         return (V) values.get(name);
     }
@@ -131,12 +132,12 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
     /**
      * Returns the current cached scoreboard contents.
      */
-    public T getCache(Minecraft minecraft, float partialTicks) {
+    public T getCache(Minecraft minecraft, DeltaTracker deltaTracker) {
         // Test all variables and clear the cache if any change
         if (!variables.isEmpty()) {
             for (var variable : variables.entrySet()) {
                 var currentValue = values.get(variable.getKey());
-                var newValue = variable.getValue().apply(minecraft, partialTicks);
+                var newValue = variable.getValue().apply(minecraft, deltaTracker);
                 if (Objects.equals(currentValue, newValue) && currentValue != null) continue;
 
                 // Clear the cache and ensure all variables are determined!
@@ -145,7 +146,7 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                     if (Objects.equals(variable.getKey(), otherVariable.getKey())) {
                         values.put(variable.getKey(), newValue);
                     } else {
-                        values.put(otherVariable.getKey(), otherVariable.getValue().apply(minecraft, partialTicks));
+                        values.put(otherVariable.getKey(), otherVariable.getValue().apply(minecraft, deltaTracker));
                     }
                 }
                 break;
@@ -192,10 +193,10 @@ public abstract class ElementCache<T extends ElementInformation> implements Clos
                         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                                 GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                     }, () -> {
-                        render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, false);
+                        render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, DeltaTracker.ZERO, false);
                     });
                 } else {
-                    render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, 0f, false);
+                    render(graphics, cache, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, DeltaTracker.ZERO, false);
                 }
                 // FIXME: Re-add this detection as it's not 100% accurate!
                 //if (!hasDrawnSomething) {

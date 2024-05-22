@@ -82,7 +82,7 @@ public class NoxesiumPackets {
     public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         PayloadTypeRegistry.configurationS2C().register(type.type, codec);
         PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
@@ -111,7 +111,7 @@ public class NoxesiumPackets {
     public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         PayloadTypeRegistry.configurationC2S().register(type.type, codec);
         PayloadTypeRegistry.playC2S().register(type.type, codec);
         serverboundPackets.put(type.id().toString(), group);

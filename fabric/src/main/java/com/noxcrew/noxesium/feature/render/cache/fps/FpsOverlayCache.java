@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponentBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,8 +30,8 @@ public class FpsOverlayCache extends ElementCache<FpsOverlayInformation> {
     /**
      * Renders the fps overlay through its cache.
      */
-    public static void renderFpsOverlay(GuiGraphics graphics, float partialTicks) {
-        getInstance().render(graphics, partialTicks);
+    public static void renderFpsOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
+        getInstance().render(graphics, deltaTracker);
     }
 
     public FpsOverlayCache() {
@@ -49,7 +50,7 @@ public class FpsOverlayCache extends ElementCache<FpsOverlayInformation> {
     }
 
     @Override
-    protected void render(GuiGraphics graphics, FpsOverlayInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, FpsOverlayInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         // FIXME Can't just check for a different mod like this that's trash
         var lineOffset = font.lineHeight + 5;
         var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset : 0;

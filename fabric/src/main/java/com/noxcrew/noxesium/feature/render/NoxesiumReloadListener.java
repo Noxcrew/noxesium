@@ -28,6 +28,6 @@ public class NoxesiumReloadListener implements SimpleSynchronousResourceReloadLi
 
     @Override
     public ResourceLocation getFabricId() {
-        return new ResourceLocation("noxesium", "reload");
+        return ResourceLocation.fromNamespaceAndPath("noxesium", "reload");
     }
 }
