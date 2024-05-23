@@ -39,7 +39,7 @@ public class GameTimeOverlayCache extends ElementCache<GameTimeOverlayInformatio
 
     @Override
     protected GameTimeOverlayInformation createCache(Minecraft minecraft, Font font) {
-        var gameTimeComponent = new BakedComponentBuilder(Component.translatable("debug.game game_time_overlay", (float) getVariable("game time"), (int) ((float) getVariable("game time")) * 24000), font);
+        var gameTimeComponent = new BakedComponentBuilder(Component.translatable("debug.game_time_overlay", String.format("%.5f", (float) getVariable("game time")), (int) ((float) getVariable("game time") * 24000)), font);
         gameTimeComponent.shadow = false;
         return new GameTimeOverlayInformation(gameTimeComponent.build());
     }

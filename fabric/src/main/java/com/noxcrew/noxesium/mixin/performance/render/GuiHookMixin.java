@@ -61,7 +61,7 @@ public abstract class GuiHookMixin {
 
         var overlay2 = new LayeredDraw();
         overlay2.add(GameTimeOverlayCache::renderGameTimeOverlay);
-        this.layers.add(overlay, () ->
+        this.layers.add(overlay2, () ->
                 // Check that the main GUI is not hidden
                 !minecraft.options.hideGui &&
                         // Check that the debug screen is not up
