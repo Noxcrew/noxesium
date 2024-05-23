@@ -1,0 +1,37 @@
+{
+  "debug.experimental_patches.disabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant désactivés.",
+  "debug.experimental_patches.enabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant activés.",
+  "debug.experimental_patches.help": "F3 + W = Basculer les correctifs de performance de l'Interface Utilisateur de Noxesium.",
+
+  "debug.fps_overlay.disabled": "Le compteur d'IPS est maintenant désactivé.",
+  "debug.fps_overlay.enabled": "Le compteur d'IPS est maintenant activé. (Désactivables avec F3 + Y)",
+  "debug.fps_overlay.help": "F3 + Y = Basculer le compteur d'IPS sur l'écran.",
+  "debug.fps_overlay": "%s images/s",
+
+  "debug.noxesium_overlay.on": "Noxesium: §aActivé",
+  "debug.noxesium_overlay.off": "Noxesium: §cDésactivé",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "Superposition d'IPS",
+  "noxesium.options.fps_overlay.tooltip": "Si activé, une petite superposition montrant les ips actuels dans le coin en haut à gauche de votre écran est ajouté.",
+  "noxesium.options.experimental_patches.name": "Optimisations expérimentales",
+  "noxesium.options.experimental_patches.tooltip": "§4(attention: instable!)\n§fActive les amélioration de performance de l'Interface Utilisateur expérimental remplaçant totalement tout le code d'affichage de l'Interface Utilisateur pour fonctionner plus rapidement.\n\n§cAttention: §fSi vous rencontrez tout problème d'affichage de l'Interface Utilisateur en utilisant ce paramètre, veuillez rapporter ces problèmes à Noxesium, et non pas les autres modifications impliquées.",
+  "noxesium.options.reset_toggle_keys.name": "Réinitialiser les Touches de Bascule à la mort",
+  "noxesium.options.reset_toggle_keys.tooltip": "Réinitialiser ou non les touches de bascule (courrir/s'accroupir) quand vous réapparaissez. Normalement activé en vanilla.",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "Basculer la mise en lumière rouge (Spectateurs)",
+  "key.noxesium.glow.orange": "Basculer la mise en lumière orange (Spectateurs)",
+  "key.noxesium.glow.yellow": "Basculer la mise en lumière jaune (Spectateurs)",
+  "key.noxesium.glow.lime": "Basculer la mise en lumière vert clair (Spectateurs)",
+  "key.noxesium.glow.green": "Basculer la mise en lumière verte (Spectateurs)",
+  "key.noxesium.glow.cyan": "Basculer la mise en lumière cyan (Spectateurs)",
+  "key.noxesium.glow.aqua": "Basculer la mise en lumière turquoise (Spectateurs)",
+  "key.noxesium.glow.blue": "Basculer la mise en lumière bleue (Spectateurs)",
+  "key.noxesium.glow.purple": "Basculer la mise en lumière violette (Spectateurs)",
+  "key.noxesium.glow.pink": "Basculer la mise en lumière rose (Spectateurs)",
+
+  "key.noxesium.glow.all": "Activer toute les mises en lumière (Spectateurs)",
+  "key.noxesium.glow.none": "Désactiver toute les mises en lumière (Spectateurs)"
+}
