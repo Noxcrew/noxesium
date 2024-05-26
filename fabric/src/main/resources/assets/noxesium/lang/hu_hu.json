@@ -4,7 +4,7 @@
   "debug.experimental_patches.help": "F3 + W = Noxesium felhasználói felületi javítások ki/be kapcsolása",
 
   "debug.fps_overlay.disabled": "FPS számláló ki lett kapcsolva",
-  "debug.fps_overlay.enabled": "FPS számláló be lett kapcsolva (kapcsold ki az F3 + Y billentyűkombinációval)",
+  "debug.fps_overlay.enabled": "FPS számláló be lett kapcsolva (kikapcsolható az F3 + Y billentyűkombinációval)",
   "debug.fps_overlay.help": "F3 + Y = Képernyőn levő fps számláló ki/be kapcsolása",
   "debug.fps_overlay": "%s fps",
 
@@ -14,10 +14,10 @@
   "noxesium.options.pages.noxesium": "Noxesium",
   "noxesium.options.fps_overlay.name": "FPS Átfedés",
   "noxesium.options.fps_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz hozzáadva a képernyő bal felső sarkába, ami mutatja a jelenlegi fps-t.",
-  "noxesium.options.experimental_patches.name": "Kísérleti Optimalizálások",
+  "noxesium.options.experimental_patches.name": "Kísérleti Optimalizációk",
   "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi teljesítmény fejlesztéseket, melyek teljesen lecserélik az összes felhasználói felület renderelő kódot, hogy gyorsabban fusson.\n\n§Figyelem: §fHa felhasználói felületi renderelési hibákat észlelsz ezen beállítás használata közben, kérlek Noxesiumnak jelentsél hibákat, ne a többi modnak.",
   "noxesium.options.reset_toggle_keys.name": "Bekapcsolt Billentyűk Visszaállítása Halálkor",
-  "noxesium.options.reset_toggle_keys.tooltip": "Újraéledéskor vissza legyenek-e állítva a bekapcsolt billentyűk (futás/lopakodés). Vanillában alapból be van kapcsolva.",
+  "noxesium.options.reset_toggle_keys.tooltip": "Újraéledéskor vissza legyenek-e állítva a bekapcsolt billentyűk (futás/lopakodás). Vanillában alapból be van kapcsolva.",
 
   "category.noxesium": "Noxesium",
 
