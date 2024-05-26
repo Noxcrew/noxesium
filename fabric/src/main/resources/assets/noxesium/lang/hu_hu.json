@@ -15,7 +15,7 @@
   "noxesium.options.fps_overlay.name": "FPS Átfedés",
   "noxesium.options.fps_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz hozzáadva a képernyő bal felső sarkába, ami mutatja a jelenlegi fps-t.",
   "noxesium.options.experimental_patches.name": "Kísérleti Optimalizációk",
-  "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi teljesítmény fejlesztéseket, melyek teljesen lecserélik az összes felhasználói felület renderelő kódot, hogy gyorsabban fusson.\n\n§Figyelem: §fHa felhasználói felületi renderelési hibákat észlelsz ezen beállítás használata közben, kérlek Noxesiumnak jelentsél hibákat, ne a többi modnak.",
+  "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi teljesítmény fejlesztéseket, melyek teljesen lecserélik az összes felhasználói felület renderelő kódot, hogy gyorsabban fusson.\n\n§Figyelem: §fHa felhasználói felületi renderelési hibákat észlelsz ezen beállítás használata közben, kérlek Noxesiumnak jelentsél hibákat, ne a többi érintett modnak.",
   "noxesium.options.reset_toggle_keys.name": "Bekapcsolt Billentyűk Visszaállítása Halálkor",
   "noxesium.options.reset_toggle_keys.tooltip": "Újraéledéskor vissza legyenek-e állítva a bekapcsolt billentyűk (futás/lopakodás). Vanillában alapból be van kapcsolva.",
 
