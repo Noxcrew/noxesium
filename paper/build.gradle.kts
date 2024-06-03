@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.23"
-    id("io.papermc.paperweight.userdev") version "1.5.15"
+    kotlin("jvm") version "2.0.0"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
     compileOnlyApi(libs.guava)
 
     api(libs.kotlin.coroutines)

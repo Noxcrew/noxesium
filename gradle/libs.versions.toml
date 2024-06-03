@@ -1,13 +1,12 @@
 [versions]
 # Plugins
-shadow = "8.1.5"
+shadow = "8.1.7"
 
 # Tooling
-kotlin = "1.7.10"
-kotlin-coroutines = "1.6.4"
-guava = "21.0"
-slf4j = "1.7.36"
-caffeine = "3.1.6"
+kotlin-coroutines = "1.9.0-RC"
+guava = "32.1.2-jre"
+slf4j = "2.0.9"
+caffeine = "3.1.8"
 
 [plugins]
 shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.paper.api.rule
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Material
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -78,14 +79,6 @@ public class ItemStackServerRule(
 ) : RemoteServerRule<ItemStack>(player, index, default) {
 
     override fun write(value: ItemStack, buffer: FriendlyByteBuf) {
-        /*
-        As of 1.20.5 the client uses a readJsonWithCodec which does not exist yet in
-        Minecraft 1.19.4. It's only possible for the server to serialize this type of
-        data in 1.20.5 and later. It also changed in between 1.19.4-1.20.4 so generally
-        serializing item stacks is not very stable currently.
-
-        Actual support for this awaits a server-side update to 1.20.5.
-         */
-        throw UnsupportedOperationException("Unimplemented on 1.19.4")
+        buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(value))
     }
 }
