@@ -1,0 +1,37 @@
+{
+  "debug.experimental_patches.disabled": "Noxesium UI 效能補丁現已關閉",
+  "debug.experimental_patches.enabled": "Noxesium UI 效能補丁現已開啟",
+  "debug.experimental_patches.help": "F3 + W = 切換 Noxesium UI 效能補丁狀態",
+
+  "debug.fps_overlay.disabled": "FPS 計數器現已關閉",
+  "debug.fps_overlay.enabled": "FPS 計數器現已打開（按 F3 + Y 關閉）",
+  "debug.fps_overlay.help": "F3 + Y = 切換螢幕上的 fps 計數器狀態",
+  "debug.fps_overlay": "%s FPS",
+
+  "debug.noxesium_overlay.on": "Noxesium: §a開",
+  "debug.noxesium_overlay.off": "Noxesium: §c關",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "FPS 疊加層",
+  "noxesium.options.fps_overlay.tooltip": "如果啟用，則會在螢幕左上角加入一個小的疊加層，用來顯示目前的 fps。",
+  "noxesium.options.experimental_patches.name": "啟用實驗性最佳化",
+  "noxesium.options.experimental_patches.tooltip": "§4(警告: 不穩定!)\n§f啟用實驗性UI效能改進，將會完全取代所有UI渲染代碼，使UI渲染速度變得更快。\n\n§c警告：§f如果您在啟用此設置時遇到任何UI渲染問題，請先向 Noxesium 報告，而不是其他涉及的模組。",
+  "noxesium.options.reset_toggle_keys.name": "死亡後重設行動狀態",
+  "noxesium.options.reset_toggle_keys.tooltip": "死亡後是否重設行動狀態（疾走/潛行）。 預設啟用。",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "切換紅色突出顯示（觀察者模式）",
+  "key.noxesium.glow.orange": "切換橙色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.yellow": "切換黃色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.lime": "切換石灰色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.green": "切換綠色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.cyan": "切換青色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.aqua": "切換水藍色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.blue": "切換藍色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.purple": "切換紫色突出顯示 (觀察者模式)",
+  "key.noxesium.glow.pink": "切換粉紅色突出顯示 (觀察者模式)",
+
+  "key.noxesium.glow.all": "啟用所有突出顯示 (觀察者模式)",
+  "key.noxesium.glow.none": "停用所有突出顯示 (觀察者模式)"
+}
