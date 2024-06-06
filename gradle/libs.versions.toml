@@ -3,7 +3,7 @@
 shadow = "8.1.7"
 
 # Tooling
-kotlin-coroutines = "1.9.0-RC"
+kotlin-coroutines = "1.8.1"
 guava = "32.1.2-jre"
 slf4j = "2.0.9"
 caffeine = "3.1.8"
