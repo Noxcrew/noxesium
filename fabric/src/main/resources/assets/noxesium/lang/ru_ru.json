@@ -1,0 +1,37 @@
+{
+  "debug.experimental_patches.disabled": "Экспериментальные оптимизации Noxesium UI выключены",
+  "debug.experimental_patches.enabled": "Экспериментальные оптимизации Noxesium UI включены",
+  "debug.experimental_patches.help": "F3 + W = Переключить экспериментальные оптимизации Noxesium UI",
+
+  "debug.fps_overlay.disabled": "FPS Оверлей отключен.",
+  "debug.fps_overlay.enabled": "FPS Оверлей включен (чтобы отключить используйте F3 + Y)",
+  "debug.fps_overlay.help": "F3 + Y = Переключить FPS Оверлей",
+  "debug.fps_overlay": "%s fps",
+
+  "debug.noxesium_overlay.on": "Noxesium: §aВкл.",
+  "debug.noxesium_overlay.off": "Noxesium: §cВыкл.",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "FPS Оверлей",
+  "noxesium.options.fps_overlay.tooltip": "Если эта опция включена, добавляется небольшой оверлей, который показывает текущий FPS в левом верхнем углу экрана.",
+  "noxesium.options.experimental_patches.name": "Экспериментальные Оптимизации",
+  "noxesium.options.experimental_patches.tooltip": "§4(Внимание: нестабильно!)\n§fЭкспериментальные оптимизации UI, которые полностью заменяют его код отрисовки, чтобы работать быстрее.\n\n§cВнимание: §fЕсли у вас возникнут какие-либо проблемы с рендерингом UI при использовании этой настройки, пожалуйста, сообщите о проблемах разработчикам Noxesium, а не других модов.",
+  "noxesium.options.reset_toggle_keys.name": "Сброс переключения бега при смерти",
+  "noxesium.options.reset_toggle_keys.tooltip": "Сбрасывать кнопки переключения бега/подкрадывания при возраждении. По умолчанию эта опция включена.",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "Переключить Красную подсветку (Наблюдатели)",
+  "key.noxesium.glow.orange": "Переключить Оранжевую подсветку (Наблюдатели)",
+  "key.noxesium.glow.yellow": "Переключить Желтую подсветку (Наблюдатели)",
+  "key.noxesium.glow.lime": "Переключить Лаймовую подсветку (Наблюдатели)",
+  "key.noxesium.glow.green": "Переключить Зеленую подсветку (Наблюдатели)",
+  "key.noxesium.glow.cyan": "Переключить Бирюзовую подсветку (Наблюдатели)",
+  "key.noxesium.glow.aqua": "Переключить Светло-синию подсветку (Наблюдатели)",
+  "key.noxesium.glow.blue": "Переключить Синию подсветку (Наблюдатели)",
+  "key.noxesium.glow.purple": "Переключить Фиолетовую подсветку (Наблюдатели)",
+  "key.noxesium.glow.pink": "Переключить Розовую подсветку (Наблюдатели)",
+
+  "key.noxesium.glow.all": "Включить все подсветки (Наблюдатели)",
+  "key.noxesium.glow.none": "Выключить все подсветки (Наблюдатели)"
+}
