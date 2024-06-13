@@ -8,6 +8,10 @@
   "debug.fps_overlay.help": "F3 + Y = Toggle on-screen fps counter",
   "debug.fps_overlay": "%s fps",
 
+  "noxesium.options.game_time_overlay.name": "Game Time Overlay",
+  "noxesium.options.game_time_overlay.tooltip": "If enabled, shows an overlay with the current game time, useful for shader development.",
+  "debug.game_time_overlay": "%s st, %s gt",
+
   "debug.noxesium_overlay.on": "Noxesium: §aOn",
   "debug.noxesium_overlay.off": "Noxesium: §cOff",
 

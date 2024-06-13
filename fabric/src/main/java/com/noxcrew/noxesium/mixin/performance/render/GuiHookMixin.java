@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.render.cache.actionbar.ActionBarCache;
 import com.noxcrew.noxesium.feature.render.cache.chat.ChatCache;
 import com.noxcrew.noxesium.feature.render.cache.fps.FpsOverlayCache;
+import com.noxcrew.noxesium.feature.render.cache.gametime.GameTimeOverlayCache;
 import com.noxcrew.noxesium.feature.render.cache.scoreboard.ScoreboardCache;
 import com.noxcrew.noxesium.feature.render.cache.title.TitleCache;
 import net.minecraft.client.DeltaTracker;
@@ -56,6 +57,17 @@ public abstract class GuiHookMixin {
                         !this.getDebugOverlay().showDebugScreen() &&
                         // Check that the setting is enabled
                         NoxesiumMod.getInstance().getConfig().showFpsOverlay
+        );
+
+        var overlay2 = new LayeredDraw();
+        overlay2.add(GameTimeOverlayCache::renderGameTimeOverlay);
+        this.layers.add(overlay, () ->
+                // Check that the main GUI is not hidden
+                !minecraft.options.hideGui &&
+                        // Check that the debug screen is not up
+                        !this.getDebugOverlay().showDebugScreen() &&
+                        // Check that the setting is enabled
+                        NoxesiumMod.getInstance().getConfig().showGameTimeOverlay
         );
     }
 

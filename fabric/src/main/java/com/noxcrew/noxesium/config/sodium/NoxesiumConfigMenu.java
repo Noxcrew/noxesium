@@ -30,6 +30,14 @@ public class NoxesiumConfigMenu {
                 .setControl(TickBoxControl::new)
                 .build()
         );
+        builder.add(OptionImpl.createBuilder(boolean.class, storage)
+                .setName(Component.translatable("noxesium.options.game_time_overlay.name"))
+                .setTooltip(Component.translatable("noxesium.options.game_time_overlay.tooltip"))
+                .setImpact(OptionImpact.LOW)
+                .setBinding((config, value) -> config.showGameTimeOverlay = value, (config) -> config.showGameTimeOverlay)
+                .setControl(TickBoxControl::new)
+                .build()
+        );
         if (NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable()) {
             builder.add(OptionImpl.createBuilder(boolean.class, storage)
                     .setName(Component.translatable("noxesium.options.experimental_patches.name"))
