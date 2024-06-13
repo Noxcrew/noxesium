@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.noxcrew.noxesium.mixin.performance.ext.BeaconRendererExt;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,9 +26,10 @@ import java.util.List;
  * Handles rendering logic for global block entities, specifically optimizes beacon rendering.
  */
 public class GlobalBlockEntityRenderer {
-    public static void render(Collection<BlockEntity> globalBlockEntities, Camera camera, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, float tickDelta) {
+    public static void render(Collection<BlockEntity> globalBlockEntities, Camera camera, PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, Vec3 cameraPosition, DeltaTracker deltaTracker) {
         if (globalBlockEntities.isEmpty()) return;
 
+        var tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
         var blockEntityRenderDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
         var cameraX = cameraPosition.x;
         var cameraY = cameraPosition.y;
