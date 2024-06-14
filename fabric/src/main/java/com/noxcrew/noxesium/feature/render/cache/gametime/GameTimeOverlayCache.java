@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.render.cache.ElementCache;
 import com.noxcrew.noxesium.feature.render.font.BakedComponentBuilder;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,8 +30,8 @@ public class GameTimeOverlayCache extends ElementCache<GameTimeOverlayInformatio
     /**
      * Renders the game time overlay through its cache.
      */
-    public static void renderGameTimeOverlay(GuiGraphics graphics, float partialTicks) {
-        getInstance().render(graphics, partialTicks);
+    public static void renderGameTimeOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
+        getInstance().render(graphics, deltaTracker);
     }
 
     public GameTimeOverlayCache() {
@@ -45,7 +46,7 @@ public class GameTimeOverlayCache extends ElementCache<GameTimeOverlayInformatio
     }
 
     @Override
-    protected void render(GuiGraphics graphics, GameTimeOverlayInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, float partialTicks, boolean dynamic) {
+    protected void render(GuiGraphics graphics, GameTimeOverlayInformation cache, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker, boolean dynamic) {
         // FIXME Can't just check for a different mod like this that's trash
         var lineOffset = font.lineHeight + 5;
         var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? lineOffset * 2 : lineOffset;
