@@ -7,8 +7,6 @@
   "client": [
     "BlockStateBaseMixin",
     "PlayerTabOverlayMixin",
-    "beacon.BeaconRenderingMixin",
-    "beacon.PreventDoubleBeaconRenderingMixin",
     "component.ComponentSerializerMixin",
     "component.TranslatableContentsMixin",
     "component.ext.FontManagerExt",
