@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.mixin.entity;
 
-import com.noxcrew.noxesium.feature.render.CustomRenderTypes;
+import com.noxcrew.noxesium.feature.ui.CustomRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.DisplayRenderer;
 import org.spongepowered.asm.mixin.Mixin;

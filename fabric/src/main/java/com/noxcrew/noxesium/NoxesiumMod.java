@@ -4,8 +4,8 @@ import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
-import com.noxcrew.noxesium.feature.island.MccIslandTracker;
-import com.noxcrew.noxesium.feature.render.NoxesiumReloadListener;
+import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
+import com.noxcrew.noxesium.feature.ui.NoxesiumReloadListener;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
@@ -22,6 +22,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,16 +53,21 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     private boolean initialized = false;
 
-    /**
-     * The configuration file used by the mod.
-     */
     private final NoxesiumConfig config = NoxesiumConfig.load();
+    private final Logger logger = LoggerFactory.getLogger("Noxesium");
 
     /**
      * Returns the known Noxesium instance.
      */
     public static NoxesiumMod getInstance() {
         return instance;
+    }
+
+    /**
+     * Returns the logger instance to use.
+     */
+    public Logger getLogger() {
+        return logger;
     }
 
     /**
@@ -107,7 +114,7 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new ServerRuleModule());
         registerModule(new SkullFontModule());
         registerModule(new NoxesiumSoundModule());
-        registerModule(new MccIslandTracker());
+        registerModule(new TeamGlowHotkeys());
         registerModule(new NoxesiumPacketHandling());
 
         // Every time the client joins a server we send over information on the version being used,

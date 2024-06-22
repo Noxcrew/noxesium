@@ -23,11 +23,11 @@ public class NoxesiumConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    public boolean resetToggleKeys = false;
     public boolean showFpsOverlay = false;
+    public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
-    public boolean resetToggleKeys = false;
-    public boolean showGameTimeOverlay = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if

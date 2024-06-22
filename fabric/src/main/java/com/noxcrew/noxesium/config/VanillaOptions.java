@@ -19,16 +19,6 @@ public class VanillaOptions {
             }
     );
 
-    private static final OptionInstance<Boolean> fpsOverlay = OptionInstance.createBoolean(
-            "noxesium.options.fps_overlay.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.fps_overlay.tooltip")),
-            NoxesiumMod.getInstance().getConfig().showFpsOverlay,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().showFpsOverlay = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            }
-    );
-
     private static final OptionInstance<Boolean> resetToggleKeys = OptionInstance.createBoolean(
             "noxesium.options.reset_toggle_keys.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.reset_toggle_keys.tooltip")),
@@ -38,10 +28,6 @@ public class VanillaOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             }
     );
-
-    public static OptionInstance<Boolean> fpsOverlay() {
-        return fpsOverlay;
-    }
 
     public static OptionInstance<Boolean> experimentalPatches() {
         return experimentalPatches;

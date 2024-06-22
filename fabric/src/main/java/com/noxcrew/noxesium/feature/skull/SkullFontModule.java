@@ -10,7 +10,8 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
-import com.noxcrew.noxesium.feature.render.cache.ElementCache;
+import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
+import com.noxcrew.noxesium.feature.ui.cache.ElementWrapper;
 import com.noxcrew.noxesium.mixin.component.ext.FontManagerExt;
 import com.noxcrew.noxesium.mixin.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.mixin.component.ext.SkinManagerExt;
@@ -161,7 +162,7 @@ public class SkullFontModule implements NoxesiumModule {
                                 nativeImage = NativeImage.read(inputStream);
                             }
                             imageFuture.complete(processImage(nativeImage, properties.grayscale()));
-                            ElementCache.getAllCaches().forEach(ElementCache::clearCache);
+                            ElementManager.getAllWrappers().forEach(ElementWrapper::requestRedraw);
                         } catch (IOException x) {
                             x.printStackTrace();
                         }
@@ -176,7 +177,7 @@ public class SkullFontModule implements NoxesiumModule {
                                     nativeImage = NativeImage.read(inputStream);
                                 }
                                 imageFuture.complete(processImage(nativeImage, properties.grayscale()));
-                                ElementCache.getAllCaches().forEach(ElementCache::clearCache);
+                                ElementManager.getAllWrappers().forEach(ElementWrapper::requestRedraw);
                             } catch (IOException x) {
                                 x.printStackTrace();
                             }

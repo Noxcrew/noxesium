@@ -9,7 +9,7 @@
   "debug.fps_overlay": "%s fps",
 
   "noxesium.options.game_time_overlay.name": "Game Time Overlay",
-  "noxesium.options.game_time_overlay.tooltip": "If enabled, shows an overlay with the current game time, useful for shader development.",
+  "noxesium.options.game_time_overlay.tooltip": "If enabled, a small overlay is added which shows the current game time, useful for shader development.",
   "debug.game_time_overlay": "%s st, %s gt",
 
   "debug.noxesium_overlay.on": "Noxesium: §aOn",

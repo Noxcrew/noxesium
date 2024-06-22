@@ -22,6 +22,16 @@ public class NoxesiumConfigMenu {
     public static void configure(List<OptionPage> pages) {
         var groups = ImmutableList.<OptionGroup>builder();
         var builder = OptionGroup.createBuilder();
+        if (NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable()) {
+            builder.add(OptionImpl.createBuilder(boolean.class, storage)
+                    .setName(Component.translatable("noxesium.options.experimental_patches.name"))
+                    .setTooltip(Component.translatable("noxesium.options.experimental_patches.tooltip"))
+                    .setImpact(OptionImpact.HIGH)
+                    .setBinding((config, value) -> config.enableExperimentalPerformancePatches = value, NoxesiumConfig::hasConfiguredPerformancePatches)
+                    .setControl(TickBoxControl::new)
+                    .build()
+            );
+        }
         builder.add(OptionImpl.createBuilder(boolean.class, storage)
                 .setName(Component.translatable("noxesium.options.fps_overlay.name"))
                 .setTooltip(Component.translatable("noxesium.options.fps_overlay.tooltip"))
@@ -38,16 +48,6 @@ public class NoxesiumConfigMenu {
                 .setControl(TickBoxControl::new)
                 .build()
         );
-        if (NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable()) {
-            builder.add(OptionImpl.createBuilder(boolean.class, storage)
-                    .setName(Component.translatable("noxesium.options.experimental_patches.name"))
-                    .setTooltip(Component.translatable("noxesium.options.experimental_patches.tooltip"))
-                    .setImpact(OptionImpact.HIGH)
-                    .setBinding((config, value) -> config.enableExperimentalPerformancePatches = value, NoxesiumConfig::hasConfiguredPerformancePatches)
-                    .setControl(TickBoxControl::new)
-                    .build()
-            );
-        }
         groups.add(builder.build());
         pages.add(new OptionPage(Component.translatable("noxesium.options.pages.noxesium"), groups.build()));
     }

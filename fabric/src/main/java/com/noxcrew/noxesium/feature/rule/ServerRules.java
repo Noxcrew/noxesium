@@ -9,7 +9,8 @@ import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * A class that stores all known server rules.
+ * A class that stores all known server rules. Similar to game rules but slightly more powerful
+ * for a server to modify.
  */
 public class ServerRules {
     /**
