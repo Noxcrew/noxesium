@@ -3,20 +3,28 @@ package com.noxcrew.noxesium.mixin.ui.render;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
 import com.noxcrew.noxesium.feature.ui.cache.ActionBarWrapper;
+import com.noxcrew.noxesium.feature.ui.cache.BossBarWrapper;
 import com.noxcrew.noxesium.feature.ui.cache.ChatWrapper;
+import com.noxcrew.noxesium.feature.ui.cache.DebugWrapper;
+import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
 import com.noxcrew.noxesium.feature.ui.cache.FpsOverlayWrapper;
 import com.noxcrew.noxesium.feature.ui.cache.GameTimeOverlayWrapper;
 import com.noxcrew.noxesium.feature.ui.cache.ScoreboardWrapper;
+import com.noxcrew.noxesium.feature.ui.cache.TabListWrapper;
 import com.noxcrew.noxesium.feature.ui.cache.TitleWrapper;
+import com.noxcrew.noxesium.mixin.ui.render.ext.ChatComponentExt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.components.BossHealthOverlay;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.client.gui.components.PlayerTabOverlay;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,6 +45,9 @@ import java.util.function.Supplier;
  */
 @Mixin(Gui.class)
 public abstract class GuiHookMixin {
+
+    @Unique
+    private int noxesium$lastChatHover;
 
     @Shadow
     @Final
@@ -71,23 +82,47 @@ public abstract class GuiHookMixin {
         noxesium$addRenderLayer(ElementManager.getInstance(GameTimeOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showGameTimeOverlay);
     }
 
-    @WrapOperation(method = "renderScoreboardSidebar", at = @At("HEAD"))
-    public void renderScoreboardSidebar(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-        ElementManager.getInstance(ScoreboardWrapper.class).wrapOperation(guiGraphics, deltaTracker, original);
+    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderScoreboardSidebar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    public void renderScoreboardSidebar(Gui instance, GuiGraphics graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+        ElementManager.getInstance(ScoreboardWrapper.class).wrapOperation(graphics, deltaTracker, () -> original.call(graphics, deltaTracker));
     }
 
-    @WrapOperation(method = "renderOverlayMessage", at = @At("HEAD"))
-    public void renderOverlayMessage(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-        ElementManager.getInstance(ActionBarWrapper.class).wrapOperation(guiGraphics, deltaTracker, original);
+    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderOverlayMessage(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    public void renderOverlayMessage(Gui instance, GuiGraphics graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+        ElementManager.getInstance(ActionBarWrapper.class).wrapOperation(graphics, deltaTracker, () -> original.call(graphics, deltaTracker));
     }
 
-    @WrapOperation(method = "renderTitle", at = @At("HEAD"))
-    public void renderTitle(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-        ElementManager.getInstance(TitleWrapper.class).wrapOperation(guiGraphics, deltaTracker, original);
+    @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderTitle(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    public void renderTitle(Gui instance, GuiGraphics graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+        ElementManager.getInstance(TitleWrapper.class).wrapOperation(graphics, deltaTracker, () -> original.call(graphics, deltaTracker));
     }
 
-    @WrapOperation(method = "renderChat", at = @At("HEAD"))
-    public void renderChat(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
-        ElementManager.getInstance(ChatWrapper.class).wrapOperation(guiGraphics, deltaTracker, original);
+    @WrapOperation(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V"))
+    public void renderChat(ChatComponent instance, GuiGraphics graphics, int tickCount, int x, int y, boolean focussed, Operation<Void> original) {
+        var chatWrapper = ElementManager.getInstance(ChatWrapper.class);
+        var chatComponentExt = (ChatComponentExt) instance;
+
+        // Update the rendered chat whenever you change which message you hover over (so hover components work properly!)
+        var hover = chatComponentExt.invokeGetMessageEndIndexAt(chatComponentExt.invokeScreenToChatX(x), chatComponentExt.invokeScreenToChatY(y));
+        if (hover != noxesium$lastChatHover) {
+            noxesium$lastChatHover = hover;
+            chatWrapper.requestRedraw();
+        }
+        chatWrapper.wrapOperation(graphics, DeltaTracker.ZERO, () -> original.call(graphics, tickCount, x, y, focussed));
+    }
+
+    @WrapOperation(method = "renderTabList", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/world/scores/Scoreboard;Lnet/minecraft/world/scores/Objective;)V"))
+    public void renderTabList(PlayerTabOverlay instance, GuiGraphics graphics, int partialTicks, Scoreboard scoreboard, Objective objective, Operation<Void> original) {
+        ElementManager.getInstance(TabListWrapper.class).wrapOperation(graphics, DeltaTracker.ZERO, () -> original.call(graphics, partialTicks, scoreboard, objective));
+    }
+
+    @WrapOperation(method = "method_55807", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/DebugScreenOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    public void render(DebugScreenOverlay instance, GuiGraphics graphics, Operation<Void> original) {
+        ElementManager.getInstance(DebugWrapper.class).wrapOperation(graphics, DeltaTracker.ZERO, () -> original.call(graphics));
+    }
+
+    @WrapOperation(method = "method_55808", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/BossHealthOverlay;render(Lnet/minecraft/client/gui/GuiGraphics;)V"))
+    public void render(BossHealthOverlay instance, GuiGraphics graphics, Operation<Void> original) {
+        ElementManager.getInstance(BossBarWrapper.class).wrapOperation(graphics, DeltaTracker.ZERO, () -> original.call(graphics));
     }
 }

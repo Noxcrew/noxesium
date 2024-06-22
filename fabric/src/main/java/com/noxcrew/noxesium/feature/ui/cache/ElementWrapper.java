@@ -11,6 +11,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -134,36 +135,14 @@ public abstract class ElementWrapper {
     }
 
     /**
-     * Renders this UI element while wrapping existing code for doing so provided by operation of a method
+     * Renders this UI element while wrapping existing code for doing so provided by original of a method
      * of type void method(GuiGraphics, DeltaTracker);
      */
-    public final void wrapOperation(GuiGraphics graphics, DeltaTracker deltaTracker, Operation<Void> operation) {
+    public final void wrapOperation(GuiGraphics graphics, DeltaTracker deltaTracker, @Nullable Runnable function) {
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
-            operation.call(graphics, deltaTracker);
+            if (function != null) function.run();
         } else {
-            render(graphics, deltaTracker, (grph) -> operation.call(grph, deltaTracker));
-        }
-    }
-
-    /**
-     * @see ElementWrapper#wrapOperation(GuiGraphics, DeltaTracker, Operation)
-     */
-    public final void wrapOperation(GuiGraphics graphics, Operation<Void> operation) {
-        if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
-            operation.call(graphics);
-        } else {
-            render(graphics, DeltaTracker.ZERO, operation::call);
-        }
-    }
-
-    /**
-     * @see ElementWrapper#wrapOperation(GuiGraphics, DeltaTracker, Operation)
-     */
-    public final void wrapOperation(GuiGraphics graphics, int partialTicks, Scoreboard scoreboard, Objective objective, Operation<Void> operation) {
-        if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
-            operation.call(graphics, partialTicks, scoreboard, objective);
-        } else {
-            render(graphics, DeltaTracker.ZERO, (grph) -> operation.call(grph, partialTicks, scoreboard, objective));
+            render(graphics, deltaTracker, function);
         }
     }
 
@@ -171,13 +150,13 @@ public abstract class ElementWrapper {
      * Renders the UI element.
      */
     public final void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-        render(graphics, deltaTracker, (grph) -> {});
+        render(graphics, deltaTracker, null);
     }
 
     /**
      * Renders the UI element.
      */
-    public final void render(GuiGraphics graphics, DeltaTracker deltaTracker, Consumer<GuiGraphics> renderFunction) {
+    public final void render(GuiGraphics graphics, DeltaTracker deltaTracker, @Nullable Runnable function) {
         // Test if any variables have changed
         var minecraft = Minecraft.getInstance();
         testVariableChanges(minecraft, deltaTracker);
@@ -206,7 +185,7 @@ public abstract class ElementWrapper {
                     target.setClearColor(0, 0, 0, 0);
                     target.clear(ON_OSX);
                     target.bindWrite(false);
-                    renderFunction.accept(graphics);
+                    if (function != null) function.run();
                     render(graphics, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, deltaTracker);
                 } finally {
                     graphics.flush();
@@ -226,7 +205,7 @@ public abstract class ElementWrapper {
     }
 
     /**
-     * Performs additional rendering logic for this element. Not applicable to cases where an operation is being wrapped.
+     * Performs additional rendering logic for this element. Not applicable to cases where an original is being wrapped.
      */
     protected void render(GuiGraphics graphics, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker) {
     }

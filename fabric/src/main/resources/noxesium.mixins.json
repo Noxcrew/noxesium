@@ -31,7 +31,6 @@
     "ui.render.ChatComponentMixin",
     "ui.render.ChatListenerMixin",
     "ui.render.ClientPacketListenerMixin",
-    "ui.render.DebugOverlayMixin",
     "ui.render.GlStateManagerMixin",
     "ui.render.GuiHookMixin",
     "ui.render.GuiRefreshMixin",
