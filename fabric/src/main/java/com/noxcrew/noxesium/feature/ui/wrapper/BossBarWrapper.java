@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import java.util.HashMap;
 import java.util.Map;

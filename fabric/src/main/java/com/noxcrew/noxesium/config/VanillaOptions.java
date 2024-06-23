@@ -29,11 +29,25 @@ public class VanillaOptions {
             }
     );
 
+    private static final OptionInstance<Boolean> renderMapsAsUi = OptionInstance.createBoolean(
+            "noxesium.options.render_maps_as_ui.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.render_maps_as_ui.tooltip")),
+            NoxesiumMod.getInstance().getConfig().renderMapsAsUi,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().renderMapsAsUi = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            }
+    );
+
     public static OptionInstance<Boolean> experimentalPatches() {
         return experimentalPatches;
     }
 
     public static OptionInstance<Boolean> resetToggleKeys() {
         return resetToggleKeys;
+    }
+
+    public static OptionInstance<Boolean> renderMapsAsUi() {
+        return renderMapsAsUi;
     }
 }

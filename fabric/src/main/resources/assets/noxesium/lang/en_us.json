@@ -22,6 +22,8 @@
   "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fIf you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
+  "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
+  "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.",
 
   "category.noxesium": "Noxesium",
 

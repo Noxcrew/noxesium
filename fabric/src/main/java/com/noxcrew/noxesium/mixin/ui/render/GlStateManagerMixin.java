@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.noxcrew.noxesium.feature.ui.cache.ElementWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

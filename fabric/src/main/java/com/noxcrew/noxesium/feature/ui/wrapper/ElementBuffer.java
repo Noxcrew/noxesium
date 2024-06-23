@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.GameRenderer;
-import org.joml.Vector3d;
 
 import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;

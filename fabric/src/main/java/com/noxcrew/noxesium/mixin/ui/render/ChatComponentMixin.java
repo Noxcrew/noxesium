@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.ChatWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.ChatWrapper;
 import net.minecraft.client.gui.components.ChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

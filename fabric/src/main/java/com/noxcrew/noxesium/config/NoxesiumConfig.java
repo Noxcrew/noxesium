@@ -2,6 +2,8 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.OverrideChunkUpdates;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
@@ -22,6 +24,7 @@ public class NoxesiumConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public boolean resetToggleKeys = false;
+    public boolean renderMapsAsUi = false;
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
@@ -63,6 +66,13 @@ public class NoxesiumConfig {
      */
     public boolean shouldDumpOutgoingPackets() {
         return dumpOutgoingPackets;
+    }
+
+    /**
+     * Returns whether to render maps in the UI.
+     */
+    public boolean shouldRenderMapsInUi() {
+        return renderMapsAsUi || NoxesiumMod.getInstance().getModule(OverrideChunkUpdates.class).isPlayingBingo();
     }
 
     /**

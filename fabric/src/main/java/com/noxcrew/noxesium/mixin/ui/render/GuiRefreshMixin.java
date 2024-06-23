@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
-import com.noxcrew.noxesium.feature.ui.cache.ElementWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.ActionBarWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.TitleWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.ActionBarWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.TitleWrapper;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;

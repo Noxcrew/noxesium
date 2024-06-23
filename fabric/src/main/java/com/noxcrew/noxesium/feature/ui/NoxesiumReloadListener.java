@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.ui;
 
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.ElementWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementWrapper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;

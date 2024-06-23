@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
-import com.noxcrew.noxesium.feature.ui.cache.BossBarWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.BossBarWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

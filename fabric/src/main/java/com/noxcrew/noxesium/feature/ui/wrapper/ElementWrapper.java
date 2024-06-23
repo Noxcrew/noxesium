@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.GlStateManager;

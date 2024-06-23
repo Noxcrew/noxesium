@@ -4,16 +4,17 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.ui.cache.ActionBarWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.BossBarWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.ChatWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.DebugWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.FpsOverlayWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.GameTimeOverlayWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.ScoreboardWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.TabListWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.TitleWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ActionBarWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.BossBarWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ChatWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.DebugWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.FpsOverlayWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.GameTimeOverlayWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.MapUiWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ScoreboardWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.TabListWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.TitleWrapper;
 import com.noxcrew.noxesium.mixin.ui.render.ext.ChatComponentExt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -81,6 +82,7 @@ public abstract class GuiHookMixin {
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
         noxesium$addRenderLayer(ElementManager.getInstance(FpsOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay);
         noxesium$addRenderLayer(ElementManager.getInstance(GameTimeOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showGameTimeOverlay);
+        noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
     }
 
     @WrapMethod(method = "renderScoreboardSidebar")

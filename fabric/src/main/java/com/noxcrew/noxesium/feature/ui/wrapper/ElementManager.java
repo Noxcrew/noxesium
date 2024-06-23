@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 

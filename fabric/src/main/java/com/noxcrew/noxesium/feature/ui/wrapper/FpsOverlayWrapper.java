@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import net.fabricmc.loader.api.FabricLoader;

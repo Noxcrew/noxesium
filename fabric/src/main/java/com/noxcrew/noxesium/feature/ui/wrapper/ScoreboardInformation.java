@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.Nullable;

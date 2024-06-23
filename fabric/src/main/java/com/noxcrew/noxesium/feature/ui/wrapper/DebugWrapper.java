@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 /**
  * Wraps around the debug menu and updates it whenever the fading animation changes.

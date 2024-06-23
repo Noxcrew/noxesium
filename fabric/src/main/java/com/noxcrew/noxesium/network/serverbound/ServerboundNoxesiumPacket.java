@@ -23,8 +23,9 @@ public interface ServerboundNoxesiumPacket extends NoxesiumPacket {
         if (ClientPlayNetworking.canSend(noxesiumType().type) && NoxesiumPackets.canSend(noxesiumType())) {
             if (NoxesiumMod.getInstance().getConfig().shouldDumpOutgoingPackets()) {
                 Minecraft.getInstance().player.displayClientMessage(
-                        Component.literal("[NOXESIUM]").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED))
-                                .append(Component.literal(" [OUTGOING] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.AQUA)))
+                        Component.empty()
+                                .append(Component.literal("[NOXESIUM] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
+                                .append(Component.literal("[OUTGOING] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.AQUA)))
                                 .append(Component.literal(toString()).withStyle(Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))),
                         false
                 );

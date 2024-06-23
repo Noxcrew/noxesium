@@ -86,7 +86,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
 
         NoxesiumPackets.MCC_SERVER.addListener(this, (reference, packet, context) -> {
             // If we join a server running Hole in the Wall we need to disable the Always Defer Chunk Updates setting!
-            NoxesiumMod.getInstance().getModule(OverrideChunkUpdates.class).updateState(packet.associatedGame().equals("hole_in_the_wall"));
+            NoxesiumMod.getInstance().getModule(OverrideChunkUpdates.class).updateState(packet.associatedGame());
         });
     }
 }

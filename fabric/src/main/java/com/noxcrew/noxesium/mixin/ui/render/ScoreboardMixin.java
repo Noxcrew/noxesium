@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.ScoreboardWrapper;
-import com.noxcrew.noxesium.feature.ui.cache.TabListWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.ScoreboardWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.TabListWrapper;
 import net.minecraft.world.scores.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

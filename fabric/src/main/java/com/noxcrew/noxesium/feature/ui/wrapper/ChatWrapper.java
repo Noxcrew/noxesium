@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.cache;
+package com.noxcrew.noxesium.feature.ui.wrapper;
 
 import com.noxcrew.noxesium.mixin.ui.render.ext.ChatComponentExt;
 import com.noxcrew.noxesium.mixin.ui.render.ext.GuiExt;

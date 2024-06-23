@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.mixin.ui.render;
 
 import com.mojang.authlib.minecraft.MinecraftProfileTextures;
-import com.noxcrew.noxesium.feature.ui.cache.ElementManager;
-import com.noxcrew.noxesium.feature.ui.cache.TabListWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import com.noxcrew.noxesium.feature.ui.wrapper.TabListWrapper;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import org.spongepowered.asm.mixin.Mixin;
