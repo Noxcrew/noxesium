@@ -77,7 +77,7 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public abstract class ElementWrapper {
 
-    public static boolean allowBlendChanges;
+    public static boolean allowBlendChanges = true;
 
     private final Map<String, BiFunction<Minecraft, DeltaTracker, Object>> variables = new HashMap<>();
     private final Map<String, Object> values = new HashMap<>();
