@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 
 /**
  * A Noxesium packet that is sent by the client and handled on the server.
@@ -22,9 +23,9 @@ public interface ServerboundNoxesiumPacket extends NoxesiumPacket {
         if (ClientPlayNetworking.canSend(noxesiumType().type) && NoxesiumPackets.canSend(noxesiumType())) {
             if (NoxesiumMod.getInstance().getConfig().shouldDumpOutgoingPackets()) {
                 Minecraft.getInstance().player.displayClientMessage(
-                        Component.literal("[NOXESIUM]").withStyle(ChatFormatting.RED)
-                                .append(Component.literal(" [OUTGOING] ").withStyle(ChatFormatting.AQUA))
-                                .append(Component.literal(toString())),
+                        Component.literal("[NOXESIUM]").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED))
+                                .append(Component.literal(" [OUTGOING] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.AQUA)))
+                                .append(Component.literal(toString()).withStyle(Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))),
                         false
                 );
             }
