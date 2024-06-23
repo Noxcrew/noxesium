@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.OverrideChunkUpdates;
+import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
@@ -72,7 +74,7 @@ public class NoxesiumConfig {
      * Returns whether to render maps in the UI.
      */
     public boolean shouldRenderMapsInUi() {
-        return renderMapsAsUi || NoxesiumMod.getInstance().getModule(OverrideChunkUpdates.class).isPlayingBingo();
+        return renderMapsAsUi || ServerRules.SHOW_MAP_IN_UI.getValue();
     }
 
     /**

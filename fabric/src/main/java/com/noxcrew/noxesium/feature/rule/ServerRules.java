@@ -50,4 +50,10 @@ public class ServerRules {
      * Allows server to override whether experimental UI optimizations are on.
      */
     public static ClientServerRule<Boolean> DISABLE_UI_OPTIMIZATIONS = new BooleanServerRule(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS, false);
+
+    /**
+     * Moves the handheld map to be shown in the top left/right corner instead of
+     * in the regular hand slot.
+     */
+    public static ClientServerRule<Boolean> SHOW_MAP_IN_UI = new BooleanServerRule(ServerRuleIndices.SHOW_MAP_IN_UI, false);
 }

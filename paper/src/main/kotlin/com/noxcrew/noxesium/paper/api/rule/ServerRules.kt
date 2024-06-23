@@ -73,6 +73,14 @@ public class ServerRules(
         BooleanServerRule(player, index)
     }
 
+    /**
+     * Moves the handheld map to be shown in the top left/right corner instead of
+     * in the regular hand slot.
+     */
+    public val showMapInUi: RuleFunction<Boolean> = register(ServerRuleIndices.SHOW_MAP_IN_UI) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)

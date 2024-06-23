@@ -51,4 +51,10 @@ public class ServerRuleIndices {
      * don't support animated text with shaders.
      */
     public static final int DISABLE_UI_OPTIMIZATIONS = 9;
+
+    /**
+     * Moves the handheld map to be shown in the top left/right corner instead of
+     * in the regular hand slot.
+     */
+    public static final int SHOW_MAP_IN_UI = 10;
 }
