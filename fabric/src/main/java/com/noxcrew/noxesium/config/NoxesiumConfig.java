@@ -26,6 +26,8 @@ public class NoxesiumConfig {
     public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
+    public boolean dumpIncomingPackets = true;
+    public boolean dumpOutgoingPackets = true;
 
     /**
      * Returns whether experimental patches are available. This will return false if
@@ -47,6 +49,20 @@ public class NoxesiumConfig {
      */
     public boolean shouldShowGlowingSettings() {
         return showGlowingSettings;
+    }
+
+    /**
+     * Dumps all incoming Noxesium packets in chat.
+     */
+    public boolean shouldDumpIncomingPackets() {
+        return dumpIncomingPackets;
+    }
+
+    /**
+     * Dumps all outgoing Noxesium packets in chat.
+     */
+    public boolean shouldDumpOutgoingPackets() {
+        return dumpOutgoingPackets;
     }
 
     /**

@@ -1,8 +1,12 @@
 package com.noxcrew.noxesium.network.serverbound;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 /**
  * A Noxesium packet that is sent by the client and handled on the server.
@@ -16,6 +20,14 @@ public interface ServerboundNoxesiumPacket extends NoxesiumPacket {
     default boolean send() {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (ClientPlayNetworking.canSend(noxesiumType().type) && NoxesiumPackets.canSend(noxesiumType())) {
+            if (NoxesiumMod.getInstance().getConfig().shouldDumpOutgoingPackets()) {
+                Minecraft.getInstance().player.displayClientMessage(
+                        Component.literal("[NOXESIUM]").withStyle(ChatFormatting.RED)
+                                .append(Component.literal(" [OUTGOING] ").withStyle(ChatFormatting.AQUA))
+                                .append(Component.literal(toString())),
+                        false
+                );
+            }
             ClientPlayNetworking.send(this);
             return true;
         }

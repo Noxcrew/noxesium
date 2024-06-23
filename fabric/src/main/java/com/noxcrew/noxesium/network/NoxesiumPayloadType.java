@@ -1,6 +1,10 @@
 package com.noxcrew.noxesium.network;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.function.TriConsumer;
@@ -54,6 +58,15 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
                 continue;
             }
             acceptAny(pair.getValue(), obj, context, payload);
+        }
+
+        if (NoxesiumMod.getInstance().getConfig().shouldDumpIncomingPackets()) {
+            Minecraft.getInstance().player.displayClientMessage(
+                    Component.literal("[NOXESIUM]").withStyle(ChatFormatting.RED)
+                            .append(Component.literal(" [INCOMING] ").withStyle(ChatFormatting.YELLOW))
+                            .append(Component.literal(payload.toString())),
+                    false
+            );
         }
     }
 
