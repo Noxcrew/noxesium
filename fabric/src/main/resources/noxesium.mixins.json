@@ -62,5 +62,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "model.ItemDisplayParametersMixin"
   ]
 }

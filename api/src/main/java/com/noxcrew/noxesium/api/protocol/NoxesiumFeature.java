@@ -60,8 +60,10 @@ public enum NoxesiumFeature {
     /**
      * Supports new features added for MCC when updating to 1.21.
      *
+     * @see [NoxesiumMod.RAW_MODEL_TAG]
      * @see [ServerRuleIndices.SHOW_MAP_IN_UI]
      * @see [ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES]
+     * @see [ServerRuleIndices.CUSTOM_CREATIVE_ITEMS]
      */
     NEW_MCC_FEATURES(7),
     ;

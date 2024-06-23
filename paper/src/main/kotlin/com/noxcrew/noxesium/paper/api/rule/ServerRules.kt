@@ -90,6 +90,13 @@ public class ServerRules(
         BooleanServerRule(player, index)
     }
 
+    /**
+     * Defines a list of items to show in a custom creative tab.
+     */
+    public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS) { player, index ->
+        ItemStackListServerRule(player, index)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)

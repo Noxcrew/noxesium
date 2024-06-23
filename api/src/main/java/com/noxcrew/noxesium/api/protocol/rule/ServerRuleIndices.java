@@ -64,4 +64,9 @@ public class ServerRuleIndices {
      * to avoid de-synchronizations on chunk updates.
      */
     public static final int DISABLE_DEFERRED_CHUNK_UPDATES = 11;
+
+    /**
+     * Defines a list of items to show in a custom creative tab.
+     */
+    public static final int CUSTOM_CREATIVE_ITEMS = 12;
 }

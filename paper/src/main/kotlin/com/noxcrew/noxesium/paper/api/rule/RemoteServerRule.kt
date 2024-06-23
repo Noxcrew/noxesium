@@ -82,3 +82,18 @@ public class ItemStackServerRule(
         buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(value))
     }
 }
+
+/** A server rule that stores an item stack. */
+public class ItemStackListServerRule(
+    player: Player,
+    index: Int,
+    default: List<ItemStack> = emptyList(),
+) : RemoteServerRule<List<ItemStack>>(player, index, default) {
+
+    override fun write(value: List<ItemStack>, buffer: FriendlyByteBuf) {
+        buffer.writeVarInt(value.size)
+        value.forEach {
+            buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(it))
+        }
+    }
+}

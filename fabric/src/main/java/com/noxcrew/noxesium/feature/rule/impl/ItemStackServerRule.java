@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * A standard server rule that stores a boolean.
+ * A standard server rule that stores an item stack.
  */
 public class ItemStackServerRule extends ClientServerRule<ItemStack> {
 

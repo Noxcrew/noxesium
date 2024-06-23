@@ -25,6 +25,8 @@
   "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
   "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.",
 
+  "itemGroup.noxesium.server_items": "Custom Blocks",
+
   "category.noxesium": "Noxesium",
 
   "key.noxesium.glow.red": "Toggle Red Highlighting (Spectators)",

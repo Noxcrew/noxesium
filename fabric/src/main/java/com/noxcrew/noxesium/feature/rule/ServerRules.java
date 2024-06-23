@@ -5,8 +5,11 @@ import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
 import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.ItemStackListServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 /**
  * A class that stores all known server rules. Similar to game rules but slightly more powerful
@@ -63,4 +66,9 @@ public class ServerRules {
      * to avoid de-synchronizations on chunk updates.
      */
     public static ClientServerRule<Boolean> DISABLE_DEFERRED_CHUNK_UPDATES = new BooleanServerRule(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES, false);
+
+    /**
+     * Defines a list of items to show in a custom creative tab.
+     */
+    public static ItemStackListServerRule CUSTOM_CREATIVE_ITEMS = new ItemStackListServerRule(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS);
 }
