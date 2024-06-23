@@ -66,6 +66,10 @@ public enum NoxesiumFeature {
      * @see [ServerRuleIndices.CUSTOM_CREATIVE_ITEMS]
      */
     NEW_MCC_FEATURES(7),
+    /**
+     * Added support for the extra entity data system.
+     */
+    EXTRA_ENTITY_DATA_SYSTEM(7),
     ;
 
     private final int minProtocolVersion;

@@ -1,8 +1,6 @@
 package com.noxcrew.noxesium.feature.rule;
 
-import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule;
-import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Objects;
@@ -17,9 +15,6 @@ public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf>
 
     public ClientServerRule(int index) {
         this.index = index;
-
-        // Add any created server rule to the global list
-        NoxesiumMod.getInstance().getModule(ServerRuleModule.class).register(index, this);
     }
 
     @Override

@@ -23,6 +23,11 @@
     ]
   },
   "accessWidener": "noxesium.accesswidener",
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/world/entity/Entity": ["com/noxcrew/noxesium/feature/entity/ExtraEntityDataHolder"]
+    }
+  },
   "mixins": [
     "noxesium.mixins.json",
     "noxesium-sodium.mixins.json"

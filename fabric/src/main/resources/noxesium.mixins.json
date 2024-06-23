@@ -16,6 +16,7 @@
     "component.ext.TextureCacheExt",
     "entity.BoatMixin",
     "entity.ClientPacketListenerMixin",
+    "entity.GuardianRendererMixin",
     "entity.LevelRendererMixin",
     "entity.LivingEntityMixin",
     "entity.SpinAttackMixin",
@@ -62,6 +63,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "entity.GuardianMixin",
     "model.ItemDisplayParametersMixin"
   ]
 }
