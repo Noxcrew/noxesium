@@ -28,6 +28,6 @@ public class TitleWrapper extends ElementWrapper {
         });
 
         // Ensure we re-draw if the title time goes from 0 to not 0
-        registerVariable("title_visible", (minecraft, partialTicks) -> ((GuiExt) minecraft.gui).getTitleTime() >= 0);
+        registerVariable("title visible", (minecraft, partialTicks) -> ((GuiExt) minecraft.gui).getTitleTime() >= 0);
     }
 }
