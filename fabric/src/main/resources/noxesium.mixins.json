@@ -26,6 +26,7 @@
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "map.ItemInHandRendererMixin",
+    "model.ItemModelShaperMixin",
     "model.ItemOverridesMixin",
     "rules.GuiRulesMixin",
     "rules.InventoryMixin",
