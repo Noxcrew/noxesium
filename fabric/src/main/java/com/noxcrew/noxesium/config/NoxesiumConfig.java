@@ -28,8 +28,8 @@ public class NoxesiumConfig {
     public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
-    public boolean dumpIncomingPackets = true;
-    public boolean dumpOutgoingPackets = true;
+    public boolean dumpIncomingPackets = false;
+    public boolean dumpOutgoingPackets = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if

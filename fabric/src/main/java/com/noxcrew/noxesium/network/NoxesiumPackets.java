@@ -2,6 +2,8 @@ package com.noxcrew.noxesium.network;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
+import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
@@ -143,6 +145,18 @@ public class NoxesiumPackets {
         // We don't need to register server-bound packets, we only store that the
         // group was enabled.
         registeredGroups.add(group);
+
+        // Inform all modules about the new group registration
+        NoxesiumMod.getInstance().getAllModules().forEach(it -> it.onGroupRegistered(group));
+    }
+
+    /**
+     * Unregisters all non-universal packets.
+     */
+    public static void unregisterPackets() {
+        // We only need to clear the local cache as the receivers will disappear
+        // along with the play phase addon.
+        registeredGroups.removeIf(it -> !Objects.equals(it, "universal"));
     }
 
     /**

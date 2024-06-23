@@ -14,6 +14,14 @@ public interface NoxesiumModule {
     }
 
     /**
+     * Called when a new group of packets is registered.
+     * This can be used by other mods to control when to activate
+     * themselves.
+     */
+    public default void onGroupRegistered(String group) {
+    }
+
+    /**
      * Called when the client connects to a new server.
      */
     public default void onJoinServer() {

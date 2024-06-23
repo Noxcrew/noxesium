@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,6 +85,7 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public void registerModule(NoxesiumModule module) {
         modules.put(module.getClass(), module);
+        module.onStartup();
     }
 
     /**
@@ -92,6 +94,13 @@ public class NoxesiumMod implements ClientModInitializer {
     @NotNull
     public <T extends NoxesiumModule> T getModule(Class<T> clazz) {
         return (T) Preconditions.checkNotNull(modules.get(clazz), "Could not get module " + clazz.getSimpleName());
+    }
+
+    /**
+     * Returns all registered Noxesium modules.
+     */
+    public Collection<NoxesiumModule> getAllModules() {
+        return modules.values();
     }
 
     /**
@@ -136,13 +145,13 @@ public class NoxesiumMod implements ClientModInitializer {
 
             // Handle quitting the server
             modules.values().forEach(NoxesiumModule::onQuitServer);
+
+            // Unregister additional packets
+            NoxesiumPackets.unregisterPackets();
         });
 
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
-
-        // Call initialisation on all modules
-        modules.values().forEach(NoxesiumModule::onStartup);
 
         // Register the resource listener
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new NoxesiumReloadListener());

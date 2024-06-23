@@ -19,7 +19,6 @@ public abstract class BoatMixin {
     @ModifyReturnValue(method = "canCollideWith", at = @At("RETURN"))
     public boolean checkServerForBoatCollisions(boolean original) {
         if (ServerRules.DISABLE_BOAT_COLLISIONS.getValue()) return false;
-
         return original;
     }
 }
