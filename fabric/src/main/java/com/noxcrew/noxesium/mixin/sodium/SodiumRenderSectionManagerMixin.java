@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.sodium;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import me.jellysquid.mods.sodium.client.render.chunk.RenderSectionManager;
 import org.spongepowered.asm.mixin.Mixin;
