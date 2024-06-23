@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.cache;
 
 import com.google.common.base.Preconditions;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
@@ -9,15 +8,12 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static net.minecraft.client.Minecraft.ON_OSX;
 
@@ -71,6 +67,13 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  * a 2x reduction in frames on which UI is rendered. We can settle for drawing UI on 6 instead of 2 frames
  * within a 1 second window on 60fps. Actually drawing a UI is not terribly performance demanding anyway,
  * it's just the repetition.
+ * <p>
+ * ----
+ * <p>
+ * It should be noted that most of this is not yet implemented (hence why experimental optimizations are
+ * currently fully un-available), the main problem is figuring out how to determine if frames have changed
+ * or not. It seems to be fairly complicated, but the problem is not solvable in an actual nice way without
+ * it from a conceptual level. So this'll stay disabled for a while until I solve that.
  */
 public abstract class ElementWrapper {
 
