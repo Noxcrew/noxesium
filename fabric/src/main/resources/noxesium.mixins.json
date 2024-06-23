@@ -63,6 +63,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "entity.EntityMixin",
     "entity.GuardianMixin",
     "model.ItemDisplayParametersMixin"
   ]

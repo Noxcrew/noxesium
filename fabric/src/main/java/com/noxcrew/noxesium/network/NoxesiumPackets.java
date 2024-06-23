@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.network;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
@@ -11,9 +10,11 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacke
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundResetExtraEntityDataPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundSetExtraEntityDataPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
@@ -61,6 +62,9 @@ public class NoxesiumPackets {
     public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> RESET_SERVER_RULES = NoxesiumPackets.client("reset_server_rules", ClientboundResetServerRulesPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ClientboundResetPacket> RESET = NoxesiumPackets.client("reset", ClientboundResetPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ClientboundServerInformationPacket> SERVER_INFO = NoxesiumPackets.client("server_info", ClientboundServerInformationPacket.STREAM_CODEC);
+
+    public static final NoxesiumPayloadType<ClientboundSetExtraEntityDataPacket> CHANGE_EXTRA_ENTITY_DATA = NoxesiumPackets.client("change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> RESET_EXTRA_ENTITY_DATA = NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
 
     /**
      * Registers a new clientbound Noxesium packet.

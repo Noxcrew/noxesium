@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.entity;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
+import com.noxcrew.noxesium.feature.rule.RuleIndexProvider;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  * Stores information about the currently known extra entity data keys.
  * Uses the server rule system to lend its (de)serialization and indexing logic.
  */
-public class ExtraEntityDataModule implements NoxesiumModule {
+public class ExtraEntityDataModule implements NoxesiumModule, RuleIndexProvider {
 
     private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
 
@@ -26,9 +27,7 @@ public class ExtraEntityDataModule implements NoxesiumModule {
         rules.put(index, rule);
     }
 
-    /**
-     * Returns the data saved under the given index.
-     */
+    @Override
     public ClientServerRule<?> getIndex(int index) {
         return rules.get(index);
     }

@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Stores information about the currently known server rules and their data.
  */
-public class ServerRuleModule implements NoxesiumModule {
+public class ServerRuleModule implements NoxesiumModule, RuleIndexProvider {
 
     private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
 
@@ -30,9 +30,7 @@ public class ServerRuleModule implements NoxesiumModule {
         rules.put(index, rule);
     }
 
-    /**
-     * Returns the rule saved under the given index.
-     */
+    @Override
     public ClientServerRule<?> getIndex(int index) {
         return rules.get(index);
     }

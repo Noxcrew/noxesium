@@ -13,4 +13,18 @@ public interface ExtraEntityDataHolder {
     public default <T> T getExtraData(ClientServerRule<T> rule) {
         return rule.getValue();
     }
+
+    /**
+     * Sets extra data for the given [rule] to [value].
+     */
+    public default void setExtraData(ClientServerRule<?> rule, Object value) {
+        throw new UnsupportedOperationException("Unimplemented");
+    }
+
+    /**
+     * Resets the extra data for the given [rule].
+     */
+    public default void resetExtraData(ClientServerRule<?> rule) {
+        throw new UnsupportedOperationException("Unimplemented");
+    }
 }
