@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(CreativeModeTab.ItemDisplayParameters.class)
 public class ItemDisplayParametersMixin {
 
-    @ModifyReturnValue(method = "needsUpdate", at = @At("HEAD"))
+    @ModifyReturnValue(method = "needsUpdate", at = @At("RETURN"))
     public boolean needsUpdate(boolean original) {
         return original || ServerRules.CUSTOM_CREATIVE_ITEMS.hasChangedRecently();
     }
