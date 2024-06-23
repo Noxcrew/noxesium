@@ -2,9 +2,6 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.OverrideChunkUpdates;
-import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.fabricmc.loader.api.FabricLoader;
 

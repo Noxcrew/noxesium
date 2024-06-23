@@ -32,7 +32,7 @@ public class NoxesiumListenerV0(
         registerIncomingPluginChannel(Key.key(NOXESIUM_NAMESPACE, "client_information")) { _, player, data ->
             data.readPluginMessage { buffer ->
                 val version = buffer.readInt()
-                ServerboundClientInformationPacket(version).handle(player)
+                ServerboundClientInformationPacket(version, "unknown").handle(player)
             }
         }
 

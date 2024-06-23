@@ -45,7 +45,7 @@ public class NoxesiumListenerV1(
                     // Read legacy version integer
                     buffer.readVarInt()
 
-                    type.reader?.let { it(buffer) }?.handle(player)
+                    type.reader?.let { it(buffer, player, manager.getProtocolVersion(player) ?: 0) }?.handle(player)
                 }
             }
         }

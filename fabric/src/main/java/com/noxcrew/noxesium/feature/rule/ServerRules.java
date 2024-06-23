@@ -56,4 +56,11 @@ public class ServerRules {
      * in the regular hand slot.
      */
     public static ClientServerRule<Boolean> SHOW_MAP_IN_UI = new BooleanServerRule(ServerRuleIndices.SHOW_MAP_IN_UI, false);
+
+    /**
+     * Forces the client to run chunk updates immediately instead of deferring
+     * them to the off-thread. Can be used to force a client to update the world
+     * to avoid de-synchronizations on chunk updates.
+     */
+    public static ClientServerRule<Boolean> DISABLE_DEFERRED_CHUNK_UPDATES = new BooleanServerRule(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES, false);
 }

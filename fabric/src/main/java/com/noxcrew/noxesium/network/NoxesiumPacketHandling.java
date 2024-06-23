@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.network;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import com.noxcrew.noxesium.feature.OverrideChunkUpdates;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
@@ -82,11 +81,6 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
         NoxesiumPackets.CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             manager.stopSound(packet.id());
-        });
-
-        NoxesiumPackets.MCC_SERVER.addListener(this, (reference, packet, context) -> {
-            // If we join a server running Hole in the Wall we need to disable the Always Defer Chunk Updates setting!
-            NoxesiumMod.getInstance().getModule(OverrideChunkUpdates.class).updateState(packet.associatedGame().equalsIgnoreCase("hole_in_the_wall"));
         });
     }
 }

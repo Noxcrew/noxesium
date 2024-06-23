@@ -57,6 +57,13 @@ public enum NoxesiumFeature {
      * Supports the V2 API of Noxesium.
      */
     API_V2(6),
+    /**
+     * Supports new features added for MCC when updating to 1.21.
+     *
+     * @see [ServerRuleIndices.SHOW_MAP_IN_UI]
+     * @see [ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES]
+     */
+    NEW_MCC_FEATURES(7),
     ;
 
     private final int minProtocolVersion;

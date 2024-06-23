@@ -81,6 +81,15 @@ public class ServerRules(
         BooleanServerRule(player, index)
     }
 
+    /**
+     * Forces the client to run chunk updates immediately instead of deferring
+     * them to the off-thread. Can be used to force a client to update the world
+     * to avoid de-synchronizations on chunk updates.
+     */
+    public val disableDeferredChunkUpdates: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)
