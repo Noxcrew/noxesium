@@ -11,8 +11,14 @@ public class EntityRuleIndices {
     public static final int DISABLE_BUBBLES = 0;
 
     /**
-     * Defines a color to use for a beam created by this entity. Applies to both
-     * guardians and end crystals.
+     * Defines a color to use for a beam created by this entity. Applies only to guardian
+     * beams at this time.
      */
     public static final int BEAM_COLOR = 1;
+
+    /**
+     * Allows defining qib behavior for an interaction entity. You can find more information
+     * about the qib system in the qib package.
+     */
+    public static final int QIB_BEHAVIOR = 2;
 }
