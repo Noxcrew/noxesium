@@ -61,7 +61,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
     private final NoxesiumConfig config = NoxesiumConfig.load();
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
-
+    
     /**
      * Returns the known Noxesium instance.
      */
@@ -123,8 +123,12 @@ public class NoxesiumMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // Don't initialize twice! This allows other mods to call NoxesiumMod#onInitializeClient to ensure it's done initializing.
+        if (instance == this) return;
+
         // Store the instance and register all modules
         instance = this;
+
         registerModule(new ServerRuleModule());
         registerModule(new SkullFontModule());
         registerModule(new NoxesiumSoundModule());
