@@ -7,6 +7,10 @@
     "debug.fps_overlay.enabled": "FPS Zähler ist nun angeschaltet (ausschalten mit F3 + Y)",
     "debug.fps_overlay.help": "F3 + Y = FPS Zählen an-/ausschalten",
     "debug.fps_overlay": "%s fps",
+
+    "noxesium.options.game_time_overlay.name": "Tageszeit Overlay",
+    "noxesium.options.game_time_overlay.tooltip": "Wenn diese Option aktiviert ist, wird ein kleines Overlay hinzugefügt, welches die aktuelle Tageszeit anzeigt, was für die Shader Entwicklung nützlich ist.",
+    "debug.game_time_overlay": "%s st, %s gt",
   
     "debug.noxesium_overlay.on": "Noxesium: §aAn",
     "debug.noxesium_overlay.off": "Noxesium: §cAus",
@@ -19,8 +23,10 @@
     "noxesium.options.reset_toggle_keys.name": "Umschalttasten beim Tod zurücksetzen",
     "noxesium.options.reset_toggle_keys.tooltip": "Ob das Umschalten der Tasten zum Schleichen und Sprinten nach einem Tod ausgeschaltet werden soll. Normalerweise in Vanilla aktiviert.",
     "noxesium.options.render_maps_as_ui.name": "Render Karten in der UI",
-    "noxesium.options.render_maps_as_ui.tooltip": "Wenn die Option aktiviert ist, werden Karten, die in der Hand gehalten werden, in der oberen linken/rechte Ecke des Bildschirms dargestellt und nicht relativ zur Position der Hand",
+    "noxesium.options.render_maps_as_ui.tooltip": "Wenn diese Option aktiviert ist, werden Karten, die in der Hand gehalten werden, in der oberen linken/rechte Ecke des Bildschirms dargestellt und nicht relativ zur Position der Hand",
   
+    "itemGroup.noxesium.server_items": "Benutzerdefinierte Blöcke",
+
     "category.noxesium": "Noxesium",
   
     "key.noxesium.glow.red": "Rote Spieler hervorheben (Zuschauer)",
