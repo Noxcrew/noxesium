@@ -8,6 +8,10 @@
   "debug.fps_overlay.help": "F3 + Y = Képernyőn levő fps számláló ki/be kapcsolása",
   "debug.fps_overlay": "%s fps",
 
+  "noxesium.options.game_time_overlay.name": "Játékidő Átfedés",
+  "noxesium.options.game_time_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz a hozzáadva ami megmutatja a jelenlegi játékidőt, hasznps shader fejlesztéshez.",
+  "debug.game_time_overlay": "%s st, %s gt",
+  
   "debug.noxesium_overlay.on": "Noxesium: §aBe",
   "debug.noxesium_overlay.off": "Noxesium: §cKi",
 
@@ -18,6 +22,10 @@
   "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi fejlesztéseket, melyek kicserélik az összes felhasználói felület renderelő kódot, hogy gyorsabban fusson.\n\n§cFigyelem: §fHa bármilyen felhasználói felülettel kapcsolatos renderelési hibákat észlelsz ezen beállítás használata közben, kérlek a Noxesiumnak jelentsd a hibát, ne a többi érintett modnak.",
   "noxesium.options.reset_toggle_keys.name": "Bekapcsolt Billentyűk Visszaállítása Halálkor",
   "noxesium.options.reset_toggle_keys.tooltip": "Újraéledéskor vissza legyenek-e állítva a bekapcsolt billentyűk (futás/lopakodás). Vanillában alapból be van kapcsolva.",
+  "noxesium.options.render_maps_as_ui.name": "Térképek Felhasználói Felületen való megjelenítése",
+  "noxesium.options.render_maps_as_ui.tooltip": "Ha be van kapcsolva, akkor az egy kézben tartott térképek a képernyő bal/jobb felső sarkában fognak megjelenni a kéz relatív helye helyett.",
+
+  "itemGroup.noxesium.server_items": "Egyedi Blokkok",
 
   "category.noxesium": "Noxesium",
 
