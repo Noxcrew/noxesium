@@ -1,0 +1,45 @@
+{
+    "debug.experimental_patches.disabled": "Noxesium UI Verbesserungen sind nun ausgeschaltet",
+    "debug.experimental_patches.enabled": "Noxesium UI Verbesserungen sind nun angeschaltet",
+    "debug.experimental_patches.help": "F3 + W = Noxesium UI Verbesserungen an-/ausschalten",
+  
+    "debug.fps_overlay.disabled": "FPS Zähler ist nun ausgeschaltet",
+    "debug.fps_overlay.enabled": "FPS Zähler ist nun angeschaltet (ausschalten mit F3 + Y)",
+    "debug.fps_overlay.help": "F3 + Y = FPS Zählen an-/ausschalten",
+    "debug.fps_overlay": "%s fps",
+
+    "noxesium.options.game_time_overlay.name": "Tageszeit Overlay",
+    "noxesium.options.game_time_overlay.tooltip": "Wenn diese Option aktiviert ist, wird ein kleines Overlay hinzugefügt, welches die aktuelle Tageszeit anzeigt, was für die Shader Entwicklung nützlich ist.",
+    "debug.game_time_overlay": "%s st, %s gt",
+  
+    "debug.noxesium_overlay.on": "Noxesium: §aAn",
+    "debug.noxesium_overlay.off": "Noxesium: §cAus",
+  
+    "noxesium.options.pages.noxesium": "Noxesium",
+    "noxesium.options.fps_overlay.name": "FPS Zähler",
+    "noxesium.options.fps_overlay.tooltip": "Fügt in der oberen linken Ecke des Bildschirms einen FPS Zähler hinzu.",
+    "noxesium.options.experimental_patches.name": "Experimentelle Optimierungen",
+    "noxesium.options.experimental_patches.tooltip": "§4(Achtung: instabil!)\n§fAktiviert experimentelle UI Verbesserungen welche den kompletten UI Rendering Code vollständig ersetzen und so eine deutlich schnellere Ausführung ermöglichen.\n\n§cWarnung: §fFalls während der Benutzung irgendwelche Probleme mit der Anzeige von UI Elementen auftreten, bitte melde diese direkt bei Noxesium und nicht bei anderen Mods.",
+    "noxesium.options.reset_toggle_keys.name": "Umschalttasten beim Tod zurücksetzen",
+    "noxesium.options.reset_toggle_keys.tooltip": "Ob das Umschalten der Tasten zum Schleichen und Sprinten nach einem Tod ausgeschaltet werden soll. Normalerweise in Vanilla aktiviert.",
+    "noxesium.options.render_maps_as_ui.name": "Render Karten in der UI",
+    "noxesium.options.render_maps_as_ui.tooltip": "Wenn diese Option aktiviert ist, werden Karten, die in der Hand gehalten werden, in der oberen linken/rechte Ecke des Bildschirms dargestellt und nicht relativ zur Position der Hand",
+  
+    "itemGroup.noxesium.server_items": "Benutzerdefinierte Blöcke",
+
+    "category.noxesium": "Noxesium",
+  
+    "key.noxesium.glow.red": "Rote Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.orange": "Orange Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.yellow": "Gelbe Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.lime": "Hellgrüne Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.green": "Grüne Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.cyan": "Türkise Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.aqua": "Hellblaue Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.blue": "Blaue Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.purple": "Violette Spieler hervorheben (Zuschauer)",
+    "key.noxesium.glow.pink": "Rosa Spieler hervorheben (Zuschauer)",
+  
+    "key.noxesium.glow.all": "Hebe alle Spieler hervor (Zuschauer)",
+    "key.noxesium.glow.none": "Alle Hervorhebungen entfernen (Zuschauer)"
+  }
