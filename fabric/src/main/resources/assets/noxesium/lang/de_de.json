@@ -1,10 +1,10 @@
 {
-    "debug.experimental_patches.disabled": "Noxesium UI Verbesserungen sind nun aus",
-    "debug.experimental_patches.enabled": "Noxesium UI Verbesserungen sind nun an",
+    "debug.experimental_patches.disabled": "Noxesium UI Verbesserungen sind nun ausgeschaltet",
+    "debug.experimental_patches.enabled": "Noxesium UI Verbesserungen sind nun angeschaltet",
     "debug.experimental_patches.help": "F3 + W = Noxesium UI Verbesserungen an-/ausschalten",
   
-    "debug.fps_overlay.disabled": "FPS Zähler ist nun aus",
-    "debug.fps_overlay.enabled": "FPS Zähler ist nun an (ausschalten mit F3 + Y)",
+    "debug.fps_overlay.disabled": "FPS Zähler ist nun ausgeschaltet",
+    "debug.fps_overlay.enabled": "FPS Zähler ist nun angeschaltet (ausschalten mit F3 + Y)",
     "debug.fps_overlay.help": "F3 + Y = FPS Zählen an-/ausschalten",
     "debug.fps_overlay": "%s fps",
   
