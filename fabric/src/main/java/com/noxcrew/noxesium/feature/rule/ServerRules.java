@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackListServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.QibBehaviorServerRule;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -70,6 +71,12 @@ public class ServerRules {
      * Defines a list of items to show in a custom creative tab.
      */
     public static ItemStackListServerRule CUSTOM_CREATIVE_ITEMS = register(new ItemStackListServerRule(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS));
+
+    /**
+     * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
+     * These behaviors are defined globally to avoid large amounts of data sending.
+     */
+    public static QibBehaviorServerRule QIB_BEHAVIORS = register(new QibBehaviorServerRule(ServerRuleIndices.QIB_BEHAVIORS));
 
     /**
      * Registers a new server rule.

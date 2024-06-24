@@ -69,4 +69,10 @@ public class ServerRuleIndices {
      * Defines a list of items to show in a custom creative tab.
      */
     public static final int CUSTOM_CREATIVE_ITEMS = 12;
+
+    /**
+     * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
+     * These behaviors are defined globally to avoid large amounts of data sending.
+     */
+    public static final int QIB_BEHAVIORS = 13;
 }

@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
+import com.noxcrew.noxesium.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.feature.model.CustomServerCreativeItems;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
@@ -131,6 +132,7 @@ public class NoxesiumMod implements ClientModInitializer {
         registerModule(new NoxesiumPacketHandling());
         registerModule(new CustomServerCreativeItems());
         registerModule(new ExtraEntityDataModule());
+        registerModule(new QibBehaviorModule());
 
         // Every time the client joins a server we send over information on the version being used,
         // we initialize when both packets are known ad we are in the PLAY phase, whenever both have

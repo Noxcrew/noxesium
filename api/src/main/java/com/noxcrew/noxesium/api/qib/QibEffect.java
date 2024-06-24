@@ -35,14 +35,6 @@ public sealed interface QibEffect {
     }
 
     /**
-     * Performs some action that edits the player's state.
-     */
-    public record UpdateState(
-            QibState state
-    ) implements QibEffect {
-    }
-
-    /**
      * Plays a sound effect.
      */
     public record PlaySound(

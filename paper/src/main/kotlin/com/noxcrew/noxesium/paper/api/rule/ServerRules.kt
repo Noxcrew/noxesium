@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper.api.rule
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices
+import com.noxcrew.noxesium.api.qib.QibDefinition
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -95,6 +96,14 @@ public class ServerRules(
      */
     public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS) { player, index ->
         ItemStackListServerRule(player, index)
+    }
+
+    /**
+     * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
+     * These behaviors are defined globally to avoid large amounts of data sending.
+     */
+    public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> = register(ServerRuleIndices.QIB_BEHAVIORS) { player, index ->
+        QibBehaviorServerRule(player, index)
     }
 
     /** Registers a new [rule]. */

@@ -3,7 +3,10 @@ package com.noxcrew.noxesium.mixin.entity;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.entity.QibBehaviorModule;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.resources.model.BakedModel;
@@ -18,6 +21,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
@@ -26,6 +30,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -51,6 +56,32 @@ public abstract class LivingEntityMixin {
     private float noxesium$lastYBodyRot = 0f;
     @Unique
     private long noxesium$lastRender = 0;
+
+    @Inject(method = "jumpFromGround", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getDeltaMovement()Lnet/minecraft/world/phys/Vec3;"))
+    public void onJumpFromGround(CallbackInfo ci) {
+        var entity = (LivingEntity) ((Object) this);
+        if (entity instanceof LocalPlayer localPlayer) {
+            NoxesiumMod.getInstance().getModule(QibBehaviorModule.class).onPlayerJump(localPlayer);
+        }
+    }
+
+    @Redirect(method = "onEffectUpdated", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z"))
+    public boolean onEffectUpdatedClientside(Level instance) {
+        // Fake that we're on the server so we can update attributes!
+        if (QibBehaviorModule.updateAttributes) {
+            return false;
+        }
+        return instance.isClientSide;
+    }
+
+    @Redirect(method = "onEffectRemoved", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z"))
+    public boolean onEffectRemovedClientside(Level instance) {
+        // Fake that we're on the server so we can update attributes!
+        if (QibBehaviorModule.updateAttributes) {
+            return false;
+        }
+        return instance.isClientSide;
+    }
 
     @Inject(method = "onSyncedDataUpdated", at = @At("RETURN"))
     public void updateBoundingBoxOnSyncedData(EntityDataAccessor<?> entityDataAccessor, CallbackInfo ci) {

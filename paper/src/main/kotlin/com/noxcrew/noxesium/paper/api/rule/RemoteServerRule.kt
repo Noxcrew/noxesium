@@ -1,6 +1,9 @@
 package com.noxcrew.noxesium.paper.api.rule
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule
+import com.noxcrew.noxesium.api.qib.QibDefinition
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -94,6 +97,31 @@ public class ItemStackListServerRule(
         buffer.writeVarInt(value.size)
         value.forEach {
             buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(it))
+        }
+    }
+}
+
+/** A server rule that stores qib behavior. */
+public class QibBehaviorServerRule(
+    player: Player,
+    index: Int,
+    default: Map<String, QibDefinition> = emptyMap(),
+) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {
+
+    private companion object {
+        private val json = Json {
+            encodeDefaults = false
+            ignoreUnknownKeys = true
+            isLenient = true
+            decodeEnumsCaseInsensitive = true
+        }
+    }
+
+    override fun write(value: Map<String, QibDefinition>, buffer: FriendlyByteBuf) {
+        buffer.writeVarInt(value.size)
+        value.forEach { (key, value) ->
+            buffer.writeUtf(key)
+            buffer.writeUtf(json.encodeToString(value))
         }
     }
 }

@@ -65,6 +65,7 @@
   "mixins": [
     "entity.EntityMixin",
     "entity.GuardianMixin",
+    "entity.InteractionMixin",
     "model.ItemDisplayParametersMixin"
   ]
 }

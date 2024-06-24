@@ -15,6 +15,13 @@ public interface ExtraEntityDataHolder {
     }
 
     /**
+     * Returns whether the server has sent over extra data for this rule.
+     */
+    public default boolean hasExtraData(ClientServerRule<?> rule) {
+        return false;
+    }
+
+    /**
      * Sets extra data for the given [rule] to [value].
      */
     public default void setExtraData(ClientServerRule<?> rule, Object value) {

@@ -21,12 +21,17 @@ public class EntityMixin implements ExtraEntityDataHolder {
     @Override
     public <T> T getExtraData(ClientServerRule<T> rule) {
         if (noxesium$extraData != null) {
-            var data = noxesium$extraData.get(rule);
+            var data = noxesium$extraData.get(rule.getIndex());
             if (data != null) {
                 return (T) data;
             }
         }
         return ExtraEntityDataHolder.super.getExtraData(rule);
+    }
+
+    @Override
+    public boolean hasExtraData(ClientServerRule<?> rule) {
+        return noxesium$extraData != null && noxesium$extraData.containsKey(rule.getIndex());
     }
 
     @Override
