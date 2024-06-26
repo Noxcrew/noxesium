@@ -1,15 +1,15 @@
 {
-  "debug.experimental_patches.disabled": "Noxesium felhasználói felületi javítások ki lettek kapcsolva",
-  "debug.experimental_patches.enabled": "Noxesium felhasználói felületi javítások be lettek kapcsolva",
+  "debug.experimental_patches.disabled": "Noxesium felhasználói felületi javítások kikapcsolva",
+  "debug.experimental_patches.enabled": "Noxesium felhasználói felületi javítások bekapcsolva",
   "debug.experimental_patches.help": "F3 + W = Noxesium felhasználói felületi javítások ki/be kapcsolása",
 
-  "debug.fps_overlay.disabled": "FPS számláló ki lett kapcsolva",
-  "debug.fps_overlay.enabled": "FPS számláló be lett kapcsolva (kikapcsolható az F3 + Y billentyűkombinációval)",
+  "debug.fps_overlay.disabled": "FPS számláló kikapcsolva",
+  "debug.fps_overlay.enabled": "FPS számláló bekapcsolva (kikapcsolható az F3 + Y billentyűkombinációval)",
   "debug.fps_overlay.help": "F3 + Y = Képernyőn levő fps számláló ki/be kapcsolása",
   "debug.fps_overlay": "%s fps",
 
   "noxesium.options.game_time_overlay.name": "Játékidő Átfedés",
-  "noxesium.options.game_time_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz a hozzáadva ami megmutatja a jelenlegi játékidőt, hasznps shader fejlesztéshez.",
+  "noxesium.options.game_time_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz hozzáadva, ami megmutatja a jelenlegi játékidőt, hasznos shader fejlesztéshez.",
   "debug.game_time_overlay": "%s st, %s gt",
   
   "debug.noxesium_overlay.on": "Noxesium: §aBe",
@@ -18,12 +18,12 @@
   "noxesium.options.pages.noxesium": "Noxesium",
   "noxesium.options.fps_overlay.name": "FPS Átfedés",
   "noxesium.options.fps_overlay.tooltip": "Ha be van kapcsolva, egy kis átfedés lesz hozzáadva a képernyő bal felső sarkába, ami mutatja a jelenlegi fps-t.",
-  "noxesium.options.experimental_patches.name": "Kísérleti Optimalizációk",
-  "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi fejlesztéseket, melyek kicserélik az összes felhasználói felület renderelő kódot, hogy gyorsabban fusson.\n\n§cFigyelem: §fHa bármilyen felhasználói felülettel kapcsolatos renderelési hibákat észlelsz ezen beállítás használata közben, kérlek a Noxesiumnak jelentsd a hibát, ne a többi érintett modnak.",
+  "noxesium.options.experimental_patches.name": "Kísérleti Optimalizálások",
+  "noxesium.options.experimental_patches.tooltip": "§4(figyelem: instabil!)\n§fBekapcsolja a kísérleti felhasználói felületi fejlesztéseket, melyek kicserélik az összes felhasználói felületet megjelenítő kódot, hogy gyorsabban fusson.\n\n§cFigyelem: §fHa bármilyen felhasználói felülettel kapcsolatos renderelési hibát észlelsz ezen beállítás használata közben, kérlek a Noxesiumnak jelentsd a hibát, ne a többi érintett modnak.",
   "noxesium.options.reset_toggle_keys.name": "Bekapcsolt Billentyűk Visszaállítása Halálkor",
   "noxesium.options.reset_toggle_keys.tooltip": "Újraéledéskor vissza legyenek-e állítva a bekapcsolt billentyűk (futás/lopakodás). Vanillában alapból be van kapcsolva.",
   "noxesium.options.render_maps_as_ui.name": "Térképek Felhasználói Felületen való megjelenítése",
-  "noxesium.options.render_maps_as_ui.tooltip": "Ha be van kapcsolva, akkor az egy kézben tartott térképek a képernyő bal/jobb felső sarkában fognak megjelenni a kéz relatív helye helyett.",
+  "noxesium.options.render_maps_as_ui.tooltip": "Ha be van kapcsolva, akkor a kézben tartott térképek a képernyő bal/jobb felső sarkában fognak megjelenni a kéz relatív helye helyett.",
 
   "itemGroup.noxesium.server_items": "Egyedi Blokkok",
 
