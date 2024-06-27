@@ -8,6 +8,10 @@
   "debug.fps_overlay.help": "F3 + Y = Basculer le compteur d'IPS sur l'écran.",
   "debug.fps_overlay": "%s images/s",
 
+  "noxesium.options.game_time_overlay.name": "Superposition de Temps en Jeu",
+  "noxesium.options.game_time_overlay.tooltip": "Si activé,une petite superposition est ajouté montrant le temps en jeu actuel, utile pour le développement de shader.",
+  "debug.game_time_overlay": "%s st, %s gt",
+
   "debug.noxesium_overlay.on": "Noxesium: §aActivé",
   "debug.noxesium_overlay.off": "Noxesium: §cDésactivé",
 
@@ -18,6 +22,10 @@
   "noxesium.options.experimental_patches.tooltip": "§4(attention: instable!)\n§fActive les amélioration de performance de l'Interface Utilisateur expérimental remplaçant totalement tout le code d'affichage de l'Interface Utilisateur pour fonctionner plus rapidement.\n\n§cAttention: §fSi vous rencontrez tout problème d'affichage de l'Interface Utilisateur en utilisant ce paramètre, veuillez rapporter ces problèmes à Noxesium, et non pas les autres modifications impliquées.",
   "noxesium.options.reset_toggle_keys.name": "Réinitialiser les Touches de Bascule à la mort",
   "noxesium.options.reset_toggle_keys.tooltip": "Réinitialiser ou non les touches de bascule (courrir/s'accroupir) quand vous réapparaissez. Normalement activé en vanilla.",
+  "noxesium.options.render_maps_as_ui.name": "Rendu de la Carte dans l'Interface Utilisateur",
+  "noxesium.options.render_maps_as_ui.tooltip": "Si activé, les cartes tenus en main secondaire seront rendues dans le coin haut gauche / droite de votre écran au lieu de par rapport à l'endroit de votre main.",
+
+  "itemGroup.noxesium.server_items": "Blocs Customisés",
 
   "category.noxesium": "Noxesium",
 
