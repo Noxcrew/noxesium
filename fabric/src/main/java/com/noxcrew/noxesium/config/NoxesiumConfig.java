@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import com.noxcrew.noxesium.util.CompatibilityReferences;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
@@ -23,17 +22,21 @@ public class NoxesiumConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    public boolean resetToggleKeys = false;
+    public boolean renderMapsAsUi = false;
     public boolean showFpsOverlay = false;
+    public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
-    public boolean resetToggleKeys = false;
+    public boolean dumpIncomingPackets = false;
+    public boolean dumpOutgoingPackets = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if
      * any mods are detected that are known to have compatibility issues.
      */
     public boolean areExperimentalPatchesAvailable() {
-        return !CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient() && !ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue();
+        return false; //!CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient() && !ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue();
     }
 
     /**
@@ -48,6 +51,27 @@ public class NoxesiumConfig {
      */
     public boolean shouldShowGlowingSettings() {
         return showGlowingSettings;
+    }
+
+    /**
+     * Dumps all incoming Noxesium packets in chat.
+     */
+    public boolean shouldDumpIncomingPackets() {
+        return dumpIncomingPackets;
+    }
+
+    /**
+     * Dumps all outgoing Noxesium packets in chat.
+     */
+    public boolean shouldDumpOutgoingPackets() {
+        return dumpOutgoingPackets;
+    }
+
+    /**
+     * Returns whether to render maps in the UI.
+     */
+    public boolean shouldRenderMapsInUi() {
+        return renderMapsAsUi || ServerRules.SHOW_MAP_IN_UI.getValue();
     }
 
     /**

@@ -30,8 +30,16 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
     // Add the API module
-    include(project(":api"))
-    api(project(":api"))
+    project(":api").apply {
+        include(this)
+        api(this)
+    }
+
+    // Use an updated version of mixin extras so we can use WrapMethod
+    annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.0-beta.2")?.apply {
+        include(this)
+        implementation(this)
+    }
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

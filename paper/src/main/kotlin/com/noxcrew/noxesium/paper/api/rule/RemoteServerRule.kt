@@ -1,8 +1,12 @@
 package com.noxcrew.noxesium.paper.api.rule
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule
+import com.noxcrew.noxesium.api.qib.QibDefinition
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Material
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -78,14 +82,46 @@ public class ItemStackServerRule(
 ) : RemoteServerRule<ItemStack>(player, index, default) {
 
     override fun write(value: ItemStack, buffer: FriendlyByteBuf) {
-        /*
-        As of 1.20.5 the client uses a readJsonWithCodec which does not exist yet in
-        Minecraft 1.19.4. It's only possible for the server to serialize this type of
-        data in 1.20.5 and later. It also changed in between 1.19.4-1.20.4 so generally
-        serializing item stacks is not very stable currently.
+        buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(value))
+    }
+}
 
-        Actual support for this awaits a server-side update to 1.20.5.
-         */
-        throw UnsupportedOperationException("Unimplemented on 1.19.4")
+/** A server rule that stores an item stack. */
+public class ItemStackListServerRule(
+    player: Player,
+    index: Int,
+    default: List<ItemStack> = emptyList(),
+) : RemoteServerRule<List<ItemStack>>(player, index, default) {
+
+    override fun write(value: List<ItemStack>, buffer: FriendlyByteBuf) {
+        buffer.writeVarInt(value.size)
+        value.forEach {
+            buffer.writeJsonWithCodec(net.minecraft.world.item.ItemStack.CODEC, CraftItemStack.asNMSCopy(it))
+        }
+    }
+}
+
+/** A server rule that stores qib behavior. */
+public class QibBehaviorServerRule(
+    player: Player,
+    index: Int,
+    default: Map<String, QibDefinition> = emptyMap(),
+) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {
+
+    private companion object {
+        private val json = Json {
+            encodeDefaults = false
+            ignoreUnknownKeys = true
+            isLenient = true
+            decodeEnumsCaseInsensitive = true
+        }
+    }
+
+    override fun write(value: Map<String, QibDefinition>, buffer: FriendlyByteBuf) {
+        buffer.writeVarInt(value.size)
+        value.forEach { (key, value) ->
+            buffer.writeUtf(key)
+            buffer.writeUtf(json.encodeToString(value))
+        }
     }
 }

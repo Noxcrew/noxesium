@@ -22,7 +22,6 @@ public abstract class SpinAttackMixin {
     private List<Entity> checkServerForSpinCollision(Level instance, Entity entity, AABB aabb, Operation<List<Entity>> original) {
         // If the spin attack is disabled we return no targets which makes the client
         // think there is nothing to collide with.
-        // This server rule could be replaced with a GameRule.
         if (ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS.getValue()) {
             return List.of();
         }

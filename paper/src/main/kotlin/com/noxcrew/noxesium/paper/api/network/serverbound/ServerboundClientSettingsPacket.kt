@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
 import net.minecraft.network.FriendlyByteBuf
+import org.bukkit.entity.Player
 
 /**
  * Sent to the server to inform it about various settings configured by the client,
@@ -15,6 +16,8 @@ public class ServerboundClientSettingsPacket(
 
     public constructor(
         buffer: FriendlyByteBuf,
+        player: Player,
+        protocolVersion: Int,
     ) : this(
         ClientSettings(
             buffer.readVarInt(),

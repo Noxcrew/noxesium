@@ -14,6 +14,7 @@ import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSetti
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
+import org.bukkit.entity.Player
 
 /** Stores and registers all known Noxesium packets. */
 public object NoxesiumPackets {
@@ -53,7 +54,7 @@ public object NoxesiumPackets {
     }
 
     /** Registers a server-bound packet. */
-    private fun <T : ServerboundNoxesiumPacket> server(id: String, reader: (FriendlyByteBuf) -> T): ServerboundPacketType<T> {
+    private fun <T : ServerboundNoxesiumPacket> server(id: String, reader: (FriendlyByteBuf, Player, Int) -> T): ServerboundPacketType<T> {
         require(id !in _serverboundPackets) { "Cannot register serverbound packet $id twice!" }
         val packetType = ServerboundPacketType(id, reader)
         _serverboundPackets[id] = packetType

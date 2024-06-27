@@ -70,7 +70,7 @@ public open class NoxesiumManager(
 
         // Register a player when we receive the client information packet
         NoxesiumPackets.SERVER_CLIENT_INFO.addListener(this) { packet, player ->
-            registerPlayer(player, packet.protocolVersion)
+            registerPlayer(player, packet.protocolVersion, packet.versionString)
         }
         NoxesiumPackets.SERVER_CLIENT_SETTINGS.addListener(this) { packet, player ->
             saveSettings(player, packet.settings)
@@ -112,9 +112,9 @@ public open class NoxesiumManager(
      * the player back various packets related to the server information and default
      * server rule values.
      */
-    internal fun registerPlayer(player: Player, protocolVersion: Int) {
-        logger.info("${player.name} is running Noxesium protocol $protocolVersion")
-        saveProtocol(player, protocolVersion)
+    internal fun registerPlayer(player: Player, protocolVersion: Int, version: String) {
+        logger.info("${player.name} is running Noxesium $version ($protocolVersion)")
+        saveProtocol(player, version, protocolVersion)
 
         // Inform the player about which version is being used
         sendPacket(player, ClientboundServerInformationPacket(ProtocolVersion.VERSION))
@@ -166,10 +166,10 @@ public open class NoxesiumManager(
         rules[index] = ruleSupplier
     }
 
-    /** Stores the protocol version for [player] as [protocolVersion]. */
-    internal fun saveProtocol(player: Player, protocolVersion: Int) {
+    /** Stores the protocol version for [player] as [version] with [protocolVersion]. */
+    internal fun saveProtocol(player: Player, version: String, protocolVersion: Int) {
         players[player.uniqueId] = protocolVersion
-        onPlayerVersionReceived(player, protocolVersion)
+        onPlayerVersionReceived(player, version, protocolVersion)
     }
 
     /** Stores client settings for [player] as [clientSettings]. */
@@ -214,7 +214,7 @@ public open class NoxesiumManager(
     }
 
     /** Called when [player] informs the server they are on [protocolVersion]. */
-    protected open fun onPlayerVersionReceived(player: Player, protocolVersion: Int) {
+    protected open fun onPlayerVersionReceived(player: Player, version: String, protocolVersion: Int) {
     }
 
     /** Called when [player] informs the server they are using [ClientSettings]. */

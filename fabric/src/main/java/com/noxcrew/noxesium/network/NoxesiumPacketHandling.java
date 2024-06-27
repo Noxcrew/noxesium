@@ -2,18 +2,13 @@ package com.noxcrew.noxesium.network;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
+import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
-import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
+import net.minecraft.world.entity.Entity;
 
 import static com.noxcrew.noxesium.api.util.ByteUtil.hasFlag;
 
@@ -88,6 +83,32 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
         NoxesiumPackets.CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             manager.stopSound(packet.id());
+        });
+
+        NoxesiumPackets.CHANGE_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
+            Entity entity = context.player().clientLevel.getEntity(packet.entityId());
+            if (entity != null) {
+                var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);
+                var indices = packet.indices();
+                for (var idx = 0; idx < indices.size(); idx++) {
+                    var index = indices.getInt(idx);
+                    var rule = provider.getIndex(index);
+                    if (rule == null) return;
+                    entity.setExtraData(rule, packet.values().get(idx));
+                }
+            }
+        });
+
+        NoxesiumPackets.RESET_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
+            Entity entity = context.player().clientLevel.getEntity(packet.entityId());
+            if (entity != null) {
+                var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);
+                for (var index : packet.indices()) {
+                    var rule = provider.getIndex(index);
+                    if (rule == null) continue;
+                    entity.resetExtraData(rule);
+                }
+            }
         });
     }
 }

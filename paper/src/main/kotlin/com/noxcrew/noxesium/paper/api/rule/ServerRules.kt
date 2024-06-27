@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper.api.rule
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices
+import com.noxcrew.noxesium.api.qib.QibDefinition
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -71,6 +72,38 @@ public class ServerRules(
      */
     public val disableUiOptimizations: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS) { player, index ->
         BooleanServerRule(player, index)
+    }
+
+    /**
+     * Moves the handheld map to be shown in the top left/right corner instead of
+     * in the regular hand slot.
+     */
+    public val showMapInUi: RuleFunction<Boolean> = register(ServerRuleIndices.SHOW_MAP_IN_UI) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
+    /**
+     * Forces the client to run chunk updates immediately instead of deferring
+     * them to the off-thread. Can be used to force a client to update the world
+     * to avoid de-synchronizations on chunk updates.
+     */
+    public val disableDeferredChunkUpdates: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
+    /**
+     * Defines a list of items to show in a custom creative tab.
+     */
+    public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS) { player, index ->
+        ItemStackListServerRule(player, index)
+    }
+
+    /**
+     * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
+     * These behaviors are defined globally to avoid large amounts of data sending.
+     */
+    public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> = register(ServerRuleIndices.QIB_BEHAVIORS) { player, index ->
+        QibBehaviorServerRule(player, index)
     }
 
     /** Registers a new [rule]. */

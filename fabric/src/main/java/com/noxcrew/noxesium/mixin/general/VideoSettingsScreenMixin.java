@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.config.VanillaOptions;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.screens.VideoSettingsScreen;
+import net.minecraft.client.gui.screens.options.VideoSettingsScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -16,13 +16,12 @@ public abstract class VideoSettingsScreenMixin {
 
     @ModifyReturnValue(method = "options", at = @At("TAIL"))
     private static OptionInstance<?>[] changeOptions(OptionInstance<?>[] original) {
-        var showExperimentalPatches = NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable();
-        var newArray = new OptionInstance<?>[original.length + (showExperimentalPatches ? 2 : 1)];
-        System.arraycopy(original, 0, newArray, 0, original.length);
-        if (showExperimentalPatches) {
-            newArray[newArray.length - 2] = VanillaOptions.experimentalPatches();
+        if (NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable()) {
+            var newArray = new OptionInstance<?>[original.length + 1];
+            System.arraycopy(original, 0, newArray, 0, original.length);
+            newArray[newArray.length - 1] = VanillaOptions.experimentalPatches();
+            return newArray;
         }
-        newArray[newArray.length - 1] = VanillaOptions.fpsOverlay();
-        return newArray;
+        return original;
     }
 }

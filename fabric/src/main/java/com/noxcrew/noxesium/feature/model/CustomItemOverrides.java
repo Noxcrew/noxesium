@@ -36,7 +36,7 @@ public class CustomItemOverrides extends ItemOverrides {
     /**
      * The identifier of the custom model data tag.
      */
-    private static final ResourceLocation CUSTOM_MODEL_DATA_ID = new ResourceLocation("custom_model_data");
+    private static final ResourceLocation CUSTOM_MODEL_DATA_ID = ResourceLocation.withDefaultNamespace("custom_model_data");
 
     /**
      * All models that are directly determined by a single custom model data in the correct order.

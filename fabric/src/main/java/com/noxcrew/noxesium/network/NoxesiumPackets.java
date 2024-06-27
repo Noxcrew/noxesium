@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.network;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
@@ -9,9 +10,11 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacke
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundResetExtraEntityDataPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundSetExtraEntityDataPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
@@ -60,6 +63,9 @@ public class NoxesiumPackets {
     public static final NoxesiumPayloadType<ClientboundResetPacket> RESET = NoxesiumPackets.client("reset", ClientboundResetPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ClientboundServerInformationPacket> SERVER_INFO = NoxesiumPackets.client("server_info", ClientboundServerInformationPacket.STREAM_CODEC);
 
+    public static final NoxesiumPayloadType<ClientboundSetExtraEntityDataPacket> CHANGE_EXTRA_ENTITY_DATA = NoxesiumPackets.client("change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> RESET_EXTRA_ENTITY_DATA = NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
+
     /**
      * Registers a new clientbound Noxesium packet.
      *
@@ -82,7 +88,7 @@ public class NoxesiumPackets {
     public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         PayloadTypeRegistry.configurationS2C().register(type.type, codec);
         PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
@@ -111,7 +117,7 @@ public class NoxesiumPackets {
     public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
-        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(new ResourceLocation(PACKET_NAMESPACE, id)));
+        var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         PayloadTypeRegistry.configurationC2S().register(type.type, codec);
         PayloadTypeRegistry.playC2S().register(type.type, codec);
         serverboundPackets.put(type.id().toString(), group);
@@ -143,6 +149,18 @@ public class NoxesiumPackets {
         // We don't need to register server-bound packets, we only store that the
         // group was enabled.
         registeredGroups.add(group);
+
+        // Inform all modules about the new group registration
+        NoxesiumMod.getInstance().getAllModules().forEach(it -> it.onGroupRegistered(group));
+    }
+
+    /**
+     * Unregisters all non-universal packets.
+     */
+    public static void unregisterPackets() {
+        // We only need to clear the local cache as the receivers will disappear
+        // along with the play phase addon.
+        registeredGroups.removeIf(it -> !Objects.equals(it, "universal"));
     }
 
     /**

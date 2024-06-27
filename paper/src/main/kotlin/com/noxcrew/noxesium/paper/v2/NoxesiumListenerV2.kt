@@ -44,7 +44,7 @@ public class NoxesiumListenerV2(
         for (type in serverboundPackets.values) {
             registerIncomingPluginChannel(Key.key(PACKET_NAMESPACE, type.id)) { _, player, data ->
                 data.readPluginMessage { buffer ->
-                    type.reader?.let { it(buffer) }?.handle(player)
+                    type.reader?.let { it(buffer, player, manager.getProtocolVersion(player) ?: 0) }?.handle(player)
                 }
             }
         }

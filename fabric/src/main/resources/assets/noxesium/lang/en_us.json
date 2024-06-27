@@ -8,6 +8,10 @@
   "debug.fps_overlay.help": "F3 + Y = Toggle on-screen fps counter",
   "debug.fps_overlay": "%s fps",
 
+  "noxesium.options.game_time_overlay.name": "Game Time Overlay",
+  "noxesium.options.game_time_overlay.tooltip": "If enabled, a small overlay is added which shows the current game time, useful for shader development.",
+  "debug.game_time_overlay": "%s st, %s gt",
+
   "debug.noxesium_overlay.on": "Noxesium: §aOn",
   "debug.noxesium_overlay.off": "Noxesium: §cOff",
 
@@ -18,6 +22,10 @@
   "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fIf you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
+  "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
+  "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.",
+
+  "itemGroup.noxesium.server_items": "Custom Blocks",
 
   "category.noxesium": "Noxesium",
 

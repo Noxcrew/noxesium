@@ -51,4 +51,28 @@ public class ServerRuleIndices {
      * don't support animated text with shaders.
      */
     public static final int DISABLE_UI_OPTIMIZATIONS = 9;
+
+    /**
+     * Moves the handheld map to be shown in the top left/right corner instead of
+     * in the regular hand slot.
+     */
+    public static final int SHOW_MAP_IN_UI = 10;
+
+    /**
+     * Forces the client to run chunk updates immediately instead of deferring
+     * them to the off-thread. Can be used to force a client to update the world
+     * to avoid de-synchronizations on chunk updates.
+     */
+    public static final int DISABLE_DEFERRED_CHUNK_UPDATES = 11;
+
+    /**
+     * Defines a list of items to show in a custom creative tab.
+     */
+    public static final int CUSTOM_CREATIVE_ITEMS = 12;
+
+    /**
+     * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
+     * These behaviors are defined globally to avoid large amounts of data sending.
+     */
+    public static final int QIB_BEHAVIORS = 13;
 }

@@ -10,7 +10,7 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
     /** The id of this packet. */
     id: String,
     /** A function that reads this packet from a buffer. */
-    public val reader: ((FriendlyByteBuf) -> T)? = null,
+    public val reader: ((FriendlyByteBuf, Player, Int) -> T)? = null,
 ) : PacketType<T>(id) {
 
     private val updateListeners = Caffeine.newBuilder()
