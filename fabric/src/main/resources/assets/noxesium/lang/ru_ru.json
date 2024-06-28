@@ -8,6 +8,10 @@
   "debug.fps_overlay.help": "F3 + Y = Переключить FPS Оверлей",
   "debug.fps_overlay": "%s fps",
 
+  "noxesium.options.game_time_overlay.name": "Оверлей игрового времени",
+  "noxesium.options.game_time_overlay.tooltip": "Если эта опция включена, добавляется небольшой оверлей, который показывает текущее игровое время, что полезно для разработки шейдеров.",
+  "debug.game_time_overlay": "%s st, %s gt",
+
   "debug.noxesium_overlay.on": "Noxesium: §aВкл.",
   "debug.noxesium_overlay.off": "Noxesium: §cВыкл.",
 
@@ -18,6 +22,10 @@
   "noxesium.options.experimental_patches.tooltip": "§4(Внимание: нестабильно!)\n§fЭкспериментальные оптимизации UI, которые полностью заменяют его код отрисовки, чтобы работать быстрее.\n\n§cВнимание: §fЕсли у вас возникнут какие-либо проблемы с рендерингом UI при использовании этой настройки, пожалуйста, сообщите о проблемах разработчикам Noxesium, а не других модов.",
   "noxesium.options.reset_toggle_keys.name": "Сброс переключения бега при смерти",
   "noxesium.options.reset_toggle_keys.tooltip": "Сбрасывать кнопки переключения бега/подкрадывания при возраждении. По умолчанию эта опция включена.",
+  "noxesium.options.render_maps_as_ui.name": "Рендеринг карт в UI",
+  "noxesium.options.render_maps_as_ui.tooltip": "Если эта опция включена, карты, которые вы держите в одной руке, отображаются в левом/правом верхнем углу экрана, а не относительно местоположения руки.",
+
+  "itemGroup.noxesium.server_items": "Пользовательские блоки",
 
   "category.noxesium": "Noxesium",
 
