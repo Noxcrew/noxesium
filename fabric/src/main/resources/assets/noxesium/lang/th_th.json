@@ -1,0 +1,45 @@
+{
+  "debug.experimental_patches.disabled": "การเพิ่มประสิทธิภาพของ UI ของ Noxesium ได้ปิดการใช้งาน",
+  "debug.experimental_patches.enabled": "การเพิ่มประสิทธิภาพของ UI ของ Noxesium ได้เปิดการใช้งาน",
+  "debug.experimental_patches.help": "F3 + W = สลับการตั้งค่าของการเพิ่มประสิทธิภาพของ UI ของ Noxesium",
+
+  "debug.fps_overlay.disabled": "การแสดงผล FPS ได้ปิดการใช้งาน",
+  "debug.fps_overlay.enabled": "การแสดงผล FPS ได้เปิดการใช้งาน (ปิดด้วย F3 + Y)",
+  "debug.fps_overlay.help": "F3 + Y = สลับการตั้งค่าของการแสดงผล FPS",
+  "debug.fps_overlay": "%s fps",
+
+  "noxesium.options.game_time_overlay.name": "การแสดงผลของเวลาในเกม",
+  "noxesium.options.game_time_overlay.tooltip": "การแสดงผลขนาดเล็กของเวลาในเกมจะถูกแสดงขึ้นถ้าเปิดการใช้งาน มีประโยชน์สำหรับการพัฒนาของเชเดอร์",
+  "debug.game_time_overlay": "%s st, %s gt",
+
+  "debug.noxesium_overlay.on": "Noxesium: §aเปิด",
+  "debug.noxesium_overlay.off": "Noxesium: §cปิด",
+
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.fps_overlay.name": "การแสดงผล FPS",
+  "noxesium.options.fps_overlay.tooltip": "ถ้าเปิดการใช้งานการแสดงผลขนาดเล็กของ FPS จะถูกแสดงขึ้นบนมุมบนซ้ายของจอ",
+  "noxesium.options.experimental_patches.name": "การทดลองของการเพิ่มประสิทธิภาพของเกม",
+  "noxesium.options.experimental_patches.tooltip": "§4(ระวัง: ไม่เสถียร!)\n§fเปิดใช้งานการทดลองของการเพิ่มประสิทธิภาพของ UI โดยจะแทนที่โค้ดสำหรับการแสดงผลของ UI เพื่อให้เกมลี่นขึ้น\n\n§cระวัง: §fถ้าคุณเจอปัญหาเกี่ยวกับการแสดงผลของ UI ขณะการใช้งาน โปรดรายงานปัญหาการใช้งานทาง Noxesium ไม่ใช่ม็อดอื่นๆ ที่เกี่ยวข้อง",
+  "noxesium.options.reset_toggle_keys.name": "รีเซ็ตการสลับคึย์ตอนตาย",
+  "noxesium.options.reset_toggle_keys.tooltip": "ตั้งค่าว่าจะให้รีเซ็ตการสลับคึย์ (วิ่งหรือย่อง) ในตอนเกิดใหม่ ถูกเปิดใช้งานโดยค่าเริ่มต้นในเกมที่ไม่มีการลงม็อดใดๆ",
+  "noxesium.options.render_maps_as_ui.name": "แสดงผลแผนที่บน UI",
+  "noxesium.options.render_maps_as_ui.tooltip": "ถ้าเปิดการใช้งานแผนที่ในมือหนึ่งของคุณจะแสดงบนมุมบนซ้ายหรือขวาของจอแทนที่จะแสดงบนมือของคุณ",
+
+  "itemGroup.noxesium.server_items": "บล็อกที่กำหนดเอง",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "สลับการตั้งค่าของไฮไลท์สีแดง (ผู้ชม)",
+  "key.noxesium.glow.orange": "สลับการตั้งค่าของไฮไลท์สีส้ม (ผู้ชม)",
+  "key.noxesium.glow.yellow": "สลับการตั้งค่าของไฮไลท์สีเหลือง (ผู้ชม)",
+  "key.noxesium.glow.lime": "สลับการตั้งค่าของไฮไลท์สีเขียวอ่อน (ผู้ชม)",
+  "key.noxesium.glow.green": "สลับการตั้งค่าของไฮไลท์สีเขียว (ผู้ชม)",
+  "key.noxesium.glow.cyan": "สลับการตั้งค่าของไฮไลท์สีฟ้าคราม (ผู้ชม)",
+  "key.noxesium.glow.aqua": "สลับการตั้งค่าของไฮไลท์สีฟ้า (ผู้ชม)",
+  "key.noxesium.glow.blue": "สลับการตั้งค่าของไฮไลท์สีน้ำเงิน (ผู้ชม)",
+  "key.noxesium.glow.purple": "สลับการตั้งค่าของไฮไลท์สีม่วง (ผู้ชม)",
+  "key.noxesium.glow.pink": "สลับการตั้งค่าของไฮไลท์สีชมพู (ผู้ชม)",
+
+  "key.noxesium.glow.all": "เปิดใช้งานไฮไลท์ทั้งหมด (ผู้ชม)",
+  "key.noxesium.glow.none": "ปิดใช้งานไฮไลท์ทั้งหมด (ผู้ชม)"
+}
