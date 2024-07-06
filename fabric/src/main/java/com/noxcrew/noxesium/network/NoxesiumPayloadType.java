@@ -61,7 +61,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
             acceptAny(pair.getValue(), obj, context, payload);
         }
 
-        if (NoxesiumMod.getInstance().getConfig().shouldDumpIncomingPackets()) {
+        if (NoxesiumMod.getInstance().getConfig().dumpIncomingPackets) {
             Minecraft.getInstance().player.displayClientMessage(
                     Component.empty()
                             .append(Component.literal("[NOXESIUM] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))

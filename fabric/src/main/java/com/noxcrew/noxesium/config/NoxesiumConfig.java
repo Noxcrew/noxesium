@@ -30,6 +30,7 @@ public class NoxesiumConfig {
     public boolean showGlowingSettings = false;
     public boolean dumpIncomingPackets = false;
     public boolean dumpOutgoingPackets = false;
+    public boolean printPacketExceptions = false;
 
     /**
      * Returns whether experimental patches are available. This will return false if
@@ -44,27 +45,6 @@ public class NoxesiumConfig {
      */
     public boolean hasConfiguredPerformancePatches() {
         return areExperimentalPatchesAvailable() && enableExperimentalPerformancePatches;
-    }
-
-    /**
-     * Whether custom key bindings for making teams glow should be shown.
-     */
-    public boolean shouldShowGlowingSettings() {
-        return showGlowingSettings;
-    }
-
-    /**
-     * Dumps all incoming Noxesium packets in chat.
-     */
-    public boolean shouldDumpIncomingPackets() {
-        return dumpIncomingPackets;
-    }
-
-    /**
-     * Dumps all outgoing Noxesium packets in chat.
-     */
-    public boolean shouldDumpOutgoingPackets() {
-        return dumpOutgoingPackets;
     }
 
     /**

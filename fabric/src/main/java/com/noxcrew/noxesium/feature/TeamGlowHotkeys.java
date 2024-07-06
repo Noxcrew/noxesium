@@ -38,7 +38,7 @@ public class TeamGlowHotkeys implements NoxesiumModule {
 
     public TeamGlowHotkeys() {
         // Optionally disable the glowing settings if the config is in use
-        if (!NoxesiumMod.getInstance().getConfig().shouldShowGlowingSettings()) return;
+        if (!NoxesiumMod.getInstance().getConfig().showGlowingSettings) return;
 
         for (var team : GLOW_TEAMS.entrySet()) {
             register(

@@ -21,7 +21,7 @@ public interface ServerboundNoxesiumPacket extends NoxesiumPacket {
     default boolean send() {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (ClientPlayNetworking.canSend(noxesiumType().type) && NoxesiumPackets.canSend(noxesiumType())) {
-            if (NoxesiumMod.getInstance().getConfig().shouldDumpOutgoingPackets()) {
+            if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets) {
                 Minecraft.getInstance().player.displayClientMessage(
                         Component.empty()
                                 .append(Component.literal("[NOXESIUM] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))

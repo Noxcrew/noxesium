@@ -47,7 +47,7 @@ public class ItemStackListServerRule extends ClientServerRule<List<ItemStack>> {
         var amount = buffer.readVarInt();
         var array = new ArrayList<ItemStack>(amount);
         for (int i = 0; i < amount; i++) {
-            array.set(i, buffer.readJsonWithCodec(ItemStack.CODEC));
+            array.add(buffer.readJsonWithCodec(ItemStack.CODEC));
         }
         return array;
     }
