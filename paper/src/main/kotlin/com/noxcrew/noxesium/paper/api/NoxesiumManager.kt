@@ -161,7 +161,7 @@ public open class NoxesiumManager(
     }
 
     /** Registers a new server rule with the given [index] and [ruleSupplier]. */
-    internal fun registerServerRule(index: Int, ruleSupplier: RuleFunction<*>) {
+    public fun registerServerRule(index: Int, ruleSupplier: RuleFunction<*>) {
         require(!rules.containsKey(index)) { "Can't double register index $index" }
         rules[index] = ruleSupplier
     }

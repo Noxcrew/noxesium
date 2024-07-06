@@ -9,6 +9,8 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServer
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientInformationPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSettingsPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.handle
+import com.noxcrew.noxesium.paper.api.readPluginMessage
+import com.noxcrew.noxesium.paper.api.sendPluginMessage
 import net.kyori.adventure.key.Key
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin

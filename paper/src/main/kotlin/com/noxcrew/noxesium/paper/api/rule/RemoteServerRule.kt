@@ -34,6 +34,13 @@ public abstract class RemoteServerRule<T : Any>(
         this.changePending = true
     }
 
+    override fun reset() {
+        // We enforce resetting because another
+        // server may have had a cached value change!
+        this.value = default
+        this.changePending = true
+    }
+
     override fun getDefault(): T = default
     override fun getIndex(): Int = index
 }

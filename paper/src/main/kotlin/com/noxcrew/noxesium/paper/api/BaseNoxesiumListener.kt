@@ -78,24 +78,24 @@ public abstract class BaseNoxesiumListener(
 
     /** Sends this packet to the given [player]. */
     public abstract fun sendPacket(player: Player, packet: NoxesiumPacket)
-
-    /** Sends a plugin message to a player. */
-    public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
-        val craftPlayer = this as CraftPlayer
-        if (craftPlayer.handle.connection == null) return
-        if (channel.asString() in craftPlayer.listeningPluginChannels) {
-            val packet = ClientboundCustomPayloadPacket(
-                DiscardedPayload(
-                    ResourceLocation(StandardMessenger.validateAndCorrectChannel(channel.asString())),
-                    // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-                    FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
-                )
-            )
-            craftPlayer.handle.connection.send(packet)
-        }
-    }
-
-    /** Reads a byte array using [reader]. */
-    public fun <T> ByteArray.readPluginMessage(reader: (buffer: FriendlyByteBuf) -> T): T =
-        FriendlyByteBuf(Unpooled.wrappedBuffer(this)).let(reader)
 }
+
+/** Sends a plugin message to a player. */
+public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
+    val craftPlayer = this as CraftPlayer
+    if (craftPlayer.handle.connection == null) return
+    if (channel.asString() in craftPlayer.listeningPluginChannels) {
+        val packet = ClientboundCustomPayloadPacket(
+            DiscardedPayload(
+                ResourceLocation(StandardMessenger.validateAndCorrectChannel(channel.asString())),
+                // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
+                FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
+            )
+        )
+        craftPlayer.handle.connection.send(packet)
+    }
+}
+
+/** Reads a byte array using [reader]. */
+public fun <T> ByteArray.readPluginMessage(reader: (buffer: FriendlyByteBuf) -> T): T =
+    FriendlyByteBuf(Unpooled.wrappedBuffer(this)).let(reader)
