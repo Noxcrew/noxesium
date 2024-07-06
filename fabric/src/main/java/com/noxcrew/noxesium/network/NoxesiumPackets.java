@@ -25,6 +25,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,6 +69,13 @@ public class NoxesiumPackets {
     public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> RESET_EXTRA_ENTITY_DATA = NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
 
     /**
+     * Returns an unmodifiable copy of all registered groups.
+     */
+    public static Collection<String> getRegisteredGroups() {
+        return Collections.unmodifiableCollection(registeredGroups);
+    }
+
+    /**
      * Registers a new clientbound Noxesium packet.
      *
      * @param id  The identifier of this packet.
@@ -92,6 +101,17 @@ public class NoxesiumPackets {
         PayloadTypeRegistry.configurationS2C().register(type.type, codec);
         PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
+
+        // If this group has already been registered we also immediately register this packet!
+        if (registeredGroups.contains(group)) {
+            var universal = Objects.equals(group, "universal");
+            if (universal) {
+                registerGlobalReceiver(type.type);
+            } else {
+                registerReceiver(type.type);
+            }
+        }
+
         return type;
     }
 

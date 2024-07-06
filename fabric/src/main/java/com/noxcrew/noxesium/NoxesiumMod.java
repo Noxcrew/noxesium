@@ -90,7 +90,12 @@ public class NoxesiumMod implements ClientModInitializer {
     public void registerModule(NoxesiumModule module) {
         modules.put(module.getClass(), module);
         module.onStartup();
-    }
+
+        // Run onGroupRegistered for registered groups
+        for (var group : NoxesiumPackets.getRegisteredGroups()) {
+            module.onGroupRegistered(group);
+        }
+     }
 
     /**
      * Returns the module of type [T] if one is registered.
