@@ -15,7 +15,12 @@ public class ServerboundClientInformationPacket(
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_CLIENT_INFO) {
 
     public constructor(buffer: FriendlyByteBuf, player: Player, protocolVersion: Int) : this(
+        buffer,
         buffer.readVarInt(),
+    )
+
+    public constructor(buffer: FriendlyByteBuf, protocolVersion: Int) : this(
+        protocolVersion,
         if (protocolVersion >= NoxesiumFeature.NEW_MCC_FEATURES.minProtocolVersion) buffer.readUtf() else "unknown"
     )
 }
