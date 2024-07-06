@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.paper.v0
 import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.paper.api.BaseNoxesiumListener
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
+import com.noxcrew.noxesium.paper.api.createPayloadPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServerRulesPacket
@@ -10,8 +11,8 @@ import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientInfor
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSettingsPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.handle
 import com.noxcrew.noxesium.paper.api.readPluginMessage
-import com.noxcrew.noxesium.paper.api.sendPluginMessage
 import net.kyori.adventure.key.Key
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.slf4j.Logger
@@ -58,14 +59,14 @@ public class NoxesiumListenerV0(
         registerOutgoingPluginChannel(NOXESIUM_RULES_CHANNEL)
     }
 
-    override fun sendPacket(player: Player, packet: NoxesiumPacket) {
+    override fun createPacket(player: Player, packet: NoxesiumPacket): ClientboundCustomPayloadPacket? =
         if (packet is ClientboundResetServerRulesPacket) {
-            player.sendPluginMessage(NOXESIUM_RULES_CHANNEL) { buffer ->
+            player.createPayloadPacket(NOXESIUM_RULES_CHANNEL) { buffer ->
                 buffer.writeVarIntArray(packet.indices.toIntArray())
                 buffer.writeInt(0)
             }
         } else if (packet is ClientboundChangeServerRulesPacket) {
-            player.sendPluginMessage(NOXESIUM_RULES_CHANNEL) { buffer ->
+            player.createPayloadPacket(NOXESIUM_RULES_CHANNEL) { buffer ->
                 buffer.writeVarIntArray(IntArray(0))
                 buffer.writeInt(packet.writers.size)
 
@@ -74,6 +75,7 @@ public class NoxesiumListenerV0(
                     writer(buffer)
                 }
             }
+        } else {
+            null
         }
-    }
 }

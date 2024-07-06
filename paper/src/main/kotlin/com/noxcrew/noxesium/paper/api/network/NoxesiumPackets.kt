@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSound
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSoundStopPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccGameStatePacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccServerPacket
+import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServerRulesPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
@@ -35,6 +36,9 @@ public object NoxesiumPackets {
     public val CLIENT_START_SOUND: PacketType<ClientboundCustomSoundStartPacket> = client("start_sound")
     public val CLIENT_MODIFY_SOUND: PacketType<ClientboundCustomSoundModifyPacket> = client("modify_sound")
     public val CLIENT_STOP_SOUND: PacketType<ClientboundCustomSoundStopPacket> = client("stop_sound")
+
+    public val CLIENT_CHANGE_EXTRA_ENTITY_DATA: PacketType<ClientboundCustomSoundStopPacket> = client("change_extra_entity_data")
+    public val CLIENT_RESET_EXTRA_ENTITY_DATA: PacketType<ClientboundResetExtraEntityDataPacket> = client("reset_extra_entity_data")
 
     /** All registered client-bound packets. */
     public val clientboundPackets: Map<String, PacketType<*>>

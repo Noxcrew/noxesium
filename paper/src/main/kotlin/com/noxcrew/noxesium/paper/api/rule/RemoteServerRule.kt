@@ -9,12 +9,14 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.awt.Color
+import java.util.Optional
 
 /**
  * The server-side implementation of a server rule supported by Noxesium.
  */
 public abstract class RemoteServerRule<T : Any>(
-    private val player: Player,
+    private val player: Player?,
     private val index: Int,
     private val default: T,
 ) : ServerRule<T, FriendlyByteBuf>() {
@@ -47,7 +49,7 @@ public abstract class RemoteServerRule<T : Any>(
 
 /** A server rule that stores a boolean value. */
 public class BooleanServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: Boolean = false,
 ) : RemoteServerRule<Boolean>(player, index, default) {
@@ -59,7 +61,7 @@ public class BooleanServerRule(
 
 /** A server rule that stores an integer value. */
 public class IntServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: Int = 0,
 ) : RemoteServerRule<Int>(player, index, default) {
@@ -69,9 +71,21 @@ public class IntServerRule(
     }
 }
 
+/** A server rule that stores a string value. */
+public class StringServerRule(
+    player: Player?,
+    index: Int,
+    default: String,
+) : RemoteServerRule<String>(player, index, default) {
+
+    override fun write(value: String, buffer: FriendlyByteBuf) {
+        buffer.writeUtf(value)
+    }
+}
+
 /** A server rule that stores a list of string value. */
 public class StringListServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: List<String> = emptyList(),
 ) : RemoteServerRule<List<String>>(player, index, default) {
@@ -83,7 +97,7 @@ public class StringListServerRule(
 
 /** A server rule that stores an item stack. */
 public class ItemStackServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: ItemStack = ItemStack(Material.AIR),
 ) : RemoteServerRule<ItemStack>(player, index, default) {
@@ -95,7 +109,7 @@ public class ItemStackServerRule(
 
 /** A server rule that stores an item stack. */
 public class ItemStackListServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: List<ItemStack> = emptyList(),
 ) : RemoteServerRule<List<ItemStack>>(player, index, default) {
@@ -108,9 +122,26 @@ public class ItemStackListServerRule(
     }
 }
 
+/** A server rule that stores an optional color value. */
+public class ColorServerRule(
+    player: Player?,
+    index: Int,
+    default: Optional<Color>,
+) : RemoteServerRule<Optional<Color>>(player, index, default) {
+
+    override fun write(value: Optional<Color>, buffer: FriendlyByteBuf) {
+        if (value.isPresent) {
+            buffer.writeBoolean(true)
+            buffer.writeVarInt(value.get().rgb)
+        } else {
+            buffer.writeBoolean(false)
+        }
+    }
+}
+
 /** A server rule that stores qib behavior. */
 public class QibBehaviorServerRule(
-    player: Player,
+    player: Player?,
     index: Int,
     default: Map<String, QibDefinition> = emptyMap(),
 ) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {

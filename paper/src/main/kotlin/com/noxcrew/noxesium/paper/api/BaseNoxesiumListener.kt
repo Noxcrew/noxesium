@@ -76,22 +76,31 @@ public abstract class BaseNoxesiumListener(
         }
     }
 
-    /** Sends this packet to the given [player]. */
-    public abstract fun sendPacket(player: Player, packet: NoxesiumPacket)
+    /** Creates this packet for the given [player]. */
+    public abstract fun createPacket(player: Player, packet: NoxesiumPacket): ClientboundCustomPayloadPacket?
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
+public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit): ClientboundCustomPayloadPacket? {
     val craftPlayer = this as CraftPlayer
-    if (craftPlayer.handle.connection == null) return
+    if (craftPlayer.handle.connection == null) return null
     if (channel.asString() in craftPlayer.listeningPluginChannels) {
-        val packet = ClientboundCustomPayloadPacket(
+        return ClientboundCustomPayloadPacket(
             DiscardedPayload(
                 ResourceLocation(StandardMessenger.validateAndCorrectChannel(channel.asString())),
                 // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
                 FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
             )
         )
+    }
+    return null
+}
+
+/** Sends a plugin message to a player. */
+public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
+    val packet = createPayloadPacket(channel, initialCapacity, writer)
+    if (packet != null) {
+        val craftPlayer = this as CraftPlayer
         craftPlayer.handle.connection.send(packet)
     }
 }

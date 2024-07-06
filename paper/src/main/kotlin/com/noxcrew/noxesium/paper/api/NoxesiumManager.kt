@@ -13,7 +13,9 @@ import com.noxcrew.noxesium.paper.api.rule.RuleFunction
 import com.noxcrew.noxesium.paper.v0.NoxesiumListenerV0
 import com.noxcrew.noxesium.paper.v1.NoxesiumListenerV1
 import com.noxcrew.noxesium.paper.v2.NoxesiumListenerV2
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
@@ -94,17 +96,27 @@ public open class NoxesiumManager(
     /**
      * Sends this packet to the given [player].
      */
-    public fun sendPacket(player: Player, packet: NoxesiumPacket) {
-        val protocol = getProtocolVersion(player) ?: return
+    public fun createPacket(player: Player, packet: NoxesiumPacket): ClientboundCustomPayloadPacket? {
+        val protocol = getProtocolVersion(player) ?: return null
 
         // Use the newest protocol this client supports!
-        if (protocol < NoxesiumFeature.API_V1.minProtocolVersion) {
-            v0.sendPacket(player, packet)
+        return if (protocol < NoxesiumFeature.API_V1.minProtocolVersion) {
+            v0.createPacket(player, packet)
         } else if (protocol < NoxesiumFeature.API_V2.minProtocolVersion) {
-            v1.sendPacket(player, packet)
+            v1.createPacket(player, packet)
         } else {
-            v2.sendPacket(player, packet)
+            v2.createPacket(player, packet)
         }
+    }
+
+    /**
+     * Sends this packet to the given [player].
+     */
+    public fun sendPacket(player: Player, packet: NoxesiumPacket) {
+        // Use the newest protocol this client supports!
+        val nmsPacket = createPacket(player, packet) ?: return
+        val craftPlayer = player as CraftPlayer
+        craftPlayer.handle.connection.send(nmsPacket)
     }
 
     /**
