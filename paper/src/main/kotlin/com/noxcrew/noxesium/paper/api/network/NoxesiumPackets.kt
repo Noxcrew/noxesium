@@ -28,7 +28,7 @@ public object NoxesiumPackets {
     public val CLIENT_CHANGE_SERVER_RULES: PacketType<ClientboundChangeServerRulesPacket> = client("change_server_rules")
     public val CLIENT_RESET_SERVER_RULES: PacketType<ClientboundResetServerRulesPacket> = client("reset_server_rules")
     public val CLIENT_RESET: PacketType<ClientboundResetPacket> = client("reset")
-    public val CLIENT_SERVER_INFO: PacketType<ClientboundServerInformationPacket> = client("server")
+    public val CLIENT_SERVER_INFO: PacketType<ClientboundServerInformationPacket> = client("server_info")
 
     public val CLIENT_MCC_SERVER: PacketType<ClientboundMccServerPacket> = client("mcc_server")
     public val CLIENT_MCC_GAME_STATE: PacketType<ClientboundMccGameStatePacket> = client("mcc_game_state")
