@@ -18,6 +18,7 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPack
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -61,7 +62,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
     private final NoxesiumConfig config = NoxesiumConfig.load();
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
-    
+
     /**
      * Returns the known Noxesium instance.
      */
@@ -95,7 +96,7 @@ public class NoxesiumMod implements ClientModInitializer {
         for (var group : NoxesiumPackets.getRegisteredGroups()) {
             module.onGroupRegistered(group);
         }
-     }
+    }
 
     /**
      * Returns the module of type [T] if one is registered.
@@ -155,15 +156,14 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
-            // Reset the current max protocol version
-            currentMaxProtocol = ProtocolVersion.VERSION;
-            initialized = false;
+            uninitialize();
+        });
 
-            // Handle quitting the server
-            modules.values().forEach(NoxesiumModule::onQuitServer);
-
-            // Unregister additional packets
-            NoxesiumPackets.unregisterPackets();
+        // Re-initialize when moving in/out of the config phase, we assume any server
+        // running a proxy that doesn't use the configuration phase between servers
+        // has their stuff set up well enough to remember the client's information.
+        ClientConfigurationConnectionEvents.START.register((ignored1, ignored2) -> {
+            uninitialize();
         });
 
         // Register all universal messaging channels
@@ -200,6 +200,21 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     /**
+     * Un-initializes the connection with the server.
+     */
+    private void uninitialize() {
+        // Reset the current max protocol version
+        currentMaxProtocol = ProtocolVersion.VERSION;
+        initialized = false;
+
+        // Handle quitting the server
+        modules.values().forEach(NoxesiumModule::onQuitServer);
+
+        // Unregister additional packets
+        NoxesiumPackets.unregisterPackets();
+    }
+
+    /**
      * Sends a packet to the server containing the GUI scale of the client which
      * allows servers to more accurately adapt their UI to clients.
      */
@@ -211,15 +226,15 @@ public class NoxesiumMod implements ClientModInitializer {
         var options = Minecraft.getInstance().options;
 
         new ServerboundClientSettingsPacket(
-                new ClientSettings(
-                        options.guiScale().get(),
-                        window.getGuiScale(),
-                        window.getGuiScaledWidth(),
-                        window.getGuiScaledHeight(),
-                        Minecraft.getInstance().isEnforceUnicode(),
-                        options.touchscreen().get(),
-                        options.notificationDisplayTime().get()
-                )
+            new ClientSettings(
+                options.guiScale().get(),
+                window.getGuiScale(),
+                window.getGuiScaledWidth(),
+                window.getGuiScaledHeight(),
+                Minecraft.getInstance().isEnforceUnicode(),
+                options.touchscreen().get(),
+                options.notificationDisplayTime().get()
+            )
         ).send();
     }
 }
