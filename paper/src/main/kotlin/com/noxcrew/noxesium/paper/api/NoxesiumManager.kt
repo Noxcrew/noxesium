@@ -49,6 +49,8 @@ public open class NoxesiumManager(
     private val settings = ConcurrentHashMap<UUID, ClientSettings>()
     private val profiles = ConcurrentHashMap<UUID, NoxesiumProfile>()
     private val rules = ConcurrentHashMap<Int, RuleFunction<*>>()
+    private val ready = ConcurrentHashMap.newKeySet<UUID>()
+    private val pending = ConcurrentHashMap<UUID, Pair<Int, String>>()
 
     private lateinit var v0: BaseNoxesiumListener
     private lateinit var v1: BaseNoxesiumListener
@@ -72,6 +74,12 @@ public open class NoxesiumManager(
 
         // Register a player when we receive the client information packet
         NoxesiumPackets.SERVER_CLIENT_INFO.addListener(this) { packet, player ->
+            // If the player hasn't told the server about their plugin channels yet we wait!
+            if (player.uniqueId !in ready) {
+                pending[player.uniqueId] = packet.protocolVersion to packet.versionString
+                return@addListener
+            }
+
             registerPlayer(player, packet.protocolVersion, packet.versionString)
         }
         NoxesiumPackets.SERVER_CLIENT_SETTINGS.addListener(this) { packet, player ->
@@ -91,6 +99,16 @@ public open class NoxesiumManager(
         v0.unregister()
         v1.unregister()
         v2.unregister()
+    }
+
+    /**
+     * Marks that a player is ready to start receiving packets, that is they have confirmed with
+     * the server the existance of at least one Noxesium channel.
+     */
+    public fun markReady(player: Player) {
+        ready += player.uniqueId
+        val (protocolVersion, version) = pending.remove(player.uniqueId) ?: return
+        registerPlayer(player, protocolVersion, version)
     }
 
     /**
@@ -219,6 +237,7 @@ public open class NoxesiumManager(
         players -= e.player.uniqueId
         settings -= e.player.uniqueId
         profiles -= e.player.uniqueId
+        ready - e.player.uniqueId
     }
 
     /** Called when [player] is registered as a Noxesium user. */

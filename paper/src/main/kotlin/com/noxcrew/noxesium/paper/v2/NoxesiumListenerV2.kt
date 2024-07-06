@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.paper.api.BaseNoxesiumListener
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.createPayloadPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
+import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets.clientboundPackets
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets.serverboundPackets
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
@@ -24,6 +25,8 @@ import it.unimi.dsi.fastutil.ints.IntImmutableList
 import net.kyori.adventure.key.Key
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerRegisterChannelEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.Logger
 
@@ -156,4 +159,10 @@ public class NoxesiumListenerV2(
                 }
             }
         }
+
+    @EventHandler
+    public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
+        if (event.channel != Key.key(PACKET_NAMESPACE, NoxesiumPackets.CLIENT_SERVER_INFO.id).asString()) return
+        manager.markReady(event.player)
+    }
 }

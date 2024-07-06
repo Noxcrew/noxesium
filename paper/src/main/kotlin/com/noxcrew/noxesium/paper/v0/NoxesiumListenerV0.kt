@@ -14,6 +14,8 @@ import com.noxcrew.noxesium.paper.api.readPluginMessage
 import net.kyori.adventure.key.Key
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerRegisterChannelEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.Logger
 
@@ -78,4 +80,10 @@ public class NoxesiumListenerV0(
         } else {
             null
         }
+
+    @EventHandler
+    public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
+        if (event.channel != NOXESIUM_RULES_CHANNEL.asString()) return
+        manager.markReady(event.player)
+    }
 }

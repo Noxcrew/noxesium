@@ -7,8 +7,11 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
 import net.minecraft.resources.ResourceLocation
+import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
+import org.bukkit.event.HandlerList
+import org.bukkit.event.Listener
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.messaging.PluginMessageListener
 import org.bukkit.plugin.messaging.StandardMessenger
@@ -20,7 +23,7 @@ public abstract class BaseNoxesiumListener(
     public val plugin: Plugin,
     public val logger: Logger,
     public val manager: NoxesiumManager,
-) {
+): Listener {
 
     public companion object {
         /** Base namespace of the plugin channel for Noxesium messages. */
@@ -56,6 +59,7 @@ public abstract class BaseNoxesiumListener(
     /** Registers this listener. */
     public fun register(): BaseNoxesiumListener {
         require(registered.compareAndSet(false, true)) { "Cannot register when registered" }
+        Bukkit.getPluginManager().registerEvents(this, plugin)
         for ((channel, listener) in incomingPluginChannels) {
             plugin.server.messenger.registerIncomingPluginChannel(plugin, channel.asString(), listener)
         }
@@ -68,6 +72,7 @@ public abstract class BaseNoxesiumListener(
     /** Un-registers this listener. */
     public fun unregister() {
         require(registered.compareAndSet(true, false)) { "Cannot un-register when not registered" }
+        HandlerList.unregisterAll(this)
         for ((channel, listener) in incomingPluginChannels) {
             plugin.server.messenger.unregisterIncomingPluginChannel(plugin, channel.asString(), listener)
         }
