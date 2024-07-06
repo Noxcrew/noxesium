@@ -238,6 +238,7 @@ public open class NoxesiumManager(
         settings -= e.player.uniqueId
         profiles -= e.player.uniqueId
         ready - e.player.uniqueId
+        pending -= e.player.uniqueId
     }
 
     /** Called when [player] is registered as a Noxesium user. */
