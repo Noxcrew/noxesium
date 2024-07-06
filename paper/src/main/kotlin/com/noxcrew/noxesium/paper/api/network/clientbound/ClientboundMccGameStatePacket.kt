@@ -15,7 +15,7 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
  *
  * Values for the stage key differ based on the game.
  */
-public class ClientboundMccGameStatePacket(
+public data class ClientboundMccGameStatePacket(
     public val phaseType: String,
     public val stageKey: String,
     public val round: Int,

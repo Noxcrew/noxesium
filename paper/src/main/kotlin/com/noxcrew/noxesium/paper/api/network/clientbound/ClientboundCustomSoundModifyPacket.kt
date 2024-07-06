@@ -7,7 +7,7 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
  * Sent by a server to change the volume of a sound. The interpolation time can be
  * used to fade the sound up or down over an amount of ticks.
  */
-public class ClientboundCustomSoundModifyPacket(
+public data class ClientboundCustomSoundModifyPacket(
     public val id: Int,
     public val volume: Float,
     public val interpolationTicks: Int,

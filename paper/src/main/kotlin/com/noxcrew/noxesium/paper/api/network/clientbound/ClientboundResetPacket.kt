@@ -9,6 +9,6 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
  * 0x01 - Resets all server rule values
  * 0x02 - Resets cached player heads
  */
-public class ClientboundResetPacket(
+public data class ClientboundResetPacket(
     public val flags: Byte,
 ) : NoxesiumPacket(NoxesiumPackets.CLIENT_RESET)

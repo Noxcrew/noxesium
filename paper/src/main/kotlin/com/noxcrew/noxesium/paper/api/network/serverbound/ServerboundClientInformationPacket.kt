@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
  * Sent to the server when the client first joins to establish the version of the
  * client being used.
  */
-public class ServerboundClientInformationPacket(
+public data class ServerboundClientInformationPacket(
     public val protocolVersion: Int,
     public val versionString: String,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_CLIENT_INFO) {

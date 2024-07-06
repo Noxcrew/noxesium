@@ -10,7 +10,7 @@ import org.joml.Vector3f
  * Sent by a server to start a Noxesium custom sound. If a sound with the same id
  * is already playing, that sound will be stopped.
  */
-public class ClientboundCustomSoundStartPacket(
+public data class ClientboundCustomSoundStartPacket(
     public val id: Int,
     public val sound: ResourceLocation,
     public val source: SoundSource,

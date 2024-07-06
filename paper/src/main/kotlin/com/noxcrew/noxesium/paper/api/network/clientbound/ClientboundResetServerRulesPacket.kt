@@ -7,6 +7,6 @@ import it.unimi.dsi.fastutil.ints.IntList
 /**
  * Resets the stored value for one or more server rules.
  */
-public class ClientboundResetServerRulesPacket(
+public data class ClientboundResetServerRulesPacket(
     public val indices: IntList,
 ) : NoxesiumPacket(NoxesiumPackets.CLIENT_RESET_SERVER_RULES)
