@@ -51,7 +51,7 @@ public class NoxesiumSoundModule implements NoxesiumModule {
     @Nullable
     public NoxesiumSoundInstance getSound(int id) {
         NoxesiumSoundInstance soundInstance = sounds.get(id);
-        if (soundInstance.isStopped()) {
+        if (soundInstance != null && soundInstance.isStopped()) {
             sounds.remove(id);
             return null;
         }
