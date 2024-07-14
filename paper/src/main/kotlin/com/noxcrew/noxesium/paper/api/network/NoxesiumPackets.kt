@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInfor
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientInformationPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSettingsPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
+import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundQibTriggeredPacket
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.entity.Player
 
@@ -24,6 +25,7 @@ public object NoxesiumPackets {
 
     public val SERVER_CLIENT_INFO: ServerboundPacketType<ServerboundClientInformationPacket> = server("client_info", ::ServerboundClientInformationPacket)
     public val SERVER_CLIENT_SETTINGS: ServerboundPacketType<ServerboundClientSettingsPacket> = server("client_settings", ::ServerboundClientSettingsPacket)
+    public val SERVER_QIB_TRIGGERED: ServerboundPacketType<ServerboundQibTriggeredPacket> = server("qib_triggered", ::ServerboundQibTriggeredPacket)
 
     public val CLIENT_CHANGE_SERVER_RULES: PacketType<ClientboundChangeServerRulesPacket> = client("change_server_rules")
     public val CLIENT_RESET_SERVER_RULES: PacketType<ClientboundResetServerRulesPacket> = client("reset_server_rules")

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.entity;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -44,6 +45,13 @@ public class QibBehaviorModule implements NoxesiumModule {
     }
 
     /**
+     * Sends the server that the player triggered the given type of behavior.
+     */
+    private void sendPacket(String behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
+        new ServerboundQibTriggeredPacket(behavior, type, entityId).send();
+    }
+
+    /**
      * Triggers when a player jumps.
      */
     public void onPlayerJump(LocalPlayer player) {
@@ -60,6 +68,7 @@ public class QibBehaviorModule implements NoxesiumModule {
             // Try to trigger the jump behavior
             var definition = knownBehaviors.get(behavior);
             if (definition.onJump() != null) {
+                sendPacket(behavior, ServerboundQibTriggeredPacket.Type.JUMP, entity.getId());
                 executeBehavior(player, entity, definition.onJump());
                 triggeredJump.add(entity);
             }
@@ -103,12 +112,14 @@ public class QibBehaviorModule implements NoxesiumModule {
             // Try to trigger the entry
             if (definition.triggerEnterLeaveOnSwitch() || !collidingWithTypes.contains(behavior)) {
                 if (definition.onEnter() != null) {
+                    sendPacket(behavior, ServerboundQibTriggeredPacket.Type.ENTER, entity.getId());
                     executeBehavior(player, entity, definition.onEnter());
                 }
             }
 
             // Always trigger the while inside logic
             if (definition.whileInside() != null) {
+                sendPacket(behavior, ServerboundQibTriggeredPacket.Type.INSIDE, entity.getId());
                 executeBehavior(player, entity, definition.whileInside());
             }
             collidingTypes.add(behavior);
@@ -140,6 +151,7 @@ public class QibBehaviorModule implements NoxesiumModule {
             // Execute the behavior if we always do or if you've left this type
             if (definition.triggerEnterLeaveOnSwitch() || !collidingTypes.contains(behavior)) {
                 if (definition.onLeave() != null) {
+                    sendPacket(behavior, ServerboundQibTriggeredPacket.Type.LEAVE, collision.getId());
                     executeBehavior(player, collision, definition.onLeave());
                 }
             }
