@@ -36,7 +36,7 @@ public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> v
         for (var index : indices) {
             // If we don't know one rule the whole packet is useless
             var rule = provider.getIndex(index);
-            if (rule == null) return result;
+            if (rule == null) throw new UnsupportedOperationException("Invalid rule index " + index);
             var data = rule.read(buf);
             result.add(data);
         }

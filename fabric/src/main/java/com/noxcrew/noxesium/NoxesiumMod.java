@@ -5,10 +5,12 @@ import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
+import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.feature.model.CustomServerCreativeItems;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.feature.ui.NoxesiumReloadListener;
@@ -171,6 +173,10 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Register the resource listener
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new NoxesiumReloadListener());
+
+        // Trigger registration of all server and entity rules
+        Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
+        ignored = ExtraEntityData.DISABLE_BUBBLES;
     }
 
     /**

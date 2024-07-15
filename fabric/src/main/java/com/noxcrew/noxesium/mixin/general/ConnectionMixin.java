@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin;
+package com.noxcrew.noxesium.mixin.general;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import io.netty.channel.ChannelHandlerContext;

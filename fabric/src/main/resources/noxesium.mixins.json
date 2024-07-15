@@ -63,10 +63,11 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "ConnectionMixin",
     "entity.EntityMixin",
     "entity.GuardianMixin",
     "entity.InteractionMixin",
+    "general.ConnectionMixin",
+    "general.PacketDecoderMixin",
     "model.ItemDisplayParametersMixin"
   ]
 }
