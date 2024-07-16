@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.ui.wrapper;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.noxcrew.noxesium.NoxesiumMod;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -44,12 +45,11 @@ public class MapUiWrapper extends ElementWrapper {
     }
 
     public MapUiWrapper() {
-        /*for (var arm : HumanoidArm.values()) {
-            registerVariable(arm.getSerializedName() + " map", (minecraft, partialTicks) -> hasMapItem(minecraft, arm));
-        }*/
-
         // Update every tick for the map contents
-        registerVariable("tick", (minecraft, parialTicks) -> RenderSystem.getShaderGameTime());
+        registerVariable("tick", (minecraft, partialTicks) -> RenderSystem.getShaderGameTime());
+
+        // Update as the setting changes
+        registerVariable("size", (minecraft, partialTicks) -> NoxesiumMod.getInstance().getConfig().mapUiSize);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class MapUiWrapper extends ElementWrapper {
 
     private void renderMap(Minecraft minecraft, GuiGraphics graphics, DeltaTracker deltaTracker, PoseStack pose, HumanoidArm arm, ItemStack item, int offset) {
         pose.pushPose();
-        var scale = 1f / ((float) minecraft.getWindow().getGuiScale()) * 4f;
+        var scale = 1f / ((float) minecraft.getWindow().getGuiScale()) * 4f * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
         if (arm == HumanoidArm.RIGHT) {
             pose.translate(graphics.guiWidth() - (148f * scale), 0f, 0f);
         } else {

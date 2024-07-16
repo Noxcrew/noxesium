@@ -15,10 +15,11 @@ public abstract class AccessibilitySettingsScreenMixin {
 
     @ModifyReturnValue(method = "options", at = @At("TAIL"))
     private static OptionInstance<?>[] changeOptions(OptionInstance<?>[] original) {
-        var newArray = new OptionInstance<?>[original.length + 2];
+        var newArray = new OptionInstance<?>[original.length + 3];
         System.arraycopy(original, 0, newArray, 0, original.length);
-        newArray[newArray.length - 2] = VanillaOptions.resetToggleKeys();
-        newArray[newArray.length - 1] = VanillaOptions.renderMapsAsUi();
+        newArray[newArray.length - 3] = VanillaOptions.resetToggleKeys();
+        newArray[newArray.length - 2] = VanillaOptions.renderMapsAsUi();
+        newArray[newArray.length - 1] = VanillaOptions.mapUiSize();
         return newArray;
     }
 }
