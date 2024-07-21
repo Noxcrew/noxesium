@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.config.MapLocation;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -49,7 +50,9 @@ public class MapUiWrapper extends ElementWrapper {
         registerVariable("tick", (minecraft, partialTicks) -> RenderSystem.getShaderGameTime());
 
         // Update as the setting changes
+        registerVariable("main_hand", (minecraft, partialTicks) -> minecraft.options.mainHand());
         registerVariable("size", (minecraft, partialTicks) -> NoxesiumMod.getInstance().getConfig().mapUiSize);
+        registerVariable("location", (minecraft, partialTicks) -> NoxesiumMod.getInstance().getConfig().mapUiLocation);
     }
 
     @Override
@@ -69,11 +72,25 @@ public class MapUiWrapper extends ElementWrapper {
     private void renderMap(Minecraft minecraft, GuiGraphics graphics, DeltaTracker deltaTracker, PoseStack pose, HumanoidArm arm, ItemStack item, int offset) {
         pose.pushPose();
         var scale = 1f / ((float) minecraft.getWindow().getGuiScale()) * 4f * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
+        var bottom = NoxesiumMod.getInstance().getConfig().mapUiLocation == MapLocation.BOTTOM;
         if (arm == HumanoidArm.RIGHT) {
-            pose.translate(graphics.guiWidth() - (148f * scale), 0f, 0f);
+            if (bottom) {
+                // Translate it to be at the bottom right of the GUI
+                pose.translate(graphics.guiWidth() - (148f * scale), graphics.guiHeight() - (148f * scale), 0f);
+            } else {
+                // Only translate to the right of the GUI
+                pose.translate(graphics.guiWidth() - (148f * scale), 0f, 0f);
+            }
         } else {
-            pose.translate(0f, offset, 0f);
+            if (bottom) {
+                // Translate it to be at the bottom of the GUI
+                pose.translate(0f, graphics.guiHeight() - (148f * scale), 0f);
+            } else {
+                // Only add the offset on the left top side!
+                pose.translate(0f, offset, 0f);
+            }
         }
+
         pose.scale(1f * scale, 1f * scale, -1f);
         pose.translate(10f, 10f, 0f);
         MapId mapid = item.get(DataComponents.MAP_ID);

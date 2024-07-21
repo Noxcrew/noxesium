@@ -80,9 +80,10 @@ public abstract class GuiHookMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
+        // Render map at the bottom so the rest goes on top, this goes after vanilla so we render on top of e.g. chat
+        noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
         noxesium$addRenderLayer(ElementManager.getInstance(FpsOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay);
         noxesium$addRenderLayer(ElementManager.getInstance(GameTimeOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showGameTimeOverlay);
-        noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
     }
 
     @WrapMethod(method = "renderScoreboardSidebar")

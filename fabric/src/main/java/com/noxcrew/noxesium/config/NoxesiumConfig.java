@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
@@ -23,7 +24,7 @@ public class NoxesiumConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public boolean resetToggleKeys = false;
-    public boolean renderMapsAsUi = false;
+    public TriState renderMapsInUi = TriState.DEFAULT;
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableExperimentalPerformancePatches = false;
@@ -32,6 +33,7 @@ public class NoxesiumConfig {
     public boolean dumpOutgoingPackets = false;
     public boolean printPacketExceptions = false;
     public double mapUiSize = 1;
+    public MapLocation mapUiLocation = MapLocation.TOP;
 
     /**
      * Returns whether experimental patches are available. This will return false if
@@ -52,7 +54,10 @@ public class NoxesiumConfig {
      * Returns whether to render maps in the UI.
      */
     public boolean shouldRenderMapsInUi() {
-        return renderMapsAsUi || ServerRules.SHOW_MAP_IN_UI.getValue();
+        if (renderMapsInUi == TriState.DEFAULT) {
+            return ServerRules.SHOW_MAP_IN_UI.getValue();
+        }
+        return renderMapsInUi.get();
     }
 
     /**

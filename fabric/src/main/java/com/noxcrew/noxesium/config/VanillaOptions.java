@@ -2,8 +2,11 @@ package com.noxcrew.noxesium.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
+
+import java.util.Arrays;
 
 /**
  * Stores vanilla option instances for all settings.
@@ -30,12 +33,14 @@ public class VanillaOptions {
         }
     );
 
-    private static final OptionInstance<Boolean> renderMapsAsUi = OptionInstance.createBoolean(
+    private static final OptionInstance<TriState> renderMapsAsUi = new OptionInstance<>(
         "noxesium.options.render_maps_as_ui.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.render_maps_as_ui.tooltip")),
-        NoxesiumMod.getInstance().getConfig().renderMapsAsUi,
+        VanillaOptions::triStateValueLabel,
+        new OptionInstance.Enum<>(Arrays.asList(TriState.values()), Codec.STRING.xmap(TriState::valueOf, TriState::name)),
+        NoxesiumMod.getInstance().getConfig().renderMapsInUi,
         (newValue) -> {
-            NoxesiumMod.getInstance().getConfig().renderMapsAsUi = newValue;
+            NoxesiumMod.getInstance().getConfig().renderMapsInUi = newValue;
             NoxesiumMod.getInstance().getConfig().save();
         }
     );
@@ -53,6 +58,18 @@ public class VanillaOptions {
         }
     );
 
+    private static final OptionInstance<MapLocation> mapUiLocation = new OptionInstance<>(
+        "noxesium.options.ui_map_location.name",
+        OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_map_location.tooltip")),
+        VanillaOptions::triStateValueLabel,
+        new OptionInstance.Enum<>(Arrays.asList(MapLocation.values()), Codec.STRING.xmap(MapLocation::valueOf, MapLocation::name)),
+        NoxesiumMod.getInstance().getConfig().mapUiLocation,
+        (newValue) -> {
+            NoxesiumMod.getInstance().getConfig().mapUiLocation = newValue;
+            NoxesiumMod.getInstance().getConfig().save();
+        }
+    );
+
     public static OptionInstance<Boolean> experimentalPatches() {
         return experimentalPatches;
     }
@@ -61,7 +78,7 @@ public class VanillaOptions {
         return resetToggleKeys;
     }
 
-    public static OptionInstance<Boolean> renderMapsAsUi() {
+    public static OptionInstance<TriState> renderMapsAsUi() {
         return renderMapsAsUi;
     }
 
@@ -69,7 +86,15 @@ public class VanillaOptions {
         return mapUiSize;
     }
 
+    public static OptionInstance<MapLocation> mapUiLocation() {
+        return mapUiLocation;
+    }
+
     private static Component percentValueLabel(Component component, double d) {
         return Component.translatable("options.percent_value", new Object[]{component, (int) (d * 100.0)});
+    }
+
+    private static Component triStateValueLabel(Component component, Enum e) {
+        return Component.translatable("noxesium.options.enum." + e.name().toLowerCase());
     }
 }

@@ -23,9 +23,18 @@
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
-  "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.",
+  "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.\n\nIf set to \"Ask server\" the server you are playing on is able to enable or disable this feature.",
   "noxesium.options.ui_map_size.name": "Map UI Size",
   "noxesium.options.ui_map_size.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
+  "noxesium.options.ui_map_location.name": "Map UI Location",
+  "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting.",
+
+  "noxesium.options.enum.default": "Ask server",
+  "noxesium.options.enum.true": "Always",
+  "noxesium.options.enum.false": "Never",
+
+  "noxesium.options.enum.top": "Top Corner",
+  "noxesium.options.enum.bottom": "Bottom Corner",
 
   "itemGroup.noxesium.server_items": "Custom Blocks",
 
