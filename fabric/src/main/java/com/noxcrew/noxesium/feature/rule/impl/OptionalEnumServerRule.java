@@ -12,11 +12,13 @@ public class OptionalEnumServerRule<T extends Enum<T>> extends ClientServerRule<
 
     private final Optional<T> defaultValue;
     private final Class<T> clazz;
+    private final Runnable onChange;
 
-    public OptionalEnumServerRule(int index, Class<T> clazz, Optional<T> defaultValue) {
+    public OptionalEnumServerRule(int index, Class<T> clazz, Optional<T> defaultValue, Runnable onChange) {
         super(index);
         this.clazz = clazz;
         this.defaultValue = defaultValue;
+        this.onChange = onChange;
         setValue(defaultValue);
     }
 
@@ -31,5 +33,11 @@ public class OptionalEnumServerRule<T extends Enum<T>> extends ClientServerRule<
             return Optional.of(buffer.readEnum(clazz));
         }
         return Optional.empty();
+    }
+
+    @Override
+    protected void onValueChanged(Optional<T> oldValue, Optional<T> newValue) {
+        super.onValueChanged(oldValue, newValue);
+        onChange.run();
     }
 }

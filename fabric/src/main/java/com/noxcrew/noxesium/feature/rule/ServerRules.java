@@ -11,6 +11,7 @@ import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.OptionalEnumServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.QibBehaviorServerRule;
 import net.minecraft.client.GraphicsStatus;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -85,7 +86,12 @@ public class ServerRules {
     /**
      * Allows the server to override the graphics mode used by the client.
      */
-    public static OptionalEnumServerRule<GraphicsStatus> OVERRIDE_GRAPHICS_MODE = register(new OptionalEnumServerRule<>(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, GraphicsStatus.class, Optional.empty()));
+    public static OptionalEnumServerRule<GraphicsStatus> OVERRIDE_GRAPHICS_MODE = register(new OptionalEnumServerRule<>(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, GraphicsStatus.class, Optional.empty(), () -> {
+        // We need to call this whenever we change the display type.
+        if (Minecraft.getInstance().levelRenderer != null) {
+            Minecraft.getInstance().levelRenderer.allChanged();
+        }
+    }));
 
     /**
      * Registers a new server rule.
