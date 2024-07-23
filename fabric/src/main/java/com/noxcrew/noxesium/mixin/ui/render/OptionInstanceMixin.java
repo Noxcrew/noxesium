@@ -8,11 +8,11 @@ import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.ui.wrapper.ChatWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.function.Consumer;
@@ -51,7 +51,12 @@ public abstract class OptionInstanceMixin<T> {
             return (T) PrioritizeChunkUpdates.NEARBY;
         }
         if (((Object) (this)) == options.graphicsMode() && ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().isPresent()) {
-            return (T) ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().get();
+            var graphics = (T) ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().get();
+            if (ServerRuleModule.noxesium$isUsingIris && graphics == GraphicsStatus.FABULOUS) {
+                // Don't use fabulous graphics when using Iris!
+                return original;
+            }
+            return graphics;
         }
         return original;
     }

@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.rule;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.NoxesiumModule;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,18 @@ public class ServerRuleModule implements NoxesiumModule, RuleIndexProvider {
      */
     public static boolean noxesium$disableSettingOverrides = false;
 
+    /**
+     * Whether Iris is being used. If true we don't allow the graphics setting to be changed to Fabulous! as
+     * to not break Iris.
+     */
+    public static boolean noxesium$isUsingIris = false;
+
     private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
+
+    public ServerRuleModule() {
+        // Store whether we are using Iris or not
+        noxesium$isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
+    }
 
     @Override
     public void onQuitServer() {
