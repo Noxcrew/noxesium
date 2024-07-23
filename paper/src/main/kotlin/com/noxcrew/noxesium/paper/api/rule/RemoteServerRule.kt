@@ -126,13 +126,30 @@ public class ItemStackListServerRule(
 public class ColorServerRule(
     player: Player?,
     index: Int,
-    default: Optional<Color>,
+    default: Optional<Color> = Optional.empty(),
 ) : RemoteServerRule<Optional<Color>>(player, index, default) {
 
     override fun write(value: Optional<Color>, buffer: FriendlyByteBuf) {
         if (value.isPresent) {
             buffer.writeBoolean(true)
             buffer.writeVarInt(value.get().rgb)
+        } else {
+            buffer.writeBoolean(false)
+        }
+    }
+}
+
+/** A server rule that stores an optional enum value. */
+public class OptionalEnumServerRule<T : Enum<T>>(
+    player: Player?,
+    index: Int,
+    default: Optional<T> = Optional.empty(),
+) : RemoteServerRule<Optional<T>>(player, index, default) {
+
+    override fun write(value: Optional<T>, buffer: FriendlyByteBuf) {
+        if (value.isPresent) {
+            buffer.writeBoolean(true)
+            buffer.writeEnum(value.get())
         } else {
             buffer.writeBoolean(false)
         }

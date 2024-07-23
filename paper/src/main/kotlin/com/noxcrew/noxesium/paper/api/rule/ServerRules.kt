@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.qib.QibDefinition
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.Optional
 
 /** An alias for a function that provides a server rule. */
 public data class RuleFunction<T : Any>(
@@ -104,6 +105,13 @@ public class ServerRules(
      */
     public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> = register(ServerRuleIndices.QIB_BEHAVIORS) { player, index ->
         QibBehaviorServerRule(player, index)
+    }
+
+    /**
+     * Allows the server to override the graphics mode used by the client.
+     */
+    public val overrideGraphicsMode: RuleFunction<Optional<GraphicsType>> = register(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE) { player, index ->
+        OptionalEnumServerRule(player, index)
     }
 
     /** Registers a new [rule]. */

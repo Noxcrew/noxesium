@@ -8,8 +8,12 @@ import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
 import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackListServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.OptionalEnumServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.QibBehaviorServerRule;
+import net.minecraft.client.GraphicsStatus;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Optional;
 
 /**
  * A class that stores all known server rules. Similar to game rules but slightly more powerful
@@ -77,6 +81,11 @@ public class ServerRules {
      * These behaviors are defined globally to avoid large amounts of data sending.
      */
     public static QibBehaviorServerRule QIB_BEHAVIORS = register(new QibBehaviorServerRule(ServerRuleIndices.QIB_BEHAVIORS));
+
+    /**
+     * Allows the server to override the graphics mode used by the client.
+     */
+    public static OptionalEnumServerRule<GraphicsStatus> OVERRIDE_GRAPHICS_MODE = register(new OptionalEnumServerRule<>(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, GraphicsStatus.class, Optional.empty()));
 
     /**
      * Registers a new server rule.

@@ -70,6 +70,10 @@ public enum NoxesiumFeature {
      * Added support for the extra entity data system.
      */
     EXTRA_ENTITY_DATA_SYSTEM(7),
+    /**
+     * Added support to let the server decide the Graphics options.
+     */
+    SERVER_DECIDES_GRAPHICS(8),
     ;
 
     private final int minProtocolVersion;

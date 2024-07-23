@@ -11,6 +11,11 @@ import java.util.Map;
  */
 public class ServerRuleModule implements NoxesiumModule, RuleIndexProvider {
 
+    /**
+     * If enabled settings are not overridden. This should be true while rendering the settings menu.
+     */
+    public static boolean noxesium$disableSettingOverrides = false;
+
     private final Map<Integer, ClientServerRule<?>> rules = new HashMap<>();
 
     @Override

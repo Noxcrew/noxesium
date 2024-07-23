@@ -75,4 +75,9 @@ public class ServerRuleIndices {
      * These behaviors are defined globally to avoid large amounts of data sending.
      */
     public static final int QIB_BEHAVIORS = 13;
+
+    /**
+     * Allows the server to override the graphics mode used by the client.
+     */
+    public static final int OVERRIDE_GRAPHICS_MODE = 14;
 }
