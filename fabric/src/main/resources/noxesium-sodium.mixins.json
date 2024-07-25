@@ -4,9 +4,10 @@
   "package": "com.noxcrew.noxesium.mixin.sodium",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "SodiumOptionImplMixin",
     "SodiumRenderSectionManagerMixin",
-    "SodiumVideoSettingsMenuMixin",
-    "SodiumOptionImplMixin"
+    "SodiumShaderLoaderMixin",
+    "SodiumVideoSettingsMenuMixin"
   ],
   "injectors": {
     "defaultRequire": 1

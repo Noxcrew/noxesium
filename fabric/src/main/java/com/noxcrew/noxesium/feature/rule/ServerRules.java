@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.rule;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
 import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
@@ -89,7 +90,13 @@ public class ServerRules {
     public static OptionalEnumServerRule<GraphicsStatus> OVERRIDE_GRAPHICS_MODE = register(new OptionalEnumServerRule<>(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, GraphicsStatus.class, Optional.empty(), () -> {
         // We need to call this whenever we change the display type.
         if (Minecraft.getInstance().levelRenderer != null) {
-            Minecraft.getInstance().levelRenderer.allChanged();
+            if (RenderSystem.isOnRenderThread()) {
+                Minecraft.getInstance().levelRenderer.allChanged();
+            } else {
+                RenderSystem.recordRenderCall(() -> {
+                    Minecraft.getInstance().levelRenderer.allChanged();
+                });
+            }
         }
     }));
 

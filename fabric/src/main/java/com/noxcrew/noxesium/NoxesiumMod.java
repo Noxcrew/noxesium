@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.shaders.Program;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
@@ -24,17 +25,27 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectio
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 /**
  * The main file for the client-side implementation of Noxesium.
@@ -62,6 +73,12 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     private boolean initialized = false;
 
+    /**
+     * The mapping of cached shaders.
+     */
+    @Nullable
+    private GameRenderer.ResourceCache cachedShaders = null;
+
     private final NoxesiumConfig config = NoxesiumConfig.load();
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
 
@@ -84,6 +101,14 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public NoxesiumConfig getConfig() {
         return config;
+    }
+
+    /**
+     * Returns a cache with all shaders in the Sodium namespace.
+     */
+    @Nullable
+    public GameRenderer.ResourceCache getCachedShaders() {
+        return cachedShaders;
     }
 
     /**
@@ -177,6 +202,53 @@ public class NoxesiumMod implements ClientModInitializer {
         // Trigger registration of all server and entity rules
         Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
         ignored = ExtraEntityData.DISABLE_BUBBLES;
+
+        // Listen to shaders that are loaded and cache them
+        ResourceManagerHelper
+            .get(PackType.CLIENT_RESOURCES)
+            .registerReloadListener(
+                new SimpleResourceReloadListener<Void>() {
+                    @Override
+                    public ResourceLocation getFabricId() {
+                        return ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "shaders");
+                    }
+
+                    @Override
+                    public CompletableFuture<Void> load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
+                        return CompletableFuture.supplyAsync(() -> {
+                            var map = manager.listResources(
+                                "shaders",
+                                folder -> {
+                                    // We include all namespaces because you need to be able to import shaders from elsewhere!
+                                    var s = folder.getPath();
+                                    return s.endsWith(".json")
+                                        || s.endsWith(Program.Type.FRAGMENT.getExtension())
+                                        || s.endsWith(Program.Type.VERTEX.getExtension())
+                                        || s.endsWith(".glsl");
+                                }
+                            );
+                            var map1 = new HashMap<ResourceLocation, Resource>();
+                            map.forEach((key, value) -> {
+                                try (InputStream inputstream = value.open()) {
+                                    byte[] abyte = inputstream.readAllBytes();
+                                    map1.put(ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath().substring("shaders/".length())), new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
+                                } catch (Exception exception) {
+                                    getLogger().warn("Failed to read resource {}", key, exception);
+                                }
+                            });
+
+                            // Save the shaders here instead of in apply so we go before any other resource re-loader!
+                            cachedShaders = new GameRenderer.ResourceCache(manager, map1);
+                            return null;
+                        });
+                    }
+
+                    @Override
+                    public CompletableFuture<Void> apply(Void data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                }
+            );
     }
 
     /**
