@@ -4,6 +4,7 @@
   "package": "com.noxcrew.noxesium.mixin.sodium",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "SodiumGlProgramMixin",
     "SodiumOptionImplMixin",
     "SodiumRenderSectionManagerMixin",
     "SodiumShaderLoaderMixin",
