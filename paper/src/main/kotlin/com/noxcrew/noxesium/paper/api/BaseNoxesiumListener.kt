@@ -92,7 +92,7 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
     if (channel.asString() in craftPlayer.listeningPluginChannels) {
         return ClientboundCustomPayloadPacket(
             DiscardedPayload(
-                ResourceLocation(StandardMessenger.validateAndCorrectChannel(channel.asString())),
+                ResourceLocation.parse(StandardMessenger.validateAndCorrectChannel(channel.asString())),
                 // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
                 FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
             )
