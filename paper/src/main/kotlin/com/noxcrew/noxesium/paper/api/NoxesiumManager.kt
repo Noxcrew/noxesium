@@ -56,6 +56,9 @@ public open class NoxesiumManager(
     private lateinit var v1: BaseNoxesiumListener
     private lateinit var v2: BaseNoxesiumListener
 
+    /** Returns that [playerId] is ready and has registered the plugin channels. */
+    public fun isReady(playerId: UUID): Boolean = playerId in ready
+
     /**
      * Registers this manager and all listener variants.
      */
@@ -103,12 +106,17 @@ public open class NoxesiumManager(
 
     /**
      * Marks that a player is ready to start receiving packets, that is they have confirmed with
-     * the server the existance of at least one Noxesium channel.
+     * the server the existence of at least one Noxesium channel.
      */
     public fun markReady(player: Player) {
         ready += player.uniqueId
+        onReady(player)
         val (protocolVersion, version) = pending.remove(player.uniqueId) ?: return
         registerPlayer(player, protocolVersion, version)
+    }
+
+    /** Run when [player] becomes ready. */
+    protected open fun onReady(player: Player) {
     }
 
     /**
