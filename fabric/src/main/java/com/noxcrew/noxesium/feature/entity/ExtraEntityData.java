@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.protocol.rule.EntityRuleIndices;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.ColorServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.DoubleServerRule;
 import com.noxcrew.noxesium.feature.rule.impl.StringServerRule;
 
 import java.awt.Color;
@@ -29,6 +30,12 @@ public class ExtraEntityData {
      * about the qib system in the qib package.
      */
     public static ClientServerRule<String> QIB_BEHAVIOR = register(new StringServerRule(EntityRuleIndices.QIB_BEHAVIOR, ""));
+
+    /**
+     * Allows defining the width of an interaction entity on the Z-axis for the context of
+     * qib collisions. The regular width is seen as its width on the X-axis.
+     */
+    public static ClientServerRule<Double> QIB_WIDTH_Z = register(new DoubleServerRule(EntityRuleIndices.QIB_WIDTH_Z, 1.0));
 
     /**
      * Registers a new extra entity data key.

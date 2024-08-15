@@ -1,9 +1,12 @@
 package com.noxcrew.noxesium.mixin.entity;
 
+import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataHolder;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.util.HashMap;
@@ -13,7 +16,7 @@ import java.util.Map;
  * Implements [ExtraEntityDataHolder] onto the Entity class.
  */
 @Mixin(Entity.class)
-public class EntityMixin implements ExtraEntityDataHolder {
+public abstract class EntityMixin implements ExtraEntityDataHolder {
 
     @Unique
     private Map<Integer, Object> noxesium$extraData = null;
@@ -40,6 +43,11 @@ public class EntityMixin implements ExtraEntityDataHolder {
             noxesium$extraData = new HashMap<>();
         }
         noxesium$extraData.put(rule.getIndex(), value);
+
+        // If this is the width of an interaction entity we update its bounding box!
+        if (rule == ExtraEntityData.QIB_WIDTH_Z) {
+            this.setBoundingBox(this.makeBoundingBox());
+        }
     }
 
     @Override
@@ -50,4 +58,10 @@ public class EntityMixin implements ExtraEntityDataHolder {
             noxesium$extraData = null;
         }
     }
+
+    @Shadow
+    public abstract void setBoundingBox(AABB aABB);
+
+    @Shadow
+    protected abstract AABB makeBoundingBox();
 }

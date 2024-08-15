@@ -21,4 +21,10 @@ public class EntityRuleIndices {
      * about the qib system in the qib package.
      */
     public static final int QIB_BEHAVIOR = 2;
+
+    /**
+     * Allows defining the width of an interaction entity on the Z-axis for the context of
+     * qib collisions. The regular width is seen as its width on the X-axis.
+     */
+    public static final int QIB_WIDTH_Z = 3;
 }

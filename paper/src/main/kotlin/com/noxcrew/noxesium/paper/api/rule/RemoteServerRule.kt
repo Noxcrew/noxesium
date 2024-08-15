@@ -69,6 +69,18 @@ public class IntServerRule(
     }
 }
 
+/** A server rule that stores a double value. */
+public class DoubleServerRule(
+    player: Player?,
+    index: Int,
+    default: Double = 0.0,
+) : RemoteServerRule<Double>(player, index, default) {
+
+    override fun write(value: Double, buffer: FriendlyByteBuf) {
+        buffer.writeDouble(value)
+    }
+}
+
 /** A server rule that stores a string value. */
 public class StringServerRule(
     player: Player?,

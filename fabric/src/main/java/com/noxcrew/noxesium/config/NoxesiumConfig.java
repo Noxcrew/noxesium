@@ -32,7 +32,7 @@ public class NoxesiumConfig {
     public boolean dumpIncomingPackets = false;
     public boolean dumpOutgoingPackets = false;
     public boolean printPacketExceptions = false;
-    public double mapUiSize = 1;
+    public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
 
     /**

@@ -48,7 +48,6 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Sends the server that the player triggered the given type of behavior.
      */
     private void sendPacket(String behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
-        System.out.println("sending trigger of " + behavior + " with " + type);
         new ServerboundQibTriggeredPacket(behavior, type, entityId).send();
     }
 
@@ -172,7 +171,6 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Executes the given behavior.
      */
     private void executeBehavior(LocalPlayer player, Entity entity, QibEffect effect) {
-        System.out.println("executing " + effect);
         switch (effect) {
             case QibEffect.Multiple multiple -> {
                 for (var nested : multiple.effects()) {
