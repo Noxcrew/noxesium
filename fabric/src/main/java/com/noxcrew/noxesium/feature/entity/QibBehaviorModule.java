@@ -70,8 +70,8 @@ public class QibBehaviorModule implements NoxesiumModule {
             if (triggeredJump.contains(entity)) continue;
 
             // Check the behavior of the entity
-            if (!entity.hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
-            var behavior = entity.getExtraData(ExtraEntityData.QIB_BEHAVIOR);
+            if (!entity.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
+            var behavior = entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
             var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
             if (!knownBehaviors.containsKey(behavior)) continue;
 
@@ -115,10 +115,10 @@ public class QibBehaviorModule implements NoxesiumModule {
         var collidingTypes = new ArrayList<String>();
         for (var entity : entities) {
             // Stop colliding with this entity
-            if (!entity.hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
+            if (!entity.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
 
             // Determine this entity's behavior
-            var behavior = entity.getExtraData(ExtraEntityData.QIB_BEHAVIOR);
+            var behavior = entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
             var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
             if (!knownBehaviors.containsKey(behavior)) continue;
             var definition = knownBehaviors.get(behavior);
@@ -154,10 +154,10 @@ public class QibBehaviorModule implements NoxesiumModule {
             triggeredJump.remove(collision);
 
             // Stop colliding with this entity
-            if (!collision.hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
+            if (!collision.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
 
             // Determine this entity's behavior
-            var behavior = collision.getExtraData(ExtraEntityData.QIB_BEHAVIOR);
+            var behavior = collision.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
             var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
             if (!knownBehaviors.containsKey(behavior)) continue;
             var definition = knownBehaviors.get(behavior);
@@ -186,7 +186,7 @@ public class QibBehaviorModule implements NoxesiumModule {
                 }
             }
             case QibEffect.Stay stay -> {
-                var timeSpent = stay.global() ? collidingWithTypes.getOrDefault(entity.getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger()).get() :
+                var timeSpent = stay.global() ? collidingWithTypes.getOrDefault(entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger()).get() :
                     collidingWithEntities.getOrDefault(entity, new AtomicInteger()).get();
 
                 if (timeSpent >= stay.ticks()) {

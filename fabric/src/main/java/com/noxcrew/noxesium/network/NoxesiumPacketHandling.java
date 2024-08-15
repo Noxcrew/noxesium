@@ -94,7 +94,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                     var index = indices.getInt(idx);
                     var rule = provider.getIndex(index);
                     if (rule == null) return;
-                    entity.setExtraData(rule, packet.values().get(idx));
+                    entity.noxesium$setExtraData(rule, packet.values().get(idx));
                 }
             }
         });
@@ -106,7 +106,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                 for (var index : packet.indices()) {
                     var rule = provider.getIndex(index);
                     if (rule == null) continue;
-                    entity.resetExtraData(rule);
+                    entity.noxesium$resetExtraData(rule);
                 }
             }
         });

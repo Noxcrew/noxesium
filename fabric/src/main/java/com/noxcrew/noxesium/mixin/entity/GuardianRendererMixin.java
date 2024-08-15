@@ -55,7 +55,7 @@ public class GuardianRendererMixin {
         vertexConsumer.addVertex(pose, x, y, z);
 
         // Load the color of the beam from the beam color data
-        var color = guardian.getExtraData(ExtraEntityData.BEAM_COLOR);
+        var color = guardian.noxesium$getExtraData(ExtraEntityData.BEAM_COLOR);
         if (color.isPresent()) {
             vertexConsumer.setColor(color.get().getRGB());
         } else {

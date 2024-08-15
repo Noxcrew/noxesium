@@ -10,28 +10,28 @@ public interface ExtraEntityDataHolder {
     /**
      * Returns the extra data stored under the given rule.
      */
-    public default <T> T getExtraData(ClientServerRule<T> rule) {
+    public default <T> T noxesium$getExtraData(ClientServerRule<T> rule) {
         return rule.getValue();
     }
 
     /**
      * Returns whether the server has sent over extra data for this rule.
      */
-    public default boolean hasExtraData(ClientServerRule<?> rule) {
+    public default boolean noxesium$hasExtraData(ClientServerRule<?> rule) {
         return false;
     }
 
     /**
      * Sets extra data for the given [rule] to [value].
      */
-    public default void setExtraData(ClientServerRule<?> rule, Object value) {
+    public default void noxesium$setExtraData(ClientServerRule<?> rule, Object value) {
         throw new UnsupportedOperationException("Unimplemented");
     }
 
     /**
      * Resets the extra data for the given [rule].
      */
-    public default void resetExtraData(ClientServerRule<?> rule) {
+    public default void noxesium$resetExtraData(ClientServerRule<?> rule) {
         throw new UnsupportedOperationException("Unimplemented");
     }
 }

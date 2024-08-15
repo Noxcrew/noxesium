@@ -66,9 +66,11 @@
     "entity.EntityMixin",
     "entity.GuardianMixin",
     "entity.InteractionMixin",
+    "entity.TridentPatchesMixin",
     "general.ConnectionMixin",
-    "general.PacketDecoderMixin",
     "general.MappedRegistryMixin",
+    "general.PacketDecoderMixin",
+    "inventory.TridentItemMixin",
     "model.ItemDisplayParametersMixin"
   ]
 }

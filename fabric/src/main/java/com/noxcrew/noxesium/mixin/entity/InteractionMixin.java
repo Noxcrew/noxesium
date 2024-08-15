@@ -23,7 +23,7 @@ public class InteractionMixin {
     @Inject(method = "skipAttackInteraction", at = @At("HEAD"), cancellable = true)
     public void skipAttackInteraction(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
+        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
             cir.setReturnValue(false);
         }
     }
@@ -31,7 +31,7 @@ public class InteractionMixin {
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
+        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
             cir.setReturnValue(InteractionResult.PASS);
         }
     }
@@ -39,7 +39,7 @@ public class InteractionMixin {
     @Inject(method = "makeBoundingBox", at = @At("HEAD"), cancellable = true)
     public void interact(CallbackInfoReturnable<AABB> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.hasExtraData(ExtraEntityData.QIB_WIDTH_Z)) {
+        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_WIDTH_Z)) {
             var dimensions = interaction.getDimensions(Pose.STANDING);
             var position = interaction.position();
             var x = position.x;
@@ -47,7 +47,7 @@ public class InteractionMixin {
             var z = position.z;
             var dx = dimensions.width() / 2.0f;
             var dy = dimensions.height();
-            var dz = interaction.getExtraData(ExtraEntityData.QIB_WIDTH_Z) / 2.0f;
+            var dz = interaction.noxesium$getExtraData(ExtraEntityData.QIB_WIDTH_Z) / 2.0f;
             cir.setReturnValue(
                 new AABB(x - (double) dx, y, z - (double) dz, x + (double) dx, y + (double) dy, z + (double) dz)
             );

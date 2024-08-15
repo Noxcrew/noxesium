@@ -92,13 +92,13 @@ public class ServerRuleIndices {
      *   entity data.
      * - Do not send the client updates about its own pose.
      * - Ignore all logic about using the auto spin attack as an attack.
-     * - Add a sound effect called noxesium:trident_ready_indicator
+     * - Add a sound effect called noxesium:trident.ready_indicator
      *
      * The effects this setting has:
      * - Makes the sound effect and camera POV (pose) change client-side
      * - Adds an indicator sound when the trident has been charged enough
      * - Adds coyote time to releasing the trident when briefly not in water
-     *   or if released slightly too early (0.1s)
+     * - Changes held item renderer to have less motion when riptiding
      */
     public static final int ENABLE_SMOOTHER_CLIENT_TRIDENT = 15;
 }

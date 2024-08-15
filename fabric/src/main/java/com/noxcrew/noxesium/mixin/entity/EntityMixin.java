@@ -22,23 +22,23 @@ public abstract class EntityMixin implements ExtraEntityDataHolder {
     private Map<Integer, Object> noxesium$extraData = null;
 
     @Override
-    public <T> T getExtraData(ClientServerRule<T> rule) {
+    public <T> T noxesium$getExtraData(ClientServerRule<T> rule) {
         if (noxesium$extraData != null) {
             var data = noxesium$extraData.get(rule.getIndex());
             if (data != null) {
                 return (T) data;
             }
         }
-        return ExtraEntityDataHolder.super.getExtraData(rule);
+        return ExtraEntityDataHolder.super.noxesium$getExtraData(rule);
     }
 
     @Override
-    public boolean hasExtraData(ClientServerRule<?> rule) {
+    public boolean noxesium$hasExtraData(ClientServerRule<?> rule) {
         return noxesium$extraData != null && noxesium$extraData.containsKey(rule.getIndex());
     }
 
     @Override
-    public void setExtraData(ClientServerRule<?> rule, Object value) {
+    public void noxesium$setExtraData(ClientServerRule<?> rule, Object value) {
         if (noxesium$extraData == null) {
             noxesium$extraData = new HashMap<>();
         }
@@ -51,7 +51,7 @@ public abstract class EntityMixin implements ExtraEntityDataHolder {
     }
 
     @Override
-    public void resetExtraData(ClientServerRule<?> rule) {
+    public void noxesium$resetExtraData(ClientServerRule<?> rule) {
         if (noxesium$extraData == null) return;
         noxesium$extraData.remove(rule.getIndex());
         if (noxesium$extraData.isEmpty()) {
