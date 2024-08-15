@@ -74,6 +74,10 @@ public enum NoxesiumFeature {
      * Added support to let the server decide the Graphics options.
      */
     SERVER_DECIDES_GRAPHICS(8),
+    /**
+     * Finalised client qib feature to make it functional.
+     */
+    STABLE_CLIENT_QIBS(9),
     ;
 
     private final int minProtocolVersion;

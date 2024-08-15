@@ -48,6 +48,7 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Sends the server that the player triggered the given type of behavior.
      */
     private void sendPacket(String behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
+        System.out.println("sending trigger of " + behavior + " with " + type);
         new ServerboundQibTriggeredPacket(behavior, type, entityId).send();
     }
 
@@ -55,6 +56,12 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Triggers when a player jumps.
      */
     public void onPlayerJump(LocalPlayer player) {
+        // Do not allow triggering a jump while in an auto spin attack!
+        if (player.isAutoSpinAttack()) return;
+
+        // Do not allow jumping while in a vehicle.
+        if (player.getVehicle() != null) return;
+
         for (var entity : collidingWithEntities) {
             // Don't trigger jumping twice for the same entity!
             if (triggeredJump.contains(entity)) continue;
@@ -165,6 +172,7 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Executes the given behavior.
      */
     private void executeBehavior(LocalPlayer player, Entity entity, QibEffect effect) {
+        System.out.println("executing " + effect);
         switch (effect) {
             case QibEffect.Multiple multiple -> {
                 for (var nested : multiple.effects()) {

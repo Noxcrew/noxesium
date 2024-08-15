@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.paper.api.rule
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import com.noxcrew.noxesium.api.qib.QibDefinition
 import kotlinx.serialization.encodeToString
@@ -164,19 +166,14 @@ public class QibBehaviorServerRule(
 ) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {
 
     private companion object {
-        private val json = Json {
-            encodeDefaults = false
-            ignoreUnknownKeys = true
-            isLenient = true
-            decodeEnumsCaseInsensitive = true
-        }
+        private val gson: Gson = GsonBuilder().create()
     }
 
     override fun write(value: Map<String, QibDefinition>, buffer: FriendlyByteBuf) {
         buffer.writeVarInt(value.size)
         value.forEach { (key, value) ->
             buffer.writeUtf(key)
-            buffer.writeUtf(json.encodeToString(value))
+            buffer.writeUtf(gson.toJson(value))
         }
     }
 }
