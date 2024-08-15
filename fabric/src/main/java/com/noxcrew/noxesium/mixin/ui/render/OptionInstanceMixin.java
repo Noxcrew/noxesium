@@ -43,7 +43,6 @@ public abstract class OptionInstanceMixin<T> {
     @ModifyReturnValue(method = "get", at = @At("RETURN"))
     private T overridePrioritizeChunkUpdates(T original) {
         var options = Minecraft.getInstance().options;
-
         if (options == null) return original;
 
         // Ignore if we're in a nested settings menu override

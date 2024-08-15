@@ -38,7 +38,7 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
     public JsonElement serialize(QibEffect src, Type typeOfSrc, JsonSerializationContext context) {
         var object = new JsonObject();
         object.add("type", new JsonPrimitive(typeOfSrc.getTypeName()));
-        object.add("effect", context.serialize(src, typeOfSrc));
+        object.add("effect", context.serialize(src));
         return object;
     }
 }
