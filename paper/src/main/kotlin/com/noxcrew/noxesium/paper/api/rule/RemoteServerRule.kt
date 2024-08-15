@@ -1,11 +1,7 @@
 package com.noxcrew.noxesium.paper.api.rule
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import com.noxcrew.noxesium.api.qib.QibDefinition
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.minecraft.network.FriendlyByteBuf
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -165,15 +161,11 @@ public class QibBehaviorServerRule(
     default: Map<String, QibDefinition> = emptyMap(),
 ) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {
 
-    private companion object {
-        private val gson: Gson = GsonBuilder().create()
-    }
-
     override fun write(value: Map<String, QibDefinition>, buffer: FriendlyByteBuf) {
         buffer.writeVarInt(value.size)
         value.forEach { (key, value) ->
             buffer.writeUtf(key)
-            buffer.writeUtf(gson.toJson(value))
+            buffer.writeUtf(QibDefinition.QIB_GSON.toJson(value))
         }
     }
 }

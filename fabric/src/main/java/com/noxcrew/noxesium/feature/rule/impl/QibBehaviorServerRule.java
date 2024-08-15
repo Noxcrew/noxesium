@@ -1,7 +1,5 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +12,6 @@ import java.util.Map;
  */
 public class QibBehaviorServerRule extends ClientServerRule<Map<String, QibDefinition>> {
 
-    private static final Gson gson = new GsonBuilder().create();
     private final Map<String, QibDefinition> defaultValue;
 
     public QibBehaviorServerRule(int index) {
@@ -39,7 +36,7 @@ public class QibBehaviorServerRule extends ClientServerRule<Map<String, QibDefin
         for (int i = 0; i < amount; i++) {
             var key = buffer.readUtf();
             var value = buffer.readUtf();
-            array.put(key, gson.fromJson(value, QibDefinition.class));
+            array.put(key, QibDefinition.QIB_GSON.fromJson(value, QibDefinition.class));
         }
         return array;
     }

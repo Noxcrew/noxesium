@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.api.qib;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,14 +31,21 @@ import org.jetbrains.annotations.Nullable;
  *                                  instance of the same qib definition.
  */
 public record QibDefinition(
-        @Nullable
-        QibEffect onEnter,
-        @Nullable
-        QibEffect onLeave,
-        @Nullable
-        QibEffect whileInside,
-        @Nullable
-        QibEffect onJump,
-        boolean triggerEnterLeaveOnSwitch
+    @Nullable
+    QibEffect onEnter,
+    @Nullable
+    QibEffect onLeave,
+    @Nullable
+    QibEffect whileInside,
+    @Nullable
+    QibEffect onJump,
+    boolean triggerEnterLeaveOnSwitch
 ) {
+
+    /**
+     * A GSON implementation that can serialize QibDefinition objects.
+     */
+    public static final Gson QIB_GSON = new GsonBuilder()
+        .registerTypeAdapter(QibEffect.class, new QibEffectSerializer())
+        .create();
 }
