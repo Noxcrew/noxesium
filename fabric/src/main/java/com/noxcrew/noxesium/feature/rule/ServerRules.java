@@ -101,6 +101,11 @@ public class ServerRules {
     }));
 
     /**
+     * Enables a custom smoother riptide trident implementation. Requires server-side adjustments.
+     */
+    public static ClientServerRule<Boolean> ENABLE_SMOOTHER_CLIENT_TRIDENT = register(new BooleanServerRule(ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT, false));
+
+    /**
      * Registers a new server rule.
      */
     private static <T extends ClientServerRule<?>> T register(T rule) {

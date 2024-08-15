@@ -114,6 +114,13 @@ public class ServerRules(
         OptionalEnumServerRule(player, index)
     }
 
+    /**
+     * Enables a custom smoother riptide trident implementation. Requires server-side adjustments.
+     */
+    public val enableSmootherClientTrident: RuleFunction<Boolean> = register(ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)

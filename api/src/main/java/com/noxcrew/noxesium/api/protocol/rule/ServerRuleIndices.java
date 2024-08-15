@@ -80,4 +80,25 @@ public class ServerRuleIndices {
      * Allows the server to override the graphics mode used by the client.
      */
     public static final int OVERRIDE_GRAPHICS_MODE = 14;
+
+    /**
+     * Enables Noxesium patches to the trident which make it entirely client-sided
+     * allowing for additional smoothness. The following changes need to be made
+     * server side to support this:
+     * - Remove entire block of riptide specific code that runs server-side after
+     *   the Item Used statistic is given
+     * - Override isAutoSpinAttack on the server to be true still while riptiding,
+     *   but do not send the client any updates to the riptiding flag in the living
+     *   entity data.
+     * - Do not send the client updates about its own pose.
+     * - Ignore all logic about using the auto spin attack as an attack.
+     * - Add a sound effect called noxesium:trident_ready_indicator
+     *
+     * The effects this setting has:
+     * - Makes the sound effect and camera POV (pose) change client-side
+     * - Adds an indicator sound when the trident has been charged enough
+     * - Adds coyote time to releasing the trident when briefly not in water
+     *   or if released slightly too early (0.1s)
+     */
+    public static final int ENABLE_SMOOTHER_CLIENT_TRIDENT = 15;
 }
