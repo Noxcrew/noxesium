@@ -44,6 +44,8 @@ public abstract class OptionInstanceMixin<T> {
     private T overridePrioritizeChunkUpdates(T original) {
         var options = Minecraft.getInstance().options;
 
+        if (options == null) return original;
+
         // Ignore if we're in a nested settings menu override
         if (ServerRuleModule.noxesium$disableSettingOverrides) return original;
 
