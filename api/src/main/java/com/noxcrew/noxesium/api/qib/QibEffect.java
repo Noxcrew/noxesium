@@ -16,6 +16,24 @@ public sealed interface QibEffect {
     }
 
     /**
+     * Runs the effect if the player has been inside for a given
+     * amount of time.
+     * <p>
+     * If [global] is `true` the time is checked against any qib
+     * with the same behavior id. If `false` the time is checked
+     * against this qib instance in specific.
+     * <p>
+     * This does not schedule it for when still inside, use Wait
+     * in ENTER for that, or use in an INSIDE type effect.
+     */
+    public record Stay(
+        int ticks,
+        boolean global,
+        QibEffect effect
+    ) implements QibEffect {
+    }
+
+    /**
      * Waits for an amount of ticks before executing effect.
      */
     public record Wait(

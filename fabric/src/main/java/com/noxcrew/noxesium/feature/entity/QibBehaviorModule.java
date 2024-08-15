@@ -20,7 +20,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,9 +34,9 @@ public class QibBehaviorModule implements NoxesiumModule {
 
     public static boolean updateAttributes = false;
 
-    private final List<String> collidingWithTypes = new ArrayList<>();
-    private final List<Entity> collidingWithEntities = new ArrayList<>();
-    private final List<Entity> triggeredJump = new ArrayList<>();
+    private final Map<String, AtomicInteger> collidingWithTypes = new HashMap<>();
+    private final Map<Entity, AtomicInteger> collidingWithEntities = new HashMap<>();
+    private final Set<Entity> triggeredJump = new HashSet<>();
     private final List<Pair<AtomicInteger, Triple<LocalPlayer, Entity, QibEffect>>> pending = new ArrayList<>();
 
     @Override
@@ -61,7 +65,7 @@ public class QibBehaviorModule implements NoxesiumModule {
         // Do not allow jumping while in a vehicle.
         if (player.getVehicle() != null) return;
 
-        for (var entity : collidingWithEntities) {
+        for (var entity : collidingWithEntities.keySet()) {
             // Don't trigger jumping twice for the same entity!
             if (triggeredJump.contains(entity)) continue;
 
@@ -94,6 +98,10 @@ public class QibBehaviorModule implements NoxesiumModule {
                 executeBehavior(value.getLeft(), value.getMiddle(), value.getRight());
             }
         }
+
+        // Increment all timers
+        collidingWithTypes.values().forEach(AtomicInteger::incrementAndGet);
+        collidingWithEntities.values().forEach(AtomicInteger::incrementAndGet);
     }
 
     /**
@@ -116,7 +124,7 @@ public class QibBehaviorModule implements NoxesiumModule {
             var definition = knownBehaviors.get(behavior);
 
             // Try to trigger the entry
-            if (definition.triggerEnterLeaveOnSwitch() || !collidingWithTypes.contains(behavior)) {
+            if (definition.triggerEnterLeaveOnSwitch() || !collidingWithTypes.containsKey(behavior)) {
                 if (definition.onEnter() != null) {
                     sendPacket(behavior, ServerboundQibTriggeredPacket.Type.ENTER, entity.getId());
                     executeBehavior(player, entity, definition.onEnter());
@@ -129,11 +137,11 @@ public class QibBehaviorModule implements NoxesiumModule {
                 executeBehavior(player, entity, definition.whileInside());
             }
             collidingTypes.add(behavior);
-            collidingWithTypes.add(behavior);
-            collidingWithEntities.add(entity);
+            collidingWithTypes.putIfAbsent(behavior, new AtomicInteger());
+            collidingWithEntities.putIfAbsent(entity, new AtomicInteger());
         }
 
-        var iterator = collidingWithEntities.iterator();
+        var iterator = collidingWithEntities.keySet().iterator();
         while (iterator.hasNext()) {
             // If you're still colliding with this entity we ignore it
             var collision = iterator.next();
@@ -164,7 +172,7 @@ public class QibBehaviorModule implements NoxesiumModule {
         }
 
         // Only keep the types you are still colliding with
-        collidingWithTypes.retainAll(collidingTypes);
+        collidingWithTypes.keySet().retainAll(collidingTypes);
     }
 
     /**
@@ -175,6 +183,14 @@ public class QibBehaviorModule implements NoxesiumModule {
             case QibEffect.Multiple multiple -> {
                 for (var nested : multiple.effects()) {
                     executeBehavior(player, entity, nested);
+                }
+            }
+            case QibEffect.Stay stay -> {
+                var timeSpent = stay.global() ? collidingWithTypes.getOrDefault(entity.getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger()).get() :
+                    collidingWithEntities.getOrDefault(entity, new AtomicInteger()).get();
+
+                if (timeSpent >= stay.ticks()) {
+                    executeBehavior(player, entity, stay.effect());
                 }
             }
             case QibEffect.Wait wait -> {
@@ -197,23 +213,23 @@ public class QibBehaviorModule implements NoxesiumModule {
             }
             case QibEffect.PlaySound playSound -> {
                 player.level().playLocalSound(
-                        player,
-                        SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
-                        SoundSource.PLAYERS,
-                        playSound.volume(),
-                        playSound.pitch()
+                    player,
+                    SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
+                    SoundSource.PLAYERS,
+                    playSound.volume(),
+                    playSound.pitch()
                 );
             }
             case QibEffect.GivePotionEffect giveEffect -> {
                 var type = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path())).orElse(null);
                 updateAttributes = true;
                 player.addEffect(new MobEffectInstance(
-                        type,
-                        giveEffect.duration(),
-                        giveEffect.amplifier(),
-                        giveEffect.ambient(),
-                        giveEffect.visible(),
-                        giveEffect.showIcon()
+                    type,
+                    giveEffect.duration(),
+                    giveEffect.amplifier(),
+                    giveEffect.ambient(),
+                    giveEffect.visible(),
+                    giveEffect.showIcon()
                 ));
                 updateAttributes = false;
             }
@@ -239,9 +255,9 @@ public class QibBehaviorModule implements NoxesiumModule {
                 var y = -Math.sin(pitchRad);
                 var z = Math.cos(pitchRad) * Math.cos(yawRad);
                 player.setDeltaMovement(
-                        Math.clamp(x * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
-                        Math.clamp(y * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
-                        Math.clamp(z * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit())
+                    Math.clamp(x * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
+                    Math.clamp(y * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
+                    Math.clamp(z * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit())
                 );
             }
             default -> throw new IllegalStateException("Unexpected value: " + effect);

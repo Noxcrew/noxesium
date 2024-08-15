@@ -21,6 +21,7 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
         var data = object.getAsJsonObject("effect");
         return switch (object.getAsJsonPrimitive("type").getAsString()) {
             case "Multiple" -> context.deserialize(data, QibEffect.Multiple.class);
+            case "Stay" -> context.deserialize(data, QibEffect.Stay.class);
             case "Wait" -> context.deserialize(data, QibEffect.Wait.class);
             case "Conditional" -> context.deserialize(data, QibEffect.Conditional.class);
             case "PlaySound" -> context.deserialize(data, QibEffect.PlaySound.class);
