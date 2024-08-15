@@ -89,6 +89,10 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Ticks down scheduled effects and runs them.
      */
     private void tickEffects() {
+        // Increment all timers
+        collidingWithTypes.values().forEach(AtomicInteger::incrementAndGet);
+        collidingWithEntities.values().forEach(AtomicInteger::incrementAndGet);
+
         var iterator = pending.iterator();
         while (iterator.hasNext()) {
             var pair = iterator.next();
@@ -98,10 +102,6 @@ public class QibBehaviorModule implements NoxesiumModule {
                 executeBehavior(value.getLeft(), value.getMiddle(), value.getRight());
             }
         }
-
-        // Increment all timers
-        collidingWithTypes.values().forEach(AtomicInteger::incrementAndGet);
-        collidingWithEntities.values().forEach(AtomicInteger::incrementAndGet);
     }
 
     /**
