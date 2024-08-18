@@ -40,6 +40,9 @@ public class QibBehaviorModule implements NoxesiumModule {
     @Override
     public void onStartup() {
         ClientTickEvents.END_WORLD_TICK.register((world) -> {
+            // If there are no qib behaviors set, do nothing!
+            if (ServerRules.QIB_BEHAVIORS.getValue().isEmpty()) return;
+
             // Check if the player is colliding with any interaction entities
             tickEffects();
             checkForCollisions();
@@ -106,8 +109,6 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Checks for collisions with interaction entities.
      */
     private void checkForCollisions() {
-        var player = Minecraft.getInstance().player;
-
         /*
          *  Ideally we would use vanilla's getEntities method as it uses the local chunks directly to only check against nearby
          *  entities. However, vanilla's implementation only iterates over chunks that the player collides with and then checks
@@ -117,6 +118,7 @@ public class QibBehaviorModule implements NoxesiumModule {
          *  To solve this we absolutely over-engineer this problem and use a spatial tree structure to find all interaction entities.
          */
         // var entities = player.level().getEntities(player, player.getBoundingBox(), (it) -> it.getType() == EntityType.INTERACTION);
+        var player = Minecraft.getInstance().player;
         var entities = SpatialInteractionEntityTree.findEntities(player.getBoundingBox());
 
         // Determine all current collisions

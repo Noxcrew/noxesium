@@ -21,7 +21,6 @@ import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -36,7 +35,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -253,13 +251,22 @@ public class NoxesiumMod implements ClientModInitializer {
                 }
             );
 
-        // At the end of the client tick we rebuild the spatial tree
-        var i = new MutableInt(0);
-        ClientTickEvents.END_CLIENT_TICK.register((ignored2) -> {
-            if ((i.incrementAndGet() % 20) == 0) {
-                SpatialInteractionEntityTree.rebuild();
+        // Run rebuilds on a separate thread to not destroy fps unnecessarily
+        var rebuildThread = new Thread("Noxesium Spatial Container Rebuild Thread") {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(500);
+                        SpatialInteractionEntityTree.rebuild();
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+                }
             }
-        });
+        };
+        rebuildThread.setDaemon(true);
+        rebuildThread.start();
     }
 
     /**
