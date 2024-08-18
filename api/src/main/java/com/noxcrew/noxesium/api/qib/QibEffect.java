@@ -69,6 +69,11 @@ public sealed interface QibEffect {
      * be known to the client and can be overridden
      * by any server-side effect.
      * <p>
+     * This only supports effects that directly affect client-side
+     * attributes such as speed or jump boost. This only re-implements
+     * part of the potion effect code, specifically what is needed to
+     * make speed & jump boost work.
+     * <p>
      * Using this will completely de-sync any anti-cheat plugins
      * you are using as well as make Bukkit very confused so
      * use this with caution and restraint!

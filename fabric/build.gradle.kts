@@ -17,6 +17,7 @@ repositories {
     }
     maven { url = uri("https://maven.shedaniel.me/") }
     maven { url = uri("https://maven.terraformersmc.com/releases/") }
+    maven { url = uri("https://maven.enginehub.org/repo/") }
     mavenCentral()
 }
 
@@ -40,6 +41,9 @@ dependencies {
         include(this)
         implementation(this)
     }
+
+    // Add PRTree which we use for collision detection
+    implementation("org.khelekore:prtree:1.5")
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

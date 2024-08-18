@@ -32,8 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QibBehaviorModule implements NoxesiumModule {
 
-    public static boolean updateAttributes = false;
-
     private final Map<String, AtomicInteger> collidingWithTypes = new HashMap<>();
     private final Map<Entity, AtomicInteger> collidingWithEntities = new HashMap<>();
     private final Set<Entity> triggeredJump = new HashSet<>();
@@ -109,7 +107,17 @@ public class QibBehaviorModule implements NoxesiumModule {
      */
     private void checkForCollisions() {
         var player = Minecraft.getInstance().player;
-        var entities = player.level().getEntities(player, player.getBoundingBox(), (it) -> it.getType() == EntityType.INTERACTION);
+
+        /*
+         *  Ideally we would use vanilla's getEntities method as it uses the local chunks directly to only check against nearby
+         *  entities. However, vanilla's implementation only iterates over chunks that the player collides with and then checks
+         *  the hitboxes of entities in there, it does not add entities to all chunks they clip. This means that any interaction
+         *  entity that clips multiple chunks does not get recognised outside its source chunk.
+         *
+         *  To solve this we absolutely over-engineer this problem and use a spatial tree structure to find all interaction entities.
+         */
+        // var entities = player.level().getEntities(player, player.getBoundingBox(), (it) -> it.getType() == EntityType.INTERACTION);
+        var entities = SpatialInteractionEntityTree.findEntities(player.getBoundingBox());
 
         // Determine all current collisions
         var collidingTypes = new ArrayList<String>();
@@ -222,21 +230,19 @@ public class QibBehaviorModule implements NoxesiumModule {
             }
             case QibEffect.GivePotionEffect giveEffect -> {
                 var type = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path())).orElse(null);
-                updateAttributes = true;
-                player.addEffect(new MobEffectInstance(
-                    type,
-                    giveEffect.duration(),
-                    giveEffect.amplifier(),
-                    giveEffect.ambient(),
-                    giveEffect.visible(),
-                    giveEffect.showIcon()
-                ));
-                updateAttributes = false;
+                player.noxesium$addClientsidePotionEffect(
+                    new MobEffectInstance(
+                        type,
+                        giveEffect.duration(),
+                        giveEffect.amplifier(),
+                        giveEffect.ambient(),
+                        giveEffect.visible(),
+                        giveEffect.showIcon()
+                    )
+                );
             }
             case QibEffect.RemovePotionEffect removeEffect -> {
-                updateAttributes = true;
-                player.removeEffect(BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
-                updateAttributes = false;
+                player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
             }
             case QibEffect.Move move -> {
                 player.move(MoverType.SELF, new Vec3(move.x(), move.y(), move.z()));

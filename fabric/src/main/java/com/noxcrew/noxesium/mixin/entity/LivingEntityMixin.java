@@ -21,7 +21,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector4f;
@@ -30,7 +29,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -63,24 +61,6 @@ public abstract class LivingEntityMixin {
         if (entity instanceof LocalPlayer localPlayer) {
             NoxesiumMod.getInstance().getModule(QibBehaviorModule.class).onPlayerJump(localPlayer);
         }
-    }
-
-    @Redirect(method = "onEffectUpdated", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z"))
-    public boolean onEffectUpdatedClientside(Level instance) {
-        // Fake that we're on the server so we can update attributes!
-        if (QibBehaviorModule.updateAttributes) {
-            return false;
-        }
-        return instance.isClientSide;
-    }
-
-    @Redirect(method = "onEffectRemoved", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/Level;isClientSide:Z"))
-    public boolean onEffectRemovedClientside(Level instance) {
-        // Fake that we're on the server so we can update attributes!
-        if (QibBehaviorModule.updateAttributes) {
-            return false;
-        }
-        return instance.isClientSide;
     }
 
     @Inject(method = "onSyncedDataUpdated", at = @At("RETURN"))
