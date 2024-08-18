@@ -35,6 +35,7 @@ public abstract class TridentItemMixin {
     @Inject(method = "releaseUsing", at = @At(value = "HEAD"))
     public void coyoteTimeRelease(ItemStack itemStack, Level level, LivingEntity livingEntity, int remaining, CallbackInfo ci) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
+        if (livingEntity != Minecraft.getInstance().player) return;
 
         if (livingEntity instanceof Player player) {
             // Ignore non-riptide tridents!
@@ -56,6 +57,7 @@ public abstract class TridentItemMixin {
     @Redirect(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
     public void playSound(Level instance, Player player, Entity entity, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
+        if (entity != Minecraft.getInstance().player) return;
 
         // Reset the coyote time as we've just activated the riptide.
         if (entity instanceof LivingEntity livingEntity) {

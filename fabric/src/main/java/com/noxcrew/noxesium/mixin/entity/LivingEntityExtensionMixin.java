@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.feature.entity.LivingEntityExtension;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -155,6 +156,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     @Inject(method = "isAutoSpinAttack", at = @At(value = "HEAD"), cancellable = true)
     private void isAutoSpinAttack(CallbackInfoReturnable<Boolean> cir) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
+        if (((Object) this) != Minecraft.getInstance().player) return;
         cir.setReturnValue(this.autoSpinAttackTicks > 0);
     }
 
@@ -164,6 +166,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     @Inject(method = "baseTick", at = @At(value = "TAIL"))
     private void onTick(CallbackInfo ci) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
+        if (((Object) this) != Minecraft.getInstance().player) return;
 
         // Reduce the use attempt ticks
         if (noxesium$attemptUseTicks > 0) noxesium$attemptUseTicks--;
