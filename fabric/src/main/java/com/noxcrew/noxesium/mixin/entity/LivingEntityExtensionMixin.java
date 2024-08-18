@@ -142,7 +142,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
     @Override
     public void noxesium$triggerTridentCoyoteTime() {
-        noxesium$attemptUseTicks = 5;
+        noxesium$attemptUseTicks = 4;
     }
 
     @Override
