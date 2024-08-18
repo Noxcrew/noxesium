@@ -43,6 +43,7 @@ dependencies {
     }
 
     // Add PRTree which we use for collision detection
+    include("org.khelekore:prtree:1.5")
     implementation("org.khelekore:prtree:1.5")
 
     // Compatibility with other mods
