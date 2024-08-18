@@ -62,7 +62,7 @@ public class SpatialInteractionEntityTree {
     /**
      * Returns all entities that clip [hitbox].
      */
-    public static Collection<Entity> findEntities(AABB hitbox) {
+    public static HashSet<Entity> findEntities(AABB hitbox) {
         double[] values = {hitbox.minX, hitbox.maxX, hitbox.minY, hitbox.maxY, hitbox.minZ, hitbox.maxZ};
         var mbr = new SimpleMBR(values);
         var collisions = new HashSet<Entity>();

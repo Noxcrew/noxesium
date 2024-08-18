@@ -13,8 +13,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class QibBehaviorModule implements NoxesiumModule {
 
+    private AABB lastBoundingBox;
     private final Map<String, AtomicInteger> collidingWithTypes = new HashMap<>();
     private final Map<Entity, AtomicInteger> collidingWithEntities = new HashMap<>();
     private final Set<Entity> triggeredJump = new HashSet<>();
@@ -45,7 +46,49 @@ public class QibBehaviorModule implements NoxesiumModule {
 
             // Check if the player is colliding with any interaction entities
             tickEffects();
-            checkForCollisions();
+
+            // Perform checks in between the last and next bounding box
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+
+            HashSet<Entity> entities = null;
+            if (lastBoundingBox != null) {
+                var from = lastBoundingBox.getBottomCenter();
+                var to = player.getBoundingBox().getBottomCenter();
+
+                var diffX = to.x - from.x;
+                var diffY = to.y - from.y;
+                var diffZ = to.z - from.z;
+                var differenceLengthSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
+
+                // If there's more than 0.5 between the two targets we do intermediate steps
+                // to ensure we collide with everything!
+                if (differenceLengthSquared >= 0.25) {
+                    var dimensions = player.getDimensions(player.getPose());
+                    var currentLocation = from;
+                    var differenceLength = Math.sqrt(differenceLengthSquared);
+                    var factor = 0.5 / differenceLength;
+                    var times = Math.ceil(differenceLength / .5) - 1;
+                    for (int i = 0; i < times; i++) {
+                        currentLocation = currentLocation.add(diffX * factor, diffY * factor, diffZ * factor);
+
+                        if (entities == null) {
+                            entities = SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation));
+                        } else {
+                            entities.addAll(SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation)));
+                        }
+                    }
+                }
+            }
+
+            if (entities == null) {
+                entities = SpatialInteractionEntityTree.findEntities(player.getBoundingBox());
+            } else {
+                entities.addAll(SpatialInteractionEntityTree.findEntities(player.getBoundingBox()));
+            }
+
+            checkForCollisions(entities);
+            lastBoundingBox = player.getBoundingBox();
         });
     }
 
@@ -108,7 +151,7 @@ public class QibBehaviorModule implements NoxesiumModule {
     /**
      * Checks for collisions with interaction entities.
      */
-    private void checkForCollisions() {
+    private void checkForCollisions(Set<Entity> entities) {
         /*
          *  Ideally we would use vanilla's getEntities method as it uses the local chunks directly to only check against nearby
          *  entities. However, vanilla's implementation only iterates over chunks that the player collides with and then checks
@@ -117,11 +160,8 @@ public class QibBehaviorModule implements NoxesiumModule {
          *
          *  To solve this we absolutely over-engineer this problem and use a spatial tree structure to find all interaction entities.
          */
-        // var entities = player.level().getEntities(player, player.getBoundingBox(), (it) -> it.getType() == EntityType.INTERACTION);
-        var player = Minecraft.getInstance().player;
-        var entities = SpatialInteractionEntityTree.findEntities(player.getBoundingBox());
-
         // Determine all current collisions
+        var player = Minecraft.getInstance().player;
         var collidingTypes = new ArrayList<String>();
         for (var entity : entities) {
             // Stop colliding with this entity
@@ -134,7 +174,8 @@ public class QibBehaviorModule implements NoxesiumModule {
             var definition = knownBehaviors.get(behavior);
 
             // Try to trigger the entry
-            if (definition.triggerEnterLeaveOnSwitch() || !collidingWithTypes.containsKey(behavior)) {
+            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior)) ||
+                (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(entity))) {
                 if (definition.onEnter() != null) {
                     sendPacket(behavior, ServerboundQibTriggeredPacket.Type.ENTER, entity.getId());
                     executeBehavior(player, entity, definition.onEnter());
@@ -150,6 +191,9 @@ public class QibBehaviorModule implements NoxesiumModule {
             collidingWithTypes.putIfAbsent(behavior, new AtomicInteger());
             collidingWithEntities.putIfAbsent(entity, new AtomicInteger());
         }
+
+        // Only keep the types you are still colliding with
+        collidingWithTypes.keySet().retainAll(collidingTypes);
 
         var iterator = collidingWithEntities.keySet().iterator();
         while (iterator.hasNext()) {
@@ -173,16 +217,14 @@ public class QibBehaviorModule implements NoxesiumModule {
             var definition = knownBehaviors.get(behavior);
 
             // Execute the behavior if we always do or if you've left this type
-            if (definition.triggerEnterLeaveOnSwitch() || !collidingTypes.contains(behavior)) {
+            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior)) ||
+                (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(collision))) {
                 if (definition.onLeave() != null) {
                     sendPacket(behavior, ServerboundQibTriggeredPacket.Type.LEAVE, collision.getId());
                     executeBehavior(player, collision, definition.onLeave());
                 }
             }
         }
-
-        // Only keep the types you are still colliding with
-        collidingWithTypes.keySet().retainAll(collidingTypes);
     }
 
     /**

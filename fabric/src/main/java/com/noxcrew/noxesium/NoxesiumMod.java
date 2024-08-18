@@ -257,7 +257,7 @@ public class NoxesiumMod implements ClientModInitializer {
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(2500);
                         SpatialInteractionEntityTree.rebuild();
                     } catch (InterruptedException ex) {
                         return;
