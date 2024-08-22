@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.mixin.sodium;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.NoxesiumMod;
-import me.jellysquid.mods.sodium.client.gl.shader.ShaderLoader;
+import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.mixin.Mixin;

@@ -3,11 +3,11 @@ package com.noxcrew.noxesium.config.sodium;
 import com.google.common.collect.ImmutableList;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.NoxesiumMod;
-import me.jellysquid.mods.sodium.client.gui.options.OptionGroup;
-import me.jellysquid.mods.sodium.client.gui.options.OptionImpact;
-import me.jellysquid.mods.sodium.client.gui.options.OptionImpl;
-import me.jellysquid.mods.sodium.client.gui.options.OptionPage;
-import me.jellysquid.mods.sodium.client.gui.options.control.TickBoxControl;
+import net.caffeinemc.mods.sodium.client.gui.options.OptionGroup;
+import net.caffeinemc.mods.sodium.client.gui.options.OptionImpact;
+import net.caffeinemc.mods.sodium.client.gui.options.OptionImpl;
+import net.caffeinemc.mods.sodium.client.gui.options.OptionPage;
+import net.caffeinemc.mods.sodium.client.gui.options.control.TickBoxControl;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
