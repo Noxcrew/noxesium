@@ -37,7 +37,7 @@ dependencies {
     }
 
     // Use an updated version of mixin extras so we can use WrapMethod
-    annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.0-beta.2")?.apply {
+    annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")?.apply {
         include(this)
         implementation(this)
     }
