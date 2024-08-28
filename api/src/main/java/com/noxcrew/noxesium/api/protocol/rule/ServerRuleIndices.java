@@ -85,11 +85,8 @@ public class ServerRuleIndices {
      * Enables Noxesium patches to the trident which make it entirely client-sided
      * allowing for additional smoothness. The following changes need to be made
      * server side to support this:
-     * - Remove entire block of riptide specific code that runs server-side after
-     *   the Item Used statistic is given
-     * - Override isAutoSpinAttack on the server to be true still while riptiding,
-     *   but do not send the client any updates to the riptiding flag in the living
-     *   entity data.
+     * - Make the trident noise not play to the player that's riptiding.
+     * - Remove the push/move calls on the server-side.
      * - Do not send the client updates about its own pose.
      * - Ignore all logic about using the auto spin attack as an attack.
      * - Add a sound effect called noxesium:trident.ready_indicator
