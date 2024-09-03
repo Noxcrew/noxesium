@@ -96,6 +96,8 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                     if (rule == null) return;
                     entity.noxesium$setExtraData(rule, packet.values().get(idx));
                 }
+            } else {
+                NoxesiumMod.getInstance().getLogger().warn("Received ClientboundSetExtraEntityDataPacket about unknown entity {}", packet.entityId());
             }
         });
 
@@ -108,6 +110,8 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                     if (rule == null) continue;
                     entity.noxesium$resetExtraData(rule);
                 }
+            } else {
+                NoxesiumMod.getInstance().getLogger().warn("Received ClientboundResetExtraEntityDataPacket about unknown entity {}", packet.entityId());
             }
         });
     }
