@@ -58,10 +58,10 @@ public class EntityRenderDispatcherMixin {
             if (state != null) {
                 double distance = entityRenderDispatcher.distanceToSqr(entity);
                 if (distance <= 4096.0) {
-                    var vec3 = new Vec3(0.0, aabb.getYsize(), 0.0);
+                    var vec3 = new Vec3(0.0, aabb.getYsize() / 2.0, 0.0);
                     if (vec3 != null) {
                         poseStack.pushPose();
-                        poseStack.translate(vec3.x, vec3.y + 0.5, vec3.z);
+                        poseStack.translate(vec3.x, vec3.y, vec3.z);
                         poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
                         poseStack.scale(0.025F, -0.025F, 0.025F);
                         var matrix4f = poseStack.last().pose();
