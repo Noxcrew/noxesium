@@ -27,6 +27,7 @@ public class NoxesiumConfig {
     public TriState renderMapsInUi = TriState.DEFAULT;
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
+    public boolean enableQibSystemDebugging = false;
     public boolean enableExperimentalPerformancePatches = false;
     public boolean showGlowingSettings = false;
     public boolean dumpIncomingPackets = false;

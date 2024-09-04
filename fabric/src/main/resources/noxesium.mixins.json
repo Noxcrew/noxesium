@@ -17,6 +17,7 @@
     "entity.BoatMixin",
     "entity.ClientPacketListenerMixin",
     "entity.EntityMixin",
+    "entity.EntityRenderDispatcherMixin",
     "entity.GuardianMixin",
     "entity.GuardianRendererMixin",
     "entity.InteractionMixin",

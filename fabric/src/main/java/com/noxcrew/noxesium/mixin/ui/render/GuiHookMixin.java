@@ -9,11 +9,10 @@ import com.noxcrew.noxesium.feature.ui.wrapper.BossBarWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.ChatWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.DebugWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.ElementManager;
-import com.noxcrew.noxesium.feature.ui.wrapper.FpsOverlayWrapper;
-import com.noxcrew.noxesium.feature.ui.wrapper.GameTimeOverlayWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.MapUiWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.ScoreboardWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.TabListWrapper;
+import com.noxcrew.noxesium.feature.ui.wrapper.TextHudOverlayWrapper;
 import com.noxcrew.noxesium.feature.ui.wrapper.TitleWrapper;
 import com.noxcrew.noxesium.mixin.ui.render.ext.ChatComponentExt;
 import net.minecraft.client.DeltaTracker;
@@ -82,8 +81,10 @@ public abstract class GuiHookMixin {
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
         // Render map at the bottom so the rest goes on top, this goes after vanilla so we render on top of e.g. chat
         noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
-        noxesium$addRenderLayer(ElementManager.getInstance(FpsOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay);
-        noxesium$addRenderLayer(ElementManager.getInstance(GameTimeOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showGameTimeOverlay);
+        noxesium$addRenderLayer(ElementManager.getInstance(TextHudOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay ||
+                NoxesiumMod.getInstance().getConfig().showGameTimeOverlay ||
+                NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
+        );
     }
 
     @WrapMethod(method = "renderScoreboardSidebar")

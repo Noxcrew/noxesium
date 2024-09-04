@@ -27,6 +27,11 @@ public interface LivingEntityExtension {
      */
     public default void noxesium$updateClientsidePotionEffects() {
     }
+    /**
+     * Clears the client-side potion effects.
+     */
+    public default void noxesium$clearClientsidePotionEffects() {
+    }
 
     /**
      * Triggers coyote time on releasing a riptide trident.

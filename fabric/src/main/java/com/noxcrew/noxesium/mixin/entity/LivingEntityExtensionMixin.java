@@ -34,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -82,6 +83,15 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     public void noxesium$updateClientsidePotionEffects() {
         for (var instance : noxesium$activeEffects.values()) {
             instance.getEffect().value().addAttributeModifiers(getAttributes(), instance.getAmplifier());
+        }
+    }
+
+    @Override
+    public void noxesium$clearClientsidePotionEffects() {
+        var effects = new HashMap<>(noxesium$activeEffects);
+        noxesium$activeEffects.clear();
+        for (var entry : effects.keySet()) {
+            noxesium$onEffectRemoved(entry);
         }
     }
 
