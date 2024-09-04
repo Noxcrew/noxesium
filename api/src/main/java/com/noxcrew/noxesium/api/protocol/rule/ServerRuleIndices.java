@@ -85,11 +85,11 @@ public class ServerRuleIndices {
      * Enables Noxesium patches to the trident which make it entirely client-sided
      * allowing for additional smoothness. The following changes need to be made
      * server side to support this:
-     * - Make the trident noise not play to the player that's riptiding.
-     * - Remove the push/move calls on the server-side.
+     * - Remove the release using code on the server-side for players.
+     * - Replace logic to detect when a player riptides with listening to the `riptide` packet.
      * - Do not send the client updates about its own pose.
      * - Ignore all logic about using the auto spin attack as an attack.
-     * - Add a sound effect called noxesium:trident.ready_indicator
+     * - Add a sound effect called noxesium:trident.ready_indicator.
      *
      * The effects this setting has:
      * - Makes the sound effect and camera POV (pose) change client-side

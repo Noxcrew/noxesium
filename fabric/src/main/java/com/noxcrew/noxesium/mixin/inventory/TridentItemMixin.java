@@ -1,12 +1,14 @@
 package com.noxcrew.noxesium.mixin.inventory;
 
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,15 +32,11 @@ public abstract class TridentItemMixin {
     }
 
     @Redirect(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
-    public void playSound(Level instance, Player player, Entity entity, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch) {
+    public void playSound(Level instance, Player player, Entity entity, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch, ItemStack itemStack, Level level, LivingEntity livingEntity, int i) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
         if (entity != Minecraft.getInstance().player) return;
 
-        // Reset the coyote time as we've just activated the riptide.
-        if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.noxesium$resetTridentCoyoteTime();
-        }
-
+        // Play a sound locally to replace the remote sound
         instance.playLocalSound(
                 entity,
                 soundEvent,
@@ -46,5 +44,11 @@ public abstract class TridentItemMixin {
                 volume,
                 pitch
         );
+
+        // Reset the coyote time as we've just activated the riptide.
+        livingEntity.noxesium$resetTridentCoyoteTime();
+
+        // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
+        new ServerboundRiptidePacket(itemStack).send();
     }
 }

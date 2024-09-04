@@ -19,6 +19,7 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPack
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
+import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.FriendlyByteBuf;
@@ -54,6 +55,7 @@ public class NoxesiumPackets {
     public static final NoxesiumPayloadType<ServerboundClientInformationPacket> CLIENT_INFO = NoxesiumPackets.server("client_info", ServerboundClientInformationPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> CLIENT_SETTINGS = NoxesiumPackets.server("client_settings", ServerboundClientSettingsPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ServerboundQibTriggeredPacket> QIB_TRIGGERED = NoxesiumPackets.server("qib_triggered", ServerboundQibTriggeredPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundRiptidePacket> RIPTIDE = NoxesiumPackets.server("riptide", ServerboundRiptidePacket.STREAM_CODEC);
 
     public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CUSTOM_SOUND_MODIFY = NoxesiumPackets.client("modify_sound", ClientboundCustomSoundModifyPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> CUSTOM_SOUND_START = NoxesiumPackets.client("start_sound", ClientboundCustomSoundStartPacket.STREAM_CODEC);
