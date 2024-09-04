@@ -34,9 +34,10 @@ public interface LivingEntityExtension {
     }
 
     /**
-     * Triggers coyote time on releasing a riptide trident.
+     * Returns whether a player has trident coyote time.
      */
-    public default void noxesium$triggerTridentCoyoteTime() {
+    public default boolean noxesium$hasTridentCoyoteTime() {
+        return false;
     }
 
     /**

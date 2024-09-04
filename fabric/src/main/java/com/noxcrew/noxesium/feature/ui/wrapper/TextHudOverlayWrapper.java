@@ -52,7 +52,7 @@ public class TextHudOverlayWrapper extends ElementWrapper {
         }
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging && minecraft.player != null) {
             text.add(Component.literal("§bEntities in model: §7" + SpatialInteractionEntityTree.getModelContents().size()));
-            text.add(Component.literal("§bIn water: " + (minecraft.player.isInWaterOrRain() ? "§aYes" : "§cNo")));
+            text.add(Component.literal("§bIn water: " + (minecraft.player.isInWaterOrRain() ? "§aYes" : minecraft.player.noxesium$hasTridentCoyoteTime() ? "§eGrace" : "§cNo")));
             text.add(Component.literal("§bQib behavior amount: §7" + ServerRules.QIB_BEHAVIORS.getValue().size()));
         }
 
