@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Adds a custom layer for Noxesium's text HUD overlays.

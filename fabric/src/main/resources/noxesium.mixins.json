@@ -31,7 +31,6 @@
     "general.LocalPlayerMixin",
     "general.MappedRegistryMixin",
     "general.PacketDecoderMixin",
-    "general.VideoSettingsScreenMixin",
     "inventory.InventoryMixin",
     "inventory.InventorySlotMixin",
     "inventory.TridentItemMixin",

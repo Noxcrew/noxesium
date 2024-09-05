@@ -106,6 +106,16 @@ public class ServerRules {
     public static ClientServerRule<Boolean> ENABLE_SMOOTHER_CLIENT_TRIDENT = register(new BooleanServerRule(ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT, false));
 
     /**
+     * Disables the map showing as a UI element. Can be used to hide it during loading screens.
+     */
+    public static ClientServerRule<Boolean> DISABLE_MAP_UI = register(new BooleanServerRule(ServerRuleIndices.DISABLE_MAP_UI, false));
+
+    /**
+     * Sets the amount of ticks the riptide has coyote time for.
+     */
+    public static ClientServerRule<Integer> RIPTIDE_COYOTE_TIME = register(new IntegerServerRule(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 5));
+
+    /**
      * Registers a new server rule.
      */
     private static <T extends ClientServerRule<?>> T register(T rule) {

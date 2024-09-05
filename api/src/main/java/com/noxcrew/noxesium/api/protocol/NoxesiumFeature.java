@@ -78,6 +78,10 @@ public enum NoxesiumFeature {
      * Finalised client qib feature to make it functional.
      */
     STABLE_CLIENT_QIBS(9),
+    /**
+     * Various bugfixes to client qib feature.
+     */
+    BUGFIXED_CLIENT_QIBS(10),
     ;
 
     private final int minProtocolVersion;

@@ -121,6 +121,20 @@ public class ServerRules(
         BooleanServerRule(player, index)
     }
 
+    /**
+     * Disables the map showing as a UI element. Can be used to hide it during loading screens.
+     */
+    public val disableMapUi: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_MAP_UI) { player, index ->
+        BooleanServerRule(player, index)
+    }
+
+    /**
+     * Sets the amount of ticks the riptide has coyote time for.
+     */
+    public val riptideCoyoteTime: RuleFunction<Int> = register(ServerRuleIndices.RIPTIDE_COYOTE_TIME) { player, index ->
+        IntServerRule(player, index, 5)
+    }
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, rule: (Player, Int) -> RemoteServerRule<T>): RuleFunction<T> {
         val function = RuleFunction(index, rule)

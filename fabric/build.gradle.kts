@@ -55,6 +55,11 @@ dependencies {
             isTransitive = false
         }
     }
+    if (property("enableModMenu") == "true") {
+        modImplementation("com.terraformersmc:modmenu:${property("modmenu")}") {
+            isTransitive = false
+        }
+    }
 }
 
 java {

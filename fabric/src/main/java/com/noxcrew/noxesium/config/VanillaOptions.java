@@ -13,16 +13,6 @@ import java.util.Arrays;
  */
 public class VanillaOptions {
 
-    private static final OptionInstance<Boolean> experimentalPatches = OptionInstance.createBoolean(
-        "noxesium.options.experimental_patches.name",
-        OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.experimental_patches.tooltip")),
-        NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches(),
-        (newValue) -> {
-            NoxesiumMod.getInstance().getConfig().enableExperimentalPerformancePatches = newValue;
-            NoxesiumMod.getInstance().getConfig().save();
-        }
-    );
-
     private static final OptionInstance<Boolean> resetToggleKeys = OptionInstance.createBoolean(
         "noxesium.options.reset_toggle_keys.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.reset_toggle_keys.tooltip")),
@@ -70,10 +60,6 @@ public class VanillaOptions {
         }
     );
 
-    public static OptionInstance<Boolean> experimentalPatches() {
-        return experimentalPatches;
-    }
-
     public static OptionInstance<Boolean> resetToggleKeys() {
         return resetToggleKeys;
     }
@@ -91,10 +77,10 @@ public class VanillaOptions {
     }
 
     private static Component percentValueLabel(Component component, double d) {
-        return Component.translatable("options.percent_value", new Object[]{component, (int) (d * 100.0)});
+        return Component.translatable("options.percent_value", component, (int) (d * 100.0));
     }
 
-    private static Component triStateValueLabel(Component component, Enum e) {
+    private static Component triStateValueLabel(Component component, Enum<?> e) {
         return Component.translatable("noxesium.options.enum." + e.name().toLowerCase());
     }
 }

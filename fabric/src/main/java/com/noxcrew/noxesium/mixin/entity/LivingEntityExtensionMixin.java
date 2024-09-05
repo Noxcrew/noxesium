@@ -177,7 +177,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
             // Update coyote time
             if (player.isInWaterOrRain()) {
-                noxesium$coyoteTime = 5;
+                noxesium$coyoteTime = ServerRules.RIPTIDE_COYOTE_TIME.getValue();
             } else if (noxesium$coyoteTime > 0) {
                 noxesium$coyoteTime--;
             }

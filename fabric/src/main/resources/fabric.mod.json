@@ -20,6 +20,9 @@
       "com.noxcrew.noxesium.NoxesiumMod"
     ],
     "main": [
+    ],
+    "modmenu": [
+      "com.noxcrew.noxesium.integration.ModMenuIntegration"
     ]
   },
   "accessWidener": "noxesium.accesswidener",
@@ -40,8 +43,8 @@
     "minecraft": ">=1.21"
   },
   "suggests": {
-    "sodium": ">=0.5.9",
-    "iris": ">=1.7.1"
+    "sodium": ">=0.6.0-beta.1",
+    "iris": ">=1.8.0-beta.3"
   },
   "breaks": {
     "optifabric": "*"

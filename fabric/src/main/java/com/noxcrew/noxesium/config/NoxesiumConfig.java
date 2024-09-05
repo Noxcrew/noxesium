@@ -37,11 +37,10 @@ public class NoxesiumConfig {
     public MapLocation mapUiLocation = MapLocation.TOP;
 
     /**
-     * Returns whether experimental patches are available. This will return false if
-     * any mods are detected that are known to have compatibility issues.
+     * Returns whether experimental patches are available.
      */
     public boolean areExperimentalPatchesAvailable() {
-        return false; //!CompatibilityReferences.isUsingFeatherClient() && !CompatibilityReferences.isUsingLunarClient() && !ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue();
+        return false;
     }
 
     /**

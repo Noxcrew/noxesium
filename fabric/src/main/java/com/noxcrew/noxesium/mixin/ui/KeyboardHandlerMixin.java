@@ -6,8 +6,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
+import com.noxcrew.noxesium.config.NoxesiumSettingsScreen;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -33,6 +35,7 @@ public abstract class KeyboardHandlerMixin {
     public void addExperimentalPatchesHelpMessage(ChatComponent instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
+                instance.addMessage(Component.translatable("debug.noxesium_settings.help"));
                 if (NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches()) {
                     instance.addMessage(Component.translatable("debug.experimental_patches.help"));
                 }
@@ -55,6 +58,10 @@ public abstract class KeyboardHandlerMixin {
                 NoxesiumConfig.experimentalPatchesHotkey = false;
                 this.debugFeedbackTranslated("debug.experimental_patches.disabled");
             }
+            return true;
+        }
+        if (keyCode == InputConstants.KEY_V) {
+            Minecraft.getInstance().setScreen(new NoxesiumSettingsScreen(null));
             return true;
         }
         return original;

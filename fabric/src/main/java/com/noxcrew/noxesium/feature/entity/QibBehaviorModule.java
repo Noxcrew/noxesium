@@ -103,9 +103,6 @@ public class QibBehaviorModule implements NoxesiumModule {
      * Triggers when a player jumps.
      */
     public void onPlayerJump(LocalPlayer player) {
-        // Do not allow triggering a jump while in an auto spin attack!
-        if (player.isAutoSpinAttack()) return;
-
         // Do not allow jumping while in a vehicle.
         if (player.getVehicle() != null) return;
 

@@ -1,10 +1,11 @@
 package com.noxcrew.noxesium.feature.ui.wrapper;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.config.MapLocation;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
+import com.noxcrew.noxesium.mixin.component.ext.MinecraftExt;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,7 @@ public class MapUiWrapper extends ElementWrapper {
 
     public MapUiWrapper() {
         // Update every tick for the map contents
-        registerVariable("tick", (minecraft, partialTicks) -> RenderSystem.getShaderGameTime());
+        registerVariable("client tick", (minecraft, partialTicks) -> ((MinecraftExt) minecraft).getClientTickCount());
 
         // Update as the setting changes
         registerVariable("main_hand", (minecraft, partialTicks) -> minecraft.options.mainHand());
@@ -57,6 +58,9 @@ public class MapUiWrapper extends ElementWrapper {
 
     @Override
     protected void render(GuiGraphics graphics, Minecraft minecraft, int screenWidth, int screenHeight, Font font, DeltaTracker deltaTracker) {
+        // Allow the server to temporarily disable the UI from drawing during loading screens
+        if (ServerRules.DISABLE_MAP_UI.getValue()) return;
+
         var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
         var pose = graphics.pose();
         var mainArm = minecraft.player.getMainArm();

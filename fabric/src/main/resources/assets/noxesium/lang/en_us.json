@@ -2,6 +2,7 @@
   "debug.experimental_patches.disabled": "Noxesium UI performance patches are now off",
   "debug.experimental_patches.enabled": "Noxesium UI performance patches are now on",
   "debug.experimental_patches.help": "F3 + W = Toggle Noxesium UI performance patches",
+  "debug.noxesium_settings.help": "F3 + V = Open Noxesium settings menu",
 
   "debug.fps_overlay.disabled": "FPS counter is now off",
   "debug.fps_overlay.enabled": "FPS counter is now on (turn off with F3 + Y)",
@@ -9,15 +10,16 @@
   "debug.fps_overlay": "%s fps",
 
   "noxesium.options.game_time_overlay.name": "Game Time Overlay",
-  "noxesium.options.game_time_overlay.tooltip": "If enabled, a small overlay is added which shows the current game time, useful for shader development.",
+  "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
   "debug.game_time_overlay": "%s st, %s gt",
 
   "debug.noxesium_overlay.on": "Noxesium: §aOn",
   "debug.noxesium_overlay.off": "Noxesium: §cOff",
 
   "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.screen.noxesium": "Noxesium Settings",
   "noxesium.options.fps_overlay.name": "FPS Overlay",
-  "noxesium.options.fps_overlay.tooltip": "If enabled, a small overlay is added that shows the current fps in the top left corner of your screen.",
+  "noxesium.options.fps_overlay.tooltip": "Adds a small overlay that shows the current fps in the top left corner of your screen.",
   "noxesium.options.experimental_patches.name": "Experimental Optimizations",
   "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fIf you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
@@ -28,6 +30,17 @@
   "noxesium.options.ui_map_size.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
   "noxesium.options.ui_map_location.name": "Map UI Location",
   "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting.",
+
+  "noxesium.options.dump_incoming_packets.name": "Dump Incoming Packets",
+  "noxesium.options.dump_incoming_packets.tooltip": "Enables logging of Noxesium packets that are handled by the client.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.dump_outgoing_packets.name": "Dump Outgoing Packets",
+  "noxesium.options.dump_outgoing_packets.tooltip": "Enables logging of Noxesium packets sent to the server.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.qib_debug_visuals.name": "Debug Qib System",
+  "noxesium.options.qib_debug_visuals.tooltip": "Enables debug visuals for the qib system.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.extended_packet_logging.name": "Extended Error Logging",
+  "noxesium.options.extended_packet_logging.tooltip": "Adds additional error logs to various types of invalid packet exceptions.\n\n§cIntended for server developers.",
+  "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",

@@ -98,4 +98,14 @@ public class ServerRuleIndices {
      * - Changes held item renderer to have less motion when riptiding
      */
     public static final int ENABLE_SMOOTHER_CLIENT_TRIDENT = 15;
+
+    /**
+     * Disables the map showing as a UI element. Can be used to hide it during loading screens.
+     */
+    public static final int DISABLE_MAP_UI = 16;
+
+    /**
+     * Sets the amount of ticks the riptide has coyote time for.
+     */
+    public static final int RIPTIDE_COYOTE_TIME = 17;
 }
