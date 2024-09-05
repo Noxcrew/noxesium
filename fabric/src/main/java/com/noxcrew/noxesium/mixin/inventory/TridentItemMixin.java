@@ -5,8 +5,10 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
@@ -49,6 +51,6 @@ public abstract class TridentItemMixin {
         livingEntity.noxesium$resetTridentCoyoteTime();
 
         // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
-        new ServerboundRiptidePacket(itemStack).send();
+        new ServerboundRiptidePacket(player.getUsedItemHand() == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND).send();
     }
 }
