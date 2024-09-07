@@ -2,6 +2,7 @@
   "debug.experimental_patches.disabled": "Noxesium 介面效能強化已關閉",
   "debug.experimental_patches.enabled": "Noxesium 介面效能強化已開啟",
   "debug.experimental_patches.help": "F3 + W = 切換 Noxesium 介面效能強化",
+  "debug.noxesium_settings.help": "F3 + V = 開啟 Noxesium 設定選單",
 
   "debug.fps_overlay.disabled": "FPS 計數器已關閉",
   "debug.fps_overlay.enabled": "FPS 計數器已開啟（F3 + Y 關閉）",
@@ -16,6 +17,7 @@
   "debug.noxesium_overlay.off": "Noxesium：§c關閉",
 
   "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.screen.noxesium": "Noxesium 設定",
   "noxesium.options.fps_overlay.name": "FPS 顯示",
   "noxesium.options.fps_overlay.tooltip": "若啟用，將會在畫面左上方顯示目前的 FPS。",
   "noxesium.options.experimental_patches.name": "實驗性最佳化",
@@ -28,7 +30,18 @@
   "noxesium.options.ui_map_size.tooltip": "控制「在介面中繪製地圖」設定的地圖大小。",
   "noxesium.options.ui_map_location.name": "地圖介面位置",
   "noxesium.options.ui_map_location.tooltip": "控制「在介面中繪製地圖」設定的地圖位置。",
-  
+
+  "noxesium.options.dump_incoming_packets.name": "傾印接收封包",
+  "noxesium.options.dump_incoming_packets.tooltip": "啟用由用戶端處理的 Noxesium 封包記錄。\n\n§c適用於開發 Noxesium 整合的伺服器開發人員。",
+  "noxesium.options.dump_outgoing_packets.name": "傾印傳送封包",
+  "noxesium.options.dump_outgoing_packets.tooltip": "啟用傳送到伺服器的 Noxesium 封包記錄。\n\n§c適用於開發 Noxesium 整合的伺服器開發人員。",
+  "noxesium.options.qib_debug_visuals.name": "除錯 Qib 系統",
+  "noxesium.options.qib_debug_visuals.tooltip": "為 qib 系統啟用除錯視覺效果。\n\n§c適用於開發 Noxesium 整合的伺服器開發人員。",
+  "noxesium.options.extended_packet_logging.name": "擴充錯誤記錄",
+  "noxesium.options.extended_packet_logging.tooltip": "為各種類型的無效封包例外新增額外的錯誤記錄。\n\n§c適用於伺服器開發人員。",
+  "noxesium.options.enable_glowing_keybinds.name": "隊伍發光快捷鍵",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "新增額外的快捷鍵，使玩家根據其隊伍顏色發光。需要重新啟動遊戲才能套用！\n\n§c快捷鍵僅在旁觀時有效。",
+
   "noxesium.options.enum.default": "詢問伺服器",
   "noxesium.options.enum.true": "總是",
   "noxesium.options.enum.false": "永不",
