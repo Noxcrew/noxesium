@@ -72,6 +72,7 @@ public abstract class ClientPacketListenerMixin {
         var commonplayerspawninfo = packet.commonPlayerSpawnInfo();
         var resourcekey = commonplayerspawninfo.dimension();
         var localplayer = Minecraft.getInstance().player;
+        if (localplayer == null) return;
         var resourcekey1 = localplayer.level().dimension();
         var flag = resourcekey != resourcekey1;
         if (flag) noxesium$resetEntities();
