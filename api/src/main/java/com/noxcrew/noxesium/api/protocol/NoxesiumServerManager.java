@@ -23,7 +23,8 @@ public interface NoxesiumServerManager<PlayerT> {
      *
      * @param player    The player object to fetch the rule for.
      * @param ruleIndex The id of the rule from ServerRuleIndices.
-     * @return An object that stores the current rule state for the given player, or `null` if the player is not using Noxesium.
+     * @return An object that stores the current rule state for the given player, or `null` if the player is not using Noxesium or
+     * not on a version that supports this rule.
      */
     @Nullable <T> ServerRule<T, ?> getServerRule(PlayerT player, int ruleIndex);
 

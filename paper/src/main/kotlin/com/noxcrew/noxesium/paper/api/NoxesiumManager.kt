@@ -49,6 +49,7 @@ public open class NoxesiumManager(
     private val settings = ConcurrentHashMap<UUID, ClientSettings>()
     private val profiles = ConcurrentHashMap<UUID, NoxesiumProfile>()
     private val rules = ConcurrentHashMap<Int, RuleFunction<*>>()
+    private val minimumProtocols = ConcurrentHashMap<Int, Int>()
     private val ready = ConcurrentHashMap.newKeySet<UUID>()
     private val pending = ConcurrentHashMap<UUID, Pair<Int, String>>()
 
@@ -199,9 +200,10 @@ public open class NoxesiumManager(
     }
 
     /** Registers a new server rule with the given [index] and [ruleSupplier]. */
-    public fun registerServerRule(index: Int, ruleSupplier: RuleFunction<*>) {
+    public fun registerServerRule(index: Int, minimumProtocol: Int, ruleSupplier: RuleFunction<*>) {
         require(!rules.containsKey(index)) { "Can't double register index $index" }
         rules[index] = ruleSupplier
+        minimumProtocols[index] = minimumProtocol
     }
 
     /** Stores the protocol version for [player] as [version] with [protocolVersion]. */
@@ -217,16 +219,20 @@ public open class NoxesiumManager(
     }
 
     /** Returns the given [rule] for [player]. */
-    public fun <T : Any> getServerRule(player: Player, rule: RuleFunction<T>): RemoteServerRule<T> =
+    public fun <T : Any> getServerRule(player: Player, rule: RuleFunction<T>): RemoteServerRule<T>? =
         getServerRule(player, rule.index)
 
-    override fun <T : Any> getServerRule(player: Player, index: Int): RemoteServerRule<T> =
-        profiles.computeIfAbsent(player.uniqueId) { NoxesiumProfile() }
-            .rules
-            .computeIfAbsent(index) {
-                val function = rules[index] ?: throw IllegalArgumentException("Cannot find rule with index $index")
-                function.function(player, index)
-            } as RemoteServerRule<T>
+    override fun <T : Any> getServerRule(player: Player, index: Int): RemoteServerRule<T>? =
+        profiles.computeIfAbsent(player.uniqueId) { NoxesiumProfile() }.let { profile ->
+            // Ensure that this player has the required protocol version, otherwise return `null`.
+            val version = getProtocolVersion(player) ?: -1
+            if (version < (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))) return@let null
+            return@let profile.rules
+                .computeIfAbsent(index) {
+                    val function = rules[index] ?: throw IllegalArgumentException("Cannot find rule with index $index")
+                    function.function(player, index)
+                } as RemoteServerRule<T>?
+        }
 
     override fun getClientSettings(player: Player): ClientSettings? =
         getClientSettings(player.uniqueId)
