@@ -40,9 +40,9 @@ public class ServerRules {
     public static ClientServerRule<Boolean> CAMERA_LOCKED = register(new CameraLockedRule(ServerRuleIndices.CAMERA_LOCKED));
 
     /**
-     * Whether custom music is being used. When enabled vanilla background music is fully disabled.
+     * When enabled vanilla background music is fully disabled.
      */
-    public static ClientServerRule<Boolean> ENABLE_CUSTOM_MUSIC = register(new EnableMusicRule(ServerRuleIndices.DISABLE_VANILLA_MUSIC));
+    public static ClientServerRule<Boolean> DISABLE_VANILLA_MUSIC = register(new EnableMusicRule(ServerRuleIndices.DISABLE_VANILLA_MUSIC));
 
     /**
      * When true, disables boat collision on the client side, useful for movement games involving

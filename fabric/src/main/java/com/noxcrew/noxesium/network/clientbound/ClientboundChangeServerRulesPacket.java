@@ -64,6 +64,6 @@ public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> v
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.CHANGE_SERVER_RULES;
+        return NoxesiumPackets.CLIENT_CHANGE_SERVER_RULES;
     }
 }

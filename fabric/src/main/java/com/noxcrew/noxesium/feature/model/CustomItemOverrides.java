@@ -24,7 +24,11 @@ import java.util.Objects;
 /**
  * Determines if custom item overrides are solely for key/value mappings of custom model
  * data, in which case we build a hash map representation for them and use that instead.
+ *
+ * Will be removed in a future version as the model component now exists which should
+ * be used if possible as it great performance for all clients.
  */
+@Deprecated
 public class CustomItemOverrides extends ItemOverrides {
 
     /**

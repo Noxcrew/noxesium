@@ -25,6 +25,6 @@ public record ClientboundResetExtraEntityDataPacket(int entityId, IntList indice
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.RESET_EXTRA_ENTITY_DATA;
+        return NoxesiumPackets.CLIENT_RESET_EXTRA_ENTITY_DATA;
     }
 }

@@ -279,7 +279,7 @@ public class NoxesiumMod implements ClientModInitializer {
         if (initialized) return;
 
         // Don't allow if the server doesn't support Noxesium
-        if (!ClientPlayNetworking.canSend(NoxesiumPackets.CLIENT_INFO.id())) return;
+        if (!ClientPlayNetworking.canSend(NoxesiumPackets.SERVER_CLIENT_INFO.id())) return;
 
         // Check if the connection has been established first, just in case
         if (Minecraft.getInstance().getConnection() != null) {

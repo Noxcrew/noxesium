@@ -52,25 +52,25 @@ public class NoxesiumPackets {
     public static final String PACKET_NAMESPACE = ProtocolVersion.NAMESPACE + "-v2";
 
     // Packet types are listed here to ensure they are properly registered!
-    public static final NoxesiumPayloadType<ServerboundClientInformationPacket> CLIENT_INFO = NoxesiumPackets.server("client_info", ServerboundClientInformationPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> CLIENT_SETTINGS = NoxesiumPackets.server("client_settings", ServerboundClientSettingsPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ServerboundQibTriggeredPacket> QIB_TRIGGERED = NoxesiumPackets.server("qib_triggered", ServerboundQibTriggeredPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ServerboundRiptidePacket> RIPTIDE = NoxesiumPackets.server("riptide", ServerboundRiptidePacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = NoxesiumPackets.server("client_info", ServerboundClientInformationPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = NoxesiumPackets.server("client_settings", ServerboundClientSettingsPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundQibTriggeredPacket> SERVER_QIB_TRIGGERED = NoxesiumPackets.server("qib_triggered", ServerboundQibTriggeredPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundRiptidePacket> SERVER_RIPTIDE = NoxesiumPackets.server("riptide", ServerboundRiptidePacket.STREAM_CODEC);
 
-    public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CUSTOM_SOUND_MODIFY = NoxesiumPackets.client("modify_sound", ClientboundCustomSoundModifyPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> CUSTOM_SOUND_START = NoxesiumPackets.client("start_sound", ClientboundCustomSoundStartPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> CUSTOM_SOUND_STOP = NoxesiumPackets.client("stop_sound", ClientboundCustomSoundStopPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CLIENT_CUSTOM_SOUND_MODIFY = NoxesiumPackets.client("modify_sound", ClientboundCustomSoundModifyPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> CLIENT_CUSTOM_SOUND_START = NoxesiumPackets.client("start_sound", ClientboundCustomSoundStartPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> CLIENT_CUSTOM_SOUND_STOP = NoxesiumPackets.client("stop_sound", ClientboundCustomSoundStopPacket.STREAM_CODEC);
 
-    public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> MCC_GAME_STATE = NoxesiumPackets.client("mcc_game_state", ClientboundMccGameStatePacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundMccServerPacket> MCC_SERVER = NoxesiumPackets.client("mcc_server", ClientboundMccServerPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> CLIENT_MCC_GAME_STATE = NoxesiumPackets.client("mcc_game_state", ClientboundMccGameStatePacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundMccServerPacket> CLIENT_MCC_SERVER = NoxesiumPackets.client("mcc_server", ClientboundMccServerPacket.STREAM_CODEC);
 
-    public static final NoxesiumPayloadType<ClientboundChangeServerRulesPacket> CHANGE_SERVER_RULES = NoxesiumPackets.client("change_server_rules", ClientboundChangeServerRulesPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> RESET_SERVER_RULES = NoxesiumPackets.client("reset_server_rules", ClientboundResetServerRulesPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundResetPacket> RESET = NoxesiumPackets.client("reset", ClientboundResetPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundServerInformationPacket> SERVER_INFO = NoxesiumPackets.client("server_info", ClientboundServerInformationPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES = NoxesiumPackets.client("change_server_rules", ClientboundChangeServerRulesPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES = NoxesiumPackets.client("reset_server_rules", ClientboundResetServerRulesPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetPacket> CLIENT_RESET = NoxesiumPackets.client("reset", ClientboundResetPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO = NoxesiumPackets.client("server_info", ClientboundServerInformationPacket.STREAM_CODEC);
 
-    public static final NoxesiumPayloadType<ClientboundSetExtraEntityDataPacket> CHANGE_EXTRA_ENTITY_DATA = NoxesiumPackets.client("change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
-    public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> RESET_EXTRA_ENTITY_DATA = NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundSetExtraEntityDataPacket> CLIENT_CHANGE_EXTRA_ENTITY_DATA = NoxesiumPackets.client("change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> CLIENT_RESET_EXTRA_ENTITY_DATA = NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
 
     /**
      * Returns an unmodifiable copy of all registered groups.

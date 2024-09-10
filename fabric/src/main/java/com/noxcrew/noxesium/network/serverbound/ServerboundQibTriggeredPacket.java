@@ -34,6 +34,6 @@ public record ServerboundQibTriggeredPacket(String behavior, Type qibType, int e
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.QIB_TRIGGERED;
+        return NoxesiumPackets.SERVER_QIB_TRIGGERED;
     }
 }

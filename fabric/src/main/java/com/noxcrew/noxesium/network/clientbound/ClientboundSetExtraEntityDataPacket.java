@@ -33,6 +33,6 @@ public record ClientboundSetExtraEntityDataPacket(int entityId, IntList indices,
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.CHANGE_EXTRA_ENTITY_DATA;
+        return NoxesiumPackets.CLIENT_CHANGE_EXTRA_ENTITY_DATA;
     }
 }

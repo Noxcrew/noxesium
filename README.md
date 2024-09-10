@@ -1,9 +1,8 @@
 Noxesium
 ---
 A fabric mod centered around improving the user experience when playing on multiplayer servers.
-This mod brings no notable performance improvements in single player.
 
-Server developers are welcome to submit additional patches they need, however all non-performance changes must be fully optional to use. No client-side configuration is available as behaviour should be decided by the server.
+Server developers are welcome to submit additional patches they need, feel free to open an Issue to discuss your ideas.
 
 # Usage
 Public builds of Noxesium can be found on the [Modrinth](https://modrinth.com/mod/noxesium) page. Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.
@@ -26,25 +25,30 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 
 # Features
 
-### Performance
-
-Optimizes client performance when playing on multiplayer servers such as MCC Island or Origin Realms. Optimizations are focussed on areas that other mods normally don't optimize as they usually focus on regular survival mode gameplay.
-
-- Recent versions contain experimental UI optimizations which can be enabled in the Video Settings. These optimizations currently don't support 3rd party mods yet but will in a future release. After these are stable they will be automatically enabled and should improve client fps on servers with custom UI elements.
-- Various small optimizations to rendering custom entity models
-- Speeds up beacon beam rendering (only when not using Iris Shaders)
-
 ### Additions
 
 Noxesium provides various additional features focussed around giving servers more control over how the client behaves. Some examples of additional things servers can do:
 
+- Create custom interactables on the client like speed boosters or jump pads
 - Draw player heads in text messages
 - Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
-- Use information about the GUI scale of clients
-- Disable various minor mechanics such as trident or boat collisions
-- Define an override for the empty hand item
+- Tweak the behavior of riptide tridents to make them more usable in multiplayer games
 - Prevent moving items in GUIs
 - Locking camera movement
+
+There are also a few improvements that do not require a server:
+- Prevents toggle sprint/sneak from resetting on death (can be configured)
+- Allow rendering off-hand maps as a UI element
+- Adds toggleable debug features for server and shader developers
+
+### Performance
+
+Noxesium also contains some minor performance patches, although these will not significantly improve your fps. Instead, Noxesium focusses on areas that are not covered by other mods like UI rendering or custom models. These don't occur in vanilla gameplay so they get little focus.
+
+Greater performance improvements have been included in the past, but as it's not the main focus they have been eclipsed by improvements in vanilla Minecraft and other mods. The following improvements are still present:
+
+- Optimizations to custom item model overrides with large amounts of CustomModelData variants
+- Work is being done on a set of UI performance optimizations that warp around vanilla's UI rendering and slow down the frame rate at which they are being rendered when few changes are occurring. These optimizations have been tested in the past but are currently still being developed.
 
 ### Bugfixes
 
@@ -54,6 +58,7 @@ Noxesium also fixes various small client bugs that relate to multiplayer servers
 - Fixes lighting issues with moving piston walls
 - Music properly resumes playing when setting the volume to 0% and back up
 - Fixes the backgrounds of text displays not being transparent
+- Fixes the tab menu not showing secondary skin layers
 
 ### MCC Island-specific Features
 

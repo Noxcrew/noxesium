@@ -26,6 +26,6 @@ public record ClientboundResetPacket(byte flags) implements NoxesiumPacket {
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.RESET;
+        return NoxesiumPackets.CLIENT_RESET;
     }
 }

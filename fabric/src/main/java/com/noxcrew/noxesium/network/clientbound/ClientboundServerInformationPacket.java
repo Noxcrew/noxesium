@@ -24,6 +24,6 @@ public record ClientboundServerInformationPacket(int maxProtocolVersion) impleme
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.SERVER_INFO;
+        return NoxesiumPackets.CLIENT_SERVER_INFO;
     }
 }

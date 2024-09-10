@@ -19,13 +19,13 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        NoxesiumPackets.SERVER_INFO.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_SERVER_INFO.addListener(this, (reference, packet, context) -> {
             // Whenever the server sends information about the supported protocol version we store
             // that so we know what kind of packets to expect
             NoxesiumMod.getInstance().setServerVersion(packet.maxProtocolVersion());
         });
 
-        NoxesiumPackets.RESET.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_RESET.addListener(this, (reference, packet, context) -> {
             var flags = packet.flags();
             if (hasFlag(flags, 0)) {
                 NoxesiumMod.getInstance().getModule(ServerRuleModule.class).clearAll();
@@ -35,7 +35,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        NoxesiumPackets.CHANGE_SERVER_RULES.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_CHANGE_SERVER_RULES.addListener(this, (reference, packet, context) -> {
             var indices = packet.indices();
             for (var idx = 0; idx < indices.size(); idx++) {
                 var index = indices.getInt(idx);
@@ -45,7 +45,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        NoxesiumPackets.RESET_SERVER_RULES.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_RESET_SERVER_RULES.addListener(this, (reference, packet, context) -> {
             var module = NoxesiumMod.getInstance().getModule(ServerRuleModule.class);
             for (var index : packet.indices()) {
                 var rule = module.getIndex(index);
@@ -54,7 +54,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        NoxesiumPackets.CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
 
             // Determine the sound instance to play
@@ -73,19 +73,19 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             manager.play(packet.id(), sound, packet.ignoreIfPlaying());
         });
 
-        NoxesiumPackets.CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             var sound = manager.getSound(packet.id());
             if (sound == null) return;
             sound.setVolume(packet.volume(), packet.startVolume(), packet.interpolationTicks());
         });
 
-        NoxesiumPackets.CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
             var manager = NoxesiumMod.getInstance().getModule(NoxesiumSoundModule.class);
             manager.stopSound(packet.id());
         });
 
-        NoxesiumPackets.CHANGE_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_CHANGE_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
             Entity entity = context.player().clientLevel.getEntity(packet.entityId());
             if (entity != null) {
                 var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);
@@ -101,7 +101,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             }
         });
 
-        NoxesiumPackets.RESET_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
+        NoxesiumPackets.CLIENT_RESET_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
             Entity entity = context.player().clientLevel.getEntity(packet.entityId());
             if (entity != null) {
                 var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);

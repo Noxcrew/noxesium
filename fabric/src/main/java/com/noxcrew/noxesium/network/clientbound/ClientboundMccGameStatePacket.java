@@ -58,6 +58,6 @@ public record ClientboundMccGameStatePacket(
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.MCC_GAME_STATE;
+        return NoxesiumPackets.CLIENT_MCC_GAME_STATE;
     }
 }

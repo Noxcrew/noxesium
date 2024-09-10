@@ -5,7 +5,7 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import com.noxcrew.noxesium.mixin.component.ext.MinecraftExt;
+import com.noxcrew.noxesium.mixin.feature.component.ext.MinecraftExt;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;

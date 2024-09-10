@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.item.ItemStack;
 
 /**
  * Sent to the server to inform it that it just riptided. More accurate than the server
@@ -24,6 +23,6 @@ public record ServerboundRiptidePacket(int slot) implements ServerboundNoxesiumP
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.RIPTIDE;
+        return NoxesiumPackets.SERVER_RIPTIDE;
     }
 }

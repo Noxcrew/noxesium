@@ -148,6 +148,6 @@ public record ClientboundCustomSoundStartPacket(
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.CUSTOM_SOUND_START;
+        return NoxesiumPackets.CLIENT_CUSTOM_SOUND_START;
     }
 }

@@ -24,6 +24,6 @@ public record ClientboundResetServerRulesPacket(IntList indices) implements Noxe
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.RESET_SERVER_RULES;
+        return NoxesiumPackets.CLIENT_RESET_SERVER_RULES;
     }
 }

@@ -24,6 +24,6 @@ public record ServerboundClientInformationPacket(int protocolVersion, String ver
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return NoxesiumPackets.CLIENT_INFO;
+        return NoxesiumPackets.SERVER_CLIENT_INFO;
     }
 }
