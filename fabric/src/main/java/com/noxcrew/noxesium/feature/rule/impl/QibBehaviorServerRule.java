@@ -40,4 +40,13 @@ public class QibBehaviorServerRule extends ClientServerRule<Map<String, QibDefin
         }
         return array;
     }
+
+    @Override
+    public void write(Map<String, QibDefinition> value, FriendlyByteBuf buffer) {
+        buffer.writeVarInt(value.size());
+        for (var entry : value.entrySet()) {
+            buffer.writeUtf(entry.getKey());
+            buffer.writeUtf(QibDefinition.QIB_GSON.toJson(entry.getValue()));
+        }
+    }
 }

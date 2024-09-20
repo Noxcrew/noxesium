@@ -25,4 +25,9 @@ public class IntegerServerRule extends ClientServerRule<Integer> {
     public Integer read(FriendlyByteBuf buffer) {
         return buffer.readVarInt();
     }
+
+    @Override
+    public void write(Integer value, FriendlyByteBuf buffer) {
+        buffer.writeVarInt(value);
+    }
 }

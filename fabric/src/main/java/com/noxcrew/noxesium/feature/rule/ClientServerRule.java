@@ -33,11 +33,6 @@ public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf>
     }
 
     @Override
-    public void write(T value, FriendlyByteBuf buffer) {
-        throw new UnsupportedOperationException("Cannot write a client-side server rule to a buffer");
-    }
-
-    @Override
     public int getIndex() {
         return index;
     }
@@ -47,4 +42,6 @@ public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf>
      */
     protected void onValueChanged(T oldValue, T newValue) {
     }
+
+    // On the client we implement write because Lunar re-serializes packets.
 }

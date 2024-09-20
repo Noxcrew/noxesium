@@ -25,4 +25,9 @@ public class StringServerRule extends ClientServerRule<String> {
     public String read(FriendlyByteBuf buffer) {
         return buffer.readUtf();
     }
+
+    @Override
+    public void write(String value, FriendlyByteBuf buffer) {
+        buffer.writeUtf(value);
+    }
 }

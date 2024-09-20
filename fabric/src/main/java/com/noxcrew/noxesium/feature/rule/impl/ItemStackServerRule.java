@@ -30,4 +30,9 @@ public class ItemStackServerRule extends ClientServerRule<ItemStack> {
     public ItemStack read(FriendlyByteBuf buffer) {
         return buffer.readJsonWithCodec(ItemStack.CODEC);
     }
+
+    @Override
+    public void write(ItemStack value, FriendlyByteBuf buffer) {
+        buffer.writeJsonWithCodec(ItemStack.CODEC, value);
+    }
 }

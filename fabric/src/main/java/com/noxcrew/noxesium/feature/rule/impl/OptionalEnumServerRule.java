@@ -36,6 +36,16 @@ public class OptionalEnumServerRule<T extends Enum<T>> extends ClientServerRule<
     }
 
     @Override
+    public void write(Optional<T> value, FriendlyByteBuf buffer) {
+        if (value.isPresent()) {
+            buffer.writeBoolean(true);
+            buffer.writeEnum(value.get());
+        } else {
+            buffer.writeBoolean(false);
+        }
+    }
+
+    @Override
     protected void onValueChanged(Optional<T> oldValue, Optional<T> newValue) {
         super.onValueChanged(oldValue, newValue);
         onChange.run();

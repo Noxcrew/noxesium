@@ -53,6 +53,14 @@ public class ItemStackListServerRule extends ClientServerRule<List<ItemStack>> {
     }
 
     @Override
+    public void write(List<ItemStack> value, FriendlyByteBuf buffer) {
+        buffer.writeVarInt(value.size());
+        for (var entry : value) {
+            buffer.writeJsonWithCodec(ItemStack.CODEC, entry);
+        }
+    }
+
+    @Override
     protected void onValueChanged(List<ItemStack> oldValue, List<ItemStack> newValue) {
         super.onValueChanged(oldValue, newValue);
         hasChanged = true;

@@ -32,4 +32,14 @@ public class ColorServerRule extends ClientServerRule<Optional<Color>> {
         }
         return Optional.empty();
     }
+
+    @Override
+    public void write(Optional<Color> value, FriendlyByteBuf buffer) {
+        if (value.isPresent()) {
+            buffer.writeBoolean(true);
+            buffer.writeVarInt(value.get().getRGB());
+        } else {
+            buffer.writeBoolean(false);
+        }
+    }
 }

@@ -47,6 +47,7 @@
     "iris": ">=1.8.0-beta.3"
   },
   "breaks": {
-    "optifabric": "*"
+    "optifabric": "*",
+    "sodium": "<0.6.0-beta.1"
   }
 }

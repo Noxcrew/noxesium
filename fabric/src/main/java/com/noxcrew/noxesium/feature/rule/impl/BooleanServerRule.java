@@ -25,4 +25,9 @@ public class BooleanServerRule extends ClientServerRule<Boolean> {
     public Boolean read(FriendlyByteBuf buffer) {
         return buffer.readBoolean();
     }
+
+    @Override
+    public void write(Boolean value, FriendlyByteBuf buffer) {
+        buffer.writeBoolean(value);
+    }
 }

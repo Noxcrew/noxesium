@@ -25,4 +25,9 @@ public class DoubleServerRule extends ClientServerRule<Double> {
     public Double read(FriendlyByteBuf buffer) {
         return buffer.readDouble();
     }
+
+    @Override
+    public void write(Double value, FriendlyByteBuf buffer) {
+        buffer.writeDouble(value);
+    }
 }
