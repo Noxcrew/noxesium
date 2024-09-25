@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
 import com.noxcrew.noxesium.api.protocol.NoxesiumServerManager
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
@@ -21,6 +22,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitTask
 import org.slf4j.Logger
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -33,26 +35,16 @@ public open class NoxesiumManager(
     public val logger: Logger,
 ) : NoxesiumServerManager<Player>, Listener {
 
-    /** Stores information sent to a client. */
-    public data class NoxesiumProfile(
-        /** All rules sent to this client. */
-        public val rules: MutableMap<Int, RemoteServerRule<*>> = ConcurrentHashMap(),
-    ) {
-
-        /** Whether this profile has pending updates. */
-        public val needsUpdate: Boolean
-            get() = rules.values.any { it.changePending }
-    }
-
     private val players = ConcurrentHashMap<UUID, Int>()
     private val settings = ConcurrentHashMap<UUID, ClientSettings>()
-    private val profiles = ConcurrentHashMap<UUID, NoxesiumProfile>()
+    private val profiles = ConcurrentHashMap<UUID, RuleHolder>()
     private val ready = ConcurrentHashMap.newKeySet<UUID>()
     private val pending = ConcurrentHashMap<UUID, Pair<Int, String>>()
 
     private lateinit var v0: BaseNoxesiumListener
     private lateinit var v1: BaseNoxesiumListener
     private lateinit var v2: BaseNoxesiumListener
+    private var task: Int = -1
 
     /** Stores all registered server rules. */
     public val serverRules: RuleContainer = RuleContainer()
@@ -72,7 +64,7 @@ public open class NoxesiumManager(
         v2 = NoxesiumListenerV2(plugin, logger, this).register()
 
         // Send server rule updates once a tick in a batch
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, {
+        task = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, {
             for ((player, profile) in profiles) {
                 if (!profile.needsUpdate) continue
                 updateServerRules(Bukkit.getPlayer(player) ?: continue, profile)
@@ -102,6 +94,8 @@ public open class NoxesiumManager(
      */
     public fun unregister() {
         HandlerList.unregisterAll(this)
+
+        Bukkit.getScheduler().cancelTask(task)
 
         v0.unregister()
         v1.unregister()
@@ -165,6 +159,9 @@ public open class NoxesiumManager(
         // to set default values for the rules
         onPlayerRegistered(player)
 
+        // Emit an event for hooking into
+        Bukkit.getPluginManager().callEvent(NoxesiumPlayerRegisteredEvent(player, protocolVersion, version))
+
         // Send updated rules to this player
         updateServerRules(player)
     }
@@ -180,7 +177,7 @@ public open class NoxesiumManager(
      * Sends updated server rules to [player] based on all rules in [profile]
      * that need to be updated.
      */
-    private fun updateServerRules(player: Player, profile: NoxesiumProfile) {
+    private fun updateServerRules(player: Player, profile: RuleHolder) {
         sendPacket(
             player,
             ClientboundChangeServerRulesPacket(
@@ -211,8 +208,8 @@ public open class NoxesiumManager(
         getServerRule(player, rule.index)
 
     override fun <T : Any> getServerRule(player: Player, index: Int): RemoteServerRule<T>? =
-        profiles.computeIfAbsent(player.uniqueId) { NoxesiumProfile() }.let { profile ->
-            serverRules.create(index, profile.rules, getProtocolVersion(player) ?: -1)
+        profiles.computeIfAbsent(player.uniqueId) { RuleHolder() }.let { holder ->
+            serverRules.create(index, holder, getProtocolVersion(player) ?: -1)
         }
 
     override fun getClientSettings(player: Player): ClientSettings? =

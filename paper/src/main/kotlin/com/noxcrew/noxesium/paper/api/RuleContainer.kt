@@ -9,6 +9,22 @@ public data class RuleFunction<T : Any>(
     public val constructor: (Int) -> RemoteServerRule<T>,
 )
 
+/** Stores rule objects for an object. */
+public data class RuleHolder(
+    /** All rules sent to this client. */
+    public val rules: MutableMap<Int, RemoteServerRule<*>> = ConcurrentHashMap(),
+) : MutableMap<Int, RemoteServerRule<*>> by rules {
+
+    /** Whether this profile has pending updates. */
+    public val needsUpdate: Boolean
+        get() = rules.values.any { it.changePending }
+
+    /** Marks all rules as having been updated. */
+    public fun markAllUpdated() {
+        rules.values.forEach { it.changePending = false }
+    }
+}
+
 /** Provides a container that holds rule types. */
 public data class RuleContainer(
     private val rules: MutableMap<Int, RuleFunction<*>> = ConcurrentHashMap(),
@@ -31,9 +47,10 @@ public data class RuleContainer(
     }
 
     /** Creates a new rule object, to be stored in the given map. */
-    public fun <T : Any> create(index: Int, storage: MutableMap<Int, RemoteServerRule<*>>, version: Int): RemoteServerRule<T>? {
+    public fun <T : Any> create(index: Int, storage: MutableMap<Int, RemoteServerRule<*>>, version: Int? = null): RemoteServerRule<T>? {
         // Ensure that this player has the required protocol version, otherwise return `null`.
-        if (version < (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))) return null
+        if (version != null && version < (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))) return null
+
         return storage.computeIfAbsent(index) {
             val function = rules[index] ?: throw IllegalArgumentException("Cannot find rule with index $index")
             function.constructor(index)
