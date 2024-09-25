@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network.clientbound;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -14,13 +14,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * 0x02 - Resets cached player heads
  */
 public record ClientboundResetPacket(byte flags) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundResetPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetPacket::write, ClientboundResetPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetPacket::write, ClientboundResetPacket::new);
 
-    private ClientboundResetPacket(FriendlyByteBuf buf) {
+    private ClientboundResetPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readByte());
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeByte(flags);
     }
 

@@ -17,7 +17,6 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServer
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.handle
 import com.noxcrew.noxesium.paper.api.readPluginMessage
-import com.noxcrew.noxesium.paper.v0.NoxesiumListenerV0.Companion.NOXESIUM_RULES_CHANNEL
 import it.unimi.dsi.fastutil.ints.IntImmutableList
 import net.kyori.adventure.key.Key
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket

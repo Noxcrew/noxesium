@@ -59,7 +59,7 @@ public class ServerRules(
      * the player's hand are resolved. This applies to adventure mode
      * breaking/placing restrictions as well as tool modifications.
      */
-    public val handItemOverride: RuleFunction<ItemStack> = register(ServerRuleIndices.HAND_ITEM_OVERRIDE, 6) { player, index ->
+    public val handItemOverride: RuleFunction<ItemStack> = register(ServerRuleIndices.HAND_ITEM_OVERRIDE, 11) { player, index ->
         ItemStackServerRule(player, index)
     }
 
@@ -95,7 +95,7 @@ public class ServerRules(
     /**
      * Defines a list of items to show in a custom creative tab.
      */
-    public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 7) { player, index ->
+    public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 11) { player, index ->
         ItemStackListServerRule(player, index)
     }
 

@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.awt.Color;
 import java.util.Optional;
@@ -25,21 +25,12 @@ public class ColorServerRule extends ClientServerRule<Optional<Color>> {
     }
 
     @Override
-    public Optional<Color> read(FriendlyByteBuf buffer) {
-        if (buffer.readBoolean()) {
-            var rgba = buffer.readVarInt();
-            return Optional.of(new Color(rgba, true));
-        }
-        return Optional.empty();
+    public Optional<Color> read(RegistryFriendlyByteBuf buffer) {
+        return buffer.readOptional((buf) -> new Color(buf.readVarInt(), true));
     }
 
     @Override
-    public void write(Optional<Color> value, FriendlyByteBuf buffer) {
-        if (value.isPresent()) {
-            buffer.writeBoolean(true);
-            buffer.writeVarInt(value.get().getRGB());
-        } else {
-            buffer.writeBoolean(false);
-        }
+    public void write(Optional<Color> value, RegistryFriendlyByteBuf buffer) {
+        buffer.writeOptional(value, (buf, color) -> buf.writeVarInt(color.getRGB()));
     }
 }

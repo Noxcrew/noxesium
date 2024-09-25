@@ -3,11 +3,12 @@ package com.noxcrew.noxesium.paper.api
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import io.netty.buffer.Unpooled
 import net.kyori.adventure.key.Key
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
 import net.minecraft.resources.ResourceLocation
 import org.bukkit.Bukkit
+import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
@@ -86,7 +87,7 @@ public abstract class BaseNoxesiumListener(
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit): ClientboundCustomPayloadPacket? {
+public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null, writer: (buffer: RegistryFriendlyByteBuf) -> Unit): ClientboundCustomPayloadPacket? {
     val craftPlayer = this as CraftPlayer
     if (craftPlayer.handle.connection == null) return null
     if (channel.asString() in craftPlayer.listeningPluginChannels) {
@@ -94,7 +95,7 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
             DiscardedPayload(
                 ResourceLocation.parse(StandardMessenger.validateAndCorrectChannel(channel.asString())),
                 // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-                FriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer()).apply(writer)
+                RegistryFriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(), (Bukkit.getServer() as CraftServer).handle.server.registryAccess()).apply(writer)
             )
         )
     }
@@ -102,7 +103,7 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: FriendlyByteBuf) -> Unit) {
+public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: RegistryFriendlyByteBuf) -> Unit) {
     val packet = createPayloadPacket(channel, initialCapacity, writer)
     if (packet != null) {
         val craftPlayer = this as CraftPlayer
@@ -111,5 +112,5 @@ public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, 
 }
 
 /** Reads a byte array using [reader]. */
-public fun <T> ByteArray.readPluginMessage(reader: (buffer: FriendlyByteBuf) -> T): T =
-    FriendlyByteBuf(Unpooled.wrappedBuffer(this)).let(reader)
+public fun <T> ByteArray.readPluginMessage(reader: (buffer: RegistryFriendlyByteBuf) -> T): T =
+    RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(this), (Bukkit.getServer() as CraftServer).handle.server.registryAccess()).let(reader)

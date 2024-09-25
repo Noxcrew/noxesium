@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class QibBehaviorServerRule extends ClientServerRule<Map<String, QibDefin
     }
 
     @Override
-    public Map<String, QibDefinition> read(FriendlyByteBuf buffer) {
+    public Map<String, QibDefinition> read(RegistryFriendlyByteBuf buffer) {
         var amount = buffer.readVarInt();
         var array = new HashMap<String, QibDefinition>(amount);
         for (int i = 0; i < amount; i++) {
@@ -42,11 +42,10 @@ public class QibBehaviorServerRule extends ClientServerRule<Map<String, QibDefin
     }
 
     @Override
-    public void write(Map<String, QibDefinition> value, FriendlyByteBuf buffer) {
-        buffer.writeVarInt(value.size());
-        for (var entry : value.entrySet()) {
-            buffer.writeUtf(entry.getKey());
-            buffer.writeUtf(QibDefinition.QIB_GSON.toJson(entry.getValue()));
-        }
+    public void write(Map<String, QibDefinition> value, RegistryFriendlyByteBuf buffer) {
+        buffer.writeCollection(value.entrySet(), (buf, entry) -> {
+            buf.writeUtf(entry.getKey());
+            buf.writeUtf(QibDefinition.QIB_GSON.toJson(entry.getValue()));
+        });
     }
 }

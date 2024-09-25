@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A standard server rule that stores a string.
@@ -22,12 +22,12 @@ public class StringServerRule extends ClientServerRule<String> {
     }
 
     @Override
-    public String read(FriendlyByteBuf buffer) {
+    public String read(RegistryFriendlyByteBuf buffer) {
         return buffer.readUtf();
     }
 
     @Override
-    public void write(String value, FriendlyByteBuf buffer) {
+    public void write(String value, RegistryFriendlyByteBuf buffer) {
         buffer.writeUtf(value);
     }
 }

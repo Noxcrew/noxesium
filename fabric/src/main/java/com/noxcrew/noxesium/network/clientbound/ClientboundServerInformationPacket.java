@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network.clientbound;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -12,13 +12,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * about what protocol version the server supports.
  */
 public record ClientboundServerInformationPacket(int maxProtocolVersion) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundServerInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundServerInformationPacket::write, ClientboundServerInformationPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundServerInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundServerInformationPacket::write, ClientboundServerInformationPacket::new);
 
-    private ClientboundServerInformationPacket(FriendlyByteBuf buf) {
+    private ClientboundServerInformationPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt());
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(maxProtocolVersion);
     }
 

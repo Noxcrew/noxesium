@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.Optional;
 
@@ -28,21 +29,13 @@ public class OptionalEnumServerRule<T extends Enum<T>> extends ClientServerRule<
     }
 
     @Override
-    public Optional<T> read(FriendlyByteBuf buffer) {
-        if (buffer.readBoolean()) {
-            return Optional.of(buffer.readEnum(clazz));
-        }
-        return Optional.empty();
+    public Optional<T> read(RegistryFriendlyByteBuf buffer) {
+        return buffer.readOptional((buf) -> buf.readEnum(clazz));
     }
 
     @Override
-    public void write(Optional<T> value, FriendlyByteBuf buffer) {
-        if (value.isPresent()) {
-            buffer.writeBoolean(true);
-            buffer.writeEnum(value.get());
-        } else {
-            buffer.writeBoolean(false);
-        }
+    public void write(Optional<T> value, RegistryFriendlyByteBuf buffer) {
+        buffer.writeOptional(value, FriendlyByteBuf::writeEnum);
     }
 
     @Override

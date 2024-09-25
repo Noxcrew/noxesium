@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network.clientbound;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -14,13 +14,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * @param startVolume An optional volume to start the interpolation from. If absent the current volume of the sound is used instead.
  */
 public record ClientboundCustomSoundModifyPacket(int id, float volume, int interpolationTicks, Float startVolume) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
 
-    private ClientboundCustomSoundModifyPacket(FriendlyByteBuf buf) {
+    private ClientboundCustomSoundModifyPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt(), buf.readFloat(), buf.readVarInt(), buf.readBoolean() ? buf.readFloat() : null);
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(id);
         buf.writeFloat(volume);
         buf.writeVarInt(interpolationTicks);

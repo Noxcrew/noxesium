@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -27,12 +27,12 @@ public class ItemStackServerRule extends ClientServerRule<ItemStack> {
     }
 
     @Override
-    public ItemStack read(FriendlyByteBuf buffer) {
-        return buffer.readJsonWithCodec(ItemStack.CODEC);
+    public ItemStack read(RegistryFriendlyByteBuf buffer) {
+        return ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
     }
 
     @Override
-    public void write(ItemStack value, FriendlyByteBuf buffer) {
-        buffer.writeJsonWithCodec(ItemStack.CODEC, value);
+    public void write(ItemStack value, RegistryFriendlyByteBuf buffer) {
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, value);
     }
 }

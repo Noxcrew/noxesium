@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.api.network.serverbound
 
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.entity.Player
 
 /**
@@ -23,7 +23,7 @@ public data class ServerboundQibTriggeredPacket(
         LEAVE
     }
 
-    public constructor(buffer: FriendlyByteBuf, player: Player, protocolVersion: Int) : this(
+    public constructor(buffer: RegistryFriendlyByteBuf, player: Player, protocolVersion: Int) : this(
         buffer.readUtf(),
         buffer.readEnum(Type::class.java),
         buffer.readVarInt(),

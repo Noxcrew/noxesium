@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A standard server rule that stores an integer.
@@ -22,12 +22,12 @@ public class IntegerServerRule extends ClientServerRule<Integer> {
     }
 
     @Override
-    public Integer read(FriendlyByteBuf buffer) {
+    public Integer read(RegistryFriendlyByteBuf buffer) {
         return buffer.readVarInt();
     }
 
     @Override
-    public void write(Integer value, FriendlyByteBuf buffer) {
+    public void write(Integer value, RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(value);
     }
 }

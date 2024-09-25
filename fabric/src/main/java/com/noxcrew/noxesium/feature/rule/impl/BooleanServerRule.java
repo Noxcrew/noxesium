@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A standard server rule that stores a boolean.
@@ -22,12 +22,12 @@ public class BooleanServerRule extends ClientServerRule<Boolean> {
     }
 
     @Override
-    public Boolean read(FriendlyByteBuf buffer) {
+    public Boolean read(RegistryFriendlyByteBuf buffer) {
         return buffer.readBoolean();
     }
 
     @Override
-    public void write(Boolean value, FriendlyByteBuf buffer) {
+    public void write(Boolean value, RegistryFriendlyByteBuf buffer) {
         buffer.writeBoolean(value);
     }
 }

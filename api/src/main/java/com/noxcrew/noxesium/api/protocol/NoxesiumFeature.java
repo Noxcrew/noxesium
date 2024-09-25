@@ -82,6 +82,10 @@ public enum NoxesiumFeature {
      * Various bugfixes to client qib feature.
      */
     BUGFIXED_CLIENT_QIBS(10),
+    /**
+     * Fixes serialization of item stacks in rules.
+     */
+    FIXED_ITEM_STACK_SERIALIZATION(11),
     ;
 
     private final int minProtocolVersion;

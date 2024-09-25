@@ -2,8 +2,7 @@ package com.noxcrew.noxesium.paper.api.network.serverbound
 
 import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
-import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.entity.Player
 
 /**
@@ -15,7 +14,7 @@ public data class ServerboundClientSettingsPacket(
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_CLIENT_SETTINGS) {
 
     public constructor(
-        buffer: FriendlyByteBuf,
+        buffer: RegistryFriendlyByteBuf,
         player: Player,
         protocolVersion: Int,
     ) : this(

@@ -1,10 +1,9 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,21 +42,13 @@ public class ItemStackListServerRule extends ClientServerRule<List<ItemStack>> {
     }
 
     @Override
-    public List<ItemStack> read(FriendlyByteBuf buffer) {
-        var amount = buffer.readVarInt();
-        var array = new ArrayList<ItemStack>(amount);
-        for (int i = 0; i < amount; i++) {
-            array.add(buffer.readJsonWithCodec(ItemStack.CODEC));
-        }
-        return array;
+    public List<ItemStack> read(RegistryFriendlyByteBuf buffer) {
+        return ItemStack.OPTIONAL_LIST_STREAM_CODEC.decode(buffer);
     }
 
     @Override
-    public void write(List<ItemStack> value, FriendlyByteBuf buffer) {
-        buffer.writeVarInt(value.size());
-        for (var entry : value) {
-            buffer.writeJsonWithCodec(ItemStack.CODEC, entry);
-        }
+    public void write(List<ItemStack> value, RegistryFriendlyByteBuf buffer) {
+        ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode(buffer, value);
     }
 
     @Override

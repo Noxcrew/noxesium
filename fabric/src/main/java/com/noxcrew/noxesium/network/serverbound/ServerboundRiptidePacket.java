@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.network.serverbound;
 
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -11,13 +11,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * running equal logic to check if the player is charging the riptide and in water.
  */
 public record ServerboundRiptidePacket(int slot) implements ServerboundNoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ServerboundRiptidePacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundRiptidePacket::write, ServerboundRiptidePacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundRiptidePacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundRiptidePacket::write, ServerboundRiptidePacket::new);
 
-    private ServerboundRiptidePacket(FriendlyByteBuf buf) {
+    private ServerboundRiptidePacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt());
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(slot);
     }
 

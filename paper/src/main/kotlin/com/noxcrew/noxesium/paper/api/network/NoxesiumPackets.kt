@@ -15,7 +15,7 @@ import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSetti
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundQibTriggeredPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundRiptidePacket
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.entity.Player
 
 /** Stores and registers all known Noxesium packets. */
@@ -61,7 +61,7 @@ public object NoxesiumPackets {
     }
 
     /** Registers a server-bound packet. */
-    public fun <T : ServerboundNoxesiumPacket> server(id: String, reader: (FriendlyByteBuf, Player, Int) -> T): ServerboundPacketType<T> {
+    public fun <T : ServerboundNoxesiumPacket> server(id: String, reader: (RegistryFriendlyByteBuf, Player, Int) -> T): ServerboundPacketType<T> {
         require(id !in _serverboundPackets) { "Cannot register serverbound packet $id twice!" }
         val packetType = ServerboundPacketType(id, reader)
         _serverboundPackets[id] = packetType

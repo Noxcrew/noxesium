@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network.clientbound;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -35,9 +35,9 @@ public record ClientboundCustomSoundStartPacket(
         Long unix,
         Float offset
 ) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
 
-    private ClientboundCustomSoundStartPacket(FriendlyByteBuf buf) {
+    private ClientboundCustomSoundStartPacket(RegistryFriendlyByteBuf buf) {
         this(
                 buf,
                 buf.readVarInt(),
@@ -53,7 +53,7 @@ public record ClientboundCustomSoundStartPacket(
     }
 
     private ClientboundCustomSoundStartPacket(
-            FriendlyByteBuf buf,
+            RegistryFriendlyByteBuf buf,
             int id,
             ResourceLocation sound,
             SoundSource source,
@@ -81,7 +81,7 @@ public record ClientboundCustomSoundStartPacket(
     }
 
     private ClientboundCustomSoundStartPacket(
-            FriendlyByteBuf buf,
+            RegistryFriendlyByteBuf buf,
             int id,
             ResourceLocation sound,
             SoundSource source,
@@ -110,7 +110,7 @@ public record ClientboundCustomSoundStartPacket(
         );
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(id);
         buf.writeResourceLocation(sound);
         buf.writeEnum(source);

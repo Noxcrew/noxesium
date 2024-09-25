@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.paper.api.network
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
-import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.entity.Player
 
 /** A type of packet. */
@@ -10,7 +10,7 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
     /** The id of this packet. */
     id: String,
     /** A function that reads this packet from a buffer. */
-    public val reader: ((FriendlyByteBuf, Player, Int) -> T)? = null,
+    public val reader: ((RegistryFriendlyByteBuf, Player, Int) -> T)? = null,
 ) : PacketType<T>(id) {
 
     private val updateListeners = Caffeine.newBuilder()

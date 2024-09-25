@@ -1,14 +1,14 @@
 package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import java.util.Objects;
 
 /**
  * A generic object whose value is filled in by a server.
  */
-public abstract class ClientServerRule<T> extends ServerRule<T, FriendlyByteBuf> {
+public abstract class ClientServerRule<T> extends ServerRule<T, RegistryFriendlyByteBuf> {
 
     private final int index;
     private T value;

@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network.clientbound;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -41,13 +41,13 @@ public record ClientboundMccGameStatePacket(
         String mapId,
         String mapName
 ) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
 
-    private ClientboundMccGameStatePacket(FriendlyByteBuf buf) {
+    private ClientboundMccGameStatePacket(RegistryFriendlyByteBuf buf) {
         this(buf.readUtf(), buf.readUtf(), buf.readVarInt(), buf.readVarInt(), buf.readUtf(), buf.readUtf());
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeUtf(phaseType);
         buf.writeUtf(stage);
         buf.writeVarInt(round);

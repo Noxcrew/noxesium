@@ -22,7 +22,7 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -86,7 +86,7 @@ public class NoxesiumPackets {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, StreamCodec<FriendlyByteBuf, T> codec) {
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
         return client(id, "universal", codec);
     }
 
@@ -98,11 +98,10 @@ public class NoxesiumPackets {
      * @param <T>   The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(String id, String group, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
-        PayloadTypeRegistry.configurationS2C().register(type.type, codec);
         PayloadTypeRegistry.playS2C().register(type.type, codec);
         clientboundPackets.put(id, Pair.of(group, type));
 
@@ -126,7 +125,7 @@ public class NoxesiumPackets {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, StreamCodec<FriendlyByteBuf, T> codec) {
+    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
         return server(id, "universal", codec);
     }
 
@@ -138,11 +137,10 @@ public class NoxesiumPackets {
      * @param <T>   The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, String group, StreamCodec<FriendlyByteBuf, T> codec) {
+    public static <T extends ServerboundNoxesiumPacket> NoxesiumPayloadType<T> server(String id, String group, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
-        PayloadTypeRegistry.configurationC2S().register(type.type, codec);
         PayloadTypeRegistry.playC2S().register(type.type, codec);
         serverboundPackets.put(type.id().toString(), group);
         return type;

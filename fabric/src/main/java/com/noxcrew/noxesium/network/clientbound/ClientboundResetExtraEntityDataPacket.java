@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
@@ -12,13 +12,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Resets the stored value for extra data on an entity.
  */
 public record ClientboundResetExtraEntityDataPacket(int entityId, IntList indices) implements NoxesiumPacket {
-    public static final StreamCodec<FriendlyByteBuf, ClientboundResetExtraEntityDataPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetExtraEntityDataPacket::write, ClientboundResetExtraEntityDataPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetExtraEntityDataPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetExtraEntityDataPacket::write, ClientboundResetExtraEntityDataPacket::new);
 
-    private ClientboundResetExtraEntityDataPacket(FriendlyByteBuf buf) {
+    private ClientboundResetExtraEntityDataPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt(), buf.readIntIdList());
     }
 
-    private void write(FriendlyByteBuf buf) {
+    private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(entityId);
         buf.writeIntIdList(indices);
     }
