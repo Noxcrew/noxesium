@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
-import com.noxcrew.noxesium.paper.api.rule.RuleFunction
 import com.noxcrew.noxesium.paper.v0.NoxesiumListenerV0
 import com.noxcrew.noxesium.paper.v1.NoxesiumListenerV1
 import com.noxcrew.noxesium.paper.v2.NoxesiumListenerV2
@@ -48,14 +47,18 @@ public open class NoxesiumManager(
     private val players = ConcurrentHashMap<UUID, Int>()
     private val settings = ConcurrentHashMap<UUID, ClientSettings>()
     private val profiles = ConcurrentHashMap<UUID, NoxesiumProfile>()
-    private val rules = ConcurrentHashMap<Int, RuleFunction<*>>()
-    private val minimumProtocols = ConcurrentHashMap<Int, Int>()
     private val ready = ConcurrentHashMap.newKeySet<UUID>()
     private val pending = ConcurrentHashMap<UUID, Pair<Int, String>>()
 
     private lateinit var v0: BaseNoxesiumListener
     private lateinit var v1: BaseNoxesiumListener
     private lateinit var v2: BaseNoxesiumListener
+
+    /** Stores all registered server rules. */
+    public val serverRules: RuleContainer = RuleContainer()
+
+    /** Stores all registered entity rules. */
+    public val entityRules: RuleContainer = RuleContainer()
 
     /** Returns that [playerId] is ready and has registered the plugin channels. */
     public fun isReady(playerId: UUID): Boolean = playerId in ready
@@ -158,14 +161,6 @@ public open class NoxesiumManager(
         // Inform the player about which version is being used
         sendPacket(player, ClientboundServerInformationPacket(ProtocolVersion.VERSION))
 
-        // Create the initial server rule objects for this player
-        val profile = profiles.computeIfAbsent(player.uniqueId) { NoxesiumProfile() }
-        for ((index, rule) in rules) {
-            profile.rules.computeIfAbsent(index) {
-                rule.function(player, index)
-            }
-        }
-
         // Trigger a hook to use for implementations, this may be used
         // to set default values for the rules
         onPlayerRegistered(player)
@@ -199,13 +194,6 @@ public open class NoxesiumManager(
         )
     }
 
-    /** Registers a new server rule with the given [index] and [ruleSupplier]. */
-    public fun registerServerRule(index: Int, minimumProtocol: Int, ruleSupplier: RuleFunction<*>) {
-        require(!rules.containsKey(index)) { "Can't double register index $index" }
-        rules[index] = ruleSupplier
-        minimumProtocols[index] = minimumProtocol
-    }
-
     /** Stores the protocol version for [player] as [version] with [protocolVersion]. */
     internal fun saveProtocol(player: Player, version: String, protocolVersion: Int) {
         players[player.uniqueId] = protocolVersion
@@ -224,14 +212,7 @@ public open class NoxesiumManager(
 
     override fun <T : Any> getServerRule(player: Player, index: Int): RemoteServerRule<T>? =
         profiles.computeIfAbsent(player.uniqueId) { NoxesiumProfile() }.let { profile ->
-            // Ensure that this player has the required protocol version, otherwise return `null`.
-            val version = getProtocolVersion(player) ?: -1
-            if (version < (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))) return@let null
-            return@let profile.rules
-                .computeIfAbsent(index) {
-                    val function = rules[index] ?: throw IllegalArgumentException("Cannot find rule with index $index")
-                    function.function(player, index)
-                } as RemoteServerRule<T>?
+            serverRules.create(index, profile.rules, getProtocolVersion(player) ?: -1)
         }
 
     override fun getClientSettings(player: Player): ClientSettings? =

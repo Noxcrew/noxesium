@@ -6,7 +6,6 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.awt.Color
 import java.util.Optional
@@ -15,7 +14,6 @@ import java.util.Optional
  * The server-side implementation of a server rule supported by Noxesium.
  */
 public abstract class RemoteServerRule<T : Any>(
-    private val player: Player?,
     private val index: Int,
     private val default: T,
 ) : ServerRule<T, RegistryFriendlyByteBuf>() {
@@ -48,10 +46,9 @@ public abstract class RemoteServerRule<T : Any>(
 
 /** A server rule that stores a boolean value. */
 public class BooleanServerRule(
-    player: Player?,
     index: Int,
     default: Boolean = false,
-) : RemoteServerRule<Boolean>(player, index, default) {
+) : RemoteServerRule<Boolean>(index, default) {
 
     override fun write(value: Boolean, buffer: RegistryFriendlyByteBuf) {
         buffer.writeBoolean(value)
@@ -60,10 +57,9 @@ public class BooleanServerRule(
 
 /** A server rule that stores an integer value. */
 public class IntServerRule(
-    player: Player?,
     index: Int,
     default: Int = 0,
-) : RemoteServerRule<Int>(player, index, default) {
+) : RemoteServerRule<Int>(index, default) {
 
     override fun write(value: Int, buffer: RegistryFriendlyByteBuf) {
         buffer.writeVarInt(value)
@@ -72,10 +68,9 @@ public class IntServerRule(
 
 /** A server rule that stores a double value. */
 public class DoubleServerRule(
-    player: Player?,
     index: Int,
     default: Double = 0.0,
-) : RemoteServerRule<Double>(player, index, default) {
+) : RemoteServerRule<Double>(index, default) {
 
     override fun write(value: Double, buffer: RegistryFriendlyByteBuf) {
         buffer.writeDouble(value)
@@ -84,10 +79,9 @@ public class DoubleServerRule(
 
 /** A server rule that stores a string value. */
 public class StringServerRule(
-    player: Player?,
     index: Int,
     default: String,
-) : RemoteServerRule<String>(player, index, default) {
+) : RemoteServerRule<String>(index, default) {
 
     override fun write(value: String, buffer: RegistryFriendlyByteBuf) {
         buffer.writeUtf(value)
@@ -96,10 +90,9 @@ public class StringServerRule(
 
 /** A server rule that stores a list of string value. */
 public class StringListServerRule(
-    player: Player?,
     index: Int,
     default: List<String> = emptyList(),
-) : RemoteServerRule<List<String>>(player, index, default) {
+) : RemoteServerRule<List<String>>(index, default) {
 
     override fun write(value: List<String>, buffer: RegistryFriendlyByteBuf) {
         buffer.writeCollection(value, FriendlyByteBuf::writeUtf)
@@ -108,10 +101,9 @@ public class StringListServerRule(
 
 /** A server rule that stores an item stack. */
 public class ItemStackServerRule(
-    player: Player?,
     index: Int,
     default: ItemStack = ItemStack(Material.AIR),
-) : RemoteServerRule<ItemStack>(player, index, default) {
+) : RemoteServerRule<ItemStack>(index, default) {
 
     override fun write(value: ItemStack, buffer: RegistryFriendlyByteBuf) {
         net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, CraftItemStack.asNMSCopy(value))
@@ -120,10 +112,9 @@ public class ItemStackServerRule(
 
 /** A server rule that stores an item stack. */
 public class ItemStackListServerRule(
-    player: Player?,
     index: Int,
     default: List<ItemStack> = emptyList(),
-) : RemoteServerRule<List<ItemStack>>(player, index, default) {
+) : RemoteServerRule<List<ItemStack>>(index, default) {
 
     override fun write(value: List<ItemStack>, buffer: RegistryFriendlyByteBuf) {
         net.minecraft.world.item.ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode(buffer, value.map { CraftItemStack.asNMSCopy(it) })
@@ -132,10 +123,9 @@ public class ItemStackListServerRule(
 
 /** A server rule that stores an optional color value. */
 public class ColorServerRule(
-    player: Player?,
     index: Int,
     default: Optional<Color> = Optional.empty(),
-) : RemoteServerRule<Optional<Color>>(player, index, default) {
+) : RemoteServerRule<Optional<Color>>(index, default) {
 
     override fun write(value: Optional<Color>, buffer: RegistryFriendlyByteBuf) {
         buffer.writeOptional(value) { buf, color -> buf.writeVarInt(color.rgb) }
@@ -144,10 +134,9 @@ public class ColorServerRule(
 
 /** A server rule that stores an optional enum value. */
 public class OptionalEnumServerRule<T : Enum<T>>(
-    player: Player?,
     index: Int,
     default: Optional<T> = Optional.empty(),
-) : RemoteServerRule<Optional<T>>(player, index, default) {
+) : RemoteServerRule<Optional<T>>(index, default) {
 
     override fun write(value: Optional<T>, buffer: RegistryFriendlyByteBuf) {
         buffer.writeOptional(value, FriendlyByteBuf::writeEnum)
@@ -156,10 +145,9 @@ public class OptionalEnumServerRule<T : Enum<T>>(
 
 /** A server rule that stores qib behavior. */
 public class QibBehaviorServerRule(
-    player: Player?,
     index: Int,
     default: Map<String, QibDefinition> = emptyMap(),
-) : RemoteServerRule<Map<String, QibDefinition>>(player, index, default) {
+) : RemoteServerRule<Map<String, QibDefinition>>(index, default) {
 
     override fun write(value: Map<String, QibDefinition>, buffer: RegistryFriendlyByteBuf) {
         buffer.writeCollection(value.entries) { buf, (key, value) ->
