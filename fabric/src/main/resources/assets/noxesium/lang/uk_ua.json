@@ -2,25 +2,52 @@
   "debug.experimental_patches.disabled": "Екпериментальні оптимізації UI від Noxesium вимкнені",
   "debug.experimental_patches.enabled": "Екпериментальні оптимізації UI від Noxesium увімкнені",
   "debug.experimental_patches.help": "F3 + W = Перемикання експериментальних оптимізацій UI від Noxesium",
-
+  "debug.noxesium_settings.help": "F3 + V = Відкрити налаштування Noxesium",
   "debug.fps_overlay.disabled": "Лічильник FPS вимкнуто",
   "debug.fps_overlay.enabled": "Лічильник FPS увімкнуто (можна вимнути через F3 + Y)",
   "debug.fps_overlay.help": "F3 + Y = Перемикання лічильника FPS",
   "debug.fps_overlay": "%s кадрів/сек.",
-
+  
+  "noxesium.options.game_time_overlay.name": "Оверлей ігрового часу",
+  "noxesium.options.game_time_overlay.tooltip": "Додає невеликий оверлей, який показує поточний ігровий час.\n\n§cПризначено для розробки шейдерів.",
+  
+  "debug.game_time_overlay": "%s st, %s gt",
   "debug.noxesium_overlay.on": "Noxesium: §aУвімкн.",
   "debug.noxesium_overlay.off": "Noxesium: §cВимкн.",
-
+  
   "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.screen.noxesium": "Налаштування Noxesium",
   "noxesium.options.fps_overlay.name": "Лічильник FPS",
   "noxesium.options.fps_overlay.tooltip": "Якщо увімкнено, у лівому верхньому куті екрану з'явиться невеличкий оверлей, що показує поточний FPS.",
   "noxesium.options.experimental_patches.name": "Експериментальні оптимізації",
   "noxesium.options.experimental_patches.tooltip": "§4(увага: нестабільно!)\n§fВмикає експериментальні покращення продуктивності UI, які повністю замінюють увесь код рендерингу UI для значного прискорення роботи.\n\n§cПопередження: §fЯкщо ви помітите проблеми з рендерингом UI за використання цих оптимізацій, будь ласка, повідомте про ці проблеми розробникам Noxesium, а не інших модів.",
   "noxesium.options.reset_toggle_keys.name": "Скидання нажатих клавіш при смерті",
   "noxesium.options.reset_toggle_keys.tooltip": "Чи слід скидати нажаті клавіші (біг/присідання) при респавні. Зазвичай увімкнено у ванілі.",
-
+  "noxesium.options.render_maps_as_ui.name": "Показувати мапу на інтерфейсі",
+  "noxesium.options.render_maps_as_ui.tooltip": "Якщо увімкнено, то мапа, що тримається в одній руці, буде відображатися у верхньому лівому/правому куті екрану, а не в руці.\n\nЯкщо вибрано \"Запитувати сервер\", то сервер, на якому ви граєте, може вмикати/вимикати цю функцію сам.",
+  "noxesium.options.ui_map_size.name": "Розмір мапи",
+  "noxesium.options.ui_map_size.tooltip": "Змінює розмір мапи на інтерфейсі, що котролюється параметром \"Показувати мапу на інтерфейсі\".",
+  "noxesium.options.ui_map_location.name": "Розташування мапи",
+  "noxesium.options.ui_map_location.tooltip": "Змінює розташування мапи на інтерфейсі, що котролюється параметром \"Показувати мапу на інтерфейсі\".",
+  "noxesium.options.dump_incoming_packets.name": "Журналювання вхідних пакетів",
+  "noxesium.options.dump_incoming_packets.tooltip": "Вмикає журналювання пакетів Noxesium, які опрацьовує клієнт.\n\n§cПризначено для розробників серверів, які працюють з інтеграцією Noxesium.",
+  "noxesium.options.dump_outgoing_packets.name": "Журналювання вихідних пакетів",
+  "noxesium.options.dump_outgoing_packets.tooltip": "Вмикає журналювання пакетів Noxesium, надісланих серверу.\n\n§cПризначено для розробників серверів, які працюють з інтеграцією Noxesium.",
+  "noxesium.options.qib_debug_visuals.name": "Відладка системи Qib",
+  "noxesium.options.qib_debug_visuals.tooltip": "Показує на інтерфейсі інформацію для відладки системи qib.\n\n§cПризначено для розробників серверів, які працюють з інтеграцією Noxesium.",
+  "noxesium.options.extended_packet_logging.name": "Розширене журналювання помилок",
+  "noxesium.options.extended_packet_logging.tooltip": "Додає додаткову інформацію до помилок різних типів виключень, при опрацюванні пакетів.\n\n§cПризначено для розробників серверів.",
+  "noxesium.options.enable_glowing_keybinds.name": "Гарячі клавіші підсвічення команд",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "Додає гарячі клавіші, які вмикають світіння гравців, залежно від їхньої команди. Потребує перезапуску гри!\n\n§cГарячі клавіші працюють лише у режимі спостерігача.",
+  "noxesium.options.enum.default": "Запитувати сервер",
+  "noxesium.options.enum.true": "Завжди",
+  "noxesium.options.enum.false": "Ніколи",
+  "noxesium.options.enum.top": "Верхній кут",
+  "noxesium.options.enum.bottom": "Нижній кут",
+  
+  "itemGroup.noxesium.server_items": "Блоки сервера",
   "category.noxesium": "Noxesium",
-
+  
   "key.noxesium.glow.red": "Перемикання червоного світіння (Спостерігачі)",
   "key.noxesium.glow.orange": "Перемикання помаранчевого світіння (Спостерігачі)",
   "key.noxesium.glow.yellow": "Перемикання жовтого світіння (Спостерігачі)",
@@ -31,7 +58,6 @@
   "key.noxesium.glow.blue": "Перемикання синього світіння (Спостерігачі)",
   "key.noxesium.glow.purple": "Перемикання фіолетового світіння (Спостерігачі)",
   "key.noxesium.glow.pink": "Перемикання рожевого світіння (Спостерігачі)",
-
   "key.noxesium.glow.all": "Увімкненя усіх кольорів світіння (Спостерігачі)",
   "key.noxesium.glow.none": "Вимкнення усіх кольорів світіння (Спостерігачі)"
 }
