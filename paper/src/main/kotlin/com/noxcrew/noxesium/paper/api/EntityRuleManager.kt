@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.paper.api
 
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundSetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
 import io.papermc.paper.event.player.PlayerTrackEntityEvent
@@ -9,7 +9,6 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityRemoveEvent
 import java.util.WeakHashMap
 
 /**
@@ -37,8 +36,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(manager.plugin, {
             for ((entity, holder) in entities) {
                 if (!holder.needsUpdate) continue
-                holder.markAllUpdated()
-
+                
                 // Send the packet to all players that can see it
                 for (player in Bukkit.getOnlinePlayers()) {
                     if (!player.canSee(entity)) continue
@@ -56,7 +54,10 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                                 } ?: continue
                         )
                     )
-                }
+                } 
+                
+                // Mark all rules as updated
+                holder.markAllUpdated()
             }
         }, 1, 1)
     }
@@ -80,52 +81,33 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
         }
 
     /**
-     * Send all entities' data when a player gets registered with Noxesium so
-     * they can properly see entities that were sent to them already.
-     */
-    @EventHandler
-    public fun onNoxesiumPlayerRegistered(e: NoxesiumPlayerRegisteredEvent) {
-        val player = e.player
-        val protocol = e.protocolVersion
-
-        for ((entity, holder) in entities) {
-            if (!player.canSee(entity)) continue
-            manager.sendPacket(player,
-                ClientboundSetExtraEntityDataPacket(
-                    entity.entityId,
-                    holder.rules
-                        // Only include rules that are available to this player!
-                        .filter { manager.entityRules.isAvailable(it.key, protocol) }
-                        .ifEmpty { null }
-                        ?.mapValues { (_, rule) ->
-                            { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                        } ?: continue
-                )
-            )
-        }
-    }
-
-    /**
      * When an entity starts being shown to a player we
-     * send its data along as well.
+     * send its data along as well. 
+     * This will also send data about needed entities
+     * when the player logs in / changes worlds.
      */
     @EventHandler
     public fun onEntityShown(e: PlayerTrackEntityEvent) {
         val holder = entities[e.entity] ?: return
         val protocol = manager.getProtocolVersion(e.player) ?: return
 
-        manager.sendPacket(e.player,
-            ClientboundSetExtraEntityDataPacket(
-                e.entity.entityId,
-                holder.rules
-                    // Only include rules that are available to this player!
-                    .filter { manager.entityRules.isAvailable(it.key, protocol) }
-                    .ifEmpty { null }
-                    ?.mapValues { (_, rule) ->
-                        { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                    } ?: return
+        // Add a 1 tick delay, since the player doesn't actually register
+        // the entity when beginning tracking, so on localhost the client 
+        // fails to add the extra entity data.
+        Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, {
+            manager.sendPacket(e.player,
+                ClientboundSetExtraEntityDataPacket(
+                    e.entity.entityId,
+                    holder.rules
+                        // Only include rules that are available to this player!
+                        .filter { manager.entityRules.isAvailable(it.key, protocol) }
+                        .ifEmpty { null }
+                        ?.mapValues { (_, rule) ->
+                            { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
+                        } ?: return@scheduleSyncDelayedTask
+                )
             )
-        )
+        }, 1)
     }
 
     /**
@@ -134,7 +116,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
      * use a WeakHashMap.
      */
     @EventHandler
-    public fun onEntityRemoved(e: EntityRemoveEvent) {
+    public fun onEntityRemoved(e: EntityRemoveFromWorldEvent) {
         entities.remove(e.entity)
     }
 }
