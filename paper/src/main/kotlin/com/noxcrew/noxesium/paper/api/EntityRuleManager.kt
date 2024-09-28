@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.paper.api
 
-import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundSetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
 import io.papermc.paper.event.player.PlayerTrackEntityEvent
@@ -9,6 +8,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityRemoveEvent
 import java.util.WeakHashMap
 
 /**
@@ -116,7 +116,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
      * use a WeakHashMap.
      */
     @EventHandler
-    public fun onEntityRemoved(e: EntityRemoveFromWorldEvent) {
+    public fun onEntityRemoved(e: EntityRemoveEvent) {
         entities.remove(e.entity)
     }
 }
