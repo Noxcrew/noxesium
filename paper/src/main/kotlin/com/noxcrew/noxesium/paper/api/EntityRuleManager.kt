@@ -7,6 +7,7 @@ import io.papermc.paper.event.player.PlayerTrackEntityEvent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityRemoveEvent
@@ -113,7 +114,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
      * This will also send data about needed entities
      * when the player logs in / changes worlds.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public fun onEntityShown(e: PlayerTrackEntityEvent) {
         val holder = entities[e.entity] ?: return
         val protocol = manager.getProtocolVersion(e.player) ?: return
