@@ -36,7 +36,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(manager.plugin, {
             for ((entity, holder) in entities) {
                 if (!holder.needsUpdate) continue
-                
+
                 // Send the packet to all players that can see it
                 for (player in Bukkit.getOnlinePlayers()) {
                     if (!player.canSee(entity)) continue
@@ -54,9 +54,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                                 } ?: continue
                         )
                     )
-                } 
-                
-                // Mark all rules as updated
+                // Mark as updated after we have used the changePending values!
                 holder.markAllUpdated()
             }
         }, 1, 1)
