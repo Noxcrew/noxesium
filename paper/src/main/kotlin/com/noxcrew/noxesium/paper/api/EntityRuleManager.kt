@@ -7,6 +7,7 @@ import io.papermc.paper.event.player.PlayerTrackEntityEvent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Entity
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityRemoveEvent
@@ -56,7 +57,7 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                         )
                     )
                 }
-
+                
                 // Mark as updated after we have used the changePending values!
                 holder.markAllUpdated()
             }
@@ -106,28 +107,35 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
             )
         }
     }
-
+    
     /**
      * When an entity starts being shown to a player we
-     * send its data along as well.
+     * send its data along as well. 
+     * This will also send data about needed entities
+     * when the player logs in / changes worlds.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public fun onEntityShown(e: PlayerTrackEntityEvent) {
         val holder = entities[e.entity] ?: return
         val protocol = manager.getProtocolVersion(e.player) ?: return
 
-        manager.sendPacket(e.player,
-            ClientboundSetExtraEntityDataPacket(
-                e.entity.entityId,
-                holder.rules
-                    // Only include rules that are available to this player!
-                    .filter { manager.entityRules.isAvailable(it.key, protocol) }
-                    .ifEmpty { null }
-                    ?.mapValues { (_, rule) ->
-                        { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                    } ?: return
+        // Add a 1 tick delay, since the player doesn't actually register
+        // the entity when beginning tracking, so on localhost the client 
+        // fails to add the extra entity data.
+        Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, {
+            manager.sendPacket(e.player,
+                ClientboundSetExtraEntityDataPacket(
+                    e.entity.entityId,
+                    holder.rules
+                        // Only include rules that are available to this player!
+                        .filter { manager.entityRules.isAvailable(it.key, protocol) }
+                        .ifEmpty { null }
+                        ?.mapValues { (_, rule) ->
+                            { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
+                        } ?: return@scheduleSyncDelayedTask
+                )
             )
-        )
+        }, 1)
     }
 
     /**
