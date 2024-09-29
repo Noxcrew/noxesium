@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.paper.api
 
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundSetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
 import io.papermc.paper.event.player.PlayerTrackEntityEvent
@@ -54,6 +55,8 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                                 } ?: continue
                         )
                     )
+                }
+                
                 // Mark as updated after we have used the changePending values!
                 holder.markAllUpdated()
             }
@@ -78,6 +81,32 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
             manager.entityRules.create(ruleIndex, holder)
         }
 
+    /**
+     * Send all entities' data when a player gets registered with Noxesium so
+     * they can properly see entities that were sent to them already.
+     */
+    @EventHandler
+    public fun onNoxesiumPlayerRegistered(e: NoxesiumPlayerRegisteredEvent) {
+        val player = e.player
+        val protocol = e.protocolVersion
+
+        for ((entity, holder) in entities) {
+            if (!player.canSee(entity)) continue
+            manager.sendPacket(player,
+                ClientboundSetExtraEntityDataPacket(
+                    entity.entityId,
+                    holder.rules
+                        // Only include rules that are available to this player!
+                        .filter { manager.entityRules.isAvailable(it.key, protocol) }
+                        .ifEmpty { null }
+                        ?.mapValues { (_, rule) ->
+                            { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
+                        } ?: continue
+                )
+            )
+        }
+    }
+    
     /**
      * When an entity starts being shown to a player we
      * send its data along as well. 
