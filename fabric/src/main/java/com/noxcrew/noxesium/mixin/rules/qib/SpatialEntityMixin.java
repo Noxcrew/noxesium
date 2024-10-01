@@ -45,6 +45,9 @@ public abstract class SpatialEntityMixin {
 
     @Inject(method = "setRemoved", at = @At("RETURN"))
     public void onRemoved(Entity.RemovalReason removalReason, CallbackInfo ci) {
+        // Ignore updates until the entity id has been set
+        if (!noxesium$initialized) return;
+
         if (((Object) this) instanceof Interaction interaction) {
             SpatialInteractionEntityTree.remove(interaction);
         }
