@@ -27,6 +27,7 @@ public interface LivingEntityExtension {
      */
     public default void noxesium$updateClientsidePotionEffects() {
     }
+
     /**
      * Clears the client-side potion effects.
      */

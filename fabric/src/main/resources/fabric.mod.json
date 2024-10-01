@@ -29,7 +29,8 @@
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/world/entity/Entity": ["com/noxcrew/noxesium/feature/entity/ExtraEntityDataHolder"],
-      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension"]
+      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension"],
+      "net/minecraft/world/entity/Interaction": ["com/noxcrew/noxesium/feature/entity/InteractionExtension"]
     }
   },
   "mixins": [

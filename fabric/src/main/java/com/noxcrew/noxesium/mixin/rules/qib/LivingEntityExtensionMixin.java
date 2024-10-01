@@ -34,7 +34,6 @@ import java.util.Map;
 /**
  * Hooks into the living entity code and implements [LivingEntityExtension].
  */
-@SuppressWarnings("UnreachableCode")
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityExtensionMixin implements LivingEntityExtension {
 

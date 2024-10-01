@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.khelekore.prtree.PRTree;
@@ -158,7 +159,8 @@ public class SpatialInteractionEntityTree {
     /**
      * Updates the current position of [entity] to [aabb].
      */
-    public static void update(Entity entity) {
+    public static void update(Interaction entity) {
+        if (!entity.noxesium$isInWorld()) return;
         if (entity.isRemoved()) {
             remove(entity);
             return;
@@ -172,7 +174,8 @@ public class SpatialInteractionEntityTree {
     /**
      * Removes a given [entity] from the tree.
      */
-    public static void remove(Entity entity) {
+    public static void remove(Interaction entity) {
+        if (!entity.noxesium$isInWorld()) return;
         pendingEntities.remove(entity.getId());
         removedEntities.add(entity.getId());
         needsRebuilding.set(true);
