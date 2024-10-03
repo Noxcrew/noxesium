@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aeltumn <daniel@goossens.ch>
+Date: Thu, 15 Aug 2024 19:34:11 +0200
+Subject: [PATCH] Add client-side trident API
+
+
+diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
+index 8b085b96a849336a90edfe8eefff5e054094be36..f1fba00da44385d0d3d8dca840203ceaec97240e 100644
+--- a/src/main/java/org/bukkit/entity/LivingEntity.java
++++ b/src/main/java/org/bukkit/entity/LivingEntity.java
+@@ -1503,5 +1503,24 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+      * @param affectedByFrost whether this entity is affected by frost
+      */
+     void setAffectedByFrost(boolean affectedByFrost);
++
++    /**
++     * Returns whether this entity is using a client-side implementation of the
++     * riptide trident mechanics, provided by Noxesium.
++     *
++     * It is assumed the necessary server rule is set in Noxesium separately.
++     * Issues are expected if this is true without Noxesium being set up properly.
++     *
++     * @return whether this entity uses the client-side trident
++     */
++    boolean isUsingClientsideTrident();
++
++    /**
++     * Sets whether this entity is using a client-side implementation of the
++     * riptide trident mechanics, provided by Noxesium.
++     *
++     * @param useClientTrident whether this entity uses the client-side trident
++     */
++    void setUseClientsideTrident(boolean useClientTrident);
+     // Noxesium end
+ }

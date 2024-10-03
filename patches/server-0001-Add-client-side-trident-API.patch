@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Aeltumn <daniel@goossens.ch>
+Date: Thu, 15 Aug 2024 19:44:24 +0200
+Subject: [PATCH] Add client-side trident API
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index e937828e903faf85dac1c48dab2e3d58e513016d..23fa90914f3c386445b65b8e99a4f56b60aab75d 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -3583,7 +3583,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+         AABB axisalignedbb2 = a.minmax(b);
+         List<Entity> list = this.level().getEntities(this, axisalignedbb2);
+ 
+-        if (!list.isEmpty()) {
++        if (!list.isEmpty() && !isUsingClientsideTrident()) { // Noxesium - disable spin attacks if using client tridents
+             Iterator iterator = list.iterator();
+ 
+             while (iterator.hasNext()) {
+@@ -4252,6 +4252,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
+     public boolean isAffectedByFrost() {
+         return affectedByFrost;
+     }
++
++    private boolean useClientTrident = false;
++
++    public void setUseClientsideTrident(boolean useClientTrident) {
++        this.useClientTrident = useClientTrident;
++    }
++
++    public boolean isUsingClientsideTrident() {
++        return useClientTrident;
++    }
+     // Noxesium end
+ 
+     public boolean attackable() {
+diff --git a/src/main/java/net/minecraft/world/item/TridentItem.java b/src/main/java/net/minecraft/world/item/TridentItem.java
+index f1b2d388a1a40a1d909a2e726f32d6c15e1eb0eb..8f380dc3b38fc40073eaa22551df0518dd1ddeba 100644
+--- a/src/main/java/net/minecraft/world/item/TridentItem.java
++++ b/src/main/java/net/minecraft/world/item/TridentItem.java
+@@ -115,7 +115,7 @@ public class TridentItem extends Item implements ProjectileItem {
+                         }
+ 
+                         entityhuman.awardStat(Stats.ITEM_USED.get(this));
+-                        if (f > 0.0F) {
++                        if (f > 0.0F && !entityhuman.isUsingClientsideTrident()) { // Noxesium - disable if using client-side trident
+                             float f1 = entityhuman.getYRot();
+                             float f2 = entityhuman.getXRot();
+                             float f3 = -Mth.sin(f1 * 0.017453292F) * Mth.cos(f2 * 0.017453292F);
+@@ -131,7 +131,7 @@ public class TridentItem extends Item implements ProjectileItem {
+                             entityhuman.startAutoSpinAttack(20, 8.0F, stack);
+                             if (entityhuman.onGround()) {
+                                 float f7 = 1.1999999F;
+-
++                                
+                                 entityhuman.move(MoverType.SELF, new Vec3(0.0D, 1.1999999284744263D, 0.0D));
+                             }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index adc2b5558c32ef51fe2ae6a374723bef8e8e6274..12cf86fb67ce833d9b55adc287a3b6c4a015a739 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -1213,5 +1213,15 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     public void setAffectedByFrost(boolean affectedByFrost) {
+         getHandle().setAffectedByFrost(affectedByFrost);
+     }
++
++    @Override
++    public boolean isUsingClientsideTrident() {
++        return getHandle().isUsingClientsideTrident();
++    }
++
++    @Override
++    public void setUseClientsideTrident(boolean useClientTrident) {
++        getHandle().setUseClientsideTrident(useClientTrident);
++    }
+     // Noxesium end
+ }
