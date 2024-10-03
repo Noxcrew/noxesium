@@ -35,7 +35,7 @@ index e937828e903faf85dac1c48dab2e3d58e513016d..23fa90914f3c386445b65b8e99a4f56b
  
      public boolean attackable() {
 diff --git a/src/main/java/net/minecraft/world/item/TridentItem.java b/src/main/java/net/minecraft/world/item/TridentItem.java
-index f1b2d388a1a40a1d909a2e726f32d6c15e1eb0eb..8f380dc3b38fc40073eaa22551df0518dd1ddeba 100644
+index f1b2d388a1a40a1d909a2e726f32d6c15e1eb0eb..1ffb980df0c0b46706ceaab92cb448ae2a40278e 100644
 --- a/src/main/java/net/minecraft/world/item/TridentItem.java
 +++ b/src/main/java/net/minecraft/world/item/TridentItem.java
 @@ -115,7 +115,7 @@ public class TridentItem extends Item implements ProjectileItem {
@@ -47,15 +47,6 @@ index f1b2d388a1a40a1d909a2e726f32d6c15e1eb0eb..8f380dc3b38fc40073eaa22551df0518
                              float f1 = entityhuman.getYRot();
                              float f2 = entityhuman.getXRot();
                              float f3 = -Mth.sin(f1 * 0.017453292F) * Mth.cos(f2 * 0.017453292F);
-@@ -131,7 +131,7 @@ public class TridentItem extends Item implements ProjectileItem {
-                             entityhuman.startAutoSpinAttack(20, 8.0F, stack);
-                             if (entityhuman.onGround()) {
-                                 float f7 = 1.1999999F;
--
-+                                
-                                 entityhuman.move(MoverType.SELF, new Vec3(0.0D, 1.1999999284744263D, 0.0D));
-                             }
- 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 index adc2b5558c32ef51fe2ae6a374723bef8e8e6274..12cf86fb67ce833d9b55adc287a3b6c4a015a739 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
