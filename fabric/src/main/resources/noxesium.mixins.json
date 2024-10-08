@@ -68,7 +68,6 @@
     "ui.render.SkinManagerMixin",
     "ui.render.ext.BakedGlyphExt",
     "ui.render.ext.ChatComponentExt",
-    "ui.render.ext.FontExt",
     "ui.render.ext.GuiExt",
     "ui.render.ext.PlayerTabOverlayExt"
   ],
