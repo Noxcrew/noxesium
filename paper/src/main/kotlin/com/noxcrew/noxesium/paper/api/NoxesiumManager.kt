@@ -107,10 +107,15 @@ public open class NoxesiumManager(
      * the server the existence of at least one Noxesium channel.
      */
     public fun markReady(player: Player) {
-        ready += player.uniqueId
-        onReady(player)
-        val (protocolVersion, version) = pending.remove(player.uniqueId) ?: return
-        registerPlayer(player, protocolVersion, version)
+        // Delay by a tick so the other channels can get registered. We assume all channels
+        // are registered in one batch!
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, {
+            if (!player.isConnected) return@scheduleSyncDelayedTask
+            ready += player.uniqueId
+            onReady(player)
+            val (protocolVersion, version) = pending.remove(player.uniqueId) ?: return@scheduleSyncDelayedTask
+            registerPlayer(player, protocolVersion, version)
+        }, 1)
     }
 
     /** Run when [player] becomes ready. */
@@ -229,7 +234,7 @@ public open class NoxesiumManager(
         players -= e.player.uniqueId
         settings -= e.player.uniqueId
         profiles -= e.player.uniqueId
-        ready - e.player.uniqueId
+        ready -= e.player.uniqueId
         pending -= e.player.uniqueId
     }
 

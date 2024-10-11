@@ -99,6 +99,7 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
             )
         )
     }
+    Bukkit.getLogger().warning("Couldn't create packet of type $channel for player $name as they have not yet registered the required plugin channel")
     return null
 }
 
