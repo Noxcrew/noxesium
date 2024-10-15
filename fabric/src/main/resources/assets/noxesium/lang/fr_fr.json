@@ -2,6 +2,7 @@
   "debug.experimental_patches.disabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant désactivés.",
   "debug.experimental_patches.enabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant activés.",
   "debug.experimental_patches.help": "F3 + W = Basculer les correctifs de performance de l'Interface Utilisateur de Noxesium.",
+  "debug.noxesium_settings.help": "F3 + V = Ouvrir le menu de paramètres de Noxesium",
 
   "debug.fps_overlay.disabled": "Le compteur d'IPS est maintenant désactivé.",
   "debug.fps_overlay.enabled": "Le compteur d'IPS est maintenant activé. (Désactivables avec F3 + Y)",
@@ -16,6 +17,7 @@
   "debug.noxesium_overlay.off": "Noxesium: §cDésactivé",
 
   "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.screen.noxesium": "Paramètres Noxesium",
   "noxesium.options.fps_overlay.name": "Superposition d'IPS",
   "noxesium.options.fps_overlay.tooltip": "Si activé, une petite superposition montrant les ips actuels dans le coin en haut à gauche de votre écran est ajouté.",
   "noxesium.options.experimental_patches.name": "Optimisations expérimentales",
@@ -24,6 +26,28 @@
   "noxesium.options.reset_toggle_keys.tooltip": "Réinitialiser ou non les touches de bascule (courrir/s'accroupir) quand vous réapparaissez. Normalement activé en vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Rendu de la Carte dans l'Interface Utilisateur",
   "noxesium.options.render_maps_as_ui.tooltip": "Si activé, les cartes tenus en main secondaire seront rendues dans le coin haut gauche / droite de votre écran au lieu de par rapport à l'endroit de votre main.",
+  "noxesium.options.ui_map_size.name": "Tailler de l'Interface Utilisateur de la Carte",
+  "noxesium.options.ui_map_size.tooltip": "Contrôle de la taille de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\".",
+  "noxesium.options.ui_map_location.name": "Position de l'Inerface Utilisateur de la carte.",
+  "noxesium.options.ui_map_location.tooltip": "Contrôle de la position de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\".",
+
+  "noxesium.options.dump_incoming_packets.name": "Vider les paquets entrants",
+  "noxesium.options.dump_incoming_packets.tooltip": "Active l'enregistrement des paquets Noxesium gérés par le client.\n\n§cPrévu pour les développeurs de serveurs travaillants sur les intégrations de Noxesium.",
+  "noxesium.options.dump_outgoing_packets.name": "Vider les paquets sortants",
+  "noxesium.options.dump_outgoing_packets.tooltip": "Active l'enregistrement des paquets Noxesium envoyés par au serveur.\n\n§cPrévu pour les développeurs de serveurs travaillants sur les intégrations de Noxesium.",
+  "noxesium.options.qib_debug_visuals.name": "System de debuggage de Qib",
+  "noxesium.options.qib_debug_visuals.tooltip": "Active les debuggages visuel pour le systeme Qib.\n\n§cPrévu pour les développeurs de serveurs.",
+  "noxesium.options.extended_packet_logging.name": "Enregistrement des Erreurs Étendu",
+  "noxesium.options.extended_packet_logging.tooltip": "Ajoute un enregistrement supplémentaire d'erreurs à des types variés d'exceptions de paquets invalides.\n\n§cPrévu pour les développeurs de serveurs.",
+  "noxesium.options.enable_glowing_keybinds.name": "Touches de clavier de surbrillance d'équipe",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "Ajoute des touches de clavier supplémentaire faisant surbriller les joueurs en fonction de leur couleur d'équipe. Redémarage du jeu requis pour l'appliquer!\n\n§cTouches de clavier fonctinnant uniquement en tant que spectateurs.",
+
+  "noxesium.options.enum.default": "Demander au serveur",
+  "noxesium.options.enum.true": "Toujours",
+  "noxesium.options.enum.false": "Jamais",
+
+  "noxesium.options.enum.top": "Coin du haut",
+  "noxesium.options.enum.bottom": "Coin du bas",
 
   "itemGroup.noxesium.server_items": "Blocs Customisés",
 
