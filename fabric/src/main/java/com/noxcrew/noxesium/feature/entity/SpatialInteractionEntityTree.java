@@ -107,8 +107,9 @@ public class SpatialInteractionEntityTree {
 
             if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
                 if (Minecraft.getInstance().player != null) {
-                    Minecraft.getInstance().player.sendSystemMessage(
-                            Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", " + addedEntities.size() + ", " + removingEntities.size() + "]§e, after: §f[" + staticEntities.size() + ", " + pendingEntities.size() + ", " + removedEntities.size() + "]")
+                    Minecraft.getInstance().getChatListener().handleSystemMessage(
+                            Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", " + addedEntities.size() + ", " + removingEntities.size() + "]§e, after: §f[" + staticEntities.size() + ", " + pendingEntities.size() + ", " + removedEntities.size() + "]"),
+                            false
                     );
                 }
 

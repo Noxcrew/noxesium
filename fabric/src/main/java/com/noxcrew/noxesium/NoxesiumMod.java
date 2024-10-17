@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.shaders.Program;
+import com.mojang.blaze3d.shaders.CompiledShader;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
@@ -30,12 +30,10 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -79,7 +77,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * The mapping of cached shaders.
      */
     @Nullable
-    private GameRenderer.ResourceCache cachedShaders = null;
+    private Map<ResourceLocation, Resource> cachedShaders = null;
 
     private final NoxesiumConfig config = NoxesiumConfig.load();
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
@@ -109,7 +107,7 @@ public class NoxesiumMod implements ClientModInitializer {
      * Returns a cache with all shaders in the Sodium namespace.
      */
     @Nullable
-    public GameRenderer.ResourceCache getCachedShaders() {
+    public Map<ResourceLocation, Resource> getCachedShaders() {
         return cachedShaders;
     }
 
@@ -208,50 +206,49 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Listen to shaders that are loaded and cache them
         ResourceManagerHelper
-            .get(PackType.CLIENT_RESOURCES)
-            .registerReloadListener(
-                new SimpleResourceReloadListener<Void>() {
-                    @Override
-                    public ResourceLocation getFabricId() {
-                        return ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "shaders");
-                    }
+                .get(PackType.CLIENT_RESOURCES)
+                .registerReloadListener(
+                        new SimpleResourceReloadListener<Void>() {
+                            @Override
+                            public ResourceLocation getFabricId() {
+                                return ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "shaders");
+                            }
 
-                    @Override
-                    public CompletableFuture<Void> load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
-                        return CompletableFuture.supplyAsync(() -> {
-                            var map = manager.listResources(
-                                "shaders",
-                                folder -> {
-                                    // We include all namespaces because you need to be able to import shaders from elsewhere!
-                                    var s = folder.getPath();
-                                    return s.endsWith(".json")
-                                        || s.endsWith(Program.Type.FRAGMENT.getExtension())
-                                        || s.endsWith(Program.Type.VERTEX.getExtension())
-                                        || s.endsWith(".glsl");
-                                }
-                            );
-                            var map1 = new HashMap<ResourceLocation, Resource>();
-                            map.forEach((key, value) -> {
-                                try (InputStream inputstream = value.open()) {
-                                    byte[] abyte = inputstream.readAllBytes();
-                                    map1.put(ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath().substring("shaders/".length())), new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
-                                } catch (Exception exception) {
-                                    getLogger().warn("Failed to read resource {}", key, exception);
-                                }
-                            });
+                            @Override
+                            public CompletableFuture<Void> load(ResourceManager manager, Executor executor) {
+                                return CompletableFuture.supplyAsync(() -> {
+                                    var map = manager.listResources(
+                                            "shaders",
+                                            folder -> {
+                                                // We include all namespaces because you need to be able to import shaders from elsewhere!
+                                                var s = folder.getPath();
+                                                return s.endsWith(".json")
+                                                        || CompiledShader.Type.byLocation(folder) != null
+                                                        || s.endsWith(".glsl");
+                                            }
+                                    );
+                                    var cache = new HashMap<ResourceLocation, Resource>();
+                                    map.forEach((key, value) -> {
+                                        try (InputStream inputstream = value.open()) {
+                                            byte[] abyte = inputstream.readAllBytes();
+                                            cache.put(ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath().substring("shaders/".length())), new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
+                                        } catch (Exception exception) {
+                                            getLogger().warn("Failed to read resource {}", key, exception);
+                                        }
+                                    });
 
-                            // Save the shaders here instead of in apply so we go before any other resource re-loader!
-                            cachedShaders = new GameRenderer.ResourceCache(manager, map1);
-                            return null;
-                        });
-                    }
+                                    // Save the shaders here instead of in apply so we go before any other resource re-loader!
+                                    cachedShaders = cache;
+                                    return null;
+                                });
+                            }
 
-                    @Override
-                    public CompletableFuture<Void> apply(Void data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                }
-            );
+                            @Override
+                            public CompletableFuture<Void> apply(Void data, ResourceManager manager, Executor executor) {
+                                return CompletableFuture.completedFuture(null);
+                            }
+                        }
+                );
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily
         var rebuildThread = new Thread("Noxesium Spatial Container Rebuild Thread") {
@@ -324,15 +321,15 @@ public class NoxesiumMod implements ClientModInitializer {
         var options = Minecraft.getInstance().options;
 
         new ServerboundClientSettingsPacket(
-            new ClientSettings(
-                options.guiScale().get(),
-                window.getGuiScale(),
-                window.getGuiScaledWidth(),
-                window.getGuiScaledHeight(),
-                Minecraft.getInstance().isEnforceUnicode(),
-                options.touchscreen().get(),
-                options.notificationDisplayTime().get()
-            )
+                new ClientSettings(
+                        options.guiScale().get(),
+                        window.getGuiScale(),
+                        window.getGuiScaledWidth(),
+                        window.getGuiScaledHeight(),
+                        Minecraft.getInstance().isEnforceUnicode(),
+                        options.touchscreen().get(),
+                        options.notificationDisplayTime().get()
+                )
         ).send();
     }
 }

@@ -270,7 +270,7 @@ public class QibBehaviorModule implements NoxesiumModule {
                 );
             }
             case QibEffect.GivePotionEffect giveEffect -> {
-                var type = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path())).orElse(null);
+                var type = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path())).orElse(null);
                 player.noxesium$addClientsidePotionEffect(
                     new MobEffectInstance(
                         type,
@@ -283,7 +283,7 @@ public class QibBehaviorModule implements NoxesiumModule {
                 );
             }
             case QibEffect.RemovePotionEffect removeEffect -> {
-                player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
+                player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
             }
             case QibEffect.Move move -> {
                 player.move(MoverType.SELF, new Vec3(move.x(), move.y(), move.z()));

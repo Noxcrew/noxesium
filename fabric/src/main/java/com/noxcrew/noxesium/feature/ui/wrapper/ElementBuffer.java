@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.wrapper;
 
+import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -10,6 +11,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.GameRenderer;
 
 import java.io.Closeable;
@@ -68,7 +70,7 @@ public class ElementBuffer implements Closeable {
                     }
 
                     // Create a single texture that stretches the entirety of the buffer
-                    var buffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
+                    var buffer = new VertexBuffer(BufferUsage.STATIC_WRITE);
                     buffer.bind();
 
                     var builder = new BufferBuilder(new ByteBufferBuilder(4 * 6), VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
@@ -79,9 +81,9 @@ public class ElementBuffer implements Closeable {
                     buffer.upload(builder.build());
 
                     if (target == null) {
-                        target = new TextureTarget(width, height, true, ON_OSX);
+                        target = new TextureTarget(width, height, true);
                     } else {
-                        target.resize(width, height, ON_OSX);
+                        target.resize(width, height);
                     }
 
                     // Assign the buffer instance last!
@@ -126,7 +128,7 @@ public class ElementBuffer implements Closeable {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }, () -> {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(CoreShaders.POSITION_TEX);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, getTextureId());
             buffer.bind();

@@ -15,8 +15,8 @@ public class EntityRules(private val manager: NoxesiumManager) {
     public val disableBubbles: RuleFunction<Boolean> = register(EntityRuleIndices.DISABLE_BUBBLES, 7, ::BooleanServerRule)
 
     /**
-     * Defines a color to use for a beam created by this entity. Applies only to guardian
-     * beams at this time.
+     * Defines a color to use for a beam created by this entity. Applies to guardian beams
+     * and end crystal beams.
      */
     public val beamColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.BEAM_COLOR, 7, ::ColorServerRule)
 
@@ -31,6 +31,11 @@ public class EntityRules(private val manager: NoxesiumManager) {
      * qib collisions. The regular width is seen as its width on the X-axis.
      */
     public val interactionWidthZ: RuleFunction<Double> = register(EntityRuleIndices.QIB_WIDTH_Z, 9) { DoubleServerRule(it, 1.0) }
+
+    /**
+     * Defines a color used in combination with [BEAM_COLOR] to create a linear fade.
+     */
+    public val beamFadeColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.BEAM_COLOR_FADE, 12, ::ColorServerRule)
 
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>): RuleFunction<T> {

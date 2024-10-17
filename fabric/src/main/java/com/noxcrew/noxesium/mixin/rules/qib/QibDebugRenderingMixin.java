@@ -10,7 +10,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -26,8 +28,8 @@ import java.util.Random;
 @Mixin(EntityRenderDispatcher.class)
 public class QibDebugRenderingMixin {
 
-    @Inject(method = "render", at = @At("TAIL"))
-    private void render(Entity entity, double d, double e, double f, float g, float partialTicks, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    @Inject(method = "render(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/EntityRenderer;)V", at = @At("TAIL"))
+    private void render(Entity entity, double d, double e, double f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, EntityRenderer<?, ?> entityRenderer, CallbackInfo ci) {
         var entityRenderDispatcher = ((EntityRenderDispatcher) (Object) this);
 
         if (!NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) return;
@@ -48,9 +50,9 @@ public class QibDebugRenderingMixin {
             if (qibBehavior != null) {
                 var seededRandom = new Random(qibBehavior.hashCode());
                 var color = new Color(seededRandom.nextInt());
-                LevelRenderer.renderLineBox(poseStack, noDepthBuffer, aabb, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.5F);
+                ShapeRenderer.renderLineBox(poseStack, noDepthBuffer, aabb, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 0.5F);
                 var buffer = multiBufferSource.getBuffer(RenderType.lines());
-                LevelRenderer.renderLineBox(poseStack, buffer, aabb, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0F);
+                ShapeRenderer.renderLineBox(poseStack, buffer, aabb, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0F);
             }
 
             // Draw a name tag based on the state of this entity in the spatial tree

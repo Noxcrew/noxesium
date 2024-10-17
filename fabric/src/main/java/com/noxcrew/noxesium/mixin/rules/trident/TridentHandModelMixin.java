@@ -13,7 +13,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,7 +50,7 @@ public abstract class TridentHandModelMixin {
 
         // Ignore if charging an item beyond the first 50%
         if (p_109372_.isUsingItem() && p_109372_.getUseItemRemainingTicks() > 0 && p_109372_.getUsedItemHand() == p_109375_) {
-            if (p_109377_.getUseAnimation() != UseAnim.SPEAR) return;
+            if (p_109377_.getUseAnimation() != ItemUseAnimation.SPEAR) return;
 
             float f7 = (float) p_109377_.getUseDuration(p_109372_) - ((float) p_109372_.getUseItemRemainingTicks() - p_109373_ + 1.0F);
             float f11 = f7 / 10.0F;

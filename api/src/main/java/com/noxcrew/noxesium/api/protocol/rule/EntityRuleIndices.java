@@ -11,8 +11,8 @@ public class EntityRuleIndices {
     public static final int DISABLE_BUBBLES = 0;
 
     /**
-     * Defines a color to use for a beam created by this entity. Applies only to guardian
-     * beams at this time.
+     * Defines a color to use for a beam created by this entity. Applies to guardian beams
+     * and end crystal beams.
      */
     public static final int BEAM_COLOR = 1;
 
@@ -27,4 +27,9 @@ public class EntityRuleIndices {
      * qib collisions. The regular width is seen as its width on the X-axis.
      */
     public static final int QIB_WIDTH_Z = 3;
+
+    /**
+     * Defines a color used in combination with [BEAM_COLOR] to create a linear fade.
+     */
+    public static final int BEAM_COLOR_FADE = 4;
 }

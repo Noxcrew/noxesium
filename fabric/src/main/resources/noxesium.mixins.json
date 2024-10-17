@@ -19,8 +19,9 @@
     "feature.component.ext.MinecraftExt",
     "feature.component.ext.SkinManagerExt",
     "feature.component.ext.TextureCacheExt",
-    "legacy.CustomItemOverridesMixin",
+    "legacy.ReplaceBakedModelOverrides",
     "legacy.culling.ArmorStandCullingMixin",
+    "legacy.culling.ArmorStandCullingRenderMixin",
     "legacy.culling.UpdateCullingOnReloadMixin",
     "rules.BoatCollisionMixin",
     "rules.CustomCreativeReloadMixin",
@@ -29,9 +30,12 @@
     "rules.HandItemOverrideInventoryMixin",
     "rules.HandItemOverrideRenderMixin",
     "rules.SpinAttackCollisionMixin",
+    "rules.entity.EndCrystalBeamRendererMixin",
+    "rules.entity.EndCrystalRendererMixin",
     "rules.entity.ExtraEntityDataMixin",
     "rules.entity.GuardianBeamColorRendererMixin",
     "rules.entity.GuardianBubblesRuleMixin",
+    "rules.entity.GuardianStateMixin",
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseLockMixin",
     "rules.qib.InteractionExtensionMixin",
@@ -44,7 +48,6 @@
     "rules.trident.TridentHandModelMixin",
     "rules.trident.TridentItemMixin",
     "settings.MapUiRenderingMixin",
-    "settings.MissingTagExceptionMixin",
     "settings.PacketDecoderMixin",
     "settings.PacketExceptionMixin",
     "settings.ResetToggleKeyMixin",
@@ -75,5 +78,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "rules.qib.JumpHookMixin"
   ]
 }

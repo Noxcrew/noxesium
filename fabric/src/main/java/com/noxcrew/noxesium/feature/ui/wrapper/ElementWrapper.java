@@ -77,6 +77,7 @@ import static net.minecraft.client.Minecraft.ON_OSX;
  */
 public abstract class ElementWrapper {
 
+    private static final boolean DISABLE_SYSTEM = true;
     public static boolean allowBlendChanges = true;
 
     private final Map<String, BiFunction<Minecraft, DeltaTracker, Object>> variables = new HashMap<>();
@@ -160,8 +161,16 @@ public abstract class ElementWrapper {
      * Renders the UI element.
      */
     public final void render(GuiGraphics graphics, DeltaTracker deltaTracker, @Nullable Runnable function) {
-        // Test if any variables have changed
         var minecraft = Minecraft.getInstance();
+
+        // Allow entirely disabling the system!
+        if (DISABLE_SYSTEM) {
+            if (function != null) function.run();
+            render(graphics, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, deltaTracker);
+            return;
+        }
+
+        // Test if any variables have changed
         testVariableChanges(minecraft, deltaTracker);
 
         try {
@@ -186,7 +195,7 @@ public abstract class ElementWrapper {
                 var target = buffer.getTarget();
                 try {
                     target.setClearColor(0, 0, 0, 0);
-                    target.clear(ON_OSX);
+                    target.clear();
                     target.bindWrite(false);
                     if (function != null) function.run();
                     render(graphics, minecraft, minecraft.getWindow().getGuiScaledWidth(), minecraft.getWindow().getGuiScaledHeight(), minecraft.font, deltaTracker);

@@ -1,27 +1,27 @@
 package com.noxcrew.noxesium.mixin.rules;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.feature.rule.InventoryHelper;
-import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * Overrides the item shown as being held in the main hand on the 3d player model.
  */
-@Mixin(ItemInHandLayer.class)
+@Mixin(LivingEntityRenderer.class)
 public abstract class HandItemOverrideRenderMixin {
 
-    @WrapOperation(method = "render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/LivingEntity;FFFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
-    public ItemStack getSelected(LivingEntity instance, Operation<ItemStack> original) {
-        if (instance instanceof Player player) {
+    @Redirect(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getItemHeldByArm(Lnet/minecraft/world/entity/HumanoidArm;)Lnet/minecraft/world/item/ItemStack;"))
+    public ItemStack getItemByArm(LivingEntity instance, HumanoidArm humanoidArm) {
+        if (instance instanceof Player player && humanoidArm == player.getMainArm()) {
             return InventoryHelper.getRealSelected(player.getInventory());
         } else {
-            return original.call(instance);
+            return instance.getItemHeldByArm(humanoidArm);
         }
     }
 }

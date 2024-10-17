@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -46,6 +47,8 @@ public class MapUiWrapper extends ElementWrapper {
         return item.is(Items.FILLED_MAP) && (hand == InteractionHand.OFF_HAND || !otherHand.isEmpty());
     }
 
+    private final MapRenderState mapRenderState = new MapRenderState();
+
     public MapUiWrapper() {
         // Update every tick for the map contents
         registerVariable("client tick", (minecraft, partialTicks) -> ((MinecraftExt) minecraft).getClientTickCount());
@@ -76,8 +79,11 @@ public class MapUiWrapper extends ElementWrapper {
     private void renderMap(Minecraft minecraft, GuiGraphics graphics, DeltaTracker deltaTracker, PoseStack pose, HumanoidArm arm, ItemStack item, int offset) {
         pose.pushPose();
         var scale = 1f / ((float) minecraft.getWindow().getGuiScale()) * 4f * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
-        var bottom = NoxesiumMod.getInstance().getConfig().mapUiLocation == MapLocation.BOTTOM;
-        if (arm == HumanoidArm.RIGHT) {
+        var setting = NoxesiumMod.getInstance().getConfig().mapUiLocation;
+        var bottom = setting.isBottom();
+        var flipped = setting.isFlipped();
+
+        if ((arm == HumanoidArm.RIGHT) != flipped) {
             if (bottom) {
                 // Translate it to be at the bottom right of the GUI
                 pose.translate(graphics.guiWidth() - (148f * scale), graphics.guiHeight() - (148f * scale), 0f);
@@ -97,20 +103,22 @@ public class MapUiWrapper extends ElementWrapper {
 
         pose.scale(1f * scale, 1f * scale, -1f);
         pose.translate(10f, 10f, 0f);
-        MapId mapid = item.get(DataComponents.MAP_ID);
-        MapItemSavedData mapitemsaveddata = MapItem.getSavedData(mapid, minecraft.level);
-        var bufferSource = graphics.bufferSource();
-        VertexConsumer vertexconsumer = bufferSource.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
-        Matrix4f matrix4f = pose.last().pose();
-        var light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(minecraft.player, deltaTracker.getGameTimeDeltaPartialTick(true));
-        vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(light);
-        vertexconsumer.addVertex(matrix4f, 135.0F, 135.0F, 0.0F).setColor(-1).setUv(1.0F, 1.0F).setLight(light);
-        vertexconsumer.addVertex(matrix4f, 135.0F, -7.0F, 0.0F).setColor(-1).setUv(1.0F, 0.0F).setLight(light);
-        vertexconsumer.addVertex(matrix4f, -7.0F, -7.0F, 0.0F).setColor(-1).setUv(0.0F, 0.0F).setLight(light);
-        if (mapitemsaveddata != null) {
-            minecraft.gameRenderer.getMapRenderer().render(pose, bufferSource, mapid, mapitemsaveddata, false, light);
-        }
-        bufferSource.endBatch();
+        var mapId = item.get(DataComponents.MAP_ID);
+        var mapitemsaveddata = MapItem.getSavedData(mapId, minecraft.level);
+        graphics.drawSpecial(bufferSource -> {
+            VertexConsumer vertexconsumer = bufferSource.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
+            Matrix4f matrix4f = pose.last().pose();
+            var light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(minecraft.player, deltaTracker.getGameTimeDeltaPartialTick(true));
+            vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(light);
+            vertexconsumer.addVertex(matrix4f, 135.0F, 135.0F, 0.0F).setColor(-1).setUv(1.0F, 1.0F).setLight(light);
+            vertexconsumer.addVertex(matrix4f, 135.0F, -7.0F, 0.0F).setColor(-1).setUv(1.0F, 0.0F).setLight(light);
+            vertexconsumer.addVertex(matrix4f, -7.0F, -7.0F, 0.0F).setColor(-1).setUv(0.0F, 0.0F).setLight(light);
+            if (mapitemsaveddata != null) {
+                var mapRenderer = minecraft.getMapRenderer();
+                mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);
+                mapRenderer.render(mapRenderState, pose, bufferSource, false, light);
+            }
+        });
         pose.popPose();
     }
 }

@@ -29,8 +29,10 @@
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/world/entity/Entity": ["com/noxcrew/noxesium/feature/entity/ExtraEntityDataHolder"],
-      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension"],
-      "net/minecraft/world/entity/Interaction": ["com/noxcrew/noxesium/feature/entity/InteractionExtension"]
+      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension", "com/noxcrew/noxesium/feature/entity/ArmorStandCullingExtension"],
+      "net/minecraft/world/entity/Interaction": ["com/noxcrew/noxesium/feature/entity/InteractionExtension"],
+      "net/minecraft/client/renderer/entity/state/GuardianRenderState": ["com/noxcrew/noxesium/feature/entity/BeamColorStateExtension"],
+      "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": ["com/noxcrew/noxesium/feature/entity/BeamColorStateExtension"]
     }
   },
   "mixins": [
@@ -40,15 +42,14 @@
   "depends": {
     "fabric": "*",
     "fabricloader": ">=0.16.5",
-    "fabric-api": ">=0.105.2",
-    "minecraft": ">=1.21.2-pre1"
+    "fabric-api": ">=0.106.0",
+    "minecraft": ">=1.21.2-beta.5"
   },
   "suggests": {
     "sodium": ">=0.6.0-beta.1",
     "iris": ">=1.8.0-beta.3"
   },
   "breaks": {
-    "optifabric": "*",
-    "sodium": "<0.6.0-beta.1"
+    "optifabric": "*"
   }
 }

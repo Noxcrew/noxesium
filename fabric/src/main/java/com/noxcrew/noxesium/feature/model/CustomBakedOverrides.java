@@ -1,10 +1,10 @@
 package com.noxcrew.noxesium.feature.model;
 
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.BakedOverrides;
 import net.minecraft.client.renderer.block.model.ItemOverride;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -24,12 +24,12 @@ import java.util.Objects;
 /**
  * Determines if custom item overrides are solely for key/value mappings of custom model
  * data, in which case we build a hash map representation for them and use that instead.
- *
+ * <p>
  * Will be removed in a future version as the model component now exists which should
  * be used if possible as it great performance for all clients.
  */
 @Deprecated
-public class CustomItemOverrides extends ItemOverrides {
+public class CustomBakedOverrides extends BakedOverrides {
 
     /**
      * The maximum level of precision available. Any values beyond this
@@ -63,8 +63,8 @@ public class CustomItemOverrides extends ItemOverrides {
      */
     private Integer highestCustomModelData;
 
-    public CustomItemOverrides(ModelBaker modelBaker, BlockModel blockModel, List<ItemOverride> list) {
-        super(modelBaker, blockModel, list);
+    public CustomBakedOverrides(ModelBaker modelBaker, List<ItemOverride> list) {
+        super(modelBaker, list);
 
         // Ignore empty inputs
         if (list.isEmpty()) return;
@@ -79,7 +79,7 @@ public class CustomItemOverrides extends ItemOverrides {
             var first = new MutableBoolean(false);
             var invalid = new MutableBoolean(false);
             var customModelData = new MutableObject<Float>(null);
-            override.getPredicates().forEach(predicate -> {
+            override.predicates().forEach(predicate -> {
                 // If we find any second element it's invalid
                 if (first.getValue()) {
                     invalid.setValue(true);
@@ -90,8 +90,8 @@ public class CustomItemOverrides extends ItemOverrides {
                 first.setValue(true);
 
                 // If this is custom model data we set the value
-                if (Objects.equals(predicate.getProperty(), CUSTOM_MODEL_DATA_ID)) {
-                    customModelData.setValue(predicate.getValue());
+                if (Objects.equals(predicate.property(), CUSTOM_MODEL_DATA_ID)) {
+                    customModelData.setValue(predicate.value());
                 }
             });
 
@@ -126,7 +126,7 @@ public class CustomItemOverrides extends ItemOverrides {
                 // Micro-optimization: cache the model in case it's used multiple times per model, we ditch this hashmap after
                 // this constructor anyway, and it only stores references. But if we had to make the model multiple times it'd be
                 // much more costly!
-                var bakedmodel = modelCache.computeIfAbsent(override.getModel(), (t) -> bakeModel(modelBaker, blockModel, override));
+                var bakedmodel = modelCache.computeIfAbsent(override.model(), (t) -> modelBaker.bake(t, BlockModelRotation.X0_Y0));
 
                 // Only create the hashmap if we're using it
                 if (customModelDatas == null) {
@@ -173,10 +173,10 @@ public class CustomItemOverrides extends ItemOverrides {
 
     @Nullable
     @Override
-    public BakedModel resolve(BakedModel fallback, ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int i) {
+    public BakedModel findOverride(ItemStack itemStack, @Nullable ClientLevel clientLevel, @Nullable LivingEntity livingEntity, int i) {
         if (customModelDatas != null) {
             // Determine the custom model of the item as fast as possible (this code is called a lot per tick if there's many models)
-            if (!itemStack.has(DataComponents.CUSTOM_MODEL_DATA)) return fallback;
+            if (!itemStack.has(DataComponents.CUSTOM_MODEL_DATA)) return null;
             var id = itemStack.get(DataComponents.CUSTOM_MODEL_DATA).value();
 
             // Snap to the highest valid id
@@ -187,7 +187,7 @@ public class CustomItemOverrides extends ItemOverrides {
             // If the id is below the minimum we will never find a hit and
             // we simply return the fallback
             if (lowestCustomModelData != null && id < lowestCustomModelData) {
-                return fallback;
+                return null;
             }
 
             // Try to get the exact model from the cache
@@ -204,8 +204,8 @@ public class CustomItemOverrides extends ItemOverrides {
                     }
                 }
             }
-            return fallback;
+            return null;
         }
-        return super.resolve(fallback, itemStack, clientLevel, livingEntity, i);
+        return super.findOverride(itemStack, clientLevel, livingEntity, i);
     }
 }

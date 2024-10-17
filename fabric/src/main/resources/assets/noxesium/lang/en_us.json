@@ -48,6 +48,8 @@
 
   "noxesium.options.enum.top": "Top Corner",
   "noxesium.options.enum.bottom": "Bottom Corner",
+  "noxesium.options.enum.top_flipped": "Opposite Top Corner",
+  "noxesium.options.enum.bottom_flipped": "Opposite Bottom Corner",
 
   "itemGroup.noxesium.server_items": "Custom Blocks",
 

@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.texture.HttpTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 
 import java.awt.Color;
 import java.io.File;
@@ -273,20 +274,62 @@ public class SkullFontModule implements NoxesiumModule {
         // Copy over the base layer
         for (int x = 8; x < 16; x++) {
             for (int y = 8; y < 16; y++) {
-                var pixel = input.getPixelRGBA(x, y);
-                target.setPixelRGBA(x - 8, y - 8, grayscale ? toGrayscale(pixel) : pixel);
+                var pixel = input.getPixel(x, y);
+                target.setPixel(x - 8, y - 8, grayscale ? toGrayscale(pixel) : pixel);
             }
         }
 
         // Copy the hat layer into the image using the blend function
         for (int x = 40; x < 48; x++) {
             for (int y = 8; y < 16; y++) {
-                var pixel = input.getPixelRGBA(x, y);
+                var pixel = input.getPixel(x, y);
                 if (pixel != 0) {
-                    target.blendPixel(x - 40, y - 8, grayscale ? toGrayscale(pixel) : pixel);
+                    blendPixel(target, x - 40, y - 8, grayscale ? toGrayscale(pixel) : pixel);
                 }
             }
         }
         return target;
+    }
+
+    private void blendPixel(NativeImage image, int i, int j, int k) {
+        if (image.format() != NativeImage.Format.RGBA) {
+            throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
+        } else {
+            int l = image.getPixel(i, j);
+            float f = (float) ARGB.alpha(k) / 255.0F;
+            float g = (float) ARGB.blue(k) / 255.0F;
+            float h = (float) ARGB.green(k) / 255.0F;
+            float m = (float) ARGB.red(k) / 255.0F;
+            float n = (float) ARGB.alpha(l) / 255.0F;
+            float o = (float) ARGB.blue(l) / 255.0F;
+            float p = (float) ARGB.green(l) / 255.0F;
+            float q = (float) ARGB.red(l) / 255.0F;
+            float s = 1.0F - f;
+            float t = f * f + n * s;
+            float u = g * f + o * s;
+            float v = h * f + p * s;
+            float w = m * f + q * s;
+            if (t > 1.0F) {
+                t = 1.0F;
+            }
+
+            if (u > 1.0F) {
+                u = 1.0F;
+            }
+
+            if (v > 1.0F) {
+                v = 1.0F;
+            }
+
+            if (w > 1.0F) {
+                w = 1.0F;
+            }
+
+            int x = (int) (t * 255.0F);
+            int y = (int) (u * 255.0F);
+            int z = (int) (v * 255.0F);
+            int aa = (int) (w * 255.0F);
+            image.setPixel(i, j, ARGB.color(aa, x, y, z));
+        }
     }
 }

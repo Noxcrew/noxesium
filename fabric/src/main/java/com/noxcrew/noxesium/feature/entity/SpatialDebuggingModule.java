@@ -12,9 +12,9 @@ import com.noxcrew.noxesium.NoxesiumModule;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CoreShaders;
+import net.minecraft.client.renderer.ShapeRenderer;
+import net.minecraft.util.profiling.Profiler;
 import org.lwjgl.opengl.GL32;
 
 import java.awt.Color;
@@ -49,15 +49,15 @@ public class SpatialDebuggingModule implements NoxesiumModule {
 
         var models = SpatialInteractionEntityTree.getModelContents();
 
-        Minecraft.getInstance().getProfiler().push("noxesium-debug");
+        Profiler.get().push("noxesium-debug");
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(true);
 
-        final ShaderInstance oldShader = RenderSystem.getShader();
-        RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
+        final var oldShader = RenderSystem.getShader();
+        RenderSystem.setShader(CoreShaders.RENDERTYPE_LINES);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         var vec3 = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -73,7 +73,7 @@ public class SpatialDebuggingModule implements NoxesiumModule {
             // Start the buffer after setting up the depth settings
             var buffer = Tesselator.getInstance().begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
             try {
-                LevelRenderer.renderLineBox(poseStack, buffer, model, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0F);
+                ShapeRenderer.renderLineBox(poseStack, buffer, model, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0F);
             } catch (Exception x) {
                 // Ignore exceptions from in here
                 if (SharedConstants.IS_RUNNING_IN_IDE) throw x;
@@ -86,10 +86,10 @@ public class SpatialDebuggingModule implements NoxesiumModule {
         }
 
         RenderSystem.depthFunc(GL32.GL_LEQUAL);
-        RenderSystem.setShader(() -> oldShader);
+        RenderSystem.setShader(oldShader);
         RenderSystem.disableBlend();
         RenderSystem.enableCull();
 
-        Minecraft.getInstance().getProfiler().pop();
+        Profiler.get().pop();
     }
 }

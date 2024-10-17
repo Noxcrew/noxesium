@@ -21,7 +21,8 @@ public class ExtraEntityData {
     public static ClientServerRule<Boolean> DISABLE_BUBBLES = register(new BooleanServerRule(EntityRuleIndices.DISABLE_BUBBLES, false));
 
     /**
-     * If `true` bubbles are removed from guardian beams shot by this entity.
+     * Defines a color to use for a beam created by this entity. Applies to guardian beams
+     * and end crystal beams.
      */
     public static ClientServerRule<Optional<Color>> BEAM_COLOR = register(new ColorServerRule(EntityRuleIndices.BEAM_COLOR, Optional.empty()));
 
@@ -36,6 +37,11 @@ public class ExtraEntityData {
      * qib collisions. The regular width is seen as its width on the X-axis.
      */
     public static ClientServerRule<Double> QIB_WIDTH_Z = register(new DoubleServerRule(EntityRuleIndices.QIB_WIDTH_Z, 1.0));
+
+    /**
+     * Defines a color used in combination with [BEAM_COLOR] to create a linear fade.
+     */
+    public static ClientServerRule<Optional<Color>> BEAM_COLOR_FADE = register(new ColorServerRule(EntityRuleIndices.BEAM_COLOR_FADE, Optional.empty()));
 
     /**
      * Registers a new extra entity data key.

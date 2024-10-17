@@ -28,7 +28,7 @@ public class SodiumShaderLoaderMixin {
         // Determine if this shader is being provided by some resource pack, we fall back to Sodium
         // if anything goes wrong while doing so!
         var cache = NoxesiumMod.getInstance().getCachedShaders();
-        var resource = cache != null ? cache.cache().get(name) : null;
+        var resource = cache != null ? cache.get(name) : null;
         if (resource != null) {
             try {
                 return IOUtils.toString(resource.open(), StandardCharsets.UTF_8);
