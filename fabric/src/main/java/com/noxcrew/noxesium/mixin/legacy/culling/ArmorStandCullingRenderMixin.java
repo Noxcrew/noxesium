@@ -62,7 +62,7 @@ public abstract class ArmorStandCullingRenderMixin {
                 armorStand.noxesium$setCullingBoundingBox(noxesium$updateBoundingBox(armorStand));
             }
             if (armorStand.noxesium$getCullingBoundingBox() != null) {
-                cir.setReturnValue(armorStand.noxesium$getCullingBoundingBox().move(((Entity) (Object) this).position()));
+                cir.setReturnValue(armorStand.noxesium$getCullingBoundingBox().move(armorStand.position()));
             }
         }
     }
