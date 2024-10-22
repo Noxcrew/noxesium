@@ -41,13 +41,12 @@
   ],
   "depends": {
     "fabric": "*",
-    "fabricloader": ">=0.16.5",
-    "fabric-api": ">=0.106.0",
-    "minecraft": ">=1.21.2-beta.5"
+    "fabricloader": ">=0.16.7",
+    "fabric-api": ">=0.106.1",
+    "minecraft": ">=1.21.2"
   },
   "suggests": {
-    "sodium": ">=0.6.0-beta.1",
-    "iris": ">=1.8.0-beta.3"
+    "sodium": ">=0.6.0-beta.3"
   },
   "breaks": {
     "optifabric": "*"

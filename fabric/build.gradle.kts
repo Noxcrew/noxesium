@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom") version "1.7-SNAPSHOT"
+    id("fabric-loom") version "1.8-SNAPSHOT"
 }
 
 repositories {
@@ -34,12 +34,6 @@ dependencies {
     project(":api").apply {
         include(this)
         api(this)
-    }
-
-    // Use an updated version of mixin extras so we can use WrapMethod
-    annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")?.apply {
-        include(this)
-        implementation(this)
     }
 
     // Add PRTree which we use for collision detection
