@@ -64,26 +64,26 @@ public abstract class GuiHookMixin {
      * Adds a new rendered element to the UI with the given condition and layer.
      */
     @Unique
-    private void noxesium$addRenderLayer(LayeredDraw.Layer layer, Supplier<Boolean> condition) {
+    private void noxesium$addRenderLayer(LayeredDraw.Layer layer, boolean removeIfDebugScreen, Supplier<Boolean> condition) {
         var overlay = new LayeredDraw();
         overlay.add(layer);
         this.layers.add(overlay, () ->
-                // Check that the main GUI is not hidden
-                !Minecraft.getInstance().options.hideGui &&
-                        // Check that the debug screen is not up
-                        !this.getDebugOverlay().showDebugScreen() &&
-                        // Check that the condition is met
-                        condition.get()
+            // Check that the main GUI is not hidden
+            !Minecraft.getInstance().options.hideGui &&
+                // Check that the debug screen is not up
+                (!removeIfDebugScreen || !this.getDebugOverlay().showDebugScreen()) &&
+                // Check that the condition is met
+                condition.get()
         );
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
         // Render map at the bottom so the rest goes on top, this goes after vanilla so we render on top of e.g. chat
-        noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
-        noxesium$addRenderLayer(ElementManager.getInstance(TextHudOverlayWrapper.class)::render, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay ||
-                NoxesiumMod.getInstance().getConfig().showGameTimeOverlay ||
-                NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
+        noxesium$addRenderLayer(ElementManager.getInstance(MapUiWrapper.class)::render, false, () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi());
+        noxesium$addRenderLayer(ElementManager.getInstance(TextHudOverlayWrapper.class)::render, true, () -> NoxesiumMod.getInstance().getConfig().showFpsOverlay ||
+            NoxesiumMod.getInstance().getConfig().showGameTimeOverlay ||
+            NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
         );
     }
 
