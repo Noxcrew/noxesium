@@ -28,13 +28,18 @@ public abstract class HandItemOverrideInventoryMixin {
     @ModifyReturnValue(method = "getSelected", at = @At("RETURN"))
     private ItemStack modifySelectedItem(ItemStack original) {
         if (original.isEmpty()) {
-            return ServerRules.HAND_ITEM_OVERRIDE.getValue();
+            var result = ServerRules.HAND_ITEM_OVERRIDE.getValue();
+
+            // Return the original value as Mojang does a ==
+            // comparison in specifically the attack logic!
+            if (result.isEmpty()) return original;
+            return result;
         }
         return original;
     }
 
     @ModifyReturnValue(method = "getDestroySpeed", at = @At("RETURN"))
-    private float modifySelectedItem(float original, BlockState blockState) {
+    private float modifyDestroySpeed(float original, BlockState blockState) {
         var item = this.items.get(this.selected);
         if (item.isEmpty()) {
             return ServerRules.HAND_ITEM_OVERRIDE.getValue().getDestroySpeed(blockState);
