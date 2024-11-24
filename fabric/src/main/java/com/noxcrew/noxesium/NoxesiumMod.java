@@ -28,6 +28,7 @@ import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -196,6 +197,11 @@ public class NoxesiumMod implements ClientModInitializer {
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
             uninitialize();
+        });
+
+        // Hook into client ticking
+        ClientTickEvents.START_CLIENT_TICK.register((ignored) -> {
+            NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::requestCheck);
         });
 
         // Re-initialize when moving in/out of the config phase, we assume any server

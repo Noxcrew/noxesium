@@ -148,6 +148,20 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
     }
 
     @Override
+    public void requestCheck() {
+        for (var group : groups) {
+            group.requestCheck();
+        }
+    }
+
+    @Override
+    public void updateRenderFramerate() {
+        for (var group : groups) {
+            group.updateRenderFramerate();
+        }
+    }
+
+    @Override
     public void tick() {
         for (var group : groups) {
             group.dynamic().tick();

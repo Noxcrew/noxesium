@@ -55,6 +55,16 @@ public class NoxesiumScreenRenderState implements NoxesiumRenderState {
     }
 
     @Override
+    public void requestCheck() {
+        dynamic.requestCheck();
+    }
+
+    @Override
+    public void updateRenderFramerate() {
+        dynamic.updateRenderFramerate();
+    }
+
+    @Override
     public void tick() {
         dynamic.tick();
     }

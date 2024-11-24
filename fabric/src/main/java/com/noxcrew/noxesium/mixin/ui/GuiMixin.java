@@ -94,8 +94,7 @@ public abstract class GuiMixin {
                         for (var group : state.groups()) {
                             var dynamic = group.dynamic();
                             var renderFps = dynamic.renderFramerate() >= 260 ? "Unlimited" : dynamic.renderFramerate();
-                            var checkFps = dynamic.updateFramerate();
-                            text.add(Component.literal("§b" + group.layerNames() + ": §f" + renderFps + " / " + checkFps));
+                            text.add(Component.literal("§b" + group.layerNames() + ": §f" + renderFps));
                         }
                     }
                     case NoxesiumScreenRenderState state -> {
@@ -104,8 +103,7 @@ public abstract class GuiMixin {
                                 Minecraft.getInstance().screen instanceof ChatScreen) {
                             var dynamic = state.dynamic();
                             var renderFps = dynamic.renderFramerate() >= 260 ? "Unlimited" : dynamic.renderFramerate();
-                            var checkFps = dynamic.updateFramerate();
-                            text.add(Component.literal("§eScreen: §f" + renderFps + " / " + checkFps));
+                            text.add(Component.literal("§eScreen: §f" + renderFps));
                         }
                     }
                     case null, default -> {

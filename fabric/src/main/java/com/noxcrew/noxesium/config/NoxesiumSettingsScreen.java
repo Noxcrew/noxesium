@@ -27,7 +27,6 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         );
         this.list.addBig(NoxesiumOptions.experimentalPatches());
         this.list.addSmall(
-                NoxesiumOptions.minUiFramerate(),
                 NoxesiumOptions.maxUiFramerate(),
                 NoxesiumOptions.optimizationOverlay()
         );

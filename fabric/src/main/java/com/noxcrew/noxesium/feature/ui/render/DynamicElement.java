@@ -25,21 +25,15 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public static final BlendState DEFAULT_BLEND_STATE = BlendState.standard();
     public static final BlendState GLINT_BLEND_STATE = BlendState.glint();
 
-    private static final Random random = new Random();
     private final List<ElementBuffer> buffers = new ArrayList<>();
     private boolean bufferEmpty = false;
     private boolean needsRedraw = true;
     private boolean allBuffersEmpty = true;
-    private long nextCheck;
+    private boolean canCheck = true;
     private long nextRender = -1;
     private int failedCheckCount = 0;
     private int bufferIndex = 0;
     private GuiGraphics guiGraphics;
-
-    /**
-     * The current fps at which we check for optimization steps.
-     */
-    private double checkFps = NoxesiumMod.getInstance().getConfig().minUiFramerate;
 
     /**
      * The current fps at which we re-render the UI elements.
@@ -47,9 +41,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private double renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
 
     public DynamicElement() {
-        // Determine a random nano time
-        nextCheck = System.nanoTime() + (long) Math.floor(((1 / checkFps) * random.nextDouble() * 1000000000));
-
         // Create a first buffer
         buffers.add(new ElementBuffer());
     }
@@ -66,13 +57,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
      */
     public int renderFramerate() {
         return (int) Math.floor(renderFps);
-    }
-
-    /**
-     * The current update frame rate of this group.
-     */
-    public double updateFramerate() {
-        return checkFps;
     }
 
     /**
@@ -114,6 +98,22 @@ public class DynamicElement implements Closeable, BlendStateHook {
     }
 
     /**
+     * Indicates that a check should run the very next frame.
+     */
+    public void requestCheck() {
+        canCheck = true;
+    }
+
+    /**
+     * Triggers an update of the render framerate.
+     */
+    public void updateRenderFramerate() {
+        // Just set the render fps back to the max framerate
+        // whenever the maximum framerate has changed.
+        renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+    }
+
+    /**
      * Returns whether this element is often changing. Used to determine
      * when it should be split up this buffer.
      */
@@ -140,38 +140,20 @@ public class DynamicElement implements Closeable, BlendStateHook {
         }
 
         if (verdict) {
-            // The frames matched, slow down the rendering!
-            renderFps = Math.max(NoxesiumMod.getInstance().getConfig().minUiFramerate, renderFps / 2);
-
-            // Count how often the check succeeded and slot it down by up to 5x
+            // The frames matched, slow down the rendering! We can go down to 0
+            // which means we update every client tick which is when the server
+            // may have changed.
+            renderFps = Math.max(0, Math.min(renderFps / 2, renderFps - 5));
             failedCheckCount = Math.min(-1, failedCheckCount - 1);
-            if (failedCheckCount <= -10) {
-                checkFps = ((double) NoxesiumMod.getInstance().getConfig().minUiFramerate / Math.min(5, -failedCheckCount / 10));
-            } else {
-                checkFps = NoxesiumMod.getInstance().getConfig().minUiFramerate;
-            }
         } else {
             // The frames did not match, back to full speed!
             renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-
-            // Count how often the check failed and slow it down by up to 5x
             failedCheckCount = Math.max(1, failedCheckCount + 1);
-            if (failedCheckCount >= 10) {
-                checkFps = ((double) NoxesiumMod.getInstance().getConfig().minUiFramerate / Math.min(5, failedCheckCount / 10));
-            } else {
-                checkFps = NoxesiumMod.getInstance().getConfig().minUiFramerate;
-            }
         }
 
         // Request new PBO's from all buffers
         for (var buffer : buffers) {
             buffer.requestNewPBO();
-        }
-
-        // Determine the next check time
-        var nanoTime = System.nanoTime();
-        while (nextCheck <= nanoTime) {
-            nextCheck = nanoTime + (long) Math.floor(((1 / checkFps) * 1000000000));
         }
     }
 
@@ -193,7 +175,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         }
 
         // Skip the update until we reach the next render time
-        if (!needsRedraw && nextRender > nanoTime) return false;
+        if (!needsRedraw && !canCheck && nextRender > nanoTime) return false;
         needsRedraw = false;
 
         // Set the next render time
@@ -222,10 +204,11 @@ public class DynamicElement implements Closeable, BlendStateHook {
         bufferEmpty = !elementsWereDrawn && allBuffersEmpty;
 
         // Run PBO snapshot creation logic only if we want to run a check
-        if (nextCheck <= nanoTime) {
+        if (canCheck) {
             for (var buffer : buffers) {
                 if (buffer.canSnapshot()) {
                     buffer.snapshot(bufferEmpty);
+                    canCheck = false;
                 }
             }
         }

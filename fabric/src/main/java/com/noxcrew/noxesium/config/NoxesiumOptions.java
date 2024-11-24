@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
@@ -92,21 +93,6 @@ public class NoxesiumOptions {
         }
     );
 
-    private static final OptionInstance<Integer> minUiFramerate = new OptionInstance<>(
-        "noxesium.options.min_ui_framerate.name",
-        OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.min_ui_framerate.tooltip")),
-        (text, value) -> value == 260
-            ? genericValueLabel(text, Component.translatable("options.framerateLimit.max"))
-            : genericValueLabel(text, Component.translatable("options.framerate", value)),
-        new OptionInstance.IntRange(1, 26).xmap(it -> it * 10, it -> it / 10),
-        Codec.intRange(10, 260),
-        NoxesiumMod.getInstance().getConfig().minUiFramerate,
-        (newValue) -> {
-            NoxesiumMod.getInstance().getConfig().minUiFramerate = newValue;
-            NoxesiumMod.getInstance().getConfig().save();
-        }
-    );
-
     private static final OptionInstance<Integer> maxUiFramerate = new OptionInstance<>(
         "noxesium.options.max_ui_framerate.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.max_ui_framerate.tooltip")),
@@ -119,6 +105,8 @@ public class NoxesiumOptions {
         (newValue) -> {
             NoxesiumMod.getInstance().getConfig().maxUiFramerate = newValue;
             NoxesiumMod.getInstance().getConfig().save();
+
+            NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::updateRenderFramerate);
         }
     );
 
@@ -162,10 +150,6 @@ public class NoxesiumOptions {
 
     public static OptionInstance<Boolean> playerGlowingKeybinds() {
         return playerGlowingKeybinds;
-    }
-
-    public static OptionInstance<Integer> minUiFramerate() {
-        return minUiFramerate;
     }
 
     public static OptionInstance<Integer> maxUiFramerate() {

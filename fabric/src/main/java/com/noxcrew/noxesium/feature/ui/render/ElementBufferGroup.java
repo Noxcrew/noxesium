@@ -132,6 +132,20 @@ public class ElementBufferGroup implements Closeable {
         return layers().stream().map(LayerWithReference::layer).map(NoxesiumLayer.Layer::name).collect(Collectors.joining("/"));
     }
 
+    /**
+     * Indicates that a check should run the very next frame.
+     */
+    public void requestCheck() {
+        dynamic.requestCheck();
+    }
+
+    /**
+     * Triggers an update of the render framerate.
+     */
+    public void updateRenderFramerate() {
+        dynamic.updateRenderFramerate();
+    }
+
     @Override
     public void close() {
         dynamic.close();
