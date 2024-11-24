@@ -12,7 +12,6 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Manages a buffer and its current dynamic fps.
@@ -26,10 +25,13 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public static final BlendState GLINT_BLEND_STATE = BlendState.glint();
 
     private final List<ElementBuffer> buffers = new ArrayList<>();
-    private boolean bufferEmpty = false;
+    private boolean allBuffersEmpty = false;
+    private boolean anyBufferEmpty = true;
     private boolean needsRedraw = true;
-    private boolean allBuffersEmpty = true;
     private boolean canCheck = true;
+    private int renders = 0;
+    private long nextCheck = System.nanoTime() + 1000000000;
+    private int lastFps = 0;
     private long nextRender = -1;
     private int failedCheckCount = 0;
     private int bufferIndex = 0;
@@ -53,10 +55,38 @@ public class DynamicElement implements Closeable, BlendStateHook {
     }
 
     /**
+     * Returns whether all buffers are empty.
+     */
+    public boolean isEmpty() {
+        return allBuffersEmpty;
+    }
+
+    /**
      * The current frame rate of this group.
      */
     public int renderFramerate() {
         return (int) Math.floor(renderFps);
+    }
+
+    /**
+     * Returns the amount of buffers used by this element.
+     */
+    public int buffers() {
+        return buffers.size();
+    }
+
+    /**
+     * Returns the true frame rate, the amount
+     * of times this element was rendered the last
+     * second.
+     */
+    public int framerate() {
+        if (System.nanoTime() >= nextCheck) {
+            nextCheck = System.nanoTime() + 1000000000;
+            lastFps = renders;
+            renders = 0;
+        }
+        return lastFps;
     }
 
     /**
@@ -76,7 +106,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
      * Adds the texture ids for this buffer to the given list.
      */
     public void submitTextureIds(List<BufferData> buffers) {
-        if (bufferEmpty) return;
+        if (isEmpty()) return;
         for (var buffer : this.buffers) {
             if (buffer.isInvalid()) continue;
             buffers.add(new BufferData(buffer.getTextureId(), buffer.getBlendState()));
@@ -175,8 +205,9 @@ public class DynamicElement implements Closeable, BlendStateHook {
         }
 
         // Skip the update until we reach the next render time
-        if (!needsRedraw && !canCheck && nextRender > nanoTime) return false;
+        if (!needsRedraw && !canCheck && (renderFps <= 20 || nextRender > nanoTime)) return false;
         needsRedraw = false;
+        renders++;
 
         // Set the next render time
         nextRender = nanoTime + (long) Math.floor(((1 / renderFps) * 1000000000));
@@ -187,7 +218,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
         // Draw the layers onto the buffer while capturing the blending state
         elementsWereDrawn = false;
-        allBuffersEmpty = true;
+        anyBufferEmpty = true;
         SharedVertexBuffer.blendStateHook = this;
         draw.run();
 
@@ -201,16 +232,16 @@ public class DynamicElement implements Closeable, BlendStateHook {
         }
 
         // Nothing was drawn, this layer does not contain anything!
-        bufferEmpty = !elementsWereDrawn && allBuffersEmpty;
+        allBuffersEmpty = !elementsWereDrawn && anyBufferEmpty;
 
         // Run PBO snapshot creation logic only if we want to run a check
         if (canCheck) {
             for (var buffer : buffers) {
                 if (buffer.canSnapshot()) {
-                    buffer.snapshot(bufferEmpty);
-                    canCheck = false;
+                    buffer.snapshot(allBuffersEmpty);
                 }
             }
+            canCheck = false;
         }
         return true;
     }
@@ -276,7 +307,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
             var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
             buffer.bind(guiGraphics);
             buffer.updateBlendState(null);
-            if (elementsWereDrawn) allBuffersEmpty = false;
+            if (elementsWereDrawn) anyBufferEmpty = false;
             elementsWereDrawn = false;
             return false;
         }
@@ -289,7 +320,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
         buffer.bind(guiGraphics);
         buffer.updateBlendState(BlendState.from(srcRgb, dstRgb, srcAlpha, dstAlpha));
-        if (elementsWereDrawn) allBuffersEmpty = false;
+        if (elementsWereDrawn) anyBufferEmpty = false;
         elementsWereDrawn = false;
 
         // Change the actual blending by disabling it completely which is slightly faster

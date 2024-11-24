@@ -9,7 +9,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Stores the render state for the on-screen UI element.
