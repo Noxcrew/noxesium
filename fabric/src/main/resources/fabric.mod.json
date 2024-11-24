@@ -29,7 +29,7 @@
   "custom": {
     "loom:injected_interfaces": {
       "net/minecraft/world/entity/Entity": ["com/noxcrew/noxesium/feature/entity/ExtraEntityDataHolder"],
-      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension", "com/noxcrew/noxesium/feature/entity/ArmorStandCullingExtension"],
+      "net/minecraft/world/entity/LivingEntity": ["com/noxcrew/noxesium/feature/entity/LivingEntityExtension"],
       "net/minecraft/world/entity/Interaction": ["com/noxcrew/noxesium/feature/entity/InteractionExtension"],
       "net/minecraft/client/renderer/entity/state/GuardianRenderState": ["com/noxcrew/noxesium/feature/entity/BeamColorStateExtension"],
       "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": ["com/noxcrew/noxesium/feature/entity/BeamColorStateExtension"]

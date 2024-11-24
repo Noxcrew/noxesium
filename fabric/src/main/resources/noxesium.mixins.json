@@ -19,7 +19,6 @@
     "feature.component.ext.MinecraftExt",
     "feature.component.ext.SkinManagerExt",
     "feature.component.ext.TextureCacheExt",
-    "legacy.ReplaceBakedModelOverrides",
     "rules.BoatCollisionMixin",
     "rules.CustomCreativeReloadMixin",
     "rules.DisableMusicMixin",
