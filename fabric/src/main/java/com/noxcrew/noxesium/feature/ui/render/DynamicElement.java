@@ -143,7 +143,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
             // The frames matched, slow down the rendering! We can go down to 0
             // which means we update every client tick which is when the server
             // may have changed.
-            renderFps = Math.max(0, Math.min(renderFps / 2, renderFps - 5));
+            renderFps = Math.max(1, Math.min(renderFps / 2, renderFps - 5));
             failedCheckCount = Math.min(-1, failedCheckCount - 1);
         } else {
             // The frames did not match, back to full speed!
