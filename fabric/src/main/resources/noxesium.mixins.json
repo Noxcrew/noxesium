@@ -6,7 +6,6 @@
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "client": [
     "GlowingHotkeyOverrideMixin",
-    "feature.EnableTabHatLayerMixin",
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
     "feature.FixVehicleTeleportMixin",
