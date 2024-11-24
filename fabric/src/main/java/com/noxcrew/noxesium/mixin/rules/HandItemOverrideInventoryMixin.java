@@ -30,8 +30,7 @@ public abstract class HandItemOverrideInventoryMixin {
         if (original.isEmpty()) {
             var result = ServerRules.HAND_ITEM_OVERRIDE.getValue();
 
-            // Return the original value as Mojang does a ==
-            // comparison in specifically the attack logic!
+            // Return the original value so it matches any == comparisons!
             if (result.isEmpty()) return original;
             return result;
         }

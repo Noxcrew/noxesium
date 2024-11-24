@@ -13,15 +13,13 @@
   "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
   "debug.game_time_overlay": "%s st, %s gt",
 
-  "debug.noxesium_overlay.on": "Noxesium: §aOn",
-  "debug.noxesium_overlay.off": "Noxesium: §cOff",
+  "debug.experimental_patches.on": "Experimental Optimizations: §aOn",
+  "debug.experimental_patches.off": "Experimental Optimizations: §cOff",
 
   "noxesium.options.pages.noxesium": "Noxesium",
   "noxesium.options.screen.noxesium": "Noxesium Settings",
   "noxesium.options.fps_overlay.name": "FPS Overlay",
   "noxesium.options.fps_overlay.tooltip": "Adds a small overlay that shows the current fps in the top left corner of your screen.",
-  "noxesium.options.experimental_patches.name": "Experimental Optimizations",
-  "noxesium.options.experimental_patches.tooltip": "§4(warning: unstable!)\n§fEnables experimental UI performance improvements that completely replace all UI rendering code to run much faster.\n\n§cWarning: §fIf you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
@@ -41,6 +39,15 @@
   "noxesium.options.extended_packet_logging.tooltip": "Adds additional error logs to various types of invalid packet exceptions.\n\n§cIntended for server developers.",
   "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
   "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
+
+  "noxesium.options.experimental_patches.name": "Experimental Optimizations",
+  "noxesium.options.experimental_patches.tooltip.v2": "§fEnables experimental optimizations that dynamically adjust the framerate at which UI elements are rendered.\n\n§cWarning: If you experience any UI rendering issues while using this setting, please report issues to Noxesium, not the other mods involved.",
+  "noxesium.options.min_ui_framerate.name": "Min UI Framerate",
+  "noxesium.options.min_ui_framerate.tooltip": "Sets the lowest framerate at which UI elements are rendered. This controls how quickly the UI will adapt to controls.\n\n§eRecommended Value: §f30 fps",
+  "noxesium.options.max_ui_framerate.name": "Max UI Framerate",
+  "noxesium.options.max_ui_framerate.tooltip": "Sets the highest framerate at which UI elements are rendered.\n\n§cSetting this to Unlimited has a very high performance impact!\n\n§eRecommended Value: §f60 fps",
+  "noxesium.options.optimization_overlay.name": "UI Optimization Overlay",
+  "noxesium.options.optimization_overlay.tooltip": "Adds a small overlay that shows debug information about the UI rendering optimizations.",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",

@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.config;
 
-import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
@@ -26,8 +25,11 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
                 NoxesiumOptions.playerGlowingKeybinds(),
                 NoxesiumOptions.qibSystemDebugVisuals()
         );
-        if (NoxesiumMod.getInstance().getConfig().areExperimentalPatchesAvailable()) {
-            this.list.addSmall(NoxesiumOptions.experimentalPatches());
-        }
+        this.list.addBig(NoxesiumOptions.experimentalPatches());
+        this.list.addSmall(
+                NoxesiumOptions.minUiFramerate(),
+                NoxesiumOptions.maxUiFramerate(),
+                NoxesiumOptions.optimizationOverlay()
+        );
     }
 }

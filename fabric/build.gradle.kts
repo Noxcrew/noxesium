@@ -44,11 +44,6 @@ dependencies {
     if (property("enableSodium") == "true") {
         modImplementation("maven.modrinth:sodium:${property("sodium")}")
     }
-    if (property("enableIris") == "true") {
-        modImplementation("maven.modrinth:iris:${property("iris")}") {
-            isTransitive = false
-        }
-    }
     if (property("enableModMenu") == "true") {
         modImplementation("com.terraformersmc:modmenu:${property("modmenu")}") {
             isTransitive = false

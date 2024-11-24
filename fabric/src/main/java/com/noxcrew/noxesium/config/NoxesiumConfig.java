@@ -28,26 +28,22 @@ public class NoxesiumConfig {
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableQibSystemDebugging = false;
-    public boolean enableExperimentalPerformancePatches = false;
+    public boolean disableExperimentalPerformancePatches = true; // Still off by default until thoroughly tested!
     public boolean showGlowingSettings = false;
     public boolean dumpIncomingPackets = false;
     public boolean dumpOutgoingPackets = false;
     public boolean printPacketExceptions = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
-
-    /**
-     * Returns whether experimental patches are available.
-     */
-    public boolean areExperimentalPatchesAvailable() {
-        return false;
-    }
+    public int minUiFramerate = 30;
+    public int maxUiFramerate = 60;
+    public boolean showOptimizationOverlay = false;
 
     /**
      * Returns whether experimental performance are enabled in the configuration.
      */
     public boolean hasConfiguredPerformancePatches() {
-        return areExperimentalPatchesAvailable() && enableExperimentalPerformancePatches;
+        return !disableExperimentalPerformancePatches;
     }
 
     /**
@@ -64,6 +60,8 @@ public class NoxesiumConfig {
      * Whether the experimental performance patches should be used.
      */
     public boolean shouldDisableExperimentalPerformancePatches() {
+        if (ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue()) return true;
+
         if (hasConfiguredPerformancePatches()) {
             if (experimentalPatchesHotkey != null) {
                 return !experimentalPatchesHotkey;
