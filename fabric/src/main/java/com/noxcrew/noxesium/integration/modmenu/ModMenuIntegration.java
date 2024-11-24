@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.integration;
+package com.noxcrew.noxesium.integration.modmenu;
 
 import com.noxcrew.noxesium.config.NoxesiumSettingsScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;

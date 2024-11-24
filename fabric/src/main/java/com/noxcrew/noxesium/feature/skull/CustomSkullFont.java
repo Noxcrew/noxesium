@@ -10,12 +10,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.gui.font.glyphs.SpecialGlyphs;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,9 +40,11 @@ public class CustomSkullFont extends FontSet {
 
         try {
             ResourceLocation location = DefaultPlayerSkin.getDefaultTexture();
-            var simpleTexture = SimpleTexture.TextureImage.load(Minecraft.getInstance().getResourceManager(), location);
-            var image = simpleTexture.getImage();
-
+            Resource resource = Minecraft.getInstance().getResourceManager().getResourceOrThrow(location);
+            NativeImage image;
+            try (InputStream inputstream = resource.open()) {
+                image = NativeImage.read(inputstream);
+            }
             fallbackGlyph = module.processImage(image, false);
             grayscaleFallbackGlyph = module.processImage(image, true);
         } catch (Exception x) {
@@ -170,7 +173,7 @@ public class CustomSkullFont extends FontSet {
 
                 @Override
                 public void upload(int i, int j) {
-                    image.upload(0, i, j, 0, 0, 8, 8, false, false);
+                    image.upload(0, i, j, 0, 0, 8, 8, false);
                 }
 
                 @Override

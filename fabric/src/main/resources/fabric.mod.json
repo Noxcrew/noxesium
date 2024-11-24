@@ -22,7 +22,7 @@
     "main": [
     ],
     "modmenu": [
-      "com.noxcrew.noxesium.integration.ModMenuIntegration"
+      "com.noxcrew.noxesium.integration.modmenu.ModMenuIntegration"
     ]
   },
   "accessWidener": "noxesium.accesswidener",

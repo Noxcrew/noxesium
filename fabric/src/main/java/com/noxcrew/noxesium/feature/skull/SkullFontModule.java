@@ -15,12 +15,11 @@ import com.noxcrew.noxesium.feature.ui.wrapper.ElementWrapper;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontManagerExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinManagerExt;
+import com.noxcrew.noxesium.mixin.feature.component.ext.SkinTextureDownloaderExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.TextureCacheExt;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.HttpTexture;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ARGB;
@@ -30,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,8 +56,8 @@ public class SkullFontModule implements NoxesiumModule {
     private final Map<SkullProperties, SkullConfig> lastConfig = new HashMap<>();
     private final Map<Integer, CustomSkullFont.Glyph> glyphs = new HashMap<>();
     private final Cache<Integer, Integer> grayscaleMappings = CacheBuilder.newBuilder()
-            .expireAfterAccess(5, TimeUnit.MINUTES)
-            .build();
+        .expireAfterAccess(5, TimeUnit.MINUTES)
+        .build();
     private int nextCharacter = 32;
     private UUID cache = UUID.randomUUID();
 
@@ -170,22 +170,20 @@ public class SkullFontModule implements NoxesiumModule {
                     } else {
                         // If this skin isn't known we download it first
                         var resourceLocation = ResourceLocation.withDefaultNamespace("skins/" + string);
-                        var httpTexture = new HttpTexture(file2, information.getUrl(), DefaultPlayerSkin.getDefaultTexture(), true, () -> {
-                            // At this point the texture has been saved to the file, so we can read out the native image
-                            try {
+                        CompletableFuture.supplyAsync(() -> {
+                                // At this point the texture has been saved to the file, so we can read out the native image
                                 NativeImage nativeImage;
-                                try (InputStream inputStream = new FileInputStream(file2)) {
-                                    nativeImage = NativeImage.read(inputStream);
+                                try {
+                                    nativeImage = SkinTextureDownloaderExt.invokeProcessLegacySkin(SkinTextureDownloaderExt.invokeDownloadSkin(file2.toPath(), information.getUrl()), information.getUrl());
+                                    imageFuture.complete(processImage(nativeImage, properties.grayscale()));
+                                    ElementManager.getAllWrappers().forEach(ElementWrapper::requestRedraw);
+                                } catch (IOException x) {
+                                    throw new UncheckedIOException(x);
                                 }
-                                imageFuture.complete(processImage(nativeImage, properties.grayscale()));
-                                ElementManager.getAllWrappers().forEach(ElementWrapper::requestRedraw);
-                            } catch (IOException x) {
-                                x.printStackTrace();
-                            }
-                        });
-
-                        // Let the texture manager register the skin and do the downloading for us
-                        Minecraft.getInstance().getTextureManager().register(resourceLocation, httpTexture);
+                                return nativeImage;
+                            }, Util.nonCriticalIoPool().forName("downloadTexture"))
+                            // Let the texture manager register the skin and do the downloading for us
+                            .thenCompose((nativeImage) -> SkinTextureDownloaderExt.invokeRegisterTextureInManager(resourceLocation, nativeImage));
                     }
                 }
             } catch (Exception x) {

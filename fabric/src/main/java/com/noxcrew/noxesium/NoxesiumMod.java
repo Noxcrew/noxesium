@@ -54,7 +54,6 @@ public class NoxesiumMod implements ClientModInitializer {
 
     public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
     public static final String IMMOVABLE_TAG = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "immovable").toString();
-    public static final String RAW_MODEL_TAG = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "raw_model").toString();
 
     private static NoxesiumMod instance;
 

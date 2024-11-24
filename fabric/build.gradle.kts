@@ -82,6 +82,9 @@ tasks {
         if (project.property("enableSodium") != "true") {
             exclude("**/sodium/**.java")
         }
+        if (project.property("enableModMenu") != "true") {
+            exclude("**/modmenu/**.java")
+        }
     }
 
     withType<AbstractArchiveTask> {

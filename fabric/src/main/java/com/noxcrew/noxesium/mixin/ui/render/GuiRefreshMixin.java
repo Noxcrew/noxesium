@@ -42,11 +42,6 @@ public abstract class GuiRefreshMixin {
         ElementManager.getInstance(TitleWrapper.class).requestRedraw();
     }
 
-    @Inject(method = "clear", at = @At(value = "TAIL"))
-    private void refreshTitleCacheOnClear(CallbackInfo ci) {
-        ElementManager.getInstance(TitleWrapper.class).requestRedraw();
-    }
-
     @Inject(method = "onDisconnected", at = @At(value = "TAIL"))
     private void refreshElementsOnDisconnect(CallbackInfo ci) {
         ElementManager.getAllWrappers().forEach(ElementWrapper::requestRedraw);
