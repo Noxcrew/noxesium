@@ -53,7 +53,6 @@ Noxesium also fixes various small client bugs that relate to multiplayer servers
 - Fixes lighting issues with moving piston walls
 - Music properly resumes playing when setting the volume to 0% and back up
 - Fixes the backgrounds of text displays not being transparent
-- Fixes the tab menu not showing secondary skin layers
 
 ### MCC Island-specific Features
 
