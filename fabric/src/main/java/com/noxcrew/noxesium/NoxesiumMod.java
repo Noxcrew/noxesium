@@ -2,9 +2,12 @@ package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.shaders.CompiledShader;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
+import com.noxcrew.noxesium.feature.CustomCoreShaders;
+import com.noxcrew.noxesium.feature.CustomRenderTypes;
 import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
@@ -16,7 +19,10 @@ import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
-import com.noxcrew.noxesium.feature.ui.NoxesiumReloadListener;
+import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
+import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
+import com.noxcrew.noxesium.feature.ui.render.screen.ScreenRenderingHolder;
+import com.noxcrew.noxesium.mixin.ui.ext.GuiExt;
 import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
@@ -46,6 +52,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
 /**
  * The main file for the client-side implementation of Noxesium.
@@ -181,6 +188,11 @@ public class NoxesiumMod implements ClientModInitializer {
             initialize();
         });
 
+        // Clear out all UI rendering state when we start configuring
+        ClientConfigurationConnectionEvents.START.register((ignored1, ignored2) -> {
+            RenderSystem.recordRenderCall(() -> NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::clear));
+        });
+
         // Call disconnection hooks
         ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
             uninitialize();
@@ -196,12 +208,11 @@ public class NoxesiumMod implements ClientModInitializer {
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
 
-        // Register the resource listener
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new NoxesiumReloadListener());
-
-        // Trigger registration of all server and entity rules
+        // Trigger registration of all server and entity rules and shaders
         Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
         ignored = ExtraEntityData.DISABLE_BUBBLES;
+        ignored = CustomCoreShaders.BLIT_SCREEN_MULTIPLE;
+        ignored = CustomRenderTypes.linesNoDepth();
 
         // Listen to shaders that are loaded and cache them
         ResourceManagerHelper
@@ -265,6 +276,28 @@ public class NoxesiumMod implements ClientModInitializer {
         };
         rebuildThread.setDaemon(true);
         rebuildThread.start();
+
+        // Also run frame comparisons on another thread
+        var frameComparisonThread = new Thread("Noxesium Frame Comparison Thread") {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        forEachRenderStateHolder((it) -> {
+                            var state = it.get();
+                            if (state != null) {
+                                state.tick();
+                            }
+                        });
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+                }
+            }
+        };
+        frameComparisonThread.setDaemon(true);
+        frameComparisonThread.start();
     }
 
     /**
@@ -330,5 +363,19 @@ public class NoxesiumMod implements ClientModInitializer {
                         options.notificationDisplayTime().get()
                 )
         ).send();
+    }
+
+    /**
+     * Runs [consumer] for each render state holder.
+     */
+    public static void forEachRenderStateHolder(Consumer<NoxesiumRenderStateHolder<?>> consumer) {
+        var gui = ((GuiExt) Minecraft.getInstance().gui);
+        if (gui != null) {
+            var layeredDraw = ((LayeredDrawExtension) gui.getLayers()).noxesium$get();
+            if (layeredDraw != null) {
+                consumer.accept(layeredDraw);
+            }
+        }
+        consumer.accept(ScreenRenderingHolder.getInstance());
     }
 }

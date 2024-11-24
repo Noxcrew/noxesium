@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "client": [
+    "GlowingHotkeyOverrideMixin",
     "feature.EnableTabHatLayerMixin",
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
@@ -23,8 +24,10 @@
     "rules.CustomCreativeReloadMixin",
     "rules.DisableMusicMixin",
     "rules.GuiRulesMixin",
+    "rules.HandItemOverrideAttackFix",
     "rules.HandItemOverrideInventoryMixin",
     "rules.HandItemOverrideRenderMixin",
+    "rules.OptionInstanceMixin",
     "rules.SpinAttackCollisionMixin",
     "rules.entity.EndCrystalBeamRendererMixin",
     "rules.entity.EndCrystalRendererMixin",
@@ -35,6 +38,7 @@
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseLockMixin",
     "rules.qib.InteractionExtensionMixin",
+    "rules.qib.JumpHookMixin",
     "rules.qib.LivingEntityExtensionMixin",
     "rules.qib.QibDebugRenderingMixin",
     "rules.qib.QibInteractionMixin",
@@ -51,29 +55,18 @@
     "sound.ChannelExt",
     "sound.CustomNoxesiumSoundsMixin",
     "ui.CustomDebugHotkeysMixin",
-    "ui.render.BossHealthOverlayMixin",
-    "ui.render.ChatComponentMixin",
-    "ui.render.ChatListenerMixin",
-    "ui.render.ClientPacketListenerMixin",
-    "ui.render.GlStateManagerMixin",
-    "ui.render.GuiHookMixin",
-    "ui.render.GuiRefreshMixin",
-    "ui.render.MinecraftMixin",
-    "ui.render.OptionInstanceMixin",
-    "ui.render.PlayerInfoMixin",
-    "ui.render.PlayerTabOverlayMixin",
-    "ui.render.PlayerTeamMixin",
-    "ui.render.ScoreboardMixin",
-    "ui.render.SkinManagerMixin",
-    "ui.render.ext.BakedGlyphExt",
-    "ui.render.ext.ChatComponentExt",
-    "ui.render.ext.GuiExt",
-    "ui.render.ext.PlayerTabOverlayExt"
+    "ui.GlStateManagerMixin",
+    "ui.GuiMixin",
+    "ui.LayeredDrawMixin",
+    "ui.MinecraftMixin",
+    "ui.RenderStateShardMixin",
+    "ui.ScreenRenderHookMixin",
+    "ui.ext.GuiExt",
+    "ui.ext.VertexBufferExt"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
-    "rules.qib.JumpHookMixin"
   ]
 }

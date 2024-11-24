@@ -29,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     private int noxesium$coyoteTime = 0;
 
     @Unique
-    private Map<Holder<MobEffect>, MobEffectInstance> noxesium$activeEffects = Maps.newHashMap();
+    private Map<Holder<MobEffect>, MobEffectInstance> noxesium$activeEffects = new IdentityHashMap<>();
 
     @Override
     public void noxesium$addClientsidePotionEffect(MobEffectInstance instance) {
