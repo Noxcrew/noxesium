@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.mixin.rules;
 
+import com.noxcrew.noxesium.feature.rule.InventoryHelper;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +18,6 @@ public class HandItemOverrideAttackFix {
     @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
     public ItemStack redirectGetMainHandItem(Player instance) {
         // Specifically get the true internal selected slot!
-        var inventory = instance.getInventory();
-        return Inventory.isHotbarSlot(inventory.selected) ? inventory.items.get(inventory.selected) : ItemStack.EMPTY;
+        return InventoryHelper.getRealSelected(instance.getInventory());
     }
 }
