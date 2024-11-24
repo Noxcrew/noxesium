@@ -43,12 +43,7 @@ There are also a few improvements that do not require a server:
 
 ### Performance
 
-Noxesium also contains some minor performance patches, although these will not significantly improve your fps. Instead, Noxesium focusses on areas that are not covered by other mods like UI rendering or custom models. These don't occur in vanilla gameplay so they get little focus.
-
-Greater performance improvements have been included in the past, but as it's not the main focus they have been eclipsed by improvements in vanilla Minecraft and other mods. The following improvements are still present:
-
-- Optimizations to custom item model overrides with large amounts of CustomModelData variants
-- Work is being done on a set of UI performance optimizations that warp around vanilla's UI rendering and slow down the frame rate at which they are being rendered when few changes are occurring. These optimizations have been tested in the past but are currently still being developed.
+Noxesium contains a performance patch which reworks UI rendering to have a dynamic fps. Instead of rendering the UI every frame it gets rendered between 30 and 60 times a second. Whenever a UI element changes it starts getting rendered at 60 fps, while UI elements that rarely change render at 30 fps. These are currently experimental and have to manually be enabled in the Noxesium configuration screen.
 
 ### Bugfixes
 
