@@ -1,5 +1,6 @@
 plugins {
     id("net.neoforged.moddev")
+    id("multiloader.loader")
 }
 
 neoForge {
@@ -15,8 +16,14 @@ neoForge {
     runs {
         create("client") {
             client()
-            ideName = "NeoForge Client (:${project.name})"
+            ideName = "Run NeoForge Client"
             gameDirectory.set(file("runs/client"))
+        }
+    }
+
+    mods {
+        register("noxesium") {
+            sourceSet(sourceSets["main"])
         }
     }
 }

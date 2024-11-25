@@ -1,30 +1,32 @@
 modLoader = "javafml"
 loaderVersion = "[4,)"
-license = "LGPLv3"
+license = "LGPL v3"
+issueTrackerURL = "https://github.com/Noxcrew/noxesium/issues"
 
 [[mods]]
 modId = "noxesium"
 version = "${version}"
 displayName = "Noxesium"
 authors = "Noxcrew"
-logoFile = "logo.png"
+logoFile = "assets/noxesium/logo.png"
 description = '''
-Improves client performance and play experience on large multiplayer servers.
+Improves play experience on large multiplayer servers.
 '''
 
 [[dependencies.noxesium]]
     modId = "minecraft"
-    required = "true"
-    versionRange = "[1.21.4-pre1,]"
-    ordering = "AFTER"
-    side = "BOTH"
+    type = "required"
+    versionRange = "[1.21.3,]"
 
 [[dependencies.noxesium]]
     modId = "neoforge"
-    required = true
-    versionRange = "[21.3.40,]"
-    ordering = "AFTER"
-    side = "BOTH"
+    type = "required"
+    versionRange = "[21.3.40-beta,]"
+
+[[dependencies.noxesium]]
+    modId = "optifine"
+    type = "incompatible"
+    reason = "OptiFine makes changes to the game that make development of Noxesium much harder. Please uninstall Noxesium if you want to use OptiFine."
 
 [[mixins]]
 config = "noxesium-common.mixins.json"

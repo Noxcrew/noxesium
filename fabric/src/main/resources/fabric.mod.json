@@ -3,7 +3,7 @@
   "id": "noxesium",
   "version": "${version}",
   "name": "Noxesium",
-  "description": "Improves client performance and play experience on large multiplayer servers.",
+  "description": "Improves play experience on large multiplayer servers.",
   "authors": [
     "Noxcrew"
   ],
