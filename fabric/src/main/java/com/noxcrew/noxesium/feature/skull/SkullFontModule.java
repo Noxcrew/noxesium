@@ -285,45 +285,47 @@ public class SkullFontModule implements NoxesiumModule {
         return target;
     }
 
-    private void blendPixel(NativeImage image, int i, int j, int k) {
-        if (image.format() != NativeImage.Format.RGBA) {
-            throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
-        } else {
-            int l = image.getPixel(i, j);
-            float f = (float) ARGB.alpha(k) / 255.0F;
-            float g = (float) ARGB.blue(k) / 255.0F;
-            float h = (float) ARGB.green(k) / 255.0F;
-            float m = (float) ARGB.red(k) / 255.0F;
-            float n = (float) ARGB.alpha(l) / 255.0F;
-            float o = (float) ARGB.blue(l) / 255.0F;
-            float p = (float) ARGB.green(l) / 255.0F;
-            float q = (float) ARGB.red(l) / 255.0F;
-            float s = 1.0F - f;
-            float t = f * f + n * s;
-            float u = g * f + o * s;
-            float v = h * f + p * s;
-            float w = m * f + q * s;
-            if (t > 1.0F) {
-                t = 1.0F;
-            }
+    /**
+     * Blends source pixel into target pixel at x, y.
+     */
+    private void blendPixel(NativeImage image, int x, int y, int sourcePixel) {
+        var targetPixel = image.getPixel(x, y);
+        float f = (float) ARGB.alpha(sourcePixel) / 255.0F;
+        float g = (float) ARGB.blue(sourcePixel) / 255.0F;
+        float h = (float) ARGB.green(sourcePixel) / 255.0F;
+        float m = (float) ARGB.red(sourcePixel) / 255.0F;
 
-            if (u > 1.0F) {
-                u = 1.0F;
-            }
+        float n = (float) ARGB.alpha(targetPixel) / 255.0F;
+        float o = (float) ARGB.blue(targetPixel) / 255.0F;
+        float p = (float) ARGB.green(targetPixel) / 255.0F;
+        float q = (float) ARGB.red(targetPixel) / 255.0F;
 
-            if (v > 1.0F) {
-                v = 1.0F;
-            }
+        float s = 1.0F - f;
+        float t = f * f + n * s;
+        float u = g * f + o * s;
+        float v = h * f + p * s;
+        float w = m * f + q * s;
 
-            if (w > 1.0F) {
-                w = 1.0F;
-            }
-
-            int x = (int) (t * 255.0F);
-            int y = (int) (u * 255.0F);
-            int z = (int) (v * 255.0F);
-            int aa = (int) (w * 255.0F);
-            image.setPixel(i, j, ARGB.color(aa, x, y, z));
+        if (t > 1.0F) {
+            t = 1.0F;
         }
+
+        if (u > 1.0F) {
+            u = 1.0F;
+        }
+
+        if (v > 1.0F) {
+            v = 1.0F;
+        }
+
+        if (w > 1.0F) {
+            w = 1.0F;
+        }
+
+        var alpha = (int) (t * 255.0F);
+        var blue = (int) (u * 255.0F);
+        var green = (int) (v * 255.0F);
+        var red = (int) (w * 255.0F);
+        image.setPixel(x, y, ARGB.color(alpha, red, green, blue));
     }
 }
