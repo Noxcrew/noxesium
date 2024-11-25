@@ -30,7 +30,7 @@ void main() {
             result = sample + result * (1 - sample.a);
         }
     }
-    if (SamplerCount >= 4) {;
+    if (SamplerCount >= 4) {
         sample = texture(Sampler3, texCoord);
         if (sample.a > 0) {
             result = sample + result * (1 - sample.a);
