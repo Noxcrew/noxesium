@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium;
 
-import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -26,7 +25,7 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
-        isUsingSodium = FabricLoader.getInstance().isModLoaded("sodium");
+        isUsingSodium = NoxesiumMod.getPlatform().isModLoaded("sodium");
     }
 
     @Override

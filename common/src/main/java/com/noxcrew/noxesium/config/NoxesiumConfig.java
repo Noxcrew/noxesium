@@ -2,10 +2,9 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.api.config.BooleanOrDefault;
 import com.noxcrew.noxesium.api.config.MapLocation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.FileReader;
 import java.nio.file.Files;
@@ -25,7 +24,7 @@ public class NoxesiumConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public boolean resetToggleKeys = false;
-    public TriState renderMapsInUi = TriState.DEFAULT;
+    public BooleanOrDefault renderMapsInUi = BooleanOrDefault.DEFAULT;
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableQibSystemDebugging = false;
@@ -50,10 +49,10 @@ public class NoxesiumConfig {
      * Returns whether to render maps in the UI.
      */
     public boolean shouldRenderMapsInUi() {
-        if (renderMapsInUi == TriState.DEFAULT) {
+        if (renderMapsInUi == BooleanOrDefault.DEFAULT) {
             return ServerRules.SHOW_MAP_IN_UI.getValue();
         }
-        return renderMapsInUi.get();
+        return renderMapsInUi == BooleanOrDefault.TRUE;
     }
 
     /**
@@ -101,6 +100,6 @@ public class NoxesiumConfig {
      * Returns the path where the configuration file is stored.
      */
     public static Path getConfigFile() {
-        return FabricLoader.getInstance().getConfigDir().resolve("noxesium-config.json");
+        return NoxesiumMod.getPlatform().getConfigDirectory().resolve("noxesium-config.json");
     }
 }

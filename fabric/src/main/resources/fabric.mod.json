@@ -17,7 +17,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.noxcrew.noxesium.NoxesiumMod"
+      "com.noxcrew.noxesium.NoxesiumFabricMod"
     ],
     "main": [
     ],

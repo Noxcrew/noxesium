@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.mixin.rules.qib;
 
-import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.feature.entity.LivingEntityExtension;

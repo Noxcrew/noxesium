@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.api.config.BooleanOrDefault;
 import com.noxcrew.noxesium.api.config.MapLocation;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
@@ -24,11 +24,11 @@ public class VanillaOptions {
         }
     );
 
-    private static final OptionInstance<TriState> renderMapsAsUi = new OptionInstance<>(
+    private static final OptionInstance<BooleanOrDefault> renderMapsAsUi = new OptionInstance<>(
         "noxesium.options.render_maps_as_ui.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.render_maps_as_ui.tooltip")),
         VanillaOptions::triStateValueLabel,
-        new OptionInstance.Enum<>(Arrays.asList(TriState.values()), Codec.STRING.xmap(TriState::valueOf, TriState::name)),
+        new OptionInstance.Enum<>(Arrays.asList(BooleanOrDefault.values()), Codec.STRING.xmap(BooleanOrDefault::valueOf, BooleanOrDefault::name)),
         NoxesiumMod.getInstance().getConfig().renderMapsInUi,
         (newValue) -> {
             NoxesiumMod.getInstance().getConfig().renderMapsInUi = newValue;
@@ -65,7 +65,7 @@ public class VanillaOptions {
         return resetToggleKeys;
     }
 
-    public static OptionInstance<TriState> renderMapsAsUi() {
+    public static OptionInstance<BooleanOrDefault> renderMapsAsUi() {
         return renderMapsAsUi;
     }
 

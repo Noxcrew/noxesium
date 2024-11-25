@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.rules;
 
 import com.noxcrew.noxesium.feature.rule.InventoryHelper;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;

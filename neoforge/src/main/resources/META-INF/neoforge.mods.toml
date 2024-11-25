@@ -8,7 +8,7 @@ modId = "noxesium"
 version = "${version}"
 displayName = "Noxesium"
 authors = "Noxcrew"
-logoFile = "assets/noxesium/logo.png"
+logoFile = "logo-neoforge.png"
 description = '''
 Improves play experience on large multiplayer servers.
 '''
