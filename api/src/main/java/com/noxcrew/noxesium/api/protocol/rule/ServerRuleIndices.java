@@ -43,12 +43,9 @@ public class ServerRuleIndices {
     public static final int HAND_ITEM_OVERRIDE = 8;
 
     /**
-     * Disables the UI optimizations temporarily which can be used to
-     * temporarily allow using shader animated text.
-     * <p>
-     * Notice: This is a temporary server rule as the goal is to have
-     * the UI optimizations not cause any issues, but they currently
-     * don't support animated text with shaders.
+     * Disables the UI optimizations provided by Noxesium. There are currently
+     * no known incompatibilities (text shaders are fully supported), but this
+     * option is still provided in case it becomes necessary.
      */
     public static final int DISABLE_UI_OPTIMIZATIONS = 9;
 
@@ -90,7 +87,7 @@ public class ServerRuleIndices {
      * - Do not send the client updates about its own pose.
      * - Ignore all logic about using the auto spin attack as an attack.
      * - Add a sound effect called noxesium:trident.ready_indicator.
-     *
+     * <p>
      * The effects this setting has:
      * - Makes the sound effect and camera POV (pose) change client-side
      * - Adds an indicator sound when the trident has been charged enough

@@ -80,6 +80,9 @@ public class ElementBufferGroup implements Closeable {
         // Don't allow creating groups larger than 6
         if (size() + other.size() > 6) return false;
 
+        // Don't allow merging often changing ones
+        if (!dynamic.isMergeable() || !other.dynamic.isMergeable()) return false;
+
         // Don't allow merging when render fps is too different
         return Math.abs(dynamic.renderFramerate() - other.dynamic.renderFramerate()) < 10;
     }

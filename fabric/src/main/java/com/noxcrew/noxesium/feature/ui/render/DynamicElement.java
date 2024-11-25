@@ -25,17 +25,21 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public static final BlendState GLINT_BLEND_STATE = BlendState.glint();
 
     private final List<ElementBuffer> buffers = new ArrayList<>();
-    private boolean allBuffersEmpty = false;
-    private boolean anyBufferEmpty = true;
+    private GuiGraphics guiGraphics;
+
+    private boolean bufferZeroInvalid = false;
     private boolean needsRedraw = true;
     private boolean canCheck = true;
+
     private int renders = 0;
     private long nextCheck = System.nanoTime() + 1000000000;
     private int lastFps = 0;
     private long nextRender = -1;
-    private int failedCheckCount = 0;
     private int bufferIndex = 0;
-    private GuiGraphics guiGraphics;
+
+    private boolean movementDirection = false;
+    private int matches = 0;
+    private long lastChange = System.currentTimeMillis();
 
     /**
      * The current fps at which we re-render the UI elements.
@@ -45,6 +49,18 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public DynamicElement() {
         // Create a first buffer
         buffers.add(new ElementBuffer());
+    }
+
+    /**
+     * Resets the display fps back to the maximum.
+     */
+    private void resetToMax() {
+        if (!movementDirection) return;
+
+        renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+        movementDirection = false;
+        matches = 0;
+        lastChange = System.currentTimeMillis();
     }
 
     /**
@@ -58,7 +74,14 @@ public class DynamicElement implements Closeable, BlendStateHook {
      * Returns whether all buffers are empty.
      */
     public boolean isEmpty() {
-        return allBuffersEmpty;
+        return bufferZeroInvalid;
+    }
+
+    /**
+     * Returns whether there is at least one non-empty buffer.
+     */
+    public boolean isNotEmpty() {
+        return !bufferZeroInvalid;
     }
 
     /**
@@ -81,7 +104,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
      * second.
      */
     public int framerate() {
-        if (System.nanoTime() >= nextCheck) {
+        while (System.nanoTime() >= nextCheck) {
             nextCheck = System.nanoTime() + 1000000000;
             lastFps = renders;
             renders = 0;
@@ -106,10 +129,11 @@ public class DynamicElement implements Closeable, BlendStateHook {
      * Adds the texture ids for this buffer to the given list.
      */
     public void submitTextureIds(List<BufferData> buffers) {
-        if (isEmpty()) return;
-        for (var buffer : this.buffers) {
-            if (buffer.isInvalid()) continue;
-            buffers.add(new BufferData(buffer.getTextureId(), buffer.getBlendState()));
+        if (isNotEmpty()) {
+            for (var buffer : this.buffers) {
+                if (buffer.isInvalid()) continue;
+                buffers.add(new BufferData(buffer.getTextureId(), buffer.getBlendState()));
+            }
         }
     }
 
@@ -119,9 +143,11 @@ public class DynamicElement implements Closeable, BlendStateHook {
      */
     public boolean isReady() {
         if (needsRedraw) return false;
-        for (var buffer : buffers) {
-            if (!buffer.hasValidPBO()) {
-                return false;
+        if (isNotEmpty()) {
+            for (var buffer : buffers) {
+                if (!buffer.hasValidPBO()) {
+                    return false;
+                }
             }
         }
         return true;
@@ -146,9 +172,19 @@ public class DynamicElement implements Closeable, BlendStateHook {
     /**
      * Returns whether this element is often changing. Used to determine
      * when it should be split up this buffer.
+     *
+     * Determined by if we are currently stuck at max fps, and it's been
+     * at least a second.
      */
     public boolean isOftenChanging() {
-        return failedCheckCount >= 20;
+        return !movementDirection && (System.currentTimeMillis() - lastChange) >= 2000 && matches <= 20;
+    }
+
+    /**
+     * Returns whether this element is eligible for merging.
+     */
+    public boolean isMergeable() {
+        return movementDirection && (System.currentTimeMillis() - lastChange) >= 2000;
     }
 
     /**
@@ -158,32 +194,46 @@ public class DynamicElement implements Closeable, BlendStateHook {
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
         var verdict = true;
-        for (var buffer : buffers) {
-            // Process the snapshots
-            var snapshots = buffer.snapshots();
-            if (snapshots == null) return;
-
-            var empty = buffer.emptySnapshots();
-            if (!compare(empty, snapshots[0], snapshots[1])) {
-                verdict = false;
+        if (isNotEmpty()) {
+            for (var buffer : buffers) {
+                // Process the snapshots
+                var snapshots = buffer.snapshots();
+                if (snapshots == null) return;
+                if (!compare(snapshots[0], snapshots[1])) {
+                    verdict = false;
+                }
             }
         }
 
-        if (verdict) {
-            // The frames matched, slow down the rendering! We can go down to 0
-            // which means we update every client tick which is when the server
-            // may have changed.
-            renderFps = Math.max(1, Math.min(renderFps / 2, renderFps - 5));
-            failedCheckCount = Math.min(-1, failedCheckCount - 1);
+        if (movementDirection) {
+            // This means we are lowering fps, if anything changes we go back.
+            if (verdict) {
+                var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+                renderFps = Math.max(1, Math.min(max, max * (1.0 - (double) ((System.currentTimeMillis() - lastChange) / 10000))));
+            } else {
+                resetToMax();
+            }
         } else {
-            // The frames did not match, back to full speed!
-            renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-            failedCheckCount = Math.max(1, failedCheckCount + 1);
+            // This means we are trying to lower fps as we are currently at the maximum.
+            if (verdict) {
+                matches = Math.min(200, matches + 1);
+            } else {
+                matches = Math.max(0, matches - 5);
+            }
+
+            // If we've reached 150 matches we
+            // try to start building down!
+            if (matches >= 150) {
+                movementDirection = true;
+                lastChange = System.currentTimeMillis();
+            }
         }
 
         // Request new PBO's from all buffers
-        for (var buffer : buffers) {
-            buffer.requestNewPBO();
+        if (isNotEmpty()) {
+            for (var buffer : buffers) {
+                buffer.requestNewPBO();
+            }
         }
     }
 
@@ -218,7 +268,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
         // Draw the layers onto the buffer while capturing the blending state
         elementsWereDrawn = false;
-        anyBufferEmpty = true;
         SharedVertexBuffer.blendStateHook = this;
         draw.run();
 
@@ -226,19 +275,22 @@ public class DynamicElement implements Closeable, BlendStateHook {
         guiGraphics.flush();
         SharedVertexBuffer.blendStateHook = null;
 
-        // Remove any remaining buffers
-        for (var index = (bufferIndex + 1); index < buffers.size(); index++) {
+        // Remove any remaining buffers, if no elements were drawn onto the last one
+        // we also remove that. Always keep at least 1 buffer otherwise we re-create
+        // them too often.
+        var firstUnusedBufferIndex = elementsWereDrawn ? bufferIndex + 1 : bufferIndex;
+        for (var index = Math.max(1, firstUnusedBufferIndex); index < buffers.size(); index++) {
             buffers.remove(index).close();
         }
-
-        // Nothing was drawn, this layer does not contain anything!
-        allBuffersEmpty = !elementsWereDrawn && anyBufferEmpty;
+        bufferZeroInvalid = firstUnusedBufferIndex == 0;
 
         // Run PBO snapshot creation logic only if we want to run a check
         if (canCheck) {
-            for (var buffer : buffers) {
-                if (buffer.canSnapshot()) {
-                    buffer.snapshot(allBuffersEmpty);
+            if (isNotEmpty()) {
+                for (var buffer : buffers) {
+                    if (buffer.canSnapshot()) {
+                        buffer.snapshot();
+                    }
                 }
             }
             canCheck = false;
@@ -307,7 +359,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
             var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
             buffer.bind(guiGraphics);
             buffer.updateBlendState(null);
-            if (elementsWereDrawn) anyBufferEmpty = false;
             elementsWereDrawn = false;
             return false;
         }
@@ -320,7 +371,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
         var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
         buffer.bind(guiGraphics);
         buffer.updateBlendState(BlendState.from(srcRgb, dstRgb, srcAlpha, dstAlpha));
-        if (elementsWereDrawn) anyBufferEmpty = false;
         elementsWereDrawn = false;
 
         // Change the actual blending by disabling it completely which is slightly faster
@@ -343,13 +393,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     /**
      * Compares two frame snapshots.
      */
-    private boolean compare(boolean[] empty, ByteBuffer first, ByteBuffer second) {
-        // If both are empty, they match.
-        if (empty[0] && empty[1]) return true;
-
-        // If one is empty but the other isn't, they don't match.
-        if (empty[0] || empty[1]) return false;
-
+    private boolean compare(ByteBuffer first, ByteBuffer second) {
         return first.mismatch(second) == -1;
     }
 }

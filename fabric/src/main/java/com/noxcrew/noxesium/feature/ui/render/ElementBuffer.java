@@ -35,7 +35,6 @@ public class ElementBuffer implements Closeable {
     private int currentIndex = 0;
     private int validPbos = 0;
     private boolean pboReady;
-    private boolean[] emptyPbos = new boolean[2];
     private GpuBuffer[] pbos;
     private ByteBuffer[] buffers;
     private RenderTarget target;
@@ -88,25 +87,16 @@ public class ElementBuffer implements Closeable {
     /**
      * Snapshots the current buffer contents to a PBO.
      */
-    public void snapshot(boolean empty) {
+    public void snapshot() {
         if (fence != null || pbos == null) return;
 
         // Flip which buffer we are drawing into
         if (currentIndex == 1) currentIndex = 0;
         else currentIndex = 1;
 
-        if (empty) {
-            // If the buffer is empty we immediately store the result
-            validPbos++;
-            emptyPbos[currentIndex] = true;
-            pboReady = true;
-            return;
-        }
-
         // Bind the PBO to tell the GPU to read the frame buffer's
         // texture into it directly
         pbos[currentIndex].bind();
-        emptyPbos[currentIndex] = false;
         GL11.glGetTexImage(
                 GL11.GL_TEXTURE_2D,
                 0,
@@ -218,13 +208,6 @@ public class ElementBuffer implements Closeable {
      */
     public ByteBuffer[] snapshots() {
         return pboReady ? buffers : null;
-    }
-
-    /**
-     * Returns which snapshots are currently empty.
-     */
-    public boolean[] emptySnapshots() {
-        return emptyPbos;
     }
 
     /**
