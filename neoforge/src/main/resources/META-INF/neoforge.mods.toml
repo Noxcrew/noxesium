@@ -1,10 +1,10 @@
 modLoader = "javafml"
-loaderVersion = "${forge_loader_version_range}"
+loaderVersion = "[4,)"
 license = "LGPLv3"
 
 [[mods]]
 modId = "noxesium"
-version = "${file.jarVersion}}"
+version = "${version}"
 displayName = "Noxesium"
 authors = "Noxcrew"
 logoFile = "logo.png"

@@ -9,9 +9,20 @@ neoForge {
 
     // Validate AT files and raise errors when they have invalid targets
     // This option is false by default, but turning it on is recommended
+    setAccessTransformers(project(":common").file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true
 
     runs {
+        create("client") {
+            client()
+            ideName = "NeoForge Client (:${project.name})"
+            gameDirectory.set(file("runs/client"))
+        }
+    }
+}
 
+tasks {
+    named<ProcessResources>("processResources").configure {
+        exclude("noxesium.accesswidener")
     }
 }

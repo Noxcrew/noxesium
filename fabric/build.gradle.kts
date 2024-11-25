@@ -1,5 +1,6 @@
 plugins {
     id("fabric-loom")
+    id("multiloader.loader")
 }
 
 repositories {
@@ -7,8 +8,9 @@ repositories {
 }
 
 dependencies {
-    // Depend on the common project
-    api(project(":common"))
+    // Depend on api and prtree
+    api(project(":api"))
+    api(libs.prtree)
 
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
@@ -17,11 +19,6 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
-
-    // Include dependencies in the jar
-    include(project(":api"))
-    include(project(":common"))
-    include(libs.prtree)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
@@ -32,25 +29,20 @@ dependencies {
             isTransitive = false
         }
     }
-}
 
-java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    withSourcesJar()
+    // Include dependencies in the jar
+    include(project(":api"))
+    include(project(":common"))
+    include(libs.prtree)
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/noxesium.accesswidener"))
+    accessWidenerPath.set(project(":common").file("src/main/resources/noxesium.accesswidener"))
 }
 
 tasks {
-    processResources {
-        inputs.property("version", project.version)
-        filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
-        }
+    named<ProcessResources>("processResources").configure {
+        exclude("noxesium.cfg")
     }
 
     withType<JavaCompile> {
@@ -62,16 +54,6 @@ tasks {
         }
         if (project.property("enableModMenu") != "true") {
             exclude("**/modmenu/**.java")
-        }
-    }
-
-    withType<AbstractArchiveTask> {
-        archiveBaseName.set("noxesium")
-    }
-
-    jar {
-        from("LICENSE") {
-            rename { return@rename "${it}_${rootProject.name}" }
         }
     }
 }
