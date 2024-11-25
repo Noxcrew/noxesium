@@ -1,6 +1,6 @@
 plugins {
-    id("net.neoforged.moddev")
     id("multiloader.common")
+    id("net.neoforged.moddev")
 }
 
 neoForge {

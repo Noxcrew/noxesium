@@ -12,11 +12,7 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(":common")) {
-        capabilities {
-            requireCapability("com.noxcrew.noxesium:noxesium")
-        }
-    }
+    api(project(":common"))
     "commonJava"(project(":common", "commonJava"))
     "commonResources"(project(":common", "commonResources"))
 }
@@ -29,10 +25,6 @@ tasks {
     named<ProcessResources>("processResources").configure {
         dependsOn(configurations.getByName("commonResources"))
         from(configurations.getByName("commonResources"))
-    }
-    named<Javadoc>("javadoc").configure {
-        dependsOn(configurations.getByName("commonJava"))
-        source(configurations.getByName("commonJava"))
     }
     named<Jar>("sourcesJar").configure {
         dependsOn(configurations.getByName("commonJava"))

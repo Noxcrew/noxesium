@@ -8,10 +8,6 @@ repositories {
 }
 
 dependencies {
-    // Depend on api and prtree
-    api(project(":api"))
-    api(libs.prtree)
-
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
     mappings(loom.officialMojangMappings())
@@ -29,11 +25,6 @@ dependencies {
             isTransitive = false
         }
     }
-
-    // Include dependencies in the jar
-    include(project(":api"))
-    include(project(":common"))
-    include(libs.prtree)
 }
 
 loom {
