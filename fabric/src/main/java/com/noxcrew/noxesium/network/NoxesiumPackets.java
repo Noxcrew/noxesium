@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.network;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.network.clientbound.ClientboundChangeServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacket;
@@ -49,7 +49,7 @@ public class NoxesiumPackets {
     /**
      * The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium.
      */
-    public static final String PACKET_NAMESPACE = ProtocolVersion.NAMESPACE + "-v2";
+    public static final String PACKET_NAMESPACE = NoxesiumReferences.NAMESPACE + "-v2";
 
     // Packet types are listed here to ensure they are properly registered!
     public static final NoxesiumPayloadType<ServerboundClientInformationPacket> SERVER_CLIENT_INFO = NoxesiumPackets.server("client_info", ServerboundClientInformationPacket.STREAM_CODEC);

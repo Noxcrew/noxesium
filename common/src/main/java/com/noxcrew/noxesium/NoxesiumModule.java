@@ -10,7 +10,7 @@ public interface NoxesiumModule {
     /**
      * Called on start-up when the client is being initialised.
      */
-    public default void onStartup() {
+    default void onStartup() {
     }
 
     /**
@@ -18,18 +18,18 @@ public interface NoxesiumModule {
      * This can be used by other mods to control when to activate
      * themselves.
      */
-    public default void onGroupRegistered(String group) {
+    default void onGroupRegistered(String group) {
     }
 
     /**
      * Called when the client connects to a new server.
      */
-    public default void onJoinServer() {
+    default void onJoinServer() {
     }
 
     /**
      * Called when the client disconnects from their current server.
      */
-    public default void onQuitServer() {
+    default void onQuitServer() {
     }
 }

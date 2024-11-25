@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.model;
 
 import com.noxcrew.noxesium.NoxesiumModule;
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -20,7 +20,7 @@ import net.minecraft.world.item.Items;
  */
 public class CustomServerCreativeItems implements NoxesiumModule {
 
-    private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "server_items"));
+    private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
 
     @Override
     public void onStartup() {

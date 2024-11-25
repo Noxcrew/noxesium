@@ -1,27 +1,15 @@
 plugins {
-    id("fabric-loom") version "1.8-SNAPSHOT"
+    id("fabric-loom")
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
-    maven { url = uri("https://maven.terraformersmc.com/releases/") }
-    maven {
-        setUrl("https://api.modrinth.com/maven")
-        content {
-            includeGroup("maven.modrinth")
-        }
-    }
     maven { url = uri("https://maven.shedaniel.me/") }
-    maven { url = uri("https://maven.terraformersmc.com/releases/") }
-    maven { url = uri("https://maven.enginehub.org/repo/") }
-    mavenCentral()
 }
 
 dependencies {
+    // Depend on the common project
+    api(project(":common"))
+
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
     mappings(loom.officialMojangMappings())
@@ -30,15 +18,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
 
-    // Add the API module
-    project(":api").apply {
-        include(this)
-        api(this)
-    }
-
-    // Add PRTree which we use for collision detection
-    include("org.khelekore:prtree:1.5")
-    implementation("org.khelekore:prtree:1.5")
+    // Include dependencies in the jar
+    include(project(":api"))
+    include(project(":common"))
+    include(libs.prtree)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

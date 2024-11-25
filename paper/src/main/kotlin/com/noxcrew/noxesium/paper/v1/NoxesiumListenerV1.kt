@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.v1
 
 import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion
+import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.paper.api.BaseNoxesiumListener
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.createPayloadPacket
@@ -37,7 +37,7 @@ public class NoxesiumListenerV1(
 
     public companion object {
         /** The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium. */
-        public const val PACKET_NAMESPACE: String = "${ProtocolVersion.NAMESPACE}-v1"
+        public const val PACKET_NAMESPACE: String = "${NoxesiumReferences.NAMESPACE}-v1"
     }
 
     init {

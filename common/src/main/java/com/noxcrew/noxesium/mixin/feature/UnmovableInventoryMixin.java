@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.mixin.feature;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Inventory;
@@ -12,12 +11,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.noxcrew.noxesium.NoxesiumMod.BUKKIT_COMPOUND_ID;
-import static com.noxcrew.noxesium.NoxesiumMod.IMMOVABLE_TAG;
+import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
+import static com.noxcrew.noxesium.api.NoxesiumReferences.IMMOVABLE_TAG;
 
 /**
  * Mixin for preventing items dropped from the hotbar.
- * This only prevent items with the {@link NoxesiumMod#IMMOVABLE_TAG} from being moved.
+ * This only prevent items with the {@link com.noxcrew.noxesium.api.NoxesiumReferences#IMMOVABLE_TAG} from being moved.
  */
 @Mixin(Inventory.class)
 public abstract class UnmovableInventoryMixin {

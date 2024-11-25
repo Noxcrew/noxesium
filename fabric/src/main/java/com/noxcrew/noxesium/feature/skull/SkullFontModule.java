@@ -9,7 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.NoxesiumModule;
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontManagerExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinManagerExt;
@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SkullFontModule implements NoxesiumModule {
 
-    public static ResourceLocation RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "skulls");
+    public static ResourceLocation RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "skulls");
 
     /**
      * The signature used when checking the skin. We do not care if this signature is correct, but

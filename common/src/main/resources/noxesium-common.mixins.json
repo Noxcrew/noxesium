@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.noxcrew.noxesium.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
+  "client": [
+    "feature.FixMovingPistonFlickeringMixin",
+    "feature.FixVehicleTeleportMixin",
+    "feature.UnmovableInventoryMixin",
+    "feature.UnmovableSlotMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ]
+}

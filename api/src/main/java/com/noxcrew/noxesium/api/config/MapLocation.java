@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.config;
+package com.noxcrew.noxesium.api.config;
 
 /**
  * Changes the location where the map UI is displayed.

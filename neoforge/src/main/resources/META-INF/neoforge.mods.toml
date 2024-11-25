@@ -1,0 +1,30 @@
+modLoader = "javafml"
+loaderVersion = "${forge_loader_version_range}"
+license = "LGPLv3"
+
+[[mods]]
+modId = "noxesium"
+version = "${file.jarVersion}}"
+displayName = "Noxesium"
+authors = "Noxcrew"
+logoFile = "logo.png"
+description = '''
+Improves client performance and play experience on large multiplayer servers.
+'''
+
+[[dependencies.noxesium]]
+    modId = "minecraft"
+    required = "true"
+    versionRange = "[1.21.4-pre1,]"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.noxesium]]
+    modId = "neoforge"
+    required = true
+    versionRange = "[21.3.40,]"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[mixins]]
+config = "noxesium-common.mixins.json"

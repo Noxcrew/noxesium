@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.paper.api
 import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
 import com.noxcrew.noxesium.api.protocol.NoxesiumServerManager
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion
+import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
@@ -22,7 +22,6 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
-import org.bukkit.scheduler.BukkitTask
 import org.slf4j.Logger
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -158,7 +157,7 @@ public open class NoxesiumManager(
         saveProtocol(player, version, protocolVersion)
 
         // Inform the player about which version is being used
-        sendPacket(player, ClientboundServerInformationPacket(ProtocolVersion.VERSION))
+        sendPacket(player, ClientboundServerInformationPacket(NoxesiumReferences.VERSION))
 
         // Trigger a hook to use for implementations, this may be used
         // to set default values for the rules

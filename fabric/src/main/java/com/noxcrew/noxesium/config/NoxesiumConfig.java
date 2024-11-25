@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.api.config.MapLocation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;

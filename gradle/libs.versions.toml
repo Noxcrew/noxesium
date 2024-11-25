@@ -2,11 +2,18 @@
 # Plugins
 shadow = "8.1.7"
 
+# Mixins
+mixin = "0.15.5+mixin.0.8.7"
+mixinextras = "0.4.1"
+
 # Tooling
 kotlin-coroutines = "1.8.1"
 kotlin-serialization = "1.6.3"
 guava = "32.1.2-jre"
 slf4j = "2.0.9"
+
+# Various
+prtree = "1.5"
 caffeine = "3.1.8"
 
 [plugins]
@@ -19,4 +26,9 @@ kotlin-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
+
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
+prtree = { group = "org.khelekore", name = "prtree", version.ref = "prtree" }
+
+mixin = { group = "net.fabricmc", name = "sponge-mixin", version.ref = "mixin" }
+mixinextras = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "mixinextras" }

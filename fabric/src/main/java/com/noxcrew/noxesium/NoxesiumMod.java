@@ -3,8 +3,8 @@ package com.noxcrew.noxesium;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.shaders.CompiledShader;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.CustomCoreShaders;
 import com.noxcrew.noxesium.feature.CustomRenderTypes;
@@ -60,9 +60,6 @@ import java.util.function.Consumer;
  */
 public class NoxesiumMod implements ClientModInitializer {
 
-    public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-    public static final String IMMOVABLE_TAG = ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "immovable").toString();
-
     private static NoxesiumMod instance;
 
     /**
@@ -73,7 +70,7 @@ public class NoxesiumMod implements ClientModInitializer {
     /**
      * The current maximum supported protocol version.
      */
-    private int currentMaxProtocol = ProtocolVersion.VERSION;
+    private int currentMaxProtocol = NoxesiumReferences.VERSION;
 
     /**
      * Whether the server connection has been initialized correctly.
@@ -227,7 +224,7 @@ public class NoxesiumMod implements ClientModInitializer {
                         new SimpleResourceReloadListener<Void>() {
                             @Override
                             public ResourceLocation getFabricId() {
-                                return ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "shaders");
+                                return ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "shaders");
                             }
 
                             @Override
@@ -322,7 +319,7 @@ public class NoxesiumMod implements ClientModInitializer {
             initialized = true;
 
             // Send a packet containing information about the client version of Noxesium
-            new ServerboundClientInformationPacket(ProtocolVersion.VERSION, FabricLoader.getInstance().getModContainer(ProtocolVersion.NAMESPACE).map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("unknown")).send();
+            new ServerboundClientInformationPacket(NoxesiumReferences.VERSION, FabricLoader.getInstance().getModContainer(NoxesiumReferences.NAMESPACE).map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("unknown")).send();
 
             // Inform the player about the GUI scale of the client
             syncGuiScale();
@@ -337,7 +334,7 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     private void uninitialize() {
         // Reset the current max protocol version
-        currentMaxProtocol = ProtocolVersion.VERSION;
+        currentMaxProtocol = NoxesiumReferences.VERSION;
         initialized = false;
 
         // Handle quitting the server

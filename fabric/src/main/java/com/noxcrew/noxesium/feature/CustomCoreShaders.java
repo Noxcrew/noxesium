@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.feature;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.noxcrew.noxesium.api.protocol.ProtocolVersion;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.ShaderDefines;
 import net.minecraft.client.renderer.ShaderProgram;
@@ -18,7 +18,7 @@ public class CustomCoreShaders {
      * Registers a new core shader.
      */
     private static ShaderProgram register(String name, VertexFormat format) {
-        ShaderProgram shaderprogram = new ShaderProgram(ResourceLocation.fromNamespaceAndPath(ProtocolVersion.NAMESPACE, "core/" + name), format, ShaderDefines.EMPTY);
+        ShaderProgram shaderprogram = new ShaderProgram(ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "core/" + name), format, ShaderDefines.EMPTY);
         CoreShaders.getProgramsToPreload().add(shaderprogram);
         return shaderprogram;
     }

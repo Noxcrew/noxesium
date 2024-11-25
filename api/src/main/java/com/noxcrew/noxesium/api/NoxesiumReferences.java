@@ -1,9 +1,9 @@
-package com.noxcrew.noxesium.api.protocol;
+package com.noxcrew.noxesium.api;
 
 /**
- * Stores information about protocol versions.
+ * Stores various constant values for Noxesium.
  */
-public class ProtocolVersion {
+public class NoxesiumReferences {
 
     /**
      * The current protocol version of the mod. Servers can use this version to determine which functionality
@@ -16,4 +16,14 @@ public class ProtocolVersion {
      * The name space to use for Noxesium.
      */
     public static final String NAMESPACE = "noxesium";
+
+    /**
+     * The name of the custom NBT component used by Bukkit for custom values.
+     */
+    public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
+
+    /**
+     * The NBT tag used for an immovable item.
+     */
+    public static final String IMMOVABLE_TAG = NoxesiumReferences.NAMESPACE + ":immovable";
 }

@@ -6,11 +6,7 @@
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "client": [
     "GlowingHotkeyOverrideMixin",
-    "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
-    "feature.FixVehicleTeleportMixin",
-    "feature.UnmovableInventoryMixin",
-    "feature.UnmovableSlotMixin",
     "feature.component.DisguisedSkullTranslatableContentsMixin",
     "feature.component.SkullComponentSerializationMixin",
     "feature.component.ext.FontManagerExt",

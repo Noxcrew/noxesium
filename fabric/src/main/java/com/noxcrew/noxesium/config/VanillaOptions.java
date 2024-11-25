@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.api.config.MapLocation;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
