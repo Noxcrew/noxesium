@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.feature.rule;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class ServerRuleModule implements NoxesiumModule, RuleIndexProvider {
 
     public ServerRuleModule() {
         // Store whether we are using Iris or not
-        noxesium$isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
+        noxesium$isUsingIris = NoxesiumMod.getPlatform().isModLoaded("iris");
     }
 
     @Override

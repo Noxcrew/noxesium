@@ -6,10 +6,10 @@ plugins {
 neoForge {
     neoFormVersion.set("${property("neo_form_version")}")
 
-    // Validate AT files and raise errors when they have invalid targets
-    // This option is false by default, but turning it on is recommended
     setAccessTransformers(file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true
+
+    interfaceInjectionData.from(file("src/main/resources/interface_injections.json"))
 }
 
 dependencies {

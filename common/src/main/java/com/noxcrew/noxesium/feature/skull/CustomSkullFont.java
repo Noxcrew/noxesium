@@ -4,8 +4,6 @@ import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.font.SheetGlyphInfo;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontSetExt;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
@@ -127,7 +125,6 @@ public class CustomSkullFont extends FontSet {
         }
     }
 
-    @Environment(value = EnvType.CLIENT)
     public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance,
                         int ascent) implements GlyphInfo {
 

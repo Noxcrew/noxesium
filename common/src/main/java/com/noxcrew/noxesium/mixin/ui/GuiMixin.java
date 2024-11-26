@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.feature.ui.CustomMapUiWidget;
 import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
 import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
 import com.noxcrew.noxesium.feature.ui.render.screen.NoxesiumScreenRenderState;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

@@ -8,10 +8,10 @@ neoForge {
     // See https://projects.neoforged.net/neoforged/neoforge for the latest updates
     version = "${property("forge_version")}"
 
-    // Validate AT files and raise errors when they have invalid targets
-    // This option is false by default, but turning it on is recommended
     setAccessTransformers(project(":common").file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true
+
+    interfaceInjectionData.from(project(":common").file("src/main/resources/interface_injections.json"))
 
     runs {
         create("client") {

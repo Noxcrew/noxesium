@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.feature.ui;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,7 +36,7 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
         if (minecraft.player == null) return;
 
         var font = minecraft.font;
-        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
+        var offset = NoxesiumMod.getPlatform().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
         var pose = guiGraphics.pose();
         var mainArm = minecraft.player.getMainArm();
         for (var arm : HumanoidArm.values()) {
