@@ -35,16 +35,4 @@ tasks {
     named<ProcessResources>("processResources").configure {
         exclude("noxesium.cfg")
     }
-
-    withType<JavaCompile> {
-        options.encoding = Charsets.UTF_8.name()
-
-        // Exclude sodium java classes when it's disabled
-        if (project.property("enableSodium") != "true") {
-            exclude("**/sodium/**.java")
-        }
-        if (project.property("enableModMenu") != "true") {
-            exclude("**/modmenu/**.java")
-        }
-    }
 }

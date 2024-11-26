@@ -30,3 +30,6 @@ Improves play experience on large multiplayer servers.
 
 [[mixins]]
 config = "noxesium-common.mixins.json"
+
+[[mixins]]
+config = "noxesium-sodium.mixins.json"

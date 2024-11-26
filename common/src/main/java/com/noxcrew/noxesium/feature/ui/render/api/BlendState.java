@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.feature.ui.render.api;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.noxcrew.noxesium.mixin.ui.ext.BooleanStateExt;
+import com.noxcrew.noxesium.mixin.ui.ext.GlStateManagerExt;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -53,11 +55,12 @@ public class BlendState {
      */
     public static BlendState snapshot() {
         var state = new BlendState();
-        state.blend = GlStateManager.BLEND.mode.enabled;
-        state.srcRgb = GlStateManager.BLEND.srcRgb;
-        state.dstRgb = GlStateManager.BLEND.dstRgb;
-        state.srcAlpha = GlStateManager.BLEND.srcAlpha;
-        state.dstAlpha = GlStateManager.BLEND.dstAlpha;
+        var blend = GlStateManagerExt.getBlendingState();
+        state.blend = ((BooleanStateExt) blend.mode).isEnabled();
+        state.srcRgb = blend.srcRgb;
+        state.dstRgb = blend.dstRgb;
+        state.srcAlpha = blend.srcAlpha;
+        state.dstAlpha = blend.dstAlpha;
         return state;
     }
 

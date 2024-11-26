@@ -50,7 +50,6 @@
   },
   "mixins": [
     "noxesium-common.mixins.json",
-    "noxesium-fabric.mixins.json",
     "noxesium-sodium.mixins.json"
   ],
   "depends": {

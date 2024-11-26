@@ -30,4 +30,16 @@ tasks {
             expand("version" to project.version)
         }
     }
+
+    withType<JavaCompile> {
+        options.encoding = Charsets.UTF_8.name()
+
+        // Exclude sodium java classes when it's disabled
+        if (rootProject.property("enableSodium") != "true") {
+            exclude("**/sodium/**.java")
+        }
+        if (rootProject.property("enableModMenu") != "true") {
+            exclude("**/modmenu/**.java")
+        }
+    }
 }
