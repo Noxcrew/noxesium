@@ -33,3 +33,6 @@ config = "noxesium-common.mixins.json"
 
 [[mixins]]
 config = "noxesium-sodium.mixins.json"
+
+[[mixins]]
+config = "noxesium-forge.mixins.json"

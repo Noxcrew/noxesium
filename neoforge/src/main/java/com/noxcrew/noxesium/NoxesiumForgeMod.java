@@ -10,6 +10,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -40,7 +41,21 @@ public class NoxesiumForgeMod {
         NoxesiumMod.getInstance().registerModule(creativeTab);
     }
 
-    // TODO add events for REGISTER, JOIN & START
+    /**
+     * Set up receivers whenever you join a server.
+     */
+    @SubscribeEvent
+    public void onJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        NoxesiumMod.getInstance().initialize();
+    }
+
+    /**
+     * Break down registered channels when leaving a server.
+     */
+    @SubscribeEvent
+    public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+        NoxesiumMod.getInstance().uninitialize();
+    }
 
     /**
      * Hook into client ticking for the UI optimizations.

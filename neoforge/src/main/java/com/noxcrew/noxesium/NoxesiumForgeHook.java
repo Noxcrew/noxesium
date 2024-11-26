@@ -1,6 +1,9 @@
 package com.noxcrew.noxesium;
 
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
+import com.noxcrew.noxesium.network.NoxesiumPacketHandler;
+import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.minecraft.client.GraphicsStatus;
@@ -20,10 +23,14 @@ import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Implements platform hooks on Fabric.
@@ -31,7 +38,9 @@ import java.util.Set;
 public class NoxesiumForgeHook implements NoxesiumPlatformHook {
 
     private final ModContainer modContainer;
+
     private final Set<KeyMapping> keyMappings = new HashSet<>();
+    private final Set<Consumer<PayloadRegistrar>> packetRegistrar = new HashSet<>();
 
     public NoxesiumForgeHook(ModContainer modContainer) {
         this.modContainer = modContainer;
@@ -87,15 +96,27 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
         }
     }
 
+    @SubscribeEvent
+    public void registerProtocol(RegisterPayloadHandlersEvent event) {
+        var registrar = event.registrar(NoxesiumPackets.PACKET_NAMESPACE);
+        for (var entry : packetRegistrar) {
+            entry.accept(registrar);
+        }
+    }
+
     @Override
     public boolean canSend(NoxesiumPayloadType<?> type) {
-        // TODO Implement!
-        return false;
+        return Minecraft.getInstance().getConnection() != null && NetworkRegistry.hasChannel(Minecraft.getInstance().getConnection(), type.id());
     }
 
     @Override
     public <T extends NoxesiumPacket> void registerPacket(NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
-        // TODO Implement!
+        var handler = new NoxesiumPacketHandler<T>();
+        if (clientToServer) {
+            packetRegistrar.add((registrar) -> registrar.playToServer(type.type, codec, handler));
+        } else {
+            packetRegistrar.add((registrar) -> registrar.playToClient(type.type, codec, handler));
+        }
     }
 
     @Override
@@ -105,6 +126,7 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
 
     @Override
     public <T extends CustomPacketPayload> void registerReceiver(CustomPacketPayload.Type<T> type, boolean global) {
-        // TODO Implement!
+        // Receivers are not used on Forge, you register the receivers immediately on registration.
+        // The API kinda needs reworking at some point as it's built specifically for Fabric right now.
     }
 }
