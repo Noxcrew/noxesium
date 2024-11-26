@@ -32,7 +32,7 @@ public class NoxesiumForgeMod {
         NeoForge.EVENT_BUS.register(this);
 
         // Set up the NoxesiumMod
-        NoxesiumMod.configure(new NoxesiumForgeHook(container));
+        new NoxesiumMod(new NoxesiumForgeHook(container));
 
         // Add the custom creative tab for server items
         var creativeTab = new CustomServerCreativeItems();

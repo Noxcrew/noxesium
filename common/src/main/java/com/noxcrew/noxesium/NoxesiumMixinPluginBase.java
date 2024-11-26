@@ -10,11 +10,16 @@ import java.util.Set;
 /**
  * Enables certain mixins based on whether other mods are in use or not.
  */
-public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
+public abstract class NoxesiumMixinPluginBase implements IMixinConfigPlugin {
 
     private static final String PREFIX = "com.noxcrew.noxesium.mixin.";
     private static final String SODIUM_PREFIX = "com.noxcrew.noxesium.mixin.sodium.";
     private boolean isUsingSodium;
+
+    /**
+     * Returns whether the given mod is loaded.
+     */
+    protected abstract boolean isModLoaded(String modName);
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
@@ -25,7 +30,7 @@ public class NoxesiumMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
-        isUsingSodium = NoxesiumMod.getPlatform().isModLoaded("sodium");
+        isUsingSodium = isModLoaded("sodium");
     }
 
     @Override

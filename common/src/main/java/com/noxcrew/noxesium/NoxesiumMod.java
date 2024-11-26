@@ -71,7 +71,7 @@ public class NoxesiumMod {
     @Nullable
     private Map<ResourceLocation, Resource> cachedShaders = null;
 
-    private final NoxesiumConfig config = NoxesiumConfig.load();
+    private final NoxesiumConfig config;
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
 
     /**
@@ -89,17 +89,12 @@ public class NoxesiumMod {
     }
 
     /**
-     * Configures the NoxesiumMod instance.
+     * Creates a new NoxesiumMod instance.
      */
-    public static void configure(NoxesiumPlatformHook platformHook) {
-        instance = new NoxesiumMod();
+    public NoxesiumMod(NoxesiumPlatformHook platformHook) {
+        instance = this;
         platform = platformHook;
-
-        // Trigger registration of all server and entity rules and shaders
-        Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
-        ignored = ExtraEntityData.DISABLE_BUBBLES;
-        ignored = CustomCoreShaders.BLIT_SCREEN_MULTIPLE;
-        ignored = CustomRenderTypes.linesNoDepth();
+        config = NoxesiumConfig.load();
 
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
@@ -113,6 +108,12 @@ public class NoxesiumMod {
         instance.registerModule(new ExtraEntityDataModule());
         instance.registerModule(new QibBehaviorModule());
         instance.registerModule(new SpatialDebuggingModule());
+
+        // Trigger registration of all server and entity rules and shaders
+        Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
+        ignored = ExtraEntityData.DISABLE_BUBBLES;
+        ignored = CustomCoreShaders.BLIT_SCREEN_MULTIPLE;
+        ignored = CustomRenderTypes.linesNoDepth();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily
         var rebuildThread = new Thread("Noxesium Spatial Container Rebuild Thread") {

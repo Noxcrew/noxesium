@@ -32,7 +32,7 @@ public class NoxesiumFabricMod implements ClientModInitializer {
     public static void initialize() {
         if (initialized) return;
         initialized = true;
-        NoxesiumMod.configure(new NoxesiumFabricHook());
+        new NoxesiumMod(new NoxesiumFabricHook());
         NoxesiumMod.getInstance().registerModule(new CustomServerCreativeItems());
     }
 
