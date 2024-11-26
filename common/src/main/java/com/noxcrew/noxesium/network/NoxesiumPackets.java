@@ -20,8 +20,6 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -102,17 +100,13 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
-        PayloadTypeRegistry.playS2C().register(type.type, codec);
+        NoxesiumMod.getPlatform().registerPacket(type, codec, false);
         clientboundPackets.put(id, Pair.of(group, type));
 
         // If this group has already been registered we also immediately register this packet!
         if (registeredGroups.contains(group)) {
             var universal = Objects.equals(group, "universal");
-            if (universal) {
-                registerGlobalReceiver(type.type);
-            } else {
-                registerReceiver(type.type);
-            }
+            NoxesiumMod.getPlatform().registerReceiver(type.type, universal);
         }
 
         return type;
@@ -141,7 +135,7 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
-        PayloadTypeRegistry.playC2S().register(type.type, codec);
+        NoxesiumMod.getPlatform().registerPacket(type, codec, true);
         serverboundPackets.put(type.id().toString(), group);
         return type;
     }
@@ -161,11 +155,7 @@ public class NoxesiumPackets {
             if (!Objects.equals(group, packet.getFirst())) continue;
 
             var type = packet.getSecond();
-            if (universal) {
-                registerGlobalReceiver(type.type);
-            } else {
-                registerReceiver(type.type);
-            }
+            NoxesiumMod.getPlatform().registerReceiver(type.type, universal);
         }
 
         // We don't need to register server-bound packets, we only store that the
@@ -192,24 +182,10 @@ public class NoxesiumPackets {
      * @return Whether the connected server should be receiving the packet
      */
     public static boolean canSend(NoxesiumPayloadType<?> type) {
+        if (!NoxesiumMod.getPlatform().canSend(type)) return false;
+
         var group = serverboundPackets.get(type.id().toString());
         Preconditions.checkNotNull(group, "Could not find the packet type " + type.id().toString());
         return registeredGroups.contains(group);
-    }
-
-    /**
-     * Registers a new regular receiver.
-     */
-    private static <T extends CustomPacketPayload> void registerReceiver(CustomPacketPayload.Type<T> type) {
-        var handler = new NoxesiumPacketHandler<T>();
-        ClientPlayNetworking.registerReceiver(type, handler);
-    }
-
-    /**
-     * Registers a new global receiver.
-     */
-    private static <T extends CustomPacketPayload> void registerGlobalReceiver(CustomPacketPayload.Type<T> type) {
-        var handler = new NoxesiumPacketHandler<T>();
-        ClientPlayNetworking.registerGlobalReceiver(type, handler);
     }
 }

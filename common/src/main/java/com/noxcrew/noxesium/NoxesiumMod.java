@@ -13,7 +13,6 @@ import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.feature.entity.SpatialDebuggingModule;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
-import com.noxcrew.noxesium.feature.model.CustomServerCreativeItems;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
@@ -111,7 +110,6 @@ public class NoxesiumMod {
         instance.registerModule(new NoxesiumSoundModule());
         instance.registerModule(new TeamGlowHotkeys());
         instance.registerModule(new NoxesiumPacketHandling());
-        instance.registerModule(new CustomServerCreativeItems());
         instance.registerModule(new ExtraEntityDataModule());
         instance.registerModule(new QibBehaviorModule());
         instance.registerModule(new SpatialDebuggingModule());
@@ -224,12 +222,12 @@ public class NoxesiumMod {
     /**
      * Initializes the connection with the current server if the connection has been established.
      */
-    public void initialize() {
+    public boolean initialize() {
         // Ignore if already initialized
-        if (initialized) return;
+        if (initialized) return false;
 
         // Don't allow if the server doesn't support Noxesium
-        if (!ClientPlayNetworking.canSend(NoxesiumPackets.SERVER_CLIENT_INFO.id())) return;
+        if (!NoxesiumPackets.canSend(NoxesiumPackets.SERVER_CLIENT_INFO)) return false;
 
         // Check if the connection has been established first, just in case
         if (Minecraft.getInstance().getConnection() != null) {
@@ -244,13 +242,17 @@ public class NoxesiumMod {
 
             // Call connection hooks
             modules.values().forEach(NoxesiumModule::onJoinServer);
+            return true;
         }
+        return false;
     }
 
     /**
      * Un-initializes the connection with the server.
      */
-    public void uninitialize() {
+    public boolean uninitialize() {
+        if (!initialized) return false;
+
         // Reset the current max protocol version
         currentMaxProtocol = NoxesiumReferences.VERSION;
         initialized = false;
@@ -260,6 +262,7 @@ public class NoxesiumMod {
 
         // Unregister additional packets
         NoxesiumPackets.unregisterPackets();
+        return true;
     }
 
     /**

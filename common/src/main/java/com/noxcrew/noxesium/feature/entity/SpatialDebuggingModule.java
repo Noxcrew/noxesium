@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.CoreShaders;
@@ -26,19 +25,7 @@ public class SpatialDebuggingModule implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(ctx -> {
-            // If Fabulous mode is used we want to render earlier!
-            if (ctx.advancedTranslucency()) {
-                onRenderHook();
-            }
-        });
-
-        WorldRenderEvents.LAST.register(ctx -> {
-            // If not using Fabulous we render last
-            if (!ctx.advancedTranslucency()) {
-                onRenderHook();
-            }
-        });
+        NoxesiumMod.getPlatform().registerRenderHook(this::onRenderHook);
     }
 
     private void onRenderHook() {

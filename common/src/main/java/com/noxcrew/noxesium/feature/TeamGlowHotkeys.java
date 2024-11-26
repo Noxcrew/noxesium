@@ -4,8 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import org.lwjgl.glfw.GLFW;
@@ -87,7 +85,7 @@ public class TeamGlowHotkeys implements NoxesiumModule {
     @Override
     public void onStartup() {
         // Set up an end of tick listener to go through each keybind and check for their usage
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        NoxesiumMod.getPlatform().registerTickEventHandler(() -> {
             keybinds.forEach((key, handler) -> {
                 while (key.consumeClick()) {
                     handler.run();
@@ -106,7 +104,7 @@ public class TeamGlowHotkeys implements NoxesiumModule {
      */
     private void register(String translationKey, int code, Runnable handler) {
         var key = new KeyMapping(translationKey, InputConstants.Type.KEYSYM, code, getKeybindCategory());
-        KeyBindingHelper.registerKeyBinding(key);
+        NoxesiumMod.getPlatform().registerKeyBinding(key);
         keybinds.put(key, handler);
     }
 }

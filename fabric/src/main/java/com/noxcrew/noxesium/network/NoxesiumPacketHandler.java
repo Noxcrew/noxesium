@@ -12,7 +12,7 @@ public class NoxesiumPacketHandler<T extends CustomPacketPayload> implements Cli
     @Override
     public void receive(T payload, ClientPlayNetworking.Context context) {
         if (payload instanceof NoxesiumPacket noxesiumPacket) {
-            noxesiumPacket.noxesiumType().handle(context, payload);
+            noxesiumPacket.noxesiumType().handle(new PacketContext(context.client(), context.player()), payload);
         }
     }
 }

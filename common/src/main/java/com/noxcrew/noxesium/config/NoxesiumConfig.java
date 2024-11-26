@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.config.BooleanOrDefault;
 import com.noxcrew.noxesium.api.config.MapLocation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;

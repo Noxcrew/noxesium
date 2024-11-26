@@ -1,10 +1,10 @@
 package com.noxcrew.noxesium.feature.entity;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -40,7 +40,7 @@ public class QibBehaviorModule implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        ClientTickEvents.END_WORLD_TICK.register((world) -> {
+        NoxesiumMod.getPlatform().registerTickEventHandler(() -> {
             // If there are no qib behaviors set, do nothing!
             if (ServerRules.QIB_BEHAVIORS.getValue().isEmpty()) return;
 

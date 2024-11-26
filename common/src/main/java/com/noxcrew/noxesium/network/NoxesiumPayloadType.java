@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.network;
 
 import com.noxcrew.noxesium.NoxesiumMod;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -28,7 +27,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * All listeners registered to this payload type.
      */
-    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, ClientPlayNetworking.Context>>> listeners = ConcurrentHashMap.newKeySet();
+    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, PacketContext>>> listeners = ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a new Noxesium payload type which can be listened to
@@ -49,7 +48,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * Handles a new packet [payload] of this type being received with
      * [context].
      */
-    public void handle(ClientPlayNetworking.Context context, Object payload) {
+    public void handle(PacketContext context, Object payload) {
         var iterator = listeners.iterator();
         while (iterator.hasNext()) {
             var pair = iterator.next();
@@ -79,7 +78,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * the listener from holding its own reference captive. If you do this the listener
      * will never be properly garbage collected.
      */
-    public <R> void addListener(R reference, TriConsumer<R, T, ClientPlayNetworking.Context> listener) {
+    public <R> void addListener(R reference, TriConsumer<R, T, PacketContext> listener) {
         listeners.removeIf((it) -> it.getKey().get() == null);
         listeners.add(Pair.of(new WeakReference<>(reference), listener));
     }
@@ -87,7 +86,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Casts [reference] to type [R] of [consumer].
      */
-    private <R> void acceptAny(TriConsumer<R, T, ClientPlayNetworking.Context> consumer, Object reference, ClientPlayNetworking.Context context, Object payload) {
+    private <R> void acceptAny(TriConsumer<R, T, PacketContext> consumer, Object reference, PacketContext context, Object payload) {
         consumer.accept((R) reference, (T) payload, context);
     }
 }

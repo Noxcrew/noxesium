@@ -49,7 +49,7 @@ public abstract class GuiMixin {
     @Unique
     private int noxesium$getBaseTextOffset(Font font) {
         // TODO Hardcoded checks for other mods are still rubbish!
-        return FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight + 10 : 5;
+        return NoxesiumMod.getPlatform().isModLoaded("toggle-sprint-display") ? font.lineHeight + 10 : 5;
     }
 
     /**

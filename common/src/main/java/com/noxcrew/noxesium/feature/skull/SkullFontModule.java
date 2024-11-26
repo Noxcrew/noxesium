@@ -8,6 +8,7 @@ import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontManagerExt;
@@ -15,7 +16,6 @@ import com.noxcrew.noxesium.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinManagerExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinTextureDownloaderExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.TextureCacheExt;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.SkinManager;
@@ -63,7 +63,7 @@ public class SkullFontModule implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
+        NoxesiumMod.getPlatform().registerTickEventHandler(() -> {
             // Create the custom skull font if it's not already created
             createIfNecessary();
         });
