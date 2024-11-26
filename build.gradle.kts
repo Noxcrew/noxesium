@@ -27,6 +27,7 @@ allprojects {
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.neoforged.net/releases/")
+        maven("https://maven.terraformersmc.com/")
         mavenCentral()
         maven {
             setUrl("https://api.modrinth.com/maven")

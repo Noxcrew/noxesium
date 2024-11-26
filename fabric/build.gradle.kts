@@ -25,6 +25,10 @@ dependencies {
             isTransitive = false
         }
     }
+
+    // Include dependencies in jar
+    include(project(":api"))
+    include(libs.prtree)
 }
 
 loom {
