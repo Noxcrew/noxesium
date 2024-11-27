@@ -62,7 +62,10 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
         // If experimental patches are disabled we ignore all custom logic.
         if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
             // Destroy the state if it exists
-            if (state != null) state = null;
+            if (state != null) {
+                state.close();
+                state = null;
+            }
 
             // Directly draw everything to the screen
             guiGraphics.pose().pushPose();

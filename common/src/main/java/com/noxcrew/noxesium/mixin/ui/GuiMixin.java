@@ -84,8 +84,7 @@ public abstract class GuiMixin {
         }
 
         // If the experimental patches are on we draw the current UI frame rates and group layouts
-        if (NoxesiumMod.getInstance().getConfig().showOptimizationOverlay &&
-                !NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
+        if (NoxesiumMod.getInstance().getConfig().showOptimizationOverlay) {
             NoxesiumMod.forEachRenderStateHolder((it) -> {
                 var stateIn = it.get();
                 switch (stateIn) {
