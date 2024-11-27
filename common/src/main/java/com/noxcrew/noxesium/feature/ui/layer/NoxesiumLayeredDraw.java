@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,6 +102,7 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
                     for (var subLayer : group.layers()) {
                         renderLayerDirectly(guiGraphics, deltaTracker, subLayer);
                     }
+                    guiGraphics.pose().translate(0f, 0f, LayeredDraw.Z_SEPARATION);
                 }
             }
         }
@@ -111,10 +113,11 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
      */
     public List<LayerWithReference> flatten() {
         var result = new ArrayList<LayerWithReference>();
+        var offset = new MutableInt();
         for (var layer : layers) {
             switch (layer) {
-                case NoxesiumLayer.Layer single -> result.add(new LayerWithReference(result.size(), single, null));
-                case NoxesiumLayer.NestedLayers group -> process(group, result);
+                case NoxesiumLayer.Layer single -> result.add(new LayerWithReference(result.size() + offset.getValue(), single, null));
+                case NoxesiumLayer.NestedLayers group -> process(group, result, offset);
             }
         }
         return result;
@@ -123,13 +126,17 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
     /**
      * Adds the contents of the layer group to the given list.
      */
-    private void process(NoxesiumLayer.NestedLayers target, List<LayerWithReference> list) {
+    private void process(NoxesiumLayer.NestedLayers target, List<LayerWithReference> list, MutableInt offset) {
         for (var layer : target.layers()) {
             switch (layer) {
-                case NoxesiumLayer.Layer single -> list.add(new LayerWithReference(list.size(), single, target));
-                case NoxesiumLayer.NestedLayers group -> process(group, list);
+                case NoxesiumLayer.Layer single -> list.add(new LayerWithReference(list.size() + offset.getValue(), single, target));
+                case NoxesiumLayer.NestedLayers group -> process(group, list, offset);
             }
         }
+
+        // Vanilla offsets the Z level at which it draws after every render call, including the one that draws
+        // an entire group, so there is an extra arbitrary offset after each group.
+        offset.increment();
     }
 
     /**
