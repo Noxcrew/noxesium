@@ -20,7 +20,7 @@
   "noxesium.options.screen.noxesium": "Noxesium 设置",
   "noxesium.options.fps_overlay.name": "帧率显示",
   "noxesium.options.fps_overlay.tooltip": "在屏幕左上角添加一个显示层，显示当前的帧率。",
-  "noxesium.options.reset_toggle_keys.name": "重生重置疾跑切换键",
+  "noxesium.options.reset_toggle_keys.name": "重生后重置行动状态",
   "noxesium.options.reset_toggle_keys.tooltip": "当您重生时，是否重置行动状态（疾跑/潜行）。通常在原版中是开启的。",
   "noxesium.options.render_maps_as_ui.name": "将地图渲染为 UI",
   "noxesium.options.render_maps_as_ui.tooltip": "如果启用，手持的地图将渲染在屏幕的左上角/右上角，代替手的位置。\n\n如果设置为“询问服务器”，则您正在游玩的服务器可以启用或禁用此功能。",
