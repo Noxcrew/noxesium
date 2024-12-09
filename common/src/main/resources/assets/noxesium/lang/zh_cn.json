@@ -37,8 +37,8 @@
   "noxesium.options.qib_debug_visuals.tooltip": "启用可视化调试qib系统的效果。\n\n§c仅适用于正在开发集成Noxesium的服务器开发者。",
   "noxesium.options.extended_packet_logging.name": "错误日志扩展",
   "noxesium.options.extended_packet_logging.tooltip": "为各种类型的无效数据包异常添加额外的错误日志。\n\n§c仅适用于服务器开发者。",
-  "noxesium.options.enable_glowing_keybinds.name": "队伍发光快捷键",
-  "noxesium.options.enable_glowing_keybinds.tooltip": "添加额外的快捷键，使玩家根据他们的队伍颜色发光。需要重启游戏以应用！\n\n§c快捷键仅在观战时有效。",
+  "noxesium.options.enable_glowing_keybinds.name": "色队伍伍发光快捷键",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "添加额外的快捷键，使玩家根据他们的色队伍伍颜色发光。需要重启游戏以应用！\n\n§c快捷键仅在观战时有效。",
 
   "noxesium.options.experimental_patches.name": "实验性优化",
   "noxesium.options.experimental_patches.tooltip.v2": "§f启用实验性优化，动态调整UI渲染d帧率的。\n\n§c警告：如果您在使用此设置时遇到任何UI渲染问题，请向Noxesium报告问题，而不是其他的模组。",
@@ -62,17 +62,17 @@
   
   "category.noxesium": "Noxesium",
 
-  "key.noxesium.glow.red": "切换红队发光（旁观者）",
-  "key.noxesium.glow.orange": "切换橙队发光 (旁观者)",
-  "key.noxesium.glow.yellow": "切换黄队发光 (旁观者)",
-  "key.noxesium.glow.lime": "切换石灰队发光 (旁观者)",
-  "key.noxesium.glow.green": "切换绿队发光 (旁观者)",
-  "key.noxesium.glow.cyan": "切换青队发光 (旁观者)",
-  "key.noxesium.glow.aqua": "切换黄绿队发光 (旁观者)",
-  "key.noxesium.glow.blue": "切换蓝队发光 (旁观者)",
-  "key.noxesium.glow.purple": "切换紫队发光 (旁观者)",
-  "key.noxesium.glow.pink": "切换粉红队发光 (旁观者)",
+  "key.noxesium.glow.red": "切换红色队伍发光（旁观者）",
+  "key.noxesium.glow.orange": "切换橙色队伍发光 (旁观者)",
+  "key.noxesium.glow.yellow": "切换黄色队伍发光 (旁观者)",
+  "key.noxesium.glow.lime": "切换缥色队伍发光 (旁观者)",
+  "key.noxesium.glow.green": "切换绿色队伍发光 (旁观者)",
+  "key.noxesium.glow.cyan": "切换青色队伍发光 (旁观者)",
+  "key.noxesium.glow.aqua": "切换翠色队伍发光 (旁观者)",
+  "key.noxesium.glow.blue": "切换蓝色队伍发光 (旁观者)",
+  "key.noxesium.glow.purple": "切换紫色队伍发光 (旁观者)",
+  "key.noxesium.glow.pink": "切换粉红色队伍发光 (旁观者)",
 
-  "key.noxesium.glow.all": "启用所有队伍发光 (旁观者)",
-  "key.noxesium.glow.none": "禁用所有队伍发光 (旁观者)"
+  "key.noxesium.glow.all": "启用所有色队伍伍发光 (旁观者)",
+  "key.noxesium.glow.none": "禁用所有色队伍伍发光 (旁观者)"
 }
