@@ -53,10 +53,10 @@
   "noxesium.options.enum.true": "总是",
   "noxesium.options.enum.false": "从不",
 
-  "noxesium.options.enum.top": "上方角落",
-  "noxesium.options.enum.bottom": "下方角落",
-  "noxesium.options.enum.top_flipped": "上方相反角落",
-  "noxesium.options.enum.bottom_flipped": "下方相反角落",
+  "noxesium.options.enum.top": "同侧顶部",
+  "noxesium.options.enum.bottom": "同侧底部",
+  "noxesium.options.enum.top_flipped": "异侧顶部",
+  "noxesium.options.enum.bottom_flipped": "异侧底部",
 
   "itemGroup.noxesium.server_items": "自定义方块",
   
