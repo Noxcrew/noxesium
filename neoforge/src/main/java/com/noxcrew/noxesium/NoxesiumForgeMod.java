@@ -40,7 +40,7 @@ public class NoxesiumForgeMod {
 
         // Add the custom creative tab for server items
         var creativeTab = new CustomServerCreativeItems();
-        NeoForge.EVENT_BUS.register(creativeTab);
+        container.getEventBus().register(creativeTab);
         NoxesiumMod.getInstance().registerModule(creativeTab);
     }
 

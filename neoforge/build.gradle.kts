@@ -29,9 +29,11 @@ neoForge {
 }
 
 dependencies {
-    // Include dependencies in jar
-    implementation(project(":api"))
-    implementation(libs.prtree)
+    // Include dependencies in jar and at runtime
+    jarJar(project(":api"))
+    jarJar(libs.prtree)
+    additionalRuntimeClasspath(project(":api"))
+    additionalRuntimeClasspath(libs.prtree)
 }
 
 tasks {

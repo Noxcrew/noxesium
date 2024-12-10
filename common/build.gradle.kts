@@ -14,7 +14,7 @@ neoForge {
 
 dependencies {
     // Include the API project
-    api(project(":api"))
+    compileOnlyApi(project(":api"))
 
     // Include mixins with mixin extras
     implementation(libs.mixin)
@@ -22,7 +22,7 @@ dependencies {
     annotationProcessor(libs.mixinextras)
 
     // Use PRTree as a custom dependency
-    api(libs.prtree)
+    compileOnlyApi(libs.prtree)
 
     // Add Sodium as a compile dependency available to all subprojects
     if (property("enableSodium") == "true") {
