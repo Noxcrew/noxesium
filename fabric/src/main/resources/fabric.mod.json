@@ -55,11 +55,11 @@
   "depends": {
     "fabric": "*",
     "fabricloader": ">=0.16.9",
-    "fabric-api": ">=0.109.1",
-    "minecraft": ">=1.21.4-beta.1"
+    "fabric-api": ">=0.110.5",
+    "minecraft": ">=1.21.4"
   },
   "suggests": {
-    "sodium": ">=0.6.0-beta.3"
+    "sodium": ">=0.6.0"
   },
   "breaks": {
     "optifabric": "*"

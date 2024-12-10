@@ -16,12 +16,12 @@ Improves play experience on large multiplayer servers.
 [[dependencies.noxesium]]
     modId = "minecraft"
     type = "required"
-    versionRange = "[1.21.3,]"
+    versionRange = "[1.21.4,]"
 
 [[dependencies.noxesium]]
     modId = "neoforge"
     type = "required"
-    versionRange = "[21.3.40-beta,]"
+    versionRange = "[21.4.0-beta,]"
 
 [[dependencies.noxesium]]
     modId = "optifine"
