@@ -9,6 +9,10 @@ repositories {
 
 loom {
     accessWidenerPath.set(project(":common").file("src/main/resources/noxesium.accesswidener"))
+
+    mixin {
+        defaultRefmapName.set("noxesium.refmap.json")
+    }
 }
 
 dependencies {
@@ -31,8 +35,12 @@ dependencies {
     }
 
     // Include dependencies in jar
-    include(project(":api"))
-    include(libs.prtree)
+    project(":api").apply {
+        include(this)
+        api(this)
+    }
+    include("org.khelekore:prtree:1.5")
+    implementation("org.khelekore:prtree:1.5")
 }
 
 tasks {

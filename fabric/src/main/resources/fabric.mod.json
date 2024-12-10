@@ -13,7 +13,7 @@
     "issues": "https://github.com/Noxcrew/noxesium/issues"
   },
   "license": "LGPL-3.0-only",
-  "icon": "icon.png",
+  "icon": "assets/noxesium/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [

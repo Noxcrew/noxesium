@@ -17,8 +17,8 @@ dependencies {
     compileOnlyApi(project(":api"))
 
     // Include mixins with mixin extras
-    implementation(libs.mixin)
-    implementation(libs.mixinextras)
+    compileOnly(libs.mixin)
+    compileOnly(libs.mixinextras)
     annotationProcessor(libs.mixinextras)
 
     // Use PRTree as a custom dependency
