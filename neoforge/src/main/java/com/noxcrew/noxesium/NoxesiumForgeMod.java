@@ -32,6 +32,9 @@ public class NoxesiumForgeMod {
         // Register this file as a listener
         NeoForge.EVENT_BUS.register(this);
 
+        // Register a listener on our own mod bus for the reload listeners
+        container.getEventBus().addListener(RegisterClientReloadListenersEvent.class, this::registerReloadListeners);
+
         // Set up the NoxesiumMod
         new NoxesiumMod(new NoxesiumForgeHook(container));
 
@@ -68,7 +71,6 @@ public class NoxesiumForgeMod {
     /**
      * Hook into client reloading for shader caching.
      */
-    @SubscribeEvent
     public void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(new PreparableReloadListener() {
             @Override

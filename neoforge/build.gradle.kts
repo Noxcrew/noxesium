@@ -28,8 +28,22 @@ neoForge {
     }
 }
 
+dependencies {
+    // Include dependencies in jar
+    implementation(project(":api"))
+    implementation(libs.prtree)
+}
+
 tasks {
     named<ProcessResources>("processResources").configure {
         exclude("noxesium.accesswidener")
+    }
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        isDownloadSources = true
+        isDownloadJavadoc = true
     }
 }
