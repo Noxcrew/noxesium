@@ -12,7 +12,6 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Manages a buffer and its current dynamic fps.
@@ -39,11 +38,12 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private long nextRender = -1;
     private int bufferIndex = 0;
 
-    private Supplier<String> displayName;
     private boolean movementDirection = false;
     private long lastChange = System.currentTimeMillis();
 
-    /** The amount of snapshots that recently matched. */
+    /**
+     * The amount of snapshots that recently matched.
+     */
     public int matches = 0;
 
     /**
@@ -51,10 +51,8 @@ public class DynamicElement implements Closeable, BlendStateHook {
      */
     private double renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
 
-    public DynamicElement(Supplier<String> displayName) {
-        // Create a first buffer
-        this.displayName = displayName;
-        buffers.add(new ElementBuffer(displayName));
+    public DynamicElement() {
+        buffers.add(new ElementBuffer());
     }
 
     /**
@@ -309,7 +307,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
             return buffers.get(index);
         }
         if (index == buffers.size()) {
-            var newBuffer = new ElementBuffer(displayName);
+            var newBuffer = new ElementBuffer();
             buffers.add(newBuffer);
             return newBuffer;
         }

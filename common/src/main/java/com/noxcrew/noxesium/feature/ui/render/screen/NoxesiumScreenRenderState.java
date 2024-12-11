@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class NoxesiumScreenRenderState implements NoxesiumRenderState {
 
     private Screen lastScreen;
-    private final DynamicElement dynamic = new DynamicElement(() -> "Screen");
+    private final DynamicElement dynamic = new DynamicElement();
 
     /**
      * Returns the dynamic element used for rendering the screen.

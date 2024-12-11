@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL44;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
 
 /**
  * A wrapper around a RenderTarget used for capturing rendered UI elements
@@ -43,11 +42,6 @@ public class ElementBuffer implements Closeable {
     private BlendState blendState;
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
-    private Supplier<String> displayName;
-
-    public ElementBuffer(Supplier<String> displayName) {
-        this.displayName = displayName;
-    }
 
     /**
      * Updates the blend state associated with this buffer.
@@ -100,13 +94,26 @@ public class ElementBuffer implements Closeable {
         // Bind the PBO to tell the GPU to read the frame buffer's
         // texture into it directly
         pbos[currentIndex].bind();
-        GL11.glGetTexImage(
+
+        var window = Minecraft.getInstance().getWindow();
+        GL11.glReadPixels(0,
+                0,
+                window.getWidth(),
+                window.getHeight(),
+                GL30.GL_BGRA,
+                GL11.GL_UNSIGNED_BYTE,
+                0
+        );
+
+        // GetTexImage produces weird results sometimes, it doesn't seem to catch
+        // the crosshair changing and thinks the scoreboard changes every tick.
+        /*GL11.glGetTexImage(
                 GL11.GL_TEXTURE_2D,
                 0,
                 GL30.GL_BGRA,
                 GL11.GL_UNSIGNED_BYTE,
                 0
-        );
+        );*/
 
         // Unbind the PBO so it doesn't get modified afterwards
         GlStateManager._glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
