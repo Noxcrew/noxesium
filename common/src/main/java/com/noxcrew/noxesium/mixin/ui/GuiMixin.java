@@ -91,7 +91,7 @@ public abstract class GuiMixin {
                     case NoxesiumUiRenderState state -> {
                         for (var group : state.groups()) {
                             var dynamic = group.dynamic();
-                            text.add(Component.literal("§b" + group.layerNames() + (group.dynamic().buffers() > 1 ? " §3(+" + (group.dynamic().buffers() - 1) + ")" : "") + (group.dynamic().isEmpty() ? " §9(empty)" : "") + ": §f" + dynamic.framerate() + " - " + dynamic.matches));
+                            text.add(Component.literal("§b" + group.layerNames() + (group.dynamic().buffers() > 1 ? " §3(+" + (group.dynamic().buffers() - 1) + ")" : "") + (group.dynamic().isEmpty() ? " §9(empty)" : "") + ": §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
                         }
                     }
                     case NoxesiumScreenRenderState state -> {
@@ -99,7 +99,7 @@ public abstract class GuiMixin {
                         if (Minecraft.getInstance().screen instanceof MenuAccess<?> ||
                                 Minecraft.getInstance().screen instanceof ChatScreen) {
                             var dynamic = state.dynamic();
-                            text.add(Component.literal("§eScreen: §f" + dynamic.framerate()));
+                            text.add(Component.literal("§eScreen: §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
                         }
                     }
                     case null, default -> {

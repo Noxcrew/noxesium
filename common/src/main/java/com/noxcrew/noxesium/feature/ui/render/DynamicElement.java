@@ -31,6 +31,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private boolean needsRedraw = true;
     private boolean canCheck = true;
     private boolean lastBlending = true;
+    private boolean hasChangedLayers = false;
 
     private int renders = 0;
     private long nextCheck = System.nanoTime() + 1000000000;
@@ -40,11 +41,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
     private boolean movementDirection = false;
     private long lastChange = System.currentTimeMillis();
-
-    /**
-     * The amount of snapshots that recently matched.
-     */
-    public int matches = 0;
+    private int matches = 0;
 
     /**
      * The current fps at which we re-render the UI elements.
@@ -93,6 +90,13 @@ public class DynamicElement implements Closeable, BlendStateHook {
      */
     public int renderFramerate() {
         return (int) Math.floor(renderFps);
+    }
+
+    /**
+     * Returns the percentage of matching frames.
+     */
+    public String matchRate() {
+        return String.format("%.2f", ((double) matches) / 60d);
     }
 
     /**
@@ -197,7 +201,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public void tick() {
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
-        var verdict = true;
+        var verdict = !hasChangedLayers;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
                 // Process the snapshots
@@ -205,29 +209,30 @@ public class DynamicElement implements Closeable, BlendStateHook {
                 if (snapshots == null) return;
                 if (!compare(snapshots[0], snapshots[1])) {
                     verdict = false;
+                    break;
                 }
             }
         }
 
+        // This means we are lowering fps, if anything changes more than thrice we go back.
+        if (verdict) {
+            matches = Math.min(60, matches + 1);
+        } else {
+            matches = Math.max(0, matches - 3);
+        }
+
         if (movementDirection) {
-            // This means we are lowering fps, if anything changes we go back.
-            if (verdict) {
-                var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-                renderFps = Math.max(1, Math.min(max, max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d))));
-            } else {
+            var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+            renderFps = Math.clamp(Math.max(max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d)), max * ((double) (60 - matches) / 10d)), 0, max);
+
+            // If matches falls too far
+            if (matches <= 40) {
                 resetToMax();
             }
         } else {
-            // This means we are trying to lower fps as we are currently at the maximum.
-            if (verdict) {
-                matches = Math.min(60, matches + 1);
-            } else {
-                matches = Math.max(0, matches - 5);
-            }
-
-            // If we've reached 50 matches we
+            // If we've reached 60 matches we
             // try to start building down!
-            if (matches >= 50) {
+            if (matches >= 60) {
                 movementDirection = true;
                 lastChange = System.currentTimeMillis();
             }
@@ -289,6 +294,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         var firstUnusedBufferIndex = elementsWereDrawn ? bufferIndex + 1 : bufferIndex;
         for (var index = Math.max(1, firstUnusedBufferIndex); index < buffers.size(); index++) {
             buffers.remove(index).close();
+            hasChangedLayers = true;
         }
         bufferZeroInvalid = firstUnusedBufferIndex == 0;
 
@@ -309,6 +315,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         if (index == buffers.size()) {
             var newBuffer = new ElementBuffer();
             buffers.add(newBuffer);
+            hasChangedLayers = true;
             return newBuffer;
         }
         throw new IllegalArgumentException("Cannot get a buffer at an invalid index");
