@@ -144,7 +144,7 @@ public class NoxesiumMod {
                                 state.tick();
                             }
                         });
-                        Thread.sleep(100);
+                        Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
                     }

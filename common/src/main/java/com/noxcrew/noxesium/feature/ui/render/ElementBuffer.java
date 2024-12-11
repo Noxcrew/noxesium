@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL44;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
  * A wrapper around a RenderTarget used for capturing rendered UI elements
@@ -42,8 +43,10 @@ public class ElementBuffer implements Closeable {
     private BlendState blendState;
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
+    private Supplier<String> displayName;
 
-    public ElementBuffer() {
+    public ElementBuffer(Supplier<String> displayName) {
+        this.displayName = displayName;
     }
 
     /**
@@ -88,7 +91,7 @@ public class ElementBuffer implements Closeable {
      * Snapshots the current buffer contents to a PBO.
      */
     public void snapshot() {
-        if (fence != null || pbos == null) return;
+        if (fence != null || pbos == null || buffers == null) return;
 
         // Flip which buffer we are drawing into
         if (currentIndex == 1) currentIndex = 0;
@@ -228,7 +231,6 @@ public class ElementBuffer implements Closeable {
     @Override
     public void close() {
         buffers = null;
-
         if (pbos != null) {
             for (var pbo : pbos) {
                 pbo.close();
