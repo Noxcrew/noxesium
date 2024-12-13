@@ -50,9 +50,9 @@ Noxesium contains a performance patch which reworks UI rendering to have a dynam
 Noxesium also fixes various small client bugs that relate to multiplayer servers.
 
 - Fixes jittery behavior of teleporting entities on mounts
-- Fixes lighting issues with moving piston walls
-- Music properly resumes playing when setting the volume to 0% and back up
-- Fixes the backgrounds of text displays not being transparent
+- Fixes MC-256850 so moving piston walls don't flicker as much while moving
+- Fixes MC-259812 so entity models are properly visible behind text displays
+
 
 ### MCC Island-specific Features
 
