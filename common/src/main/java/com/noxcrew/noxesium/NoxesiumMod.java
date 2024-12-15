@@ -125,6 +125,8 @@ public class NoxesiumMod {
                         SpatialInteractionEntityTree.rebuild();
                     } catch (InterruptedException ex) {
                         return;
+                    } catch (Exception ex) {
+                        logger.error("Caught exception from Noxesium Spatial Container Rebuild Thread", ex);
                     }
                 }
             }
@@ -144,9 +146,11 @@ public class NoxesiumMod {
                                 state.tick();
                             }
                         });
-                        Thread.sleep(100);
+                        Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
+                    } catch (Exception ex) {
+                        logger.error("Caught exception from Noxesium Frame Comparison Thread", ex);
                     }
                 }
             }

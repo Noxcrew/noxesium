@@ -30,6 +30,8 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private boolean bufferZeroInvalid = false;
     private boolean needsRedraw = true;
     private boolean canCheck = true;
+    private boolean lastBlending = true;
+    private boolean hasChangedLayers = false;
 
     private int renders = 0;
     private long nextCheck = System.nanoTime() + 1000000000;
@@ -38,8 +40,8 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private int bufferIndex = 0;
 
     private boolean movementDirection = false;
-    private int matches = 0;
     private long lastChange = System.currentTimeMillis();
+    private int matches = 0;
 
     /**
      * The current fps at which we re-render the UI elements.
@@ -47,7 +49,6 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private double renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
 
     public DynamicElement() {
-        // Create a first buffer
         buffers.add(new ElementBuffer());
     }
 
@@ -89,6 +90,13 @@ public class DynamicElement implements Closeable, BlendStateHook {
      */
     public int renderFramerate() {
         return (int) Math.floor(renderFps);
+    }
+
+    /**
+     * Returns the percentage of matching frames.
+     */
+    public String matchRate() {
+        return String.format("%.2f", ((double) matches) / 60d);
     }
 
     /**
@@ -172,7 +180,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     /**
      * Returns whether this element is often changing. Used to determine
      * when it should be split up this buffer.
-     *
+     * <p>
      * Determined by if we are currently stuck at max fps, and it's been
      * at least a second.
      */
@@ -193,7 +201,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public void tick() {
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
-        var verdict = true;
+        var verdict = !hasChangedLayers;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
                 // Process the snapshots
@@ -201,35 +209,36 @@ public class DynamicElement implements Closeable, BlendStateHook {
                 if (snapshots == null) return;
                 if (!compare(snapshots[0], snapshots[1])) {
                     verdict = false;
+                    break;
                 }
             }
         }
 
+        // This means we are lowering fps, if anything changes more than thrice we go back.
+        if (verdict) {
+            matches = Math.min(60, matches + 1);
+        } else {
+            matches = Math.max(0, matches - 3);
+        }
+
         if (movementDirection) {
-            // This means we are lowering fps, if anything changes we go back.
-            if (verdict) {
-                var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-                renderFps = Math.max(1, Math.min(max, max * (1.0 - (double) ((System.currentTimeMillis() - lastChange) / 10000))));
-            } else {
+            var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+            renderFps = Math.clamp(Math.max(max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d)), max * ((double) (60 - matches) / 10d)), 0, max);
+
+            // If matches falls too far
+            if (matches <= 40) {
                 resetToMax();
             }
         } else {
-            // This means we are trying to lower fps as we are currently at the maximum.
-            if (verdict) {
-                matches = Math.min(200, matches + 1);
-            } else {
-                matches = Math.max(0, matches - 5);
-            }
-
-            // If we've reached 150 matches we
+            // If we've reached 60 matches we
             // try to start building down!
-            if (matches >= 150) {
+            if (matches >= 60) {
                 movementDirection = true;
                 lastChange = System.currentTimeMillis();
             }
         }
 
-        // Request new PBO's from all buffers
+        // Request new PBOs from all buffers
         if (isNotEmpty()) {
             for (var buffer : buffers) {
                 buffer.requestNewPBO();
@@ -268,6 +277,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
         // Draw the layers onto the buffer while capturing the blending state
         elementsWereDrawn = false;
+        lastBlending = true;
         SharedVertexBuffer.blendStateHook = this;
         draw.run();
 
@@ -275,24 +285,21 @@ public class DynamicElement implements Closeable, BlendStateHook {
         guiGraphics.flush();
         SharedVertexBuffer.blendStateHook = null;
 
+        // Try to snapshot still if we can
+        trySnapshotBuffer();
+
         // Remove any remaining buffers, if no elements were drawn onto the last one
         // we also remove that. Always keep at least 1 buffer otherwise we re-create
         // them too often.
         var firstUnusedBufferIndex = elementsWereDrawn ? bufferIndex + 1 : bufferIndex;
         for (var index = Math.max(1, firstUnusedBufferIndex); index < buffers.size(); index++) {
             buffers.remove(index).close();
+            hasChangedLayers = true;
         }
         bufferZeroInvalid = firstUnusedBufferIndex == 0;
 
-        // Run PBO snapshot creation logic only if we want to run a check
+        // Unset check
         if (canCheck) {
-            if (isNotEmpty()) {
-                for (var buffer : buffers) {
-                    if (buffer.canSnapshot()) {
-                        buffer.snapshot();
-                    }
-                }
-            }
             canCheck = false;
         }
         return true;
@@ -308,6 +315,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         if (index == buffers.size()) {
             var newBuffer = new ElementBuffer();
             buffers.add(newBuffer);
+            hasChangedLayers = true;
             return newBuffer;
         }
         throw new IllegalArgumentException("Cannot get a buffer at an invalid index");
@@ -315,30 +323,38 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
     @Override
     public boolean changeState(boolean newValue) {
-        // Ignore any enabling of blending as blending is already enabled
-        if (newValue) return false;
+        // Ignore any changes if we're already in this state, but allow changing it to be enabled!
+        if (newValue == lastBlending) return !newValue;
+        lastBlending = newValue;
 
-        // If blending is turned off at any point we don't need to fork the buffer, we just need to temporarily change how
-        // we approach blending. We want to copy the RGB normally but set the alpha to a static value of 255. For this we
-        // use the constant color system.
-        SharedVertexBuffer.ignoreBlendStateHook = true;
-        GlStateManager._blendFuncSeparate(
-                // Copy normal colors directly
-                GL14.GL_ONE,
-                GL14.GL_ZERO,
-                // Use the constant color's alpha value
-                // for the resulting pixel in the buffer,
-                // since the buffer starts out being entirely
-                // transparent this puts a fully opaque
-                // pixels at any pixel we draw to when not
-                // blending.
-                GL14.GL_CONSTANT_ALPHA,
-                GL14.GL_ZERO
-        );
-        SharedVertexBuffer.ignoreBlendStateHook = false;
+        if (newValue) {
+            // Set blending back to the normal mode
+            SharedVertexBuffer.ignoreBlendStateHook = true;
+            DEFAULT_BLEND_STATE.apply();
+            SharedVertexBuffer.ignoreBlendStateHook = false;
+        } else {
+            // If blending is turned off at any point we don't need to fork the buffer, we just need to temporarily change how
+            // we approach blending. We want to copy the RGB normally but set the alpha to a static value of 255. For this we
+            // use the constant color system.
+            SharedVertexBuffer.ignoreBlendStateHook = true;
+            GlStateManager._blendFuncSeparate(
+                    // Copy normal colors directly
+                    GL14.GL_ONE,
+                    GL14.GL_ZERO,
+                    // Use the constant color's alpha value
+                    // for the resulting pixel in the buffer,
+                    // since the buffer starts out being entirely
+                    // transparent this puts a fully opaque
+                    // pixels at any pixel we draw to when not
+                    // blending.
+                    GL14.GL_CONSTANT_ALPHA,
+                    GL14.GL_ZERO
+            );
+            SharedVertexBuffer.ignoreBlendStateHook = false;
+        }
 
         // Don't let the blending disable go through
-        return true;
+        return !newValue;
     }
 
     @Override
@@ -356,6 +372,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
             GlStateManager._enableBlend();
             SharedVertexBuffer.ignoreBlendStateHook = false;
 
+            trySnapshotBuffer();
             var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
             buffer.bind(guiGraphics);
             buffer.updateBlendState(null);
@@ -368,6 +385,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         if (isNormal) return false;
 
         // Update the buffer to the next one
+        trySnapshotBuffer();
         var buffer = getBuffer(elementsWereDrawn ? ++bufferIndex : bufferIndex);
         buffer.bind(guiGraphics);
         buffer.updateBlendState(BlendState.from(srcRgb, dstRgb, srcAlpha, dstAlpha));
@@ -382,18 +400,29 @@ public class DynamicElement implements Closeable, BlendStateHook {
         return true;
     }
 
+    /**
+     * Tries to make a snapshot fo the currently bound buffer.
+     */
+    private void trySnapshotBuffer() {
+        if (elementsWereDrawn && canCheck) {
+            var target = getBuffer(bufferIndex);
+            if (target.canSnapshot()) {
+                target.snapshot();
+            }
+        }
+    }
+
     @Override
     public void close() {
         for (var buffer : buffers) {
             buffer.close();
         }
-        buffers.clear();
     }
 
     /**
      * Compares two frame snapshots.
      */
     private boolean compare(ByteBuffer first, ByteBuffer second) {
-        return first.mismatch(second) == -1;
+        return first.equals(second);
     }
 }

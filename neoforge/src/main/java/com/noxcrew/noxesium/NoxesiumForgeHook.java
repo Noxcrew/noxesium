@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium;
 
-import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPacketHandler;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
@@ -9,7 +8,6 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -19,7 +17,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -44,7 +41,7 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
 
     public NoxesiumForgeHook(ModContainer modContainer) {
         this.modContainer = modContainer;
-        NeoForge.EVENT_BUS.register(this);
+        modContainer.getEventBus().register(this);
     }
 
     @Override

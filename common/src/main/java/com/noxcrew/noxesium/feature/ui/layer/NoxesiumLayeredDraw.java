@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.feature.ui.layer;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.LayerWithReference;
 import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
+import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import net.minecraft.client.DeltaTracker;
@@ -67,6 +68,9 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
                 state.close();
                 state = null;
             }
+
+            // Ensure everything is disabled!
+            SharedVertexBuffer.reset();
 
             // Directly draw everything to the screen
             guiGraphics.pose().pushPose();

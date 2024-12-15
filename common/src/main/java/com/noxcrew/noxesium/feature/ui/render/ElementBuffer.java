@@ -43,9 +43,6 @@ public class ElementBuffer implements Closeable {
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
 
-    public ElementBuffer() {
-    }
-
     /**
      * Updates the blend state associated with this buffer.
      */
@@ -88,7 +85,7 @@ public class ElementBuffer implements Closeable {
      * Snapshots the current buffer contents to a PBO.
      */
     public void snapshot() {
-        if (fence != null || pbos == null) return;
+        if (fence != null || pbos == null || buffers == null) return;
 
         // Flip which buffer we are drawing into
         if (currentIndex == 1) currentIndex = 0;
@@ -97,13 +94,26 @@ public class ElementBuffer implements Closeable {
         // Bind the PBO to tell the GPU to read the frame buffer's
         // texture into it directly
         pbos[currentIndex].bind();
-        GL11.glGetTexImage(
+
+        var window = Minecraft.getInstance().getWindow();
+        GL11.glReadPixels(0,
+                0,
+                window.getWidth(),
+                window.getHeight(),
+                GL30.GL_BGRA,
+                GL11.GL_UNSIGNED_BYTE,
+                0
+        );
+
+        // GetTexImage produces weird results sometimes, it doesn't seem to catch
+        // the crosshair changing and thinks the scoreboard changes every tick.
+        /*GL11.glGetTexImage(
                 GL11.GL_TEXTURE_2D,
                 0,
                 GL30.GL_BGRA,
                 GL11.GL_UNSIGNED_BYTE,
                 0
-        );
+        );*/
 
         // Unbind the PBO so it doesn't get modified afterwards
         GlStateManager._glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
@@ -228,7 +238,6 @@ public class ElementBuffer implements Closeable {
     @Override
     public void close() {
         buffers = null;
-
         if (pbos != null) {
             for (var pbo : pbos) {
                 pbo.close();

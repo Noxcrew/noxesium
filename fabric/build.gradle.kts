@@ -7,6 +7,14 @@ repositories {
     maven { url = uri("https://maven.shedaniel.me/") }
 }
 
+loom {
+    accessWidenerPath.set(project(":common").file("src/main/resources/noxesium.accesswidener"))
+
+    mixin {
+        defaultRefmapName.set("noxesium.refmap.json")
+    }
+}
+
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft("com.mojang:minecraft:${property("minecraft_version")}")
@@ -27,12 +35,12 @@ dependencies {
     }
 
     // Include dependencies in jar
-    include(project(":api"))
-    include(libs.prtree)
-}
-
-loom {
-    accessWidenerPath.set(project(":common").file("src/main/resources/noxesium.accesswidener"))
+    project(":api").apply {
+        include(this)
+        api(this)
+    }
+    include("org.khelekore:prtree:1.5")
+    implementation("org.khelekore:prtree:1.5")
 }
 
 tasks {

@@ -23,9 +23,17 @@ neoForge {
 
     mods {
         register("noxesium") {
-            sourceSet(sourceSets["main"])
+            sourceSet(sourceSets.main.get())
         }
     }
+}
+
+dependencies {
+    // Include dependencies in jar and at runtime
+    jarJar(project(":api"))
+    jarJar(libs.prtree)
+    additionalRuntimeClasspath(project(":api"))
+    additionalRuntimeClasspath(libs.prtree)
 }
 
 tasks {

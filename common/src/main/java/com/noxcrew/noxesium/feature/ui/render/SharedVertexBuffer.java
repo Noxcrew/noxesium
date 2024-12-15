@@ -42,6 +42,21 @@ public class SharedVertexBuffer implements Closeable {
     private static final AtomicBoolean configuring = new AtomicBoolean(false);
 
     /**
+     * Resets any cached values.
+     */
+    public static void reset() {
+        if (blendStateHook != null) {
+            blendStateHook = null;
+        }
+        if (!allowRebindingTarget) {
+            allowRebindingTarget = true;
+        }
+        if (ignoreBlendStateHook) {
+            ignoreBlendStateHook = false;
+        }
+    }
+
+    /**
      * Binds this vertex buffer.
      */
     public static void bind() {

@@ -32,12 +32,15 @@ public class NoxesiumForgeMod {
         // Register this file as a listener
         NeoForge.EVENT_BUS.register(this);
 
+        // Register a listener on our own mod bus for the reload listeners
+        container.getEventBus().addListener(RegisterClientReloadListenersEvent.class, this::registerReloadListeners);
+
         // Set up the NoxesiumMod
         new NoxesiumMod(new NoxesiumForgeHook(container));
 
         // Add the custom creative tab for server items
         var creativeTab = new CustomServerCreativeItems();
-        NeoForge.EVENT_BUS.register(creativeTab);
+        container.getEventBus().register(creativeTab);
         NoxesiumMod.getInstance().registerModule(creativeTab);
     }
 
@@ -68,7 +71,6 @@ public class NoxesiumForgeMod {
     /**
      * Hook into client reloading for shader caching.
      */
-    @SubscribeEvent
     public void registerReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(new PreparableReloadListener() {
             @Override

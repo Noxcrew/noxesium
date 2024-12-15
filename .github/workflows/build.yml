@@ -31,7 +31,10 @@ jobs:
             - name: Gradle Build
               run: ./gradlew build
 
-            - name: Clean Up Artifacts
+            - name: Clean Up NeoForge Artifacts
+              run: rm neoforge/build/libs/*-sources.jar
+
+            - name: Clean Up Fabric Artifacts
               run: rm fabric/build/libs/*-sources.jar
 
             - name: Upload Artifacts

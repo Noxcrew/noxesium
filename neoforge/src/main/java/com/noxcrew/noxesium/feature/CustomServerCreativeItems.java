@@ -22,7 +22,7 @@ public class CustomServerCreativeItems implements NoxesiumModule {
     private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
 
     @SubscribeEvent
-    public static void registerCreativeTab(RegisterEvent event) {
+    public void registerCreativeTab(RegisterEvent event) {
         event.register(
                 Registries.CREATIVE_MODE_TAB,
                 registry -> {

@@ -13,21 +13,6 @@ description = '''
 Improves play experience on large multiplayer servers.
 '''
 
-[[dependencies.noxesium]]
-    modId = "minecraft"
-    type = "required"
-    versionRange = "[1.21.3,]"
-
-[[dependencies.noxesium]]
-    modId = "neoforge"
-    type = "required"
-    versionRange = "[21.3.40-beta,]"
-
-[[dependencies.noxesium]]
-    modId = "optifine"
-    type = "incompatible"
-    reason = "OptiFine makes changes to the game that make development of Noxesium much harder. Please uninstall Noxesium if you want to use OptiFine."
-
 [[mixins]]
 config = "noxesium-common.mixins.json"
 
@@ -36,3 +21,18 @@ config = "noxesium-sodium.mixins.json"
 
 [[mixins]]
 config = "noxesium-forge.mixins.json"
+
+[[dependencies.noxesium]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "[1.21.4,]"
+
+[[dependencies.noxesium]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[21.4.0-beta,]"
+
+[[dependencies.noxesium]]
+    modId = "optifine"
+    type = "incompatible"
+    reason = "OptiFine makes changes to the game that make development of Noxesium much harder. Please uninstall Noxesium if you want to use OptiFine."
