@@ -64,10 +64,8 @@ public class SpatialInteractionEntityTree {
      * Rebuilds the model if applicable.
      */
     public static void rebuild() {
-        if (rebuilding.get()) return;
         if (!needsRebuilding.get()) return;
-
-        rebuilding.set(true);
+        if (!rebuilding.compareAndSet(false, true)) return;
         try {
             var world = Minecraft.getInstance().level;
             if (world == null) return;

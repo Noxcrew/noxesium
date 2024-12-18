@@ -45,15 +45,9 @@ public class SharedVertexBuffer implements Closeable {
      * Resets any cached values.
      */
     public static void reset() {
-        if (blendStateHook != null) {
-            blendStateHook = null;
-        }
-        if (!allowRebindingTarget) {
-            allowRebindingTarget = true;
-        }
-        if (ignoreBlendStateHook) {
-            ignoreBlendStateHook = false;
-        }
+        blendStateHook = null;
+        allowRebindingTarget = true;
+        ignoreBlendStateHook = false;
     }
 
     /**

@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.mixin.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.config.NoxesiumConfig;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.ui.CustomMapUiWidget;
@@ -71,20 +70,16 @@ public abstract class GuiMixin {
             text.add(Component.translatable("debug.game_time_overlay", String.format("%.5f", RenderSystem.getShaderGameTime()), (int) (RenderSystem.getShaderGameTime() * 24000)));
         }
 
-        // Add qib system debug information
+        // Add debug overlays if enabled, these are not using translations as they are purely for debugging purposes!
+        // Start with qib system debug information
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging && minecraft.player != null) {
             text.add(Component.literal("§bEntities in model: §7" + SpatialInteractionEntityTree.getModelContents().size()));
             text.add(Component.literal("§bIn water: " + (minecraft.player.isInWaterOrRain() ? "§aYes" : minecraft.player.noxesium$hasTridentCoyoteTime() ? "§eGrace" : "§cNo")));
             text.add(Component.literal("§bQib behavior amount: §7" + ServerRules.QIB_BEHAVIORS.getValue().size()));
         }
 
-        // Show extra text if the experimental patches are on
-        if (NoxesiumConfig.experimentalPatchesHotkey != null) {
-            text.add(Component.translatable("debug.experimental_patches." + (NoxesiumConfig.experimentalPatchesHotkey ? "on" : "off")));
-        }
-
-        // If the experimental patches are on we draw the current UI frame rates and group layouts
-        if (NoxesiumMod.getInstance().getConfig().showOptimizationOverlay) {
+        // If the dynamic UI updating is on we draw the current UI frame rates and group layouts
+        if (NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting && NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
             NoxesiumMod.forEachRenderStateHolder((it) -> {
                 var stateIn = it.get();
                 switch (stateIn) {
@@ -141,8 +136,7 @@ public abstract class GuiMixin {
         noxesium$addRenderLayer("Noxesium Text Overlay", this::noxesium$renderTextOverlay, () -> !this.getDebugOverlay().showDebugScreen() &&
                 (NoxesiumMod.getInstance().getConfig().showFpsOverlay ||
                         NoxesiumMod.getInstance().getConfig().showGameTimeOverlay ||
-                        NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging ||
-                        NoxesiumConfig.experimentalPatchesHotkey != null)
+                        NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging)
         );
     }
 }

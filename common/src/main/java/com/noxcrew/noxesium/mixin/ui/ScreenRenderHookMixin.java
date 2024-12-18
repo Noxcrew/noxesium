@@ -19,18 +19,15 @@ public class ScreenRenderHookMixin {
 
     @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
     public void renderScreen(Screen instance, GuiGraphics guiGraphics, int width, int height, float deltaTime) {
-        // If experimental patches are disabled we ignore all custom logic,
-        // or if we are not in a GUI menu.
-        if (!(instance instanceof MenuAccess || instance instanceof ChatScreen) || NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
+        if ((instance instanceof MenuAccess || instance instanceof ChatScreen) && NoxesiumMod.getInstance().getConfig().enableUiLimiting) {
+            // Create a new state object and let it render
+            if (ScreenRenderingHolder.getInstance().render(guiGraphics, width, height, deltaTime, instance)) return;
+        } else {
             // Destroy the state if it exists
             ScreenRenderingHolder.getInstance().clear();
-
-            // Directly draw everything to the screen
-            instance.renderWithTooltip(guiGraphics, width, height, deltaTime);
-            return;
         }
 
-        // Create a new state object and let it render
-        ScreenRenderingHolder.getInstance().render(guiGraphics, width, height, deltaTime, instance);
+        // Directly draw everything to the screen
+        instance.renderWithTooltip(guiGraphics, width, height, deltaTime);
     }
 }
