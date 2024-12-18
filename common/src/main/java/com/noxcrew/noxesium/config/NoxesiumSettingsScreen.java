@@ -25,9 +25,10 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
                 NoxesiumOptions.playerGlowingKeybinds(),
                 NoxesiumOptions.qibSystemDebugVisuals()
         );
-        this.list.addBig(NoxesiumOptions.experimentalPatches());
+        this.list.addBig(NoxesiumOptions.enableUiLimiting());
         this.list.addSmall(
                 NoxesiumOptions.maxUiFramerate(),
+                NoxesiumOptions.enableDynamicUiLimiting(),
                 NoxesiumOptions.optimizationOverlay()
         );
     }

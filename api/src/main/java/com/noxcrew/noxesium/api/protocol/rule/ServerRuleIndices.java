@@ -42,12 +42,7 @@ public class ServerRuleIndices {
      */
     public static final int HAND_ITEM_OVERRIDE = 8;
 
-    /**
-     * Disables the UI optimizations provided by Noxesium. There are currently
-     * no known incompatibilities (text shaders are fully supported), but this
-     * option is still provided in case it becomes necessary.
-     */
-    public static final int DISABLE_UI_OPTIMIZATIONS = 9;
+    // Id 9 has been removed.
 
     /**
      * Moves the handheld map to be shown in the top left/right corner instead of

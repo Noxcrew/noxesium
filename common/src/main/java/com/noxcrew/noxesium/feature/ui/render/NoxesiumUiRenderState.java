@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.render;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayeredDraw;
 import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
@@ -19,7 +20,6 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
 
     private final List<ElementBufferGroup> groups = new CopyOnWriteArrayList<>();
     private final Random random = new Random();
-    private final double updateFps = 0.5;
     private long nextUpdate = -1;
     private int lastSize = 0;
 
@@ -33,23 +33,85 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
     /**
      * Renders the given layered draw object to the screen.
      */
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, NoxesiumLayeredDraw layeredDraw) {
+    public boolean render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, NoxesiumLayeredDraw layeredDraw) {
         var nanoTime = System.nanoTime();
+        var dynamic = NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting;
 
-        // Update which groups exist
-        if (lastSize != layeredDraw.size()) {
-            lastSize = layeredDraw.size();
+        // Update all groups, re-ordering where each layer is located
+        updateGroups(layeredDraw, nanoTime, dynamic);
+
+        // Tick the groups, possibly redrawing the buffer contents, if any buffers got drawn to
+        // we want to unbind the buffer afterwards
+        for (var group : groups) {
+            // Determine if the group has recently changed their
+            // visibility state, if so request an immediate redraw!
+            for (var layer : group.layers()) {
+                if (layer.groups() == null) continue;
+                for (var layerGroup : layer.groups()) {
+                    if (layerGroup.hasChangedRecently()) {
+                        group.dynamic().redraw();
+                        break;
+                    }
+                }
+            }
+
+            // Update the dynamic element of the group
+            group.dynamic().update(nanoTime, guiGraphics, () -> {
+                outer:
+                for (var layer : group.layers()) {
+                    if (layer.groups() != null) {
+                        for (var layerGroup : layer.groups()) {
+                            if (!layerGroup.test()) {
+                                continue outer;
+                            }
+                        }
+                    }
+                    group.renderLayer(guiGraphics, deltaTracker, layer.layer(), layer.index());
+                }
+            });
+        }
+
+        // Unbind the frame buffers
+        BufferHelper.unbind();
+
+        // If any group is invalid we give up
+        for (var group : groups) {
+            if (group.dynamic().isInvalid()) return false;
+        }
+
+        // Draw all groups to the screen together
+        var ids = new ArrayList<BufferData>();
+        for (var group : groups) {
+            group.dynamic().submitTextureIds(ids);
+        }
+        SharedVertexBuffer.draw(ids);
+        return true;
+    }
+
+    /**
+     * Updates which groups are currently registered in this render state.
+     * Also ticks their visibility state.
+     */
+    private void updateGroups(NoxesiumLayeredDraw layeredDraw, long nanoTime, boolean dynamic) {
+        // Update which groups exist if the layered draw object has changed
+        var intendedSize = dynamic ? layeredDraw.size() : 1;
+        if (lastSize != intendedSize) {
+            lastSize = intendedSize;
             resetGroups();
 
             // Determine all layers ordered and flattened, then
-            // split them up into
+            // split them up into partitions if we are in dynamic mode
             var flattened = layeredDraw.flatten();
-
-            // Start by splitting into 4 partitions
-            var chunked = chunked(flattened, flattened.size() / 4);
-            for (var chunk : chunked) {
+            if (dynamic) {
+                var chunked = chunked(flattened, flattened.size() / 4);
+                for (var chunk : chunked) {
+                    var group = new ElementBufferGroup();
+                    group.addLayers(chunk);
+                    groups.add(group);
+                }
+            } else {
                 var group = new ElementBufferGroup();
-                group.addLayers(chunk);
+                group.addLayers(flattened);
                 groups.add(group);
             }
         }
@@ -59,82 +121,38 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
             group.update();
         }
 
-        // Try to split up or merge together groups, but don't run this too frequently!
-        if (nextUpdate == -1) {
-            nextUpdate = nanoTime;
-        }
-        if (nanoTime >= nextUpdate) {
-            // Schedule when we can next update the groups
-            nextUpdate = nanoTime + (long) Math.floor(((1 / updateFps) * random.nextDouble() * 1000000000));
+        // If we're in dynamic mode we try to update groups.
+        if (dynamic) {
+            // Try to split up or merge together groups, but don't run this too frequently!
+            if (nextUpdate == -1 || nanoTime >= nextUpdate) {
+                // Schedule when we can next update the groups
+                nextUpdate = nanoTime + random.nextLong(500000000);
 
-            // Iterate through all groups and make changes
-            var index = 0;
-            while (index < groups.size()) {
-                var group = groups.get(index++);
+                // Iterate through all groups and make changes
+                var index = 0;
+                while (index < groups.size()) {
+                    var group = groups.get(index++);
 
-                // Try to merge if there are neighboring groups
-                if (index > 2 && index < groups.size()) {
-                    if (group.canMerge(groups.get(index))) {
-                        group.join(groups.get(index));
-                        groups.remove(index).close();
-                        index--;
-                    } else if (groups.get(index - 2).canMerge(group)) {
-                        groups.get(index - 2).join(group);
-                        groups.remove(index - 1).close();
-                        index--;
+                    // Try to merge if there are neighboring groups
+                    if (index > 2 && index < groups.size()) {
+                        if (group.canMerge(groups.get(index))) {
+                            group.join(groups.get(index));
+                            groups.remove(index).close();
+                            index--;
+                        } else if (groups.get(index - 2).canMerge(group)) {
+                            groups.get(index - 2).join(group);
+                            groups.remove(index - 1).close();
+                            index--;
+                        }
+                    }
+
+                    // Try to split up the group
+                    if (group.shouldSplit()) {
+                        groups.add(index++, group.split());
                     }
                 }
-
-                // Try to split up the group
-                if (group.shouldSplit()) {
-                    groups.add(index++, group.split());
-                }
             }
         }
-
-        // Tick the groups, possibly redrawing the buffer contents, if any buffers got drawn to
-        // we want to unbind the buffer afterwards
-        for (var group : groups) {
-            // Determine if the group has recently changed their
-            // visibility state, if so request an immediate redraw!
-            for (var layer : group.layers()) {
-                if (layer.group() != null && layer.group().hasChangedRecently()) {
-                    group.dynamic().redraw();
-                    break;
-                }
-            }
-
-            // Update the dynamic element of the group
-            group.dynamic().update(nanoTime, guiGraphics, () -> {
-                for (var layer : group.layers()) {
-                    if (layer.group() == null || layer.group().test()) {
-                        group.renderLayer(guiGraphics, deltaTracker, layer.layer(), layer.index());
-                    }
-                }
-            });
-        }
-
-        // Unbind the frame buffers
-        BufferHelper.unbind();
-
-        // Draw the groups in order
-        var ids = new ArrayList<BufferData>();
-        for (var group : groups) {
-            // If the buffer is broken we have to early exit and draw
-            // directly before going back to the buffers!
-            if (group.dynamic().isInvalid()) {
-                SharedVertexBuffer.draw(ids);
-                ids.clear();
-                group.drawDirectly(guiGraphics, deltaTracker);
-                continue;
-            }
-
-            // If the buffer is valid we use it to draw
-            group.dynamic().submitTextureIds(ids);
-        }
-
-        // Call draw on any remaining ids
-        SharedVertexBuffer.draw(ids);
     }
 
     /**

@@ -56,11 +56,6 @@ public class ServerRules {
     public static ClientServerRule<ItemStack> HAND_ITEM_OVERRIDE = register(new ItemStackServerRule(ServerRuleIndices.HAND_ITEM_OVERRIDE));
 
     /**
-     * Allows server to override whether experimental UI optimizations are on.
-     */
-    public static ClientServerRule<Boolean> DISABLE_UI_OPTIMIZATIONS = register(new BooleanServerRule(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS, false));
-
-    /**
      * Moves the handheld map to be shown in the top left/right corner instead of
      * in the regular hand slot.
      */

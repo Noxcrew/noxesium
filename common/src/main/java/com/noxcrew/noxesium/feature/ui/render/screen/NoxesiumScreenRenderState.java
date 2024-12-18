@@ -28,7 +28,7 @@ public class NoxesiumScreenRenderState implements NoxesiumRenderState {
     /**
      * Renders the given screen.
      */
-    public void render(GuiGraphics guiGraphics, int width, int height, float deltaTime, Screen screen) {
+    public boolean render(GuiGraphics guiGraphics, int width, int height, float deltaTime, Screen screen) {
         var nanoTime = System.nanoTime();
 
         // Try to update the buffer
@@ -42,15 +42,13 @@ public class NoxesiumScreenRenderState implements NoxesiumRenderState {
         BufferHelper.unbind();
 
         // If the buffer is invalid we draw directly instead of using it
-        if (dynamic.isInvalid()) {
-            screen.renderWithTooltip(guiGraphics, width, height, deltaTime);
-            return;
-        }
+        if (dynamic.isInvalid()) return false;
 
         // If the buffer is valid we use it to draw
         var ids = new ArrayList<BufferData>();
         dynamic.submitTextureIds(ids);
         SharedVertexBuffer.draw(ids);
+        return true;
     }
 
     @Override

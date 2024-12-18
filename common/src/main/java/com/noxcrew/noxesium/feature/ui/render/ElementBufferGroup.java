@@ -36,17 +36,6 @@ public class ElementBufferGroup implements Closeable {
     }
 
     /**
-     * Draws this group directly to the screen.
-     */
-    public void drawDirectly(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        for (var layer : layers) {
-            if (layer.group() == null || layer.group().test()) {
-                renderLayer(guiGraphics, deltaTracker, layer.layer(), layer.index());
-            }
-        }
-    }
-
-    /**
      * Adds the given layers to this group.
      */
     public void addLayers(Collection<LayerWithReference> layers) {

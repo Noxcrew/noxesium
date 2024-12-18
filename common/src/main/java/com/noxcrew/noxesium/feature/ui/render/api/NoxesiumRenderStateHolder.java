@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.render.api;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -32,6 +33,9 @@ public interface NoxesiumRenderStateHolder<T extends NoxesiumRenderState> {
      * Indicates that a check should run the very next frame.
      */
     default void requestCheck() {
+        // Ignore checks if we're not using dynamic UI limiting!
+        if (!NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting) return;
+
         var state = get();
         if (state != null) {
             state.requestCheck();

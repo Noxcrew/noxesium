@@ -16,12 +16,6 @@ import java.nio.file.Path;
  */
 public class NoxesiumConfig {
 
-    /**
-     * The current state of the hotkey for toggling the experimental
-     * patches on/off.
-     */
-    public static Boolean experimentalPatchesHotkey = null;
-
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public boolean resetToggleKeys = false;
@@ -29,22 +23,16 @@ public class NoxesiumConfig {
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableQibSystemDebugging = false;
-    public boolean disableExperimentalPerformancePatches = true; // Still off by default until thoroughly tested!
     public boolean showGlowingSettings = false;
     public boolean dumpIncomingPackets = false;
     public boolean dumpOutgoingPackets = false;
     public boolean printPacketExceptions = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
+    public boolean enableUiLimiting = false;
+    public boolean enableDynamicUiLimiting = false;
+    public boolean showUiDebugOverlay = false;
     public int maxUiFramerate = 60;
-    public boolean showOptimizationOverlay = false;
-
-    /**
-     * Returns whether experimental performance are enabled in the configuration.
-     */
-    public boolean hasConfiguredPerformancePatches() {
-        return !disableExperimentalPerformancePatches;
-    }
 
     /**
      * Returns whether to render maps in the UI.
@@ -54,21 +42,6 @@ public class NoxesiumConfig {
             return ServerRules.SHOW_MAP_IN_UI.getValue();
         }
         return renderMapsInUi == BooleanOrDefault.TRUE;
-    }
-
-    /**
-     * Whether the experimental performance patches should be used.
-     */
-    public boolean shouldDisableExperimentalPerformancePatches() {
-        if (ServerRules.DISABLE_UI_OPTIMIZATIONS.getValue()) return true;
-
-        if (hasConfiguredPerformancePatches()) {
-            if (experimentalPatchesHotkey != null) {
-                return !experimentalPatchesHotkey;
-            }
-            return false;
-        }
-        return true;
     }
 
     /**

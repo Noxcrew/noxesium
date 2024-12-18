@@ -51,7 +51,7 @@ public class ElementBuffer implements Closeable {
     }
 
     /**
-     * Returns the associated blend state of the this buffer.
+     * Returns the associated blend state of this buffer.
      */
     @Nullable
     public BlendState getBlendState() {
@@ -95,6 +95,7 @@ public class ElementBuffer implements Closeable {
         // texture into it directly
         pbos[currentIndex].bind();
 
+        // TODO This causes micro-stutters!
         var window = Minecraft.getInstance().getWindow();
         GL11.glReadPixels(0,
                 0,

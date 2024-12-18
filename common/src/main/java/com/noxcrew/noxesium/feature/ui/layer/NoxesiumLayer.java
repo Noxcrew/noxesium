@@ -54,13 +54,6 @@ public sealed interface NoxesiumLayer {
         }
 
         /**
-         * Returns the condition of this group.
-         */
-        public BooleanSupplier condition() {
-            return condition;
-        }
-
-        /**
          * Returns whether this group's condition has recently changed.
          */
         public boolean hasChangedRecently() {
