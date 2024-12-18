@@ -13,16 +13,6 @@ import static net.minecraft.client.Options.genericValueLabel;
  */
 public class NoxesiumOptions {
 
-    private static final OptionInstance<Boolean> experimentalPatches = OptionInstance.createBoolean(
-        "noxesium.options.experimental_patches.name",
-        OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.experimental_patches.tooltip.v2")),
-        NoxesiumMod.getInstance().getConfig().hasConfiguredPerformancePatches(),
-        (newValue) -> {
-            NoxesiumMod.getInstance().getConfig().disableExperimentalPerformancePatches = !newValue;
-            NoxesiumMod.getInstance().getConfig().save();
-        }
-    );
-
     private static final OptionInstance<Boolean> fpsOverlay = OptionInstance.createBoolean(
         "noxesium.options.fps_overlay.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.fps_overlay.tooltip")),
@@ -93,6 +83,26 @@ public class NoxesiumOptions {
         }
     );
 
+    private static final OptionInstance<Boolean> enableUiLimiting = OptionInstance.createBoolean(
+            "noxesium.options.ui_limiting.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_limiting.tooltip")),
+            NoxesiumMod.getInstance().getConfig().enableUiLimiting,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().enableUiLimiting = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            }
+    );
+
+    private static final OptionInstance<Boolean> enableDynamicUiLimiting = OptionInstance.createBoolean(
+            "noxesium.options.dynamic_ui_limiting.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.dynamic_ui_limiting.tooltip")),
+            NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            }
+    );
+
     private static final OptionInstance<Integer> maxUiFramerate = new OptionInstance<>(
         "noxesium.options.max_ui_framerate.name",
         OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.max_ui_framerate.tooltip")),
@@ -111,17 +121,21 @@ public class NoxesiumOptions {
     );
 
     private static final OptionInstance<Boolean> optimizationOverlay = OptionInstance.createBoolean(
-            "noxesium.options.optimization_overlay.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.optimization_overlay.tooltip")),
-            NoxesiumMod.getInstance().getConfig().showOptimizationOverlay,
+            "noxesium.options.ui_debug_overlay.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_debug_overlay.tooltip")),
+            NoxesiumMod.getInstance().getConfig().showUiDebugOverlay,
             (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().showOptimizationOverlay = newValue;
+                NoxesiumMod.getInstance().getConfig().showUiDebugOverlay = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
             }
     );
 
-    public static OptionInstance<Boolean> experimentalPatches() {
-        return experimentalPatches;
+    public static OptionInstance<Boolean> enableUiLimiting() {
+        return enableUiLimiting;
+    }
+
+    public static OptionInstance<Boolean> enableDynamicUiLimiting() {
+        return enableDynamicUiLimiting;
     }
 
     public static OptionInstance<Boolean> fpsOverlay() {

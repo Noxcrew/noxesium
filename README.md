@@ -43,7 +43,7 @@ There are also a few improvements that do not require a server:
 
 ### Performance
 
-Noxesium contains a performance patch which reworks UI rendering to have a dynamic fps. Instead of rendering the UI every frame it gets rendered between 20 and 60 times a second. Whenever a UI element changes it starts getting rendered at 60 fps, while UI elements that rarely change render at 20 fps. These are currently experimental and have to manually be enabled in the Noxesium configuration screen.
+Noxesium contains an optional performance patch which limits UI rendering to be limited to 60 fps which can improve fps at high values. There is an additional setting available to enable dynamic UI fps lowering, going down to 20 fps.
 
 ### Bugfixes
 

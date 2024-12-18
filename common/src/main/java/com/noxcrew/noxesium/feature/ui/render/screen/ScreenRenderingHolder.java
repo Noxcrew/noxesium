@@ -24,11 +24,11 @@ public class ScreenRenderingHolder implements NoxesiumRenderStateHolder<Noxesium
     /**
      * Renders the on-screen menu.
      */
-    public void render(GuiGraphics guiGraphics, int width, int height, float deltaTime, Screen screen) {
+    public boolean render(GuiGraphics guiGraphics, int width, int height, float deltaTime, Screen screen) {
         if (state == null) {
             state = new NoxesiumScreenRenderState();
         }
-        state.render(guiGraphics, width, height, deltaTime, screen);
+        return state.render(guiGraphics, width, height, deltaTime, screen);
     }
 
     @Override

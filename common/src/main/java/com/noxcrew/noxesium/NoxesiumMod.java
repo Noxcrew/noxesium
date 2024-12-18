@@ -115,48 +115,33 @@ public class NoxesiumMod {
         ignored = CustomCoreShaders.BLIT_SCREEN_MULTIPLE;
         ignored = CustomRenderTypes.linesNoDepth();
 
-        // Run rebuilds on a separate thread to not destroy fps unnecessarily
-        var rebuildThread = new Thread("Noxesium Spatial Container Rebuild Thread") {
+        // Run rebuilds on a separate thread to not destroy fps unnecessarily, also run
+        // frame comparisons on this thread if they are enabled.
+        var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {
             @Override
             public void run() {
                 while (true) {
                     try {
-                        Thread.sleep(2500);
                         SpatialInteractionEntityTree.rebuild();
-                    } catch (InterruptedException ex) {
-                        return;
-                    } catch (Exception ex) {
-                        logger.error("Caught exception from Noxesium Spatial Container Rebuild Thread", ex);
-                    }
-                }
-            }
-        };
-        rebuildThread.setDaemon(true);
-        rebuildThread.start();
-
-        // Also run frame comparisons on another thread
-        var frameComparisonThread = new Thread("Noxesium Frame Comparison Thread") {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        forEachRenderStateHolder((it) -> {
-                            var state = it.get();
-                            if (state != null) {
-                                state.tick();
-                            }
-                        });
+                        if (getConfig().enableDynamicUiLimiting) {
+                            forEachRenderStateHolder((it) -> {
+                                var state = it.get();
+                                if (state != null) {
+                                    state.tick();
+                                }
+                            });
+                        }
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
                     } catch (Exception ex) {
-                        logger.error("Caught exception from Noxesium Frame Comparison Thread", ex);
+                        logger.error("Caught exception from Noxesium Background Task Thread", ex);
                     }
                 }
             }
         };
-        frameComparisonThread.setDaemon(true);
-        frameComparisonThread.start();
+        backgroundTaskThread.setDaemon(true);
+        backgroundTaskThread.start();
     }
 
     /**

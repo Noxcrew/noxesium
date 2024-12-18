@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.feature.ui.layer;
 
-import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.LayerWithReference;
 import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
@@ -21,7 +20,7 @@ import java.util.List;
  * A custom implementation of layered draw that persists groupings
  * of layers to properly be able to distinguish between them.
  */
-public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderStateHolder<NoxesiumUiRenderState> {
+public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUiRenderState> {
 
     private final List<NoxesiumLayer> layers = new ArrayList<>();
     private final List<NoxesiumLayer.NestedLayers> subgroups = new ArrayList<>();
@@ -59,28 +58,24 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
         update();
     }
 
-    @Override
-    public void render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
-        // If experimental patches are disabled we ignore all custom logic.
-        if (NoxesiumMod.getInstance().getConfig().shouldDisableExperimentalPerformancePatches()) {
+    /**
+     * Resets any lingering data held by this object.
+     */
+    public void reset() {
+        if (state != null) {
             // Destroy the state if it exists
-            if (state != null) {
-                state.close();
-                state = null;
-            }
+            state.close();
+            state = null;
 
             // Ensure everything is disabled!
             SharedVertexBuffer.reset();
-
-            // Directly draw everything to the screen
-            guiGraphics.pose().pushPose();
-            for (var layer : layers) {
-                renderLayerDirectly(guiGraphics, deltaTracker, layer);
-            }
-            guiGraphics.pose().popPose();
-            return;
         }
+    }
 
+    /**
+     * Renders the layered draw's contents. Returns false if it failed to draw properly.
+     */
+    public boolean render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
         // Defer rendering the object to the current state, this holds all necessary information
         // for rendering.
         if (state == null) {
@@ -89,27 +84,7 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
             // uses them for sub-groups as well.
             state = new NoxesiumUiRenderState();
         }
-        state.render(guiGraphics, deltaTracker, this);
-    }
-
-    /**
-     * Renders a single layer directly, avoiding all custom UI optimizations.
-     */
-    private void renderLayerDirectly(GuiGraphics guiGraphics, DeltaTracker deltaTracker, NoxesiumLayer layer) {
-        switch (layer) {
-            case NoxesiumLayer.Layer single -> {
-                single.layer().render(guiGraphics, deltaTracker);
-                guiGraphics.pose().translate(0f, 0f, LayeredDraw.Z_SEPARATION);
-            }
-            case NoxesiumLayer.NestedLayers group -> {
-                if (group.condition().getAsBoolean()) {
-                    for (var subLayer : group.layers()) {
-                        renderLayerDirectly(guiGraphics, deltaTracker, subLayer);
-                    }
-                    guiGraphics.pose().translate(0f, 0f, LayeredDraw.Z_SEPARATION);
-                }
-            }
-        }
+        return state.render(guiGraphics, deltaTracker, this);
     }
 
     /**
@@ -121,7 +96,7 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
         for (var layer : layers) {
             switch (layer) {
                 case NoxesiumLayer.Layer single -> result.add(new LayerWithReference(result.size() + offset.getValue(), single, null));
-                case NoxesiumLayer.NestedLayers group -> process(group, result, offset);
+                case NoxesiumLayer.NestedLayers group -> process(group, result, offset, new ArrayList<>());
             }
         }
         return result;
@@ -130,11 +105,14 @@ public class NoxesiumLayeredDraw implements LayeredDraw.Layer, NoxesiumRenderSta
     /**
      * Adds the contents of the layer group to the given list.
      */
-    private void process(NoxesiumLayer.NestedLayers target, List<LayerWithReference> list, MutableInt offset) {
+    private void process(NoxesiumLayer.NestedLayers target, List<LayerWithReference> list, MutableInt offset, List<NoxesiumLayer.NestedLayers> nested) {
+        var nestedCopy = new ArrayList<>(nested);
+        nestedCopy.add(target);
+
         for (var layer : target.layers()) {
             switch (layer) {
-                case NoxesiumLayer.Layer single -> list.add(new LayerWithReference(list.size() + offset.getValue(), single, target));
-                case NoxesiumLayer.NestedLayers group -> process(group, list, offset);
+                case NoxesiumLayer.Layer single -> list.add(new LayerWithReference(list.size() + offset.getValue(), single, nestedCopy));
+                case NoxesiumLayer.NestedLayers group -> process(group, list, offset, nestedCopy);
             }
         }
 
