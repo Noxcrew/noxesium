@@ -35,6 +35,7 @@ public open class NoxesiumManager(
 ) : NoxesiumServerManager<Player>, Listener {
 
     private val players = ConcurrentHashMap<UUID, Int>()
+    private val exact = ConcurrentHashMap<UUID, String>()
     private val settings = ConcurrentHashMap<UUID, ClientSettings>()
     private val profiles = ConcurrentHashMap<UUID, RuleHolder>()
     private val ready = ConcurrentHashMap.newKeySet<UUID>()
@@ -198,6 +199,7 @@ public open class NoxesiumManager(
     /** Stores the protocol version for [player] as [version] with [protocolVersion]. */
     internal fun saveProtocol(player: Player, version: String, protocolVersion: Int) {
         players[player.uniqueId] = protocolVersion
+        exact[player.uniqueId] = version
         onPlayerVersionReceived(player, version, protocolVersion)
     }
 
@@ -225,12 +227,19 @@ public open class NoxesiumManager(
     override fun getProtocolVersion(player: Player): Int? =
         getProtocolVersion(player.uniqueId)
 
+    override fun getExactVersion(player: Player): String? =
+        getExactVersion(player.uniqueId)
+
     override fun getProtocolVersion(playerId: UUID): Int? =
         players[playerId]
+
+    override fun getExactVersion(playerId: UUID?): String? =
+        exact[playerId]
 
     @EventHandler
     public fun onPlayerQuit(e: PlayerQuitEvent) {
         players -= e.player.uniqueId
+        exact -= e.player.uniqueId
         settings -= e.player.uniqueId
         profiles -= e.player.uniqueId
         ready -= e.player.uniqueId

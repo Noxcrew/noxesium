@@ -85,10 +85,26 @@ public interface NoxesiumServerManager<PlayerT> {
     Integer getProtocolVersion(PlayerT player);
 
     /**
+     * Returns the exact version used by the given player.
+     *
+     * @param player The player object to fetch the exact version of.
+     * @return The exact version of the player, or `null`.
+     */
+    String getExactVersion(PlayerT player);
+
+    /**
      * Returns the protocol version used by the given player.
      *
      * @param playerId The uuid of the player to fetch the protocol version of.
      * @return The protocol version of the player, or `null`.
      */
     Integer getProtocolVersion(UUID playerId);
+
+    /**
+     * Returns the exact version used by the given player.
+     *
+     * @param playerId The uuid of the player to fetch the exact version of.
+     * @return The exact version of the player, or `null`.
+     */
+    String getExactVersion(UUID playerId);
 }
