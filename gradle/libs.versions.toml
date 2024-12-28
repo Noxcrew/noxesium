@@ -16,10 +16,6 @@ slf4j = "2.0.9"
 prtree = "1.5"
 caffeine = "3.1.8"
 
-# Cloud
-cloudCommand = "2.0.0"
-cloudMinecraft = "2.0.0-beta.10"
-
 [plugins]
 shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
 
@@ -36,11 +32,3 @@ prtree = { group = "org.khelekore", name = "prtree", version.ref = "prtree" }
 
 mixin = { group = "net.fabricmc", name = "sponge-mixin", version.ref = "mixin" }
 mixinextras = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "mixinextras" }
-
-# Cloud
-cloud-annotations = { module = "org.incendo:cloud-annotations", version.ref = "cloudCommand" }
-cloud-core = { module = "org.incendo:cloud-core", version.ref = "cloudCommand" }
-cloud-paper = { module = "org.incendo:cloud-paper", version.ref = "cloudMinecraft" }
-
-[bundles]
-cloud = ["cloud-core", "cloud-annotations", "cloud-paper"]

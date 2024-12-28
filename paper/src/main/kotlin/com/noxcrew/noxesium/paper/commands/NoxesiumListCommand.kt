@@ -8,21 +8,15 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import org.incendo.cloud.annotations.Command
-import org.incendo.cloud.annotations.Permission
 
 /**
- * Adds a command that shows the version of Noxesium being used by all
+ * Defines a command that shows the version of Noxesium being used by all
  * online players.
  */
-public class NoxesiumListCommand(
-    private val supplier: () -> NoxesiumManager,
-) {
+public class NoxesiumListCommand(private val noxesiumManager: NoxesiumManager) {
 
-    @Command("noxlist|noxesiumlist")
-    @Permission("mcc.admin.noxesium")
-    public fun listNoxesiumUsers(sender: CommandSender) {
-        val noxesiumManager = supplier()
+    /** Executes the command for the given [sender]. */
+    public fun execute(sender: CommandSender) {
         val input = Bukkit.getOnlinePlayers().groupBy {
             val protocol = noxesiumManager.getProtocolVersion(it)
             val exact = noxesiumManager.getExactVersion(it) ?: when (protocol) {
