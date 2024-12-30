@@ -1,4 +1,4 @@
 dependencies {
-    implementation("org.jetbrains:annotations:24.1.0")
-    implementation("com.google.code.gson:gson:2.10")
+    implementation(libs.annotations)
+    implementation(libs.gson)
 }

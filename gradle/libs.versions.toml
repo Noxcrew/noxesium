@@ -13,8 +13,19 @@ guava = "32.1.2-jre"
 slf4j = "2.0.9"
 
 # Various
+annotations = "24.1.0"
+gson = "2.10"
 prtree = "1.5"
 caffeine = "3.1.8"
+
+# Fabric - https://modmuss50.me/fabric.html
+minecraft = "1.21.4"
+fabric-loader = "0.16.9"
+fabric-api = "0.110.5+1.21.4"
+
+# Mods
+sodium = "mc1.21.4-0.6.3-fabric"
+modmenu = "13.0.0-beta.1"
 
 [plugins]
 shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
@@ -27,8 +38,17 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 
+annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 prtree = { group = "org.khelekore", name = "prtree", version.ref = "prtree" }
 
 mixin = { group = "net.fabricmc", name = "sponge-mixin", version.ref = "mixin" }
 mixinextras = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "mixinextras" }
+
+minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabric-api" }
+
+sodium = { group = "maven.modrinth", name = "sodium", version.ref = "sodium" }
+modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }

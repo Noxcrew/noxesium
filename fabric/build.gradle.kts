@@ -16,31 +16,30 @@ loom {
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
-    minecraft("com.mojang:minecraft:${property("minecraft_version")}")
+    minecraft(libs.minecraft)
     mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
-
-    // Fabric API. This is technically optional, but you probably want it anyway.
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("fabric_version")}")
+    modImplementation(libs.fabric.loader)
+    modImplementation(libs.fabric.api)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
-        modImplementation("maven.modrinth:sodium:${property("sodium")}")
+        modImplementation(libs.sodium)
     }
     if (property("enableModMenu") == "true") {
-        modImplementation("com.terraformersmc:modmenu:${property("modmenu")}") {
+        modImplementation(libs.modmenu) {
             isTransitive = false
         }
     }
 
-    // Include dependencies in jar
-    project(":api").apply {
-        include(this)
-        api(this)
+    // Define a function for adding included implementations
+    fun includeImplementation(target: Any) {
+        include(target)
+        implementation(target)
     }
-    include("org.khelekore:prtree:1.5")
-    implementation("org.khelekore:prtree:1.5")
+
+    // Include dependencies in jar but don't mark them as api
+    includeImplementation(project(":api"))
+    includeImplementation(libs.prtree)
 }
 
 tasks {

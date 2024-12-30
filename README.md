@@ -1,14 +1,22 @@
 Noxesium
 ---
-A fabric mod centered around improving the user experience when playing on multiplayer servers.
+A Fabric and NeoForge mod that improves the user experience when playing on multiplayer servers.
 
-Server developers are welcome to submit additional patches they need, feel free to open an Issue to discuss your ideas.
+Server developers are welcome to submit additional patches they need, feel free to open an issue to discuss your ideas.
 
 # Usage
-Public builds of Noxesium can be found on the [Modrinth](https://modrinth.com/mod/noxesium) page. Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.
+Public builds of Noxesium are available on [Modrinth](https://modrinth.com/mod/noxesium) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods/noxesium). Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.
 
-Developers that want to use Noxesium as a dependency can add it can find the artefact on our [public Maven repository](https://maven.noxcrew.com/#/public/com/noxcrew/noxesium/api).
+Developers that want to use Noxesium as a dependency can add it can find the artifact on our [public Maven repository](https://maven.noxcrew.com/#/public/com/noxcrew/noxesium/api).
 
+The following artifacts are available:
+- api: General code for interacting with Noxesium on any platform.
+- common: Client mod specific code shared between Fabric and NeoForge.
+- fabric: Fabric-specific implementation.
+- neoforge: NeoForge-specific implementation.
+- paper: Server-side API implementation for Paper.
+
+Maven:
 ```xml
 <repository>
     <id>noxcrew-maven</id>
@@ -19,8 +27,19 @@ Developers that want to use Noxesium as a dependency can add it can find the art
 <dependency>
   <groupId>com.noxcrew.noxesium</groupId>
   <artifactId>api</artifactId>
-  <version>REPLACE_WITH_CURRENT_NOXESIUM_VERSION</version>
+  <version>NOXESIUM_VERSION</version>
 </dependency>
+```
+
+Gradle (Kotlin):
+```kotlin
+repositories {
+    maven("https://maven.noxcrew.com/public")
+}
+
+dependencies {
+    api("com.noxcrew.noxesium:api:NOXESIUM_VERSION")
+}
 ```
 
 # Features
@@ -43,7 +62,9 @@ There are also a few improvements that do not require a server:
 
 ### Performance
 
-Noxesium contains an optional performance patch which limits UI rendering to be limited to 60 fps which can improve fps at high values. There is an additional setting available to enable dynamic UI fps lowering, going down to 20 fps.
+Noxesium contains optional performance features which limit UI rendering to 60 fps while keeping everything else at your full framerate. This helps free up computation time to work on rendering instead of redrawing static UI elements. It is however only effective if your fps is above the UI framerate limit. There is an additional setting available to enable dynamic UI fps lowering, which lowers the limit down to 20 fps on a per-element basis.
+
+These performance optimizations can be enabled manually in the Noxesium mod settings menu.
 
 ### Bugfixes
 
@@ -63,8 +84,7 @@ There are also a few features specific to MCC Island as Noxesium is developed al
 
 # For developers
 
-Any developers interested in writing code that interacts with Noxesium should have a look at the `api` module which contains various structures useful for setting up a server-side implementation that interacts with Noxesium. This modules
-does not have a dependency on fabric and can thus be used as a dependency in server software.
+Any developers interested in writing code that interacts with Noxesium should have a look at the `api` module which contains various structures useful for setting up a server-side implementation that interacts with Noxesium.
 
 We also provide the `paper` module which contains our own server-side implementation written in Kotlin which allows you to interface with Noxesium clients. This also implements backwards compatibility for older Noxesium clients.
 
