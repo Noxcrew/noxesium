@@ -23,7 +23,7 @@ dependencies {
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
-        modImplementation(libs.sodium)
+        modImplementation(libs.sodium.fabric)
     }
     if (property("enableModMenu") == "true") {
         modImplementation(libs.modmenu) {

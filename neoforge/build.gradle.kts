@@ -29,6 +29,11 @@ neoForge {
 }
 
 dependencies {
+    // Compatibility with other mods
+    if (property("enableSodium") == "true") {
+        implementation(libs.sodium.neoforge)
+    }
+
     // Define a function for adding included implementations
     fun includeImplementation(target: Any) {
         jarJar(target)

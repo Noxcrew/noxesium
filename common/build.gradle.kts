@@ -26,7 +26,7 @@ dependencies {
 
     // Add Sodium as a compile dependency available to all subprojects
     if (property("enableSodium") == "true") {
-        compileOnly(libs.sodium)
+        compileOnly(libs.sodium.neoforge)
     }
 }
 
