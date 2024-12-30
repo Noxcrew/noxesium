@@ -32,6 +32,7 @@ dependencies {
     // Define a function for adding included implementations
     fun includeImplementation(target: Any) {
         jarJar(target)
+        implementation(target)
         additionalRuntimeClasspath(target)
     }
 

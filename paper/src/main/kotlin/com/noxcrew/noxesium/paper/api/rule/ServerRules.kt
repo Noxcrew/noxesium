@@ -46,13 +46,6 @@ public class ServerRules(
     public val handItemOverride: RuleFunction<ItemStack> = register(ServerRuleIndices.HAND_ITEM_OVERRIDE, 11, ::ItemStackServerRule)
 
     /**
-     * Disables the UI optimizations provided by Noxesium. There are currently
-     * no known incompatibilities (text shaders are fully supported), but this
-     * option is still provided in case it becomes necessary.
-     */
-    public val disableUiOptimizations: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_UI_OPTIMIZATIONS, 5, ::BooleanServerRule)
-
-    /**
      * Moves the handheld map to be shown in the top left/right corner instead of
      * in the regular hand slot.
      */
