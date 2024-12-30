@@ -6,7 +6,7 @@ plugins {
 neoForge {
     // We currently only support NeoForge versions later than 21.0.x
     // See https://projects.neoforged.net/neoforged/neoforge for the latest updates
-    version = "${property("forge_version")}"
+    version = "${property("neoforge_version")}"
 
     setAccessTransformers(project(":common").file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true
@@ -29,11 +29,15 @@ neoForge {
 }
 
 dependencies {
+    // Define a function for adding included implementations
+    fun includeImplementation(target: Any) {
+        jarJar(target)
+        additionalRuntimeClasspath(target)
+    }
+
     // Include dependencies in jar and at runtime
-    jarJar(project(":api"))
-    jarJar(libs.prtree)
-    additionalRuntimeClasspath(project(":api"))
-    additionalRuntimeClasspath(libs.prtree)
+    includeImplementation(project(":api"))
+    includeImplementation(libs.prtree)
 }
 
 tasks {

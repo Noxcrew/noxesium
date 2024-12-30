@@ -4,7 +4,7 @@ plugins {
 }
 
 neoForge {
-    neoFormVersion.set("${property("neo_form_version")}")
+    neoFormVersion.set("${property("neoform_version")}")
 
     setAccessTransformers(file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true
@@ -21,12 +21,12 @@ dependencies {
     compileOnly(libs.mixinextras)
     annotationProcessor(libs.mixinextras)
 
-    // Use PRTree as a custom dependency
-    compileOnlyApi(libs.prtree)
+    // Use PRTree as a custom dependency but not as API
+    compileOnly(libs.prtree)
 
     // Add Sodium as a compile dependency available to all subprojects
     if (property("enableSodium") == "true") {
-        compileOnlyApi("maven.modrinth:sodium:${property("sodium")}")
+        compileOnly(libs.sodium)
     }
 }
 
