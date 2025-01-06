@@ -1,4 +1,6 @@
 import java.io.ByteArrayOutputStream
+import com.diffplug.gradle.spotless.SpotlessExtension
+import com.diffplug.gradle.spotless.SpotlessPlugin
 
 fun getGitCommit(): String {
     val stdout = ByteArrayOutputStream()
@@ -14,6 +16,7 @@ plugins {
 
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.moddev) apply false
+    alias(libs.plugins.spotless) apply false
 }
 
 val javaVersion: Int = 21
@@ -41,11 +44,33 @@ allprojects {
 subprojects {
     apply<JavaLibraryPlugin>()
     apply<Noxesium_publishingPlugin>()
+    apply<SpotlessPlugin>()
 
     tasks.withType<JavaCompile> {
         options.release.set(javaVersion)
         sourceCompatibility = javaVersion.toString()
         targetCompatibility = javaVersion.toString()
+    }
+
+    extensions.configure<SpotlessExtension> {
+        java {
+            palantirJavaFormat("2.50.0")
+        }
+        kotlin {
+            ktlint("1.5.0")
+            suppressLintsFor {
+                step = "ktlint"
+                shortCode = "standard:package-name"
+            }
+            suppressLintsFor {
+                step = "ktlint"
+                shortCode = "standard:annotation"
+            }
+            suppressLintsFor {
+                step = "ktlint"
+                shortCode = "standard:property-naming"
+            }
+        }
     }
 
     extensions.configure<JavaPluginExtension> {

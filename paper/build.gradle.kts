@@ -1,12 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import com.diffplug.gradle.spotless.SpotlessExtension
 
 plugins {
     kotlin("jvm") version "2.1.0"
     alias(libs.plugins.paperweight)
-    alias(libs.plugins.spotless)
 }
 
 val javaVersion: Int = 21
@@ -28,24 +26,6 @@ dependencies {
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-configure<SpotlessExtension> {
-    kotlin {
-        ktlint("1.5.0")
-        suppressLintsFor {
-            step = "ktlint"
-            shortCode = "standard:package-name"
-        }
-        suppressLintsFor {
-            step = "ktlint"
-            shortCode = "standard:annotation"
-        }
-        suppressLintsFor {
-            step = "ktlint"
-            shortCode = "standard:property-naming"
-        }
-    }
 }
 
 tasks.withType<KotlinCompile> {
