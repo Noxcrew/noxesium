@@ -4,7 +4,7 @@ plugins {
 }
 
 neoForge {
-    neoFormVersion.set("${property("neoform_version")}")
+    setNeoFormVersion("${property("neoform_version")}")
 
     setAccessTransformers(file("src/main/resources/noxesium.cfg"))
     validateAccessTransformers = true

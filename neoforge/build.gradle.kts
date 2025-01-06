@@ -14,9 +14,10 @@ neoForge {
     interfaceInjectionData.from(project(":common").file("src/main/resources/interface_injections.json"))
 
     runs {
-        create("client") {
+        create("clientAuth") {
             client()
-            ideName = "Run NeoForge Client"
+            devLogin = true
+            ideName = "Minecraft Client Auth (:neoforge)"
             gameDirectory.set(file("runs/client"))
         }
     }
@@ -38,7 +39,6 @@ dependencies {
     fun includeImplementation(target: Any) {
         jarJar(target)
         implementation(target)
-        additionalRuntimeClasspath(target)
     }
 
     // Include dependencies in jar and at runtime

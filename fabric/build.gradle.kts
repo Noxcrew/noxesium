@@ -4,7 +4,8 @@ plugins {
 }
 
 repositories {
-    maven { url = uri("https://maven.shedaniel.me/") }
+    maven("https://maven.shedaniel.me/")
+    maven("https://maven.covers1624.net/")
 }
 
 loom {
@@ -12,6 +13,15 @@ loom {
 
     mixin {
         defaultRefmapName.set("noxesium.refmap.json")
+    }
+
+    runs {
+        create("clientAuth") {
+            client()
+            ideConfigGenerated(true)
+            programArgs.addAll(listOf("--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"))
+            mainClass.set("net.covers1624.devlogin.DevLogin")
+        }
     }
 }
 
@@ -30,6 +40,9 @@ dependencies {
             isTransitive = false
         }
     }
+
+    // Add DevLogin
+    localRuntime("net.covers1624:DevLogin:0.1.0.5")
 
     // Define a function for adding included implementations
     fun includeImplementation(target: Any) {
