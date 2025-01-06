@@ -12,8 +12,8 @@ fun getGitCommit(): String {
 plugins {
     id("noxesium.publishing") apply false
 
-    id("fabric-loom") version "1.8-SNAPSHOT" apply false
-    id("net.neoforged.moddev") version "2.0.47-beta" apply false
+    alias(libs.plugins.loom) apply false
+    alias(libs.plugins.moddev) apply false
 }
 
 val javaVersion: Int = 21
@@ -23,7 +23,7 @@ allprojects {
     version = "${property("mod_version")}+${getGitCommit()}"
 
     repositories {
-        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.neoforged.net/releases/")

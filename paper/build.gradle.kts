@@ -1,12 +1,18 @@
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.diffplug.gradle.spotless.SpotlessExtension
 
 plugins {
-    kotlin("jvm") version "1.9.24"
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    kotlin("jvm") version "2.1.0"
+    alias(libs.plugins.paperweight)
+    alias(libs.plugins.spotless)
 }
 
+val javaVersion: Int = 21
+
 dependencies {
-    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
     compileOnlyApi(libs.guava)
 
     api(libs.kotlin.coroutines)
@@ -24,11 +30,16 @@ java {
     withSourcesJar()
 }
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = 21.toString()
-            freeCompilerArgs += listOf("-Xexplicit-api=strict")
-        }
+configure<SpotlessExtension> {
+    kotlin {
+        ktlint("0.48.2")
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    explicitApiMode.set(ExplicitApiMode.Strict)
+
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
     }
 }

@@ -1,16 +1,20 @@
 [versions]
 # Plugins
-shadow = "8.1.7"
+shadow = "9.0.0-beta4"
+spotless = "7.0.0.BETA4"
+loom = "1.8-SNAPSHOT"
+moddev = "2.0.47-beta"
+paperweight = "1.7.7"
 
 # Mixins
 mixin = "0.15.4+mixin.0.8.7"
 mixinextras = "0.4.1"
 
 # Tooling
-kotlin-coroutines = "1.8.1"
-kotlin-serialization = "1.6.3"
-guava = "32.1.2-jre"
-slf4j = "2.0.9"
+kotlin-coroutines = "1.10.1"
+kotlin-serialization = "1.8.0-RC"
+guava = "33.4.0-jre"
+slf4j = "2.0.16"
 
 # Various
 annotations = "24.1.0"
@@ -29,7 +33,11 @@ sodium-neoforge = "mc1.21.4-0.6.3-neoforge"
 modmenu = "13.0.0-beta.1"
 
 [plugins]
-shadow = { id = "io.github.goooler.shadow", version.ref = "shadow" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+loom = { id = "fabric-loom", version.ref = "loom" }
+moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 
 [libraries]
 # Tooling
