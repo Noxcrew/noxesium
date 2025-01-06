@@ -123,6 +123,13 @@ public class ServerRules {
     public static ClientServerRule<Integer> RIPTIDE_COYOTE_TIME =
             register(new IntegerServerRule(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 5));
 
+    static {
+        // Register dummy listeners for removed rules so it doesn't
+        // throw errors on old servers.
+        register(new BooleanServerRule(7, false));
+        register(new BooleanServerRule(9, false));
+    }
+
     /**
      * Registers a new server rule.
      */
