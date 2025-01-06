@@ -25,7 +25,6 @@ public abstract class BaseNoxesiumListener(
     public val logger: Logger,
     public val manager: NoxesiumManager,
 ) : Listener {
-
     public companion object {
         /** Base namespace of the plugin channel for Noxesium messages. */
         public const val NOXESIUM_NAMESPACE: String = "noxesium"
@@ -39,7 +38,10 @@ public abstract class BaseNoxesiumListener(
      * Defines a plugin message [listener] that will be registered and unregistered with
      * this listener.
      */
-    protected fun registerIncomingPluginChannel(channel: Key, listener: PluginMessageListener) {
+    protected fun registerIncomingPluginChannel(
+        channel: Key,
+        listener: PluginMessageListener,
+    ) {
         incomingPluginChannels[channel] = listener
         if (registered.get()) {
             plugin.server.messenger.registerIncomingPluginChannel(plugin, channel.asString(), listener)
@@ -83,11 +85,18 @@ public abstract class BaseNoxesiumListener(
     }
 
     /** Creates this packet for the given [player]. */
-    public abstract fun createPacket(player: Player, packet: NoxesiumPacket): ClientboundCustomPayloadPacket?
+    public abstract fun createPacket(
+        player: Player,
+        packet: NoxesiumPacket,
+    ): ClientboundCustomPayloadPacket?
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null, writer: (buffer: RegistryFriendlyByteBuf) -> Unit): ClientboundCustomPayloadPacket? {
+public fun Player.createPayloadPacket(
+    channel: Key,
+    initialCapacity: Int? = null,
+    writer: (buffer: RegistryFriendlyByteBuf) -> Unit,
+): ClientboundCustomPayloadPacket? {
     val craftPlayer = this as CraftPlayer
     if (craftPlayer.handle.connection == null) return null
     if (channel.asString() in craftPlayer.listeningPluginChannels) {
@@ -95,16 +104,25 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
             DiscardedPayload(
                 ResourceLocation.parse(StandardMessenger.validateAndCorrectChannel(channel.asString())),
                 // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-                RegistryFriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(), (Bukkit.getServer() as CraftServer).handle.server.registryAccess()).apply(writer),
+                RegistryFriendlyByteBuf(
+                    initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(),
+                    (Bukkit.getServer() as CraftServer).handle.server.registryAccess(),
+                ).apply(writer),
             ),
         )
     }
-    Bukkit.getLogger().warning("Couldn't create packet of type $channel for player $name as they have not yet registered the required plugin channel")
+    Bukkit.getLogger().warning(
+        "Couldn't create packet of type $channel for player $name as they have not yet registered the required plugin channel",
+    )
     return null
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: RegistryFriendlyByteBuf) -> Unit) {
+public fun Player.sendPluginMessage(
+    channel: Key,
+    initialCapacity: Int? = null,
+    writer: (buffer: RegistryFriendlyByteBuf) -> Unit,
+) {
     val packet = createPayloadPacket(channel, initialCapacity, writer)
     if (packet != null) {
         val craftPlayer = this as CraftPlayer

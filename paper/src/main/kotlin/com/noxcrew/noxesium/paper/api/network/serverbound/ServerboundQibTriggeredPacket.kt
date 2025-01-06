@@ -12,7 +12,6 @@ public data class ServerboundQibTriggeredPacket(
     public val qibType: Type,
     public val entityId: Int,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_QIB_TRIGGERED) {
-
     /**
      * The type of qib interaction the client triggered.
      */

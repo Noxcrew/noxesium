@@ -12,7 +12,6 @@ public class NoxesiumPlayerRegisteredEvent(
     /** The raw version string of the player's installed Noxesium jar. */
     public val version: String,
 ) : PlayerEvent(player) {
-
     public companion object {
         @JvmStatic
         public val HANDLER_LIST: HandlerList = HandlerList()

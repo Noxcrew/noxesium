@@ -38,7 +38,6 @@ public class NoxesiumListenerV2(
     logger: Logger,
     manager: NoxesiumManager,
 ) : BaseNoxesiumListener(plugin, logger, manager) {
-
     public companion object {
         /** The namespace under which all packets are registered. Appended by a global API version equal to the major version of Noxesium. */
         public const val PACKET_NAMESPACE: String = "${NoxesiumReferences.NAMESPACE}-v2"
@@ -58,7 +57,10 @@ public class NoxesiumListenerV2(
         }
     }
 
-    override fun createPacket(player: Player, packet: NoxesiumPacket): ClientboundCustomPayloadPacket? =
+    override fun createPacket(
+        player: Player,
+        packet: NoxesiumPacket,
+    ): ClientboundCustomPayloadPacket? =
         player.createPayloadPacket(Key.key(PACKET_NAMESPACE, packet.type.id)) { buffer ->
             when (packet) {
                 is ClientboundChangeServerRulesPacket -> {

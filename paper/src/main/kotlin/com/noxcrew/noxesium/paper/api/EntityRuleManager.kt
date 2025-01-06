@@ -23,8 +23,9 @@ import java.util.WeakHashMap
  * fake entity system where we send all entities entirely through packets and manage
  * them custom, hence we do not need a system such as this.
  */
-public class EntityRuleManager(private val manager: NoxesiumManager) : Listener {
-
+public class EntityRuleManager(
+    private val manager: NoxesiumManager,
+) : Listener {
     private val entities = WeakHashMap<Entity, RuleHolder>()
     private var task: Int = -1
 
@@ -35,34 +36,35 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
         Bukkit.getPluginManager().registerEvents(this, manager.plugin)
 
         // Send rule updates once a tick in a batch
-        task = Bukkit.getScheduler().scheduleSyncRepeatingTask(manager.plugin, {
-            for ((entity, holder) in entities) {
-                if (!holder.needsUpdate) continue
+        task =
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(manager.plugin, {
+                for ((entity, holder) in entities) {
+                    if (!holder.needsUpdate) continue
 
-                // Send the packet to all players that can see it
-                for (player in Bukkit.getOnlinePlayers()) {
-                    if (!player.canSee(entity)) continue
-                    manager.sendPacket(
-                        player,
-                        ClientboundSetExtraEntityDataPacket(
-                            entity.entityId,
-                            holder.rules
-                                // Only include rules that need to be updated!
-                                .filter { it.value.changePending }
-                                // Only include rules that are available to this player!
-                                .filter { manager.entityRules.isAvailable(it.key, manager.getProtocolVersion(player) ?: -1) }
-                                .ifEmpty { null }
-                                ?.mapValues { (_, rule) ->
-                                    { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                                } ?: continue,
-                        ),
-                    )
+                    // Send the packet to all players that can see it
+                    for (player in Bukkit.getOnlinePlayers()) {
+                        if (!player.canSee(entity)) continue
+                        manager.sendPacket(
+                            player,
+                            ClientboundSetExtraEntityDataPacket(
+                                entity.entityId,
+                                holder.rules
+                                    // Only include rules that need to be updated!
+                                    .filter { it.value.changePending }
+                                    // Only include rules that are available to this player!
+                                    .filter { manager.entityRules.isAvailable(it.key, manager.getProtocolVersion(player) ?: -1) }
+                                    .ifEmpty { null }
+                                    ?.mapValues { (_, rule) ->
+                                        { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
+                                    } ?: continue,
+                            ),
+                        )
+                    }
+
+                    // Mark as updated after we have used the changePending values!
+                    holder.markAllUpdated()
                 }
-
-                // Mark as updated after we have used the changePending values!
-                holder.markAllUpdated()
-            }
-        }, 1, 1)
+            }, 1, 1)
     }
 
     /**
@@ -74,11 +76,16 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
     }
 
     /** Returns the given [rule] for [entity]. */
-    public fun <T : Any> getEntityRule(entity: Entity, rule: RuleFunction<T>): RemoteServerRule<T>? =
-        getEntityRule(entity, rule.index)
+    public fun <T : Any> getEntityRule(
+        entity: Entity,
+        rule: RuleFunction<T>,
+    ): RemoteServerRule<T>? = getEntityRule(entity, rule.index)
 
     /** Returns the given [ruleIndex] for [entity]. */
-    public fun <T : Any> getEntityRule(entity: Entity, ruleIndex: Int): RemoteServerRule<T>? =
+    public fun <T : Any> getEntityRule(
+        entity: Entity,
+        ruleIndex: Int,
+    ): RemoteServerRule<T>? =
         entities.computeIfAbsent(entity) { RuleHolder() }.let { holder ->
             manager.entityRules.create(ruleIndex, holder)
         }

@@ -13,7 +13,6 @@ public data class ServerboundClientInformationPacket(
     public val protocolVersion: Int,
     public val versionString: String,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_CLIENT_INFO) {
-
     public constructor(buffer: RegistryFriendlyByteBuf, player: Player, protocolVersion: Int) : this(
         buffer,
         buffer.readVarInt(),

@@ -7,8 +7,9 @@ import java.awt.Color
 import java.util.Optional
 
 /** Stores all known entity rules supported by Noxesium. */
-public class EntityRules(private val manager: NoxesiumManager) {
-
+public class EntityRules(
+    private val manager: NoxesiumManager,
+) {
     /**
      * If `true` bubbles are removed from guardian beams shot by this entity.
      */
@@ -38,7 +39,11 @@ public class EntityRules(private val manager: NoxesiumManager) {
     public val beamFadeColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.BEAM_COLOR_FADE, 12, ::ColorServerRule)
 
     /** Registers a new [rule]. */
-    private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>): RuleFunction<T> {
+    private fun <T : Any> register(
+        index: Int,
+        minimumProtocol: Int,
+        rule: (Int) -> RemoteServerRule<T>,
+    ): RuleFunction<T> {
         val function = RuleFunction(index, rule)
         manager.entityRules.register(index, minimumProtocol, function)
         return function

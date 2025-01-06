@@ -10,6 +10,5 @@ import org.bukkit.entity.Player
 public class ServerboundRiptidePacket(
     public val slot: Int,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_RIPTIDE) {
-
     public constructor(buffer: RegistryFriendlyByteBuf, player: Player, protocolVersion: Int) : this(buffer.readVarInt())
 }

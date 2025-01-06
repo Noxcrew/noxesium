@@ -12,7 +12,6 @@ import org.bukkit.entity.Player
 public data class ServerboundClientSettingsPacket(
     public val settings: ClientSettings,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_CLIENT_SETTINGS) {
-
     public constructor(
         buffer: RegistryFriendlyByteBuf,
         player: Player,

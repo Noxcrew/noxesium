@@ -11,11 +11,11 @@ import java.util.Optional
 public class ServerRules(
     private val manager: NoxesiumManager,
 ) {
-
     /**
      * Prevents the riptide trident's spin attack from colliding with any targets.
      */
-    public val disableSpinAttackCollisions: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_SPIN_ATTACK_COLLISIONS, 1, ::BooleanServerRule)
+    public val disableSpinAttackCollisions: RuleFunction<Boolean> =
+        register(ServerRuleIndices.DISABLE_SPIN_ATTACK_COLLISIONS, 1, ::BooleanServerRule)
 
     /**
      * Adds an offset to the action bar text displayed that shows the name
@@ -56,28 +56,33 @@ public class ServerRules(
      * them to the off-thread. Can be used to force a client to update the world
      * to avoid de-synchronizations on chunk updates.
      */
-    public val disableDeferredChunkUpdates: RuleFunction<Boolean> = register(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES, 7, ::BooleanServerRule)
+    public val disableDeferredChunkUpdates: RuleFunction<Boolean> =
+        register(ServerRuleIndices.DISABLE_DEFERRED_CHUNK_UPDATES, 7, ::BooleanServerRule)
 
     /**
      * Defines a list of items to show in a custom creative tab.
      */
-    public val customCreativeItems: RuleFunction<List<ItemStack>> = register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 11, ::ItemStackListServerRule)
+    public val customCreativeItems: RuleFunction<List<ItemStack>> =
+        register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 11, ::ItemStackListServerRule)
 
     /**
      * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.
      * These behaviors are defined globally to avoid large amounts of data sending.
      */
-    public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> = register(ServerRuleIndices.QIB_BEHAVIORS, 9, ::QibBehaviorServerRule)
+    public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> =
+        register(ServerRuleIndices.QIB_BEHAVIORS, 9, ::QibBehaviorServerRule)
 
     /**
      * Allows the server to override the graphics mode used by the client.
      */
-    public val overrideGraphicsMode: RuleFunction<Optional<GraphicsType>> = register(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, 8, ::OptionalEnumServerRule)
+    public val overrideGraphicsMode: RuleFunction<Optional<GraphicsType>> =
+        register(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, 8, ::OptionalEnumServerRule)
 
     /**
      * Enables a custom smoother riptide trident implementation. Requires server-side adjustments.
      */
-    public val enableSmootherClientTrident: RuleFunction<Boolean> = register(ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT, 9, ::BooleanServerRule)
+    public val enableSmootherClientTrident: RuleFunction<Boolean> =
+        register(ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT, 9, ::BooleanServerRule)
 
     /**
      * Disables the map showing as a UI element. Can be used to hide it during loading screens.
@@ -90,7 +95,11 @@ public class ServerRules(
     public val riptideCoyoteTime: RuleFunction<Int> = register(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 10) { IntServerRule(it, 5) }
 
     /** Registers a new [rule]. */
-    private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>): RuleFunction<T> {
+    private fun <T : Any> register(
+        index: Int,
+        minimumProtocol: Int,
+        rule: (Int) -> RemoteServerRule<T>,
+    ): RuleFunction<T> {
         val function = RuleFunction(index, rule)
         manager.serverRules.register(index, minimumProtocol, function)
         return function

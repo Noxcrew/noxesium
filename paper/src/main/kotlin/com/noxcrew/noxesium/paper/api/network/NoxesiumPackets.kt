@@ -20,13 +20,15 @@ import org.bukkit.entity.Player
 
 /** Stores and registers all known Noxesium packets. */
 public object NoxesiumPackets {
-
     private val _clientboundPackets = mutableMapOf<String, PacketType<*>>()
     private val _serverboundPackets = mutableMapOf<String, ServerboundPacketType<*>>()
 
-    public val SERVER_CLIENT_INFO: ServerboundPacketType<ServerboundClientInformationPacket> = server("client_info", ::ServerboundClientInformationPacket)
-    public val SERVER_CLIENT_SETTINGS: ServerboundPacketType<ServerboundClientSettingsPacket> = server("client_settings", ::ServerboundClientSettingsPacket)
-    public val SERVER_QIB_TRIGGERED: ServerboundPacketType<ServerboundQibTriggeredPacket> = server("qib_triggered", ::ServerboundQibTriggeredPacket)
+    public val SERVER_CLIENT_INFO: ServerboundPacketType<ServerboundClientInformationPacket> =
+        server("client_info", ::ServerboundClientInformationPacket)
+    public val SERVER_CLIENT_SETTINGS: ServerboundPacketType<ServerboundClientSettingsPacket> =
+        server("client_settings", ::ServerboundClientSettingsPacket)
+    public val SERVER_QIB_TRIGGERED: ServerboundPacketType<ServerboundQibTriggeredPacket> =
+        server("qib_triggered", ::ServerboundQibTriggeredPacket)
     public val SERVER_RIPTIDE: ServerboundPacketType<ServerboundRiptidePacket> = server("riptide", ::ServerboundRiptidePacket)
 
     public val CLIENT_CHANGE_SERVER_RULES: PacketType<ClientboundChangeServerRulesPacket> = client("change_server_rules")
@@ -61,7 +63,10 @@ public object NoxesiumPackets {
     }
 
     /** Registers a server-bound packet. */
-    public fun <T : ServerboundNoxesiumPacket> server(id: String, reader: (RegistryFriendlyByteBuf, Player, Int) -> T): ServerboundPacketType<T> {
+    public fun <T : ServerboundNoxesiumPacket> server(
+        id: String,
+        reader: (RegistryFriendlyByteBuf, Player, Int) -> T,
+    ): ServerboundPacketType<T> {
         require(id !in _serverboundPackets) { "Cannot register serverbound packet $id twice!" }
         val packetType = ServerboundPacketType(id, reader)
         _serverboundPackets[id] = packetType
