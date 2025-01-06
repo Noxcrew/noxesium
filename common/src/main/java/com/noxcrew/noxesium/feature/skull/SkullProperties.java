@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.feature.skull;
 
-
 import java.util.UUID;
 
 /**
@@ -10,6 +9,12 @@ public record SkullProperties(UUID uuid, String texture, boolean grayscale, floa
 
     public SkullProperties(SkullContents contents) {
         // Only include a texture if there is no uuid available.
-        this(contents.getUuid(), contents.getUuid() == null ? contents.getTexture() : null, contents.isGrayscale(), contents.getScale(), contents.getAdvance(), contents.getAscent());
+        this(
+                contents.getUuid(),
+                contents.getUuid() == null ? contents.getTexture() : null,
+                contents.isGrayscale(),
+                contents.getScale(),
+                contents.getAdvance(),
+                contents.getAscent());
     }
 }

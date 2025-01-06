@@ -9,14 +9,13 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
+import java.awt.Color;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.CoreShaders;
 import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.util.profiling.Profiler;
 import org.lwjgl.opengl.GL32;
-
-import java.awt.Color;
 
 /**
  * Helps in debugging the spatial interaction tree.
@@ -58,9 +57,17 @@ public class SpatialDebuggingModule implements NoxesiumModule {
             RenderSystem.depthFunc(GL32.GL_ALWAYS);
 
             // Start the buffer after setting up the depth settings
-            var buffer = Tesselator.getInstance().begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+            var buffer =
+                    Tesselator.getInstance().begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
             try {
-                ShapeRenderer.renderLineBox(poseStack, buffer, model, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, 1.0F);
+                ShapeRenderer.renderLineBox(
+                        poseStack,
+                        buffer,
+                        model,
+                        color.getRed() / 255f,
+                        color.getGreen() / 255f,
+                        color.getBlue() / 255f,
+                        1.0F);
             } catch (Exception x) {
                 // Ignore exceptions from in here
                 if (SharedConstants.IS_RUNNING_IN_IDE) throw x;

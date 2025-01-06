@@ -1,11 +1,10 @@
 package com.noxcrew.noxesium.feature.sounds;
 
 import com.noxcrew.noxesium.NoxesiumModule;
-import net.minecraft.client.Minecraft;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manages and stores the currently playing sounds
@@ -43,7 +42,6 @@ public class NoxesiumSoundModule implements NoxesiumModule {
         // Clear all information about pending sounds on quit
         sounds.clear();
     }
-
 
     /**
      * Returns a currently playing custom sound

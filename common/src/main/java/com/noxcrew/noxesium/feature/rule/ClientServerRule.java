@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import java.util.Objects;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A generic object whose value is filled in by a server.
@@ -40,8 +39,7 @@ public abstract class ClientServerRule<T> extends ServerRule<T, RegistryFriendly
     /**
      * Called when the value changes from [oldValue] to [newValue].
      */
-    protected void onValueChanged(T oldValue, T newValue) {
-    }
+    protected void onValueChanged(T oldValue, T newValue) {}
 
     // On the client we implement write because Lunar re-serializes packets.
 }

@@ -7,18 +7,19 @@ import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Changes the stored value for one or more server rules.
  */
 public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> values) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundChangeServerRulesPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundChangeServerRulesPacket::write, ClientboundChangeServerRulesPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundChangeServerRulesPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(
+                    ClientboundChangeServerRulesPacket::write, ClientboundChangeServerRulesPacket::new);
 
     private ClientboundChangeServerRulesPacket(RegistryFriendlyByteBuf buf) {
         this(buf, buf.readIntIdList());
@@ -46,7 +47,8 @@ public record ClientboundChangeServerRulesPacket(IntList indices, List<Object> v
     /**
      * Writes a set of rule values to a buffer.
      */
-    public static void write(RuleIndexProvider provider, RegistryFriendlyByteBuf buf, IntList indices, List<Object> values) {
+    public static void write(
+            RuleIndexProvider provider, RegistryFriendlyByteBuf buf, IntList indices, List<Object> values) {
         buf.writeIntIdList(indices);
         var idx = 0;
         for (var index : indices) {

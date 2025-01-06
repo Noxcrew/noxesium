@@ -10,8 +10,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 /**
  * Sent by MCC Island whenever you switch servers. All values are dynamic and may change over time.
  */
-public record ClientboundMccServerPacket(String serverType, String subType, String associatedGame) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundMccServerPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccServerPacket::write, ClientboundMccServerPacket::new);
+public record ClientboundMccServerPacket(String serverType, String subType, String associatedGame)
+        implements NoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundMccServerPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ClientboundMccServerPacket::write, ClientboundMccServerPacket::new);
 
     private ClientboundMccServerPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readUtf(), buf.readUtf(), buf.readUtf());

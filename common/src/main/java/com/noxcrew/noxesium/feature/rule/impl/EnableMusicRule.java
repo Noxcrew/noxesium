@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
+import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.options.SoundOptionsScreen;
-
-import java.util.Objects;
 
 /**
  * Updates the current state of playing music and the sound settings screen whenever

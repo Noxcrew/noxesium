@@ -22,13 +22,18 @@ public abstract class GuiRulesMixin {
 
     @ModifyConstant(
             method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",
-            constant = @Constant(intValue = 59)
-    )
+            constant = @Constant(intValue = 59))
     public int raiseHeldItemHeight(int constant) {
         return constant + ServerRules.HELD_ITEM_NAME_OFFSET.getValue();
     }
 
-    @Redirect(method = "tick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Inventory;getSelected()Lnet/minecraft/world/item/ItemStack;"))
+    @Redirect(
+            method = "tick()V",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/player/Inventory;getSelected()Lnet/minecraft/world/item/ItemStack;"))
     public ItemStack getSelected(Inventory inventory) {
         return InventoryHelper.getRealSelected(inventory);
     }

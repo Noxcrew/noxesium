@@ -20,14 +20,20 @@ import net.minecraft.world.item.Items;
  */
 public class CustomServerCreativeItems implements NoxesiumModule {
 
-    private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
+    private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(
+            Registries.CREATIVE_MODE_TAB,
+            ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
 
     @Override
     public void onStartup() {
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, CREATIVE_TAB, FabricItemGroup.builder()
-                .title(Component.translatable("itemGroup.noxesium.server_items"))
-                .displayItems((parameters, output) -> output.acceptAll(ServerRules.CUSTOM_CREATIVE_ITEMS.getValue()))
-                .icon(() -> new ItemStack(Items.STRUCTURE_BLOCK))
-                .build());
+        Registry.register(
+                BuiltInRegistries.CREATIVE_MODE_TAB,
+                CREATIVE_TAB,
+                FabricItemGroup.builder()
+                        .title(Component.translatable("itemGroup.noxesium.server_items"))
+                        .displayItems(
+                                (parameters, output) -> output.acceptAll(ServerRules.CUSTOM_CREATIVE_ITEMS.getValue()))
+                        .icon(() -> new ItemStack(Items.STRUCTURE_BLOCK))
+                        .build());
     }
 }

@@ -2,10 +2,9 @@ package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A standard server rule that stores a mapping of qib behaviors.

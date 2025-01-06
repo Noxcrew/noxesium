@@ -16,7 +16,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(ArmedEntityRenderState.class)
 public abstract class HandItemOverrideRenderMixin {
 
-    @Redirect(method = "extractArmedEntityRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getItemHeldByArm(Lnet/minecraft/world/entity/HumanoidArm;)Lnet/minecraft/world/item/ItemStack;"))
+    @Redirect(
+            method = "extractArmedEntityRenderState",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/LivingEntity;getItemHeldByArm(Lnet/minecraft/world/entity/HumanoidArm;)Lnet/minecraft/world/item/ItemStack;"))
     private static ItemStack getItemByArm(LivingEntity instance, HumanoidArm humanoidArm) {
         if (instance instanceof Player player && humanoidArm == player.getMainArm()) {
             return InventoryHelper.getRealSelected(player.getInventory());

@@ -6,14 +6,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import java.util.function.Consumer;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.function.Consumer;
 
 /**
  * Syncs up with the server whenever relevant settings are updated.
@@ -25,11 +24,16 @@ import java.util.function.Consumer;
 @Mixin(OptionInstance.class)
 public abstract class OptionInstanceMixin<T> {
 
-    @WrapOperation(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
+    @WrapOperation(
+            method = "set",
+            at =
+                    @At(
+                            value = "FIELD",
+                            target =
+                                    "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
     private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
         var options = Minecraft.getInstance().options;
-        if (instance == options.touchscreen() ||
-            instance == options.notificationDisplayTime()) {
+        if (instance == options.touchscreen() || instance == options.notificationDisplayTime()) {
             NoxesiumMod.syncGuiScale();
         }
         return original.call(instance);
@@ -43,10 +47,12 @@ public abstract class OptionInstanceMixin<T> {
         // Ignore if we're in a nested settings menu override
         if (ServerRuleModule.noxesium$disableSettingOverrides) return original;
 
-        if (((Object) (this)) == options.prioritizeChunkUpdates() && ServerRules.DISABLE_DEFERRED_CHUNK_UPDATES.getValue()) {
+        if (((Object) (this)) == options.prioritizeChunkUpdates()
+                && ServerRules.DISABLE_DEFERRED_CHUNK_UPDATES.getValue()) {
             return (T) PrioritizeChunkUpdates.NEARBY;
         }
-        if (((Object) (this)) == options.graphicsMode() && ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().isPresent()) {
+        if (((Object) (this)) == options.graphicsMode()
+                && ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().isPresent()) {
             var graphics = (T) ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().get();
             if (ServerRuleModule.noxesium$isUsingIris && graphics == GraphicsStatus.FABULOUS) {
                 // Don't use fabulous graphics when using Iris!

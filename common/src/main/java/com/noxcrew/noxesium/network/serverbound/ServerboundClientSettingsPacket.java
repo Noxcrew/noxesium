@@ -12,7 +12,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * mostly geared towards the size of their GUI and other visual-related settings.
  */
 public record ServerboundClientSettingsPacket(ClientSettings settings) implements ServerboundNoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundClientSettingsPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientSettingsPacket::write, ServerboundClientSettingsPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundClientSettingsPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ServerboundClientSettingsPacket::write, ServerboundClientSettingsPacket::new);
 
     private ServerboundClientSettingsPacket(RegistryFriendlyByteBuf buf) {
         this(new ClientSettings(
@@ -22,8 +23,7 @@ public record ServerboundClientSettingsPacket(ClientSettings settings) implement
                 buf.readVarInt(),
                 buf.readBoolean(),
                 buf.readBoolean(),
-                buf.readDouble()
-        ));
+                buf.readDouble()));
     }
 
     private void write(RegistryFriendlyByteBuf buf) {

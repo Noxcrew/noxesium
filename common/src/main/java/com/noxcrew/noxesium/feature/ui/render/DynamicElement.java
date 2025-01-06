@@ -5,13 +5,12 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendStateHook;
 import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
-import net.minecraft.client.gui.GuiGraphics;
-import org.lwjgl.opengl.GL14;
-
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.gui.GuiGraphics;
+import org.lwjgl.opengl.GL14;
 
 /**
  * Manages a buffer and its current dynamic fps.
@@ -223,7 +222,12 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
         if (movementDirection) {
             var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-            renderFps = Math.clamp(Math.max(max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d)), max * ((double) (60 - matches) / 10d)), 0, max);
+            renderFps = Math.clamp(
+                    Math.max(
+                            max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d)),
+                            max * ((double) (60 - matches) / 10d)),
+                    0,
+                    max);
 
             // If matches falls too far
             if (matches <= 40) {
@@ -333,8 +337,10 @@ public class DynamicElement implements Closeable, BlendStateHook {
             DEFAULT_BLEND_STATE.apply();
             SharedVertexBuffer.ignoreBlendStateHook = false;
         } else {
-            // If blending is turned off at any point we don't need to fork the buffer, we just need to temporarily change how
-            // we approach blending. We want to copy the RGB normally but set the alpha to a static value of 255. For this we
+            // If blending is turned off at any point we don't need to fork the buffer, we just need to temporarily
+            // change how
+            // we approach blending. We want to copy the RGB normally but set the alpha to a static value of 255. For
+            // this we
             // use the constant color system.
             SharedVertexBuffer.ignoreBlendStateHook = true;
             GlStateManager._blendFuncSeparate(
@@ -348,8 +354,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
                     // pixels at any pixel we draw to when not
                     // blending.
                     GL14.GL_CONSTANT_ALPHA,
-                    GL14.GL_ZERO
-            );
+                    GL14.GL_ZERO);
             SharedVertexBuffer.ignoreBlendStateHook = false;
         }
 
@@ -359,7 +364,8 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
     @Override
     public boolean changeFunc(int srcRgb, int dstRgb, int srcAlpha, int dstAlpha) {
-        var isNormal = DEFAULT_BLEND_STATE.matches(srcRgb, dstRgb, srcAlpha, dstAlpha) ||
+        var isNormal = DEFAULT_BLEND_STATE.matches(srcRgb, dstRgb, srcAlpha, dstAlpha)
+                ||
                 // We allow glint states as this is one that specifically applies edits to an existing
                 // item that was just rendered in the same buffer.
                 GLINT_BLEND_STATE.matches(srcRgb, dstRgb, srcAlpha, dstAlpha);

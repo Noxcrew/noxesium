@@ -14,7 +14,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * 0x02 - Resets cached player heads
  */
 public record ClientboundResetPacket(byte flags) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetPacket::write, ClientboundResetPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ClientboundResetPacket::write, ClientboundResetPacket::new);
 
     private ClientboundResetPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readByte());

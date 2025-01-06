@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(ClientPacketListener.class)
 public abstract class FixVehicleTeleportMixin {
 
-    @WrapOperation(method = "handleTeleportEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isControlledByLocalInstance()Z"))
+    @WrapOperation(
+            method = "handleTeleportEntity",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isControlledByLocalInstance()Z"))
     private boolean forceTeleportRider(Entity instance, Operation<Boolean> original) {
         if (instance.getVehicle() != null) {
             // Teleport the entity to be on top of their vehicle

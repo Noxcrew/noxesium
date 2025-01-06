@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPacketHandler;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
+import java.nio.file.Path;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -15,8 +16,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import java.nio.file.Path;
 
 /**
  * Implements platform hooks on Fabric.
@@ -35,7 +34,11 @@ public class NoxesiumFabricHook implements NoxesiumPlatformHook {
 
     @Override
     public String getNoxesiumVersion() {
-        return "fabric-" + FabricLoader.getInstance().getModContainer(NoxesiumReferences.NAMESPACE).map(mod -> mod.getMetadata().getVersion().getFriendlyString()).orElse("unknown");
+        return "fabric-"
+                + FabricLoader.getInstance()
+                        .getModContainer(NoxesiumReferences.NAMESPACE)
+                        .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
+                        .orElse("unknown");
     }
 
     @Override
@@ -71,7 +74,8 @@ public class NoxesiumFabricHook implements NoxesiumPlatformHook {
     }
 
     @Override
-    public <T extends NoxesiumPacket> void registerPacket(NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+    public <T extends NoxesiumPacket> void registerPacket(
+            NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
         if (clientToServer) {
             PayloadTypeRegistry.playC2S().register(type.type, codec);
         } else {

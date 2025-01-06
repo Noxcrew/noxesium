@@ -1,12 +1,11 @@
 package com.noxcrew.noxesium.feature.ui.layer;
 
-import net.minecraft.client.gui.LayeredDraw;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+import net.minecraft.client.gui.LayeredDraw;
 
 /**
  * The different contents of a NoxesiumLayeredDraw.
@@ -85,11 +84,7 @@ public sealed interface NoxesiumLayer {
     /**
      * Stores a singular layer that is always rendered.
      */
-    record Layer(
-            int index,
-            String name,
-            LayeredDraw.Layer layer
-    ) implements NoxesiumLayer {
+    record Layer(int index, String name, LayeredDraw.Layer layer) implements NoxesiumLayer {
 
         // A global variable used for layer indices!
         private static int LAST_LAYER_INDEX = -1;
@@ -116,7 +111,10 @@ public sealed interface NoxesiumLayer {
         }
 
         public Layer(LayeredDraw.Layer layer) {
-            this(++LAST_LAYER_INDEX, STANDARD_LAYER_NAMES.getOrDefault(LAST_LAYER_INDEX, "Layer #" + LAST_LAYER_INDEX), layer);
+            this(
+                    ++LAST_LAYER_INDEX,
+                    STANDARD_LAYER_NAMES.getOrDefault(LAST_LAYER_INDEX, "Layer #" + LAST_LAYER_INDEX),
+                    layer);
         }
 
         public Layer(String name, LayeredDraw.Layer layer) {

@@ -16,7 +16,14 @@ public abstract class FixTextDisplayTransparencyMixin {
      * which fixes issues with its transparency. We do however use a custom type with a depth buffer that ensures the background does not
      * render through walls. We want to render things behind it, not it behind other things.
      */
-    @Redirect(method = "renderInner(Lnet/minecraft/client/renderer/entity/state/TextDisplayEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderType;textBackground()Lnet/minecraft/client/renderer/RenderType;"))
+    @Redirect(
+            method =
+                    "renderInner(Lnet/minecraft/client/renderer/entity/state/TextDisplayEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IF)V",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/renderer/RenderType;textBackground()Lnet/minecraft/client/renderer/RenderType;"))
     public RenderType determineRenderType() {
         return CustomRenderTypes.textBackgroundSeeThroughWithDepth();
     }

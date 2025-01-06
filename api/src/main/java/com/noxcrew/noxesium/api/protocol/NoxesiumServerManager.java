@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.api.protocol;
 
 import com.noxcrew.noxesium.api.protocol.rule.ServerRule;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The interfaces for a server-side implementation of a Noxesium manager. This is set up to interact with
@@ -26,7 +25,8 @@ public interface NoxesiumServerManager<PlayerT> {
      * @return An object that stores the current rule state for the given player, or `null` if the player is not using Noxesium or
      * not on a version that supports this rule.
      */
-    @Nullable <T> ServerRule<T, ?> getServerRule(PlayerT player, int ruleIndex);
+    @Nullable
+    <T> ServerRule<T, ?> getServerRule(PlayerT player, int ruleIndex);
 
     /**
      * +

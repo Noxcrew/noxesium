@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.network;
 
+import static com.noxcrew.noxesium.api.util.ByteUtil.hasFlag;
+
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
@@ -9,8 +11,6 @@ import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import net.minecraft.world.entity.Entity;
-
-import static com.noxcrew.noxesium.api.util.ByteUtil.hasFlag;
 
 /**
  * Registers default listeners for all base packets.
@@ -39,7 +39,9 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             var indices = packet.indices();
             for (var idx = 0; idx < indices.size(); idx++) {
                 var index = indices.getInt(idx);
-                var rule = NoxesiumMod.getInstance().getModule(ServerRuleModule.class).getIndex(index);
+                var rule = NoxesiumMod.getInstance()
+                        .getModule(ServerRuleModule.class)
+                        .getIndex(index);
                 if (rule == null) return;
                 rule.setUnsafe(packet.values().get(idx));
             }
@@ -60,15 +62,39 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             // Determine the sound instance to play
             NoxesiumSoundInstance sound = null;
             if (packet.position() != null) {
-                sound = new NoxesiumSoundInstance(packet.sound(), packet.source(), packet.position(), packet.volume(), packet.pitch(), packet.looping(), packet.attenuation(), packet.determineOffset());
+                sound = new NoxesiumSoundInstance(
+                        packet.sound(),
+                        packet.source(),
+                        packet.position(),
+                        packet.volume(),
+                        packet.pitch(),
+                        packet.looping(),
+                        packet.attenuation(),
+                        packet.determineOffset());
             } else if (packet.entityId() != null) {
                 var entity = context.player().connection.getLevel().getEntity(packet.entityId());
                 if (entity != null) {
-                    sound = new EntityNoxesiumSoundInstance(packet.sound(), packet.source(), entity, packet.volume(), packet.pitch(), packet.looping(), packet.attenuation(), packet.determineOffset());
+                    sound = new EntityNoxesiumSoundInstance(
+                            packet.sound(),
+                            packet.source(),
+                            entity,
+                            packet.volume(),
+                            packet.pitch(),
+                            packet.looping(),
+                            packet.attenuation(),
+                            packet.determineOffset());
                 }
             }
             if (sound == null) {
-                sound = new EntityNoxesiumSoundInstance(packet.sound(), packet.source(), context.player(), packet.volume(), packet.pitch(), packet.looping(), packet.attenuation(), packet.determineOffset());
+                sound = new EntityNoxesiumSoundInstance(
+                        packet.sound(),
+                        packet.source(),
+                        context.player(),
+                        packet.volume(),
+                        packet.pitch(),
+                        packet.looping(),
+                        packet.attenuation(),
+                        packet.determineOffset());
             }
             manager.play(packet.id(), sound, packet.ignoreIfPlaying());
         });
@@ -97,7 +123,11 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                     entity.noxesium$setExtraData(rule, packet.values().get(idx));
                 }
             } else {
-                NoxesiumMod.getInstance().getLogger().warn("Received ClientboundSetExtraEntityDataPacket about unknown entity {}", packet.entityId());
+                NoxesiumMod.getInstance()
+                        .getLogger()
+                        .warn(
+                                "Received ClientboundSetExtraEntityDataPacket about unknown entity {}",
+                                packet.entityId());
             }
         });
 
@@ -111,7 +141,11 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                     entity.noxesium$resetExtraData(rule);
                 }
             } else {
-                NoxesiumMod.getInstance().getLogger().warn("Received ClientboundResetExtraEntityDataPacket about unknown entity {}", packet.entityId());
+                NoxesiumMod.getInstance()
+                        .getLogger()
+                        .warn(
+                                "Received ClientboundResetExtraEntityDataPacket about unknown entity {}",
+                                packet.entityId());
             }
         });
     }

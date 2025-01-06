@@ -24,10 +24,10 @@ import org.joml.Matrix4f;
  */
 public class CustomMapUiWidget implements LayeredDraw.Layer {
 
-    private static final RenderType MAP_BACKGROUND = RenderType.text(ResourceLocation.withDefaultNamespace("textures/map/map_background.png"));
-    private static final RenderType MAP_BACKGROUND_CHECKERBOARD = RenderType.text(
-        ResourceLocation.withDefaultNamespace("textures/map/map_background_checkerboard.png")
-    );
+    private static final RenderType MAP_BACKGROUND =
+            RenderType.text(ResourceLocation.withDefaultNamespace("textures/map/map_background.png"));
+    private static final RenderType MAP_BACKGROUND_CHECKERBOARD =
+            RenderType.text(ResourceLocation.withDefaultNamespace("textures/map/map_background_checkerboard.png"));
     private final MapRenderState mapRenderState = new MapRenderState();
 
     @Override
@@ -41,9 +41,15 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
         var mainArm = minecraft.player.getMainArm();
         for (var arm : HumanoidArm.values()) {
             if (hasMapItem(minecraft.player, arm)) {
-                renderMap(minecraft, guiGraphics, deltaTracker, pose, arm, minecraft.player.getItemInHand(
-                    mainArm == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND
-                ), offset);
+                renderMap(
+                        minecraft,
+                        guiGraphics,
+                        deltaTracker,
+                        pose,
+                        arm,
+                        minecraft.player.getItemInHand(
+                                mainArm == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND),
+                        offset);
             }
         }
     }
@@ -56,17 +62,26 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
         var hand = mainArm == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
         var item = player.getItemInHand(hand);
         var otherHand = player.getItemInHand(
-            hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND
-        );
+                hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
         return item.is(Items.FILLED_MAP) && (hand == InteractionHand.OFF_HAND || !otherHand.isEmpty());
     }
 
     /**
      * Renders a map to the UI.
      */
-    private void renderMap(Minecraft minecraft, GuiGraphics graphics, DeltaTracker deltaTracker, PoseStack pose, HumanoidArm arm, ItemStack item, int offset) {
+    private void renderMap(
+            Minecraft minecraft,
+            GuiGraphics graphics,
+            DeltaTracker deltaTracker,
+            PoseStack pose,
+            HumanoidArm arm,
+            ItemStack item,
+            int offset) {
         pose.pushPose();
-        var scale = 1f / ((float) minecraft.getWindow().getGuiScale()) * 4f * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
+        var scale = 1f
+                / ((float) minecraft.getWindow().getGuiScale())
+                * 4f
+                * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
         var setting = NoxesiumMod.getInstance().getConfig().mapUiLocation;
         var bottom = setting.isBottom();
         var flipped = setting.isFlipped();
@@ -94,13 +109,32 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
         var mapId = item.get(DataComponents.MAP_ID);
         var mapitemsaveddata = MapItem.getSavedData(mapId, minecraft.level);
         graphics.drawSpecial(bufferSource -> {
-            VertexConsumer vertexconsumer = bufferSource.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
+            VertexConsumer vertexconsumer =
+                    bufferSource.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
             Matrix4f matrix4f = pose.last().pose();
-            var light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(minecraft.player, deltaTracker.getGameTimeDeltaPartialTick(true));
-            vertexconsumer.addVertex(matrix4f, -7.0F, 135.0F, 0.0F).setColor(-1).setUv(0.0F, 1.0F).setLight(light);
-            vertexconsumer.addVertex(matrix4f, 135.0F, 135.0F, 0.0F).setColor(-1).setUv(1.0F, 1.0F).setLight(light);
-            vertexconsumer.addVertex(matrix4f, 135.0F, -7.0F, 0.0F).setColor(-1).setUv(1.0F, 0.0F).setLight(light);
-            vertexconsumer.addVertex(matrix4f, -7.0F, -7.0F, 0.0F).setColor(-1).setUv(0.0F, 0.0F).setLight(light);
+            var light = minecraft
+                    .getEntityRenderDispatcher()
+                    .getPackedLightCoords(minecraft.player, deltaTracker.getGameTimeDeltaPartialTick(true));
+            vertexconsumer
+                    .addVertex(matrix4f, -7.0F, 135.0F, 0.0F)
+                    .setColor(-1)
+                    .setUv(0.0F, 1.0F)
+                    .setLight(light);
+            vertexconsumer
+                    .addVertex(matrix4f, 135.0F, 135.0F, 0.0F)
+                    .setColor(-1)
+                    .setUv(1.0F, 1.0F)
+                    .setLight(light);
+            vertexconsumer
+                    .addVertex(matrix4f, 135.0F, -7.0F, 0.0F)
+                    .setColor(-1)
+                    .setUv(1.0F, 0.0F)
+                    .setLight(light);
+            vertexconsumer
+                    .addVertex(matrix4f, -7.0F, -7.0F, 0.0F)
+                    .setColor(-1)
+                    .setUv(0.0F, 0.0F)
+                    .setLight(light);
             if (mapitemsaveddata != null) {
                 var mapRenderer = minecraft.getMapRenderer();
                 mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);

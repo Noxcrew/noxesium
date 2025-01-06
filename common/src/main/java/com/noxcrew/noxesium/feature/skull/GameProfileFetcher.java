@@ -3,12 +3,11 @@ package com.noxcrew.noxesium.feature.skull;
 import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class GameProfileFetcher {
 
@@ -24,14 +23,20 @@ public class GameProfileFetcher {
             return;
         }
 
-        CompletableFuture.runAsync(() -> {
-            // Try to use the session service to fill out the data, but otherwise we just use what we have
-            var newProfile = profile;
-            Property property = Iterables.getFirst(newProfile.getProperties().get(PROPERTY_TEXTURES), null);
-            if (property == null) {
-                newProfile = Minecraft.getInstance().getMinecraftSessionService().fetchProfile(newProfile.getId(), true).profile();
-            }
-            consumer.accept(newProfile);
-        }, Util.backgroundExecutor());
+        CompletableFuture.runAsync(
+                () -> {
+                    // Try to use the session service to fill out the data, but otherwise we just use what we have
+                    var newProfile = profile;
+                    Property property =
+                            Iterables.getFirst(newProfile.getProperties().get(PROPERTY_TEXTURES), null);
+                    if (property == null) {
+                        newProfile = Minecraft.getInstance()
+                                .getMinecraftSessionService()
+                                .fetchProfile(newProfile.getId(), true)
+                                .profile();
+                    }
+                    consumer.accept(newProfile);
+                },
+                Util.backgroundExecutor());
     }
 }

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.mixin.sodium;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.NoxesiumMod;
+import java.util.function.IntFunction;
 import net.caffeinemc.mods.sodium.client.gl.GlObject;
 import net.caffeinemc.mods.sodium.client.gl.shader.GlProgram;
 import net.caffeinemc.mods.sodium.client.gl.shader.uniform.GlUniform;
@@ -11,8 +12,6 @@ import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL32C;
 import org.spongepowered.asm.mixin.Mixin;
 
-import java.util.function.IntFunction;
-
 /**
  * Directly based on <a href="https://github.com/lni-dev/SodiumCoreShaderSupport/blob/1.20.6/src/main/java/de/linusdev/mixin/MixinGLProgram.java">Sodium Core Shader Support</a>.
  */
@@ -20,7 +19,8 @@ import java.util.function.IntFunction;
 public class SodiumGlProgramMixin extends GlObject {
 
     @WrapMethod(method = "bindUniform")
-    private <U extends GlUniform<?>> U noxesium$bindUniform(String name, IntFunction<U> factory, Operation<U> original) {
+    private <U extends GlUniform<?>> U noxesium$bindUniform(
+            String name, IntFunction<U> factory, Operation<U> original) {
         var index = GL20C.glGetUniformLocation(this.handle(), name);
         if (index < 0) {
             var error = GL20C.glGetError();
@@ -36,7 +36,8 @@ public class SodiumGlProgramMixin extends GlObject {
     }
 
     @WrapMethod(method = "bindUniformBlock")
-    private GlUniformBlock noxesium$bindUniformBlock(String name, int bindingPoint, Operation<GlUniformBlock> original) {
+    private GlUniformBlock noxesium$bindUniformBlock(
+            String name, int bindingPoint, Operation<GlUniformBlock> original) {
         var index = GL32C.glGetUniformBlockIndex(this.handle(), name);
         if (index < 0) {
             var error = GL20C.glGetError();
@@ -45,7 +46,9 @@ public class SodiumGlProgramMixin extends GlObject {
             } else if (error == GL20C.GL_INVALID_VALUE) {
                 NoxesiumMod.getInstance().getLogger().warn("Error while binding uniform block: GL_INVALID_VALUE");
             } else {
-                NoxesiumMod.getInstance().getLogger().warn("Unknown error while binding uniform block, code: {}", error);
+                NoxesiumMod.getInstance()
+                        .getLogger()
+                        .warn("Unknown error while binding uniform block, code: {}", error);
             }
         }
         GL32C.glUniformBlockBinding(this.handle(), index, bindingPoint);

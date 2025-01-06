@@ -17,9 +17,16 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(GameRenderer.class)
 public class ScreenRenderHookMixin {
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
+    @Redirect(
+            method = "render",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
     public void renderScreen(Screen instance, GuiGraphics guiGraphics, int width, int height, float deltaTime) {
-        if ((instance instanceof MenuAccess || instance instanceof ChatScreen) && NoxesiumMod.getInstance().getConfig().enableUiLimiting) {
+        if ((instance instanceof MenuAccess || instance instanceof ChatScreen)
+                && NoxesiumMod.getInstance().getConfig().enableUiLimiting) {
             // Create a new state object and let it render
             if (ScreenRenderingHolder.getInstance().render(guiGraphics, width, height, deltaTime, instance)) return;
         } else {

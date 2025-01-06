@@ -11,7 +11,8 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Sent by a server to stop a custom Noxesium sound by its id.
  */
 public record ClientboundCustomSoundStopPacket(int id) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundStopPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStopPacket::write, ClientboundCustomSoundStopPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundStopPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ClientboundCustomSoundStopPacket::write, ClientboundCustomSoundStopPacket::new);
 
     private ClientboundCustomSoundStopPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt());

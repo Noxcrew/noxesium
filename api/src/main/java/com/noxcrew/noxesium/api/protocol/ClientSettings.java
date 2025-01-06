@@ -19,6 +19,4 @@ public record ClientSettings(
         int height,
         boolean enforceUnicode,
         boolean touchScreenMode,
-        double notificationDisplayTime
-) {
-}
+        double notificationDisplayTime) {}

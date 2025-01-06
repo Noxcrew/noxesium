@@ -29,7 +29,8 @@ public class QibInteractionMixin {
     }
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
-    public void interact(Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
+    public void interact(
+            Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
         var interaction = (Interaction) ((Object) this);
         if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
             cir.setReturnValue(InteractionResult.PASS);
@@ -49,8 +50,7 @@ public class QibInteractionMixin {
             var dy = dimensions.height();
             var dz = interaction.noxesium$getExtraData(ExtraEntityData.QIB_WIDTH_Z) / 2.0f;
             cir.setReturnValue(
-                new AABB(x - (double) dx, y, z - (double) dz, x + (double) dx, y + (double) dy, z + (double) dz)
-            );
+                    new AABB(x - (double) dx, y, z - (double) dz, x + (double) dx, y + (double) dy, z + (double) dz));
         }
     }
 }

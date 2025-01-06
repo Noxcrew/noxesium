@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
 import java.lang.reflect.Type;
 
 /**
@@ -16,7 +15,8 @@ import java.lang.reflect.Type;
  */
 public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeserializer<QibEffect> {
     @Override
-    public QibEffect deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public QibEffect deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
         var object = json.getAsJsonObject();
         var data = object.getAsJsonObject("effect");
         return switch (object.getAsJsonPrimitive("type").getAsString()) {
@@ -33,7 +33,8 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
             case "SetVelocity" -> context.deserialize(data, QibEffect.SetVelocity.class);
             case "SetVelocityYawPitch" -> context.deserialize(data, QibEffect.SetVelocityYawPitch.class);
             case "ModifyVelocity" -> context.deserialize(data, QibEffect.ModifyVelocity.class);
-            default -> throw new JsonParseException("Invalid input type " + object.getAsJsonPrimitive("type").getAsString());
+            default -> throw new JsonParseException(
+                    "Invalid input type " + object.getAsJsonPrimitive("type").getAsString());
         };
     }
 

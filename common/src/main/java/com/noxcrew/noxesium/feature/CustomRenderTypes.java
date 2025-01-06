@@ -1,9 +1,5 @@
 package com.noxcrew.noxesium.feature;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.RenderType;
-
 import static net.minecraft.client.renderer.RenderStateShard.COLOR_DEPTH_WRITE;
 import static net.minecraft.client.renderer.RenderStateShard.COLOR_WRITE;
 import static net.minecraft.client.renderer.RenderStateShard.DEFAULT_LINE;
@@ -18,6 +14,10 @@ import static net.minecraft.client.renderer.RenderStateShard.RENDERTYPE_TEXT_BAC
 import static net.minecraft.client.renderer.RenderStateShard.TRANSLUCENT_TRANSPARENCY;
 import static net.minecraft.client.renderer.RenderStateShard.VIEW_OFFSET_Z_LAYERING;
 import static net.minecraft.client.renderer.RenderType.create;
+
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderType;
 
 /**
  * Defines custom render types.
@@ -42,8 +42,7 @@ public class CustomRenderTypes {
                     .setLightmapState(LIGHTMAP)
                     .setDepthTestState(LEQUAL_DEPTH_TEST)
                     .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+                    .createCompositeState(false));
 
     /**
      * Can be used to draw lines that have no depth sorting.
@@ -64,8 +63,7 @@ public class CustomRenderTypes {
                     .setWriteMaskState(COLOR_DEPTH_WRITE)
                     .setCullState(NO_CULL)
                     .setDepthTestState(NO_DEPTH_TEST)
-                    .createCompositeState(false)
-    );
+                    .createCompositeState(false));
 
     public static RenderType textBackgroundSeeThroughWithDepth() {
         return TEXT_BACKGROUND_SEE_THROUGH_WITH_DEPTH;

@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.mixin.feature;
 
+import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
+import static com.noxcrew.noxesium.api.NoxesiumReferences.IMMOVABLE_TAG;
+
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
@@ -11,9 +14,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
-import static com.noxcrew.noxesium.api.NoxesiumReferences.IMMOVABLE_TAG;
 
 /**
  * Mixin for preventing items from being moved inside custom inventories.

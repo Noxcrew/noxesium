@@ -4,6 +4,11 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.feature.entity.LivingEntityExtension;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -24,12 +29,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 /**
  * Hooks into the living entity code and implements [LivingEntityExtension].
@@ -112,7 +111,8 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
             var holder = iterator.next();
             var mobeffectinstance = noxesium$activeEffects.get(holder);
 
-            if (!mobeffectinstance.tick((LivingEntity) (Object) this, () -> noxesium$onEffectUpdated(mobeffectinstance))) {
+            if (!mobeffectinstance.tick(
+                    (LivingEntity) (Object) this, () -> noxesium$onEffectUpdated(mobeffectinstance))) {
                 iterator.remove();
                 noxesium$onEffectRemoved(holder);
             }
@@ -195,13 +195,14 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
             var remaining = entity.getUseItemRemainingTicks();
             var duration = useItem.getUseDuration(entity) - remaining;
             if (duration == 9) {
-                player.level().playLocalSound(
-                        player,
-                        SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath("noxesium", "trident.ready_indicator")),
-                        SoundSource.PLAYERS,
-                        1f,
-                        1f
-                );
+                player.level()
+                        .playLocalSound(
+                                player,
+                                SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath("noxesium", "trident.ready_indicator")),
+                                SoundSource.PLAYERS,
+                                1f,
+                                1f);
             }
         }
     }

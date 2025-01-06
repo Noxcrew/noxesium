@@ -5,6 +5,10 @@ import com.noxcrew.noxesium.network.NoxesiumPacketHandler;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -23,11 +27,6 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
-
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Implements platform hooks on Fabric.
@@ -103,11 +102,13 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
 
     @Override
     public boolean canSend(NoxesiumPayloadType<?> type) {
-        return Minecraft.getInstance().getConnection() != null && NetworkRegistry.hasChannel(Minecraft.getInstance().getConnection(), type.id());
+        return Minecraft.getInstance().getConnection() != null
+                && NetworkRegistry.hasChannel(Minecraft.getInstance().getConnection(), type.id());
     }
 
     @Override
-    public <T extends NoxesiumPacket> void registerPacket(NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+    public <T extends NoxesiumPacket> void registerPacket(
+            NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
         var handler = new NoxesiumPacketHandler<T>();
         if (clientToServer) {
             packetRegistrar.add((registrar) -> registrar.playToServer(type.type, codec, handler));

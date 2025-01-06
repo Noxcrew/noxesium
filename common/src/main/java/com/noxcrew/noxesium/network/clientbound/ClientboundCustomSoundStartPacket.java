@@ -33,9 +33,10 @@ public record ClientboundCustomSoundStartPacket(
         Vec3 position,
         Integer entityId,
         Long unix,
-        Float offset
-) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
+        Float offset)
+        implements NoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundStartPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ClientboundCustomSoundStartPacket::write, ClientboundCustomSoundStartPacket::new);
 
     private ClientboundCustomSoundStartPacket(RegistryFriendlyByteBuf buf) {
         this(
@@ -48,8 +49,7 @@ public record ClientboundCustomSoundStartPacket(
                 buf.readBoolean(),
                 buf.readFloat(),
                 buf.readFloat(),
-                buf.readVarInt()
-        );
+                buf.readVarInt());
     }
 
     private ClientboundCustomSoundStartPacket(
@@ -62,8 +62,7 @@ public record ClientboundCustomSoundStartPacket(
             boolean ignoreIfPlaying,
             float volume,
             float pitch,
-            int mode
-    ) {
+            int mode) {
         this(
                 buf,
                 id,
@@ -76,8 +75,7 @@ public record ClientboundCustomSoundStartPacket(
                 pitch,
                 mode == 0 ? buf.readVec3() : null,
                 mode == 1 ? buf.readVarInt() : null,
-                buf.readBoolean()
-        );
+                buf.readBoolean());
     }
 
     private ClientboundCustomSoundStartPacket(
@@ -92,8 +90,7 @@ public record ClientboundCustomSoundStartPacket(
             float pitch,
             Vec3 position,
             Integer entityId,
-            boolean unix
-    ) {
+            boolean unix) {
         this(
                 id,
                 sound,
@@ -106,8 +103,7 @@ public record ClientboundCustomSoundStartPacket(
                 position,
                 entityId,
                 unix ? buf.readLong() : null,
-                !unix ? buf.readFloat() : null
-        );
+                !unix ? buf.readFloat() : null);
     }
 
     private void write(RegistryFriendlyByteBuf buf) {

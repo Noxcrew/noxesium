@@ -10,14 +10,13 @@ import com.noxcrew.noxesium.feature.CustomCoreShaders;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendStateHook;
 import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.CoreShaders;
-import org.joml.Matrix4f;
-
 import java.io.Closeable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.CoreShaders;
+import org.joml.Matrix4f;
 
 /**
  * Stores a shared vertex buffer for running the blit shader to copy a render target to the screen.
@@ -85,7 +84,8 @@ public class SharedVertexBuffer implements Closeable {
         RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 
         // Set up the correct shaders and color
-        var shader = Objects.requireNonNull(RenderSystem.setShader(CustomCoreShaders.BLIT_SCREEN_MULTIPLE), "Blit shader not loaded");
+        var shader = Objects.requireNonNull(
+                RenderSystem.setShader(CustomCoreShaders.BLIT_SCREEN_MULTIPLE), "Blit shader not loaded");
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Bind the vertex shader
@@ -124,12 +124,14 @@ public class SharedVertexBuffer implements Closeable {
                 texture.state().apply();
 
                 // Change the current shader, bind the texture, and run it
-                shader = Objects.requireNonNull(RenderSystem.setShader(CoreShaders.BLIT_SCREEN), "Regular blit shader not loaded");
+                shader = Objects.requireNonNull(
+                        RenderSystem.setShader(CoreShaders.BLIT_SCREEN), "Regular blit shader not loaded");
                 shader.bindSampler("InSampler", texture.textureId());
                 buffer.drawWithShader(NULL_MATRIX, NULL_MATRIX, shader);
 
                 // Set it back to the regular blending function
-                shader = Objects.requireNonNull(RenderSystem.setShader(CustomCoreShaders.BLIT_SCREEN_MULTIPLE), "Blit shader not loaded");
+                shader = Objects.requireNonNull(
+                        RenderSystem.setShader(CustomCoreShaders.BLIT_SCREEN_MULTIPLE), "Blit shader not loaded");
                 RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             }
         }
@@ -170,7 +172,8 @@ public class SharedVertexBuffer implements Closeable {
                     buffer.bind();
 
                     // Do not use the main tesselator as it gets cleared at the end of frames.
-                    var builder = RenderSystem.renderThreadTesselator().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
+                    var builder = RenderSystem.renderThreadTesselator()
+                            .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.BLIT_SCREEN);
                     builder.addVertex(0f, 0f, 0f);
                     builder.addVertex(1f, 0f, 0f);
                     builder.addVertex(1f, 1f, 0f);

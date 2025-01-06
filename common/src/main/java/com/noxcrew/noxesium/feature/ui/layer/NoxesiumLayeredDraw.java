@@ -5,16 +5,14 @@ import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A custom implementation of layered draw that persists groupings
@@ -95,7 +93,8 @@ public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUi
         var offset = new MutableInt();
         for (var layer : layers) {
             switch (layer) {
-                case NoxesiumLayer.Layer single -> result.add(new LayerWithReference(result.size() + offset.getValue(), single, null));
+                case NoxesiumLayer.Layer single -> result.add(
+                        new LayerWithReference(result.size() + offset.getValue(), single, null));
                 case NoxesiumLayer.NestedLayers group -> process(group, result, offset, new ArrayList<>());
             }
         }
@@ -105,13 +104,18 @@ public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUi
     /**
      * Adds the contents of the layer group to the given list.
      */
-    private void process(NoxesiumLayer.NestedLayers target, List<LayerWithReference> list, MutableInt offset, List<NoxesiumLayer.NestedLayers> nested) {
+    private void process(
+            NoxesiumLayer.NestedLayers target,
+            List<LayerWithReference> list,
+            MutableInt offset,
+            List<NoxesiumLayer.NestedLayers> nested) {
         var nestedCopy = new ArrayList<>(nested);
         nestedCopy.add(target);
 
         for (var layer : target.layers()) {
             switch (layer) {
-                case NoxesiumLayer.Layer single -> list.add(new LayerWithReference(list.size() + offset.getValue(), single, nestedCopy));
+                case NoxesiumLayer.Layer single -> list.add(
+                        new LayerWithReference(list.size() + offset.getValue(), single, nestedCopy));
                 case NoxesiumLayer.NestedLayers group -> process(group, list, offset, nestedCopy);
             }
         }
@@ -130,7 +134,8 @@ public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUi
             for (var layer : layers) {
                 switch (layer) {
                     case NoxesiumLayer.Layer ignored -> size++;
-                    case NoxesiumLayer.NestedLayers group -> size += group.inner().size();
+                    case NoxesiumLayer.NestedLayers group -> size +=
+                            group.inner().size();
                 }
             }
         }

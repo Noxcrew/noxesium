@@ -12,7 +12,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * about what protocol version the server supports.
  */
 public record ClientboundServerInformationPacket(int maxProtocolVersion) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundServerInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundServerInformationPacket::write, ClientboundServerInformationPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundServerInformationPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(
+                    ClientboundServerInformationPacket::write, ClientboundServerInformationPacket::new);
 
     private ClientboundServerInformationPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt());

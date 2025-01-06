@@ -14,7 +14,13 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(Player.class)
 public class HandItemOverrideAttackFix {
 
-    @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
+    @Redirect(
+            method = "attack",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/player/Player;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
     public ItemStack redirectGetMainHandItem(Player instance) {
         // Specifically get the true internal selected slot!
         return InventoryHelper.getRealSelected(instance.getInventory());

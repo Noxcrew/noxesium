@@ -6,6 +6,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.NoxesiumMod;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -17,11 +21,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 /**
  * A custom chat component that renders a player's face at its location. The
  * input is directly received as a texture but can optionally be a unique id.
@@ -31,21 +30,24 @@ import java.util.concurrent.CompletableFuture;
  * formatting to allow servers to hide skulls in translation contents.
  */
 public class SkullContents extends TranslatableContents {
-    public static final MapCodec<SkullContents> INNER_CODEC = RecordCodecBuilder.mapCodec((instance) -> instance
-            .group(
-                    UUIDUtil.STRING_CODEC.optionalFieldOf("uuid").forGetter((skull) -> Optional.ofNullable(skull.getUuid())),
-                    Codec.STRING.optionalFieldOf("texture").forGetter((skull) -> Optional.ofNullable(skull.getTexture())),
+    public static final MapCodec<SkullContents> INNER_CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
+                    UUIDUtil.STRING_CODEC
+                            .optionalFieldOf("uuid")
+                            .forGetter((skull) -> Optional.ofNullable(skull.getUuid())),
+                    Codec.STRING
+                            .optionalFieldOf("texture")
+                            .forGetter((skull) -> Optional.ofNullable(skull.getTexture())),
                     Codec.BOOL.optionalFieldOf("grayscale", false).forGetter(SkullContents::isGrayscale),
                     Codec.INT.optionalFieldOf("advance", 0).forGetter(SkullContents::getAdvance),
                     Codec.INT.optionalFieldOf("ascent", 0).forGetter(SkullContents::getAscent),
-                    Codec.FLOAT.optionalFieldOf("scale", 1f).forGetter(SkullContents::getScale)
-            )
+                    Codec.FLOAT.optionalFieldOf("scale", 1f).forGetter(SkullContents::getScale))
             .apply(instance, SkullContents::new));
     public static final MapCodec<SkullContents> CODEC = INNER_CODEC.fieldOf("skull");
     public static final ComponentContents.Type<SkullContents> TYPE = new ComponentContents.Type<>(CODEC, "skull");
 
     @Nullable
     private final UUID uuid;
+
     private final CompletableFuture<String> texture;
     private final boolean grayscale;
     private final int advance;
@@ -53,8 +55,14 @@ public class SkullContents extends TranslatableContents {
     private final float scale;
     private final SkullConfig config;
 
-    public SkullContents(@Nullable UUID uuid, CompletableFuture<String> texture, boolean grayscale, int advance, int ascent, float scale) {
-        super("", null, new Object[]{});
+    public SkullContents(
+            @Nullable UUID uuid,
+            CompletableFuture<String> texture,
+            boolean grayscale,
+            int advance,
+            int ascent,
+            float scale) {
+        super("", null, new Object[] {});
         this.uuid = uuid;
         this.texture = texture;
         this.grayscale = grayscale;
@@ -64,8 +72,9 @@ public class SkullContents extends TranslatableContents {
         this.config = new SkullConfig(texture, new SkullProperties(this));
     }
 
-    public SkullContents(Optional<UUID> uuid, Optional<String> textureIn, boolean grayscale, int advance, int ascent, float scale) {
-        super("", null, new Object[]{});
+    public SkullContents(
+            Optional<UUID> uuid, Optional<String> textureIn, boolean grayscale, int advance, int ascent, float scale) {
+        super("", null, new Object[] {});
         CompletableFuture<String> texture = new CompletableFuture<>();
         if (textureIn.isPresent()) {
             texture.complete(textureIn.get());
@@ -73,7 +82,8 @@ public class SkullContents extends TranslatableContents {
             try {
                 GameProfile gameprofile = new GameProfile(uuid.get(), "dummy_mcdummyface");
                 GameProfileFetcher.updateGameProfile(gameprofile, (profile) -> {
-                    var property = Iterables.getFirst(profile.getProperties().get(GameProfileFetcher.PROPERTY_TEXTURES), null);
+                    var property =
+                            Iterables.getFirst(profile.getProperties().get(GameProfileFetcher.PROPERTY_TEXTURES), null);
                     if (property != null) {
                         texture.complete(property.value());
                     }
@@ -128,7 +138,8 @@ public class SkullContents extends TranslatableContents {
      * Returns the plain-text representation of this skull in the skull font.
      */
     public String getText() {
-        return Character.toString(NoxesiumMod.getInstance().getModule(SkullFontModule.class).claim(config));
+        return Character.toString(
+                NoxesiumMod.getInstance().getModule(SkullFontModule.class).claim(config));
     }
 
     public SkullConfig getConfig() {
@@ -156,7 +167,8 @@ public class SkullContents extends TranslatableContents {
 
     @Override
     public String toString() {
-        return "skull{texture='" + texture + "', grayscale='" + grayscale + "', advance='" + advance + "', ascent='" + ascent + "', scale='" + scale + "'}";
+        return "skull{texture='" + texture + "', grayscale='" + grayscale + "', advance='" + advance + "', ascent='"
+                + ascent + "', scale='" + scale + "'}";
     }
 
     @Override
@@ -164,7 +176,11 @@ public class SkullContents extends TranslatableContents {
         if (this == o) return true;
         if (!(o instanceof SkullContents that)) return false;
         if (!super.equals(o)) return false;
-        return grayscale == that.grayscale && advance == that.advance && ascent == that.ascent && Float.compare(that.scale, scale) == 0 && Objects.equals(uuid, that.uuid);
+        return grayscale == that.grayscale
+                && advance == that.advance
+                && ascent == that.ascent
+                && Float.compare(that.scale, scale) == 0
+                && Objects.equals(uuid, that.uuid);
     }
 
     @Override

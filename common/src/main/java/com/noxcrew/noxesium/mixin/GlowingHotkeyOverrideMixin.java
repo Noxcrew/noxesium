@@ -20,10 +20,16 @@ public class GlowingHotkeyOverrideMixin {
         var player = Minecraft.getInstance().player;
 
         // Only allow using the glowing outlines when flying is allowed == they are spectating
-        return player != null && player.getAbilities().mayfly &&
-            // Only allow players on teams
-            entity.getTeam() != null &&
-            // Check that the team color is in the glowing teams list
-            NoxesiumMod.getInstance().getModule(TeamGlowHotkeys.class).getGlowingTeams().contains(entity.getTeam().getColor());
+        return player != null
+                && player.getAbilities().mayfly
+                &&
+                // Only allow players on teams
+                entity.getTeam() != null
+                &&
+                // Check that the team color is in the glowing teams list
+                NoxesiumMod.getInstance()
+                        .getModule(TeamGlowHotkeys.class)
+                        .getGlowingTeams()
+                        .contains(entity.getTeam().getColor());
     }
 }

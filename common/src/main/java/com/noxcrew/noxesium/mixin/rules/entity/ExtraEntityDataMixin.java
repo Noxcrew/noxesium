@@ -3,14 +3,13 @@ package com.noxcrew.noxesium.mixin.rules.entity;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataHolder;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Implements [ExtraEntityDataHolder] onto the Entity class.

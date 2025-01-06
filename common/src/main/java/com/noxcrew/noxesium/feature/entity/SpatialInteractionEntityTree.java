@@ -1,6 +1,11 @@
 package com.noxcrew.noxesium.feature.entity;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -9,12 +14,6 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.khelekore.prtree.PRTree;
 import org.khelekore.prtree.SimpleMBR;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Stores a spatial tree with the locations of all interaction entities.
@@ -105,10 +104,14 @@ public class SpatialInteractionEntityTree {
 
             if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
                 if (Minecraft.getInstance().player != null) {
-                    Minecraft.getInstance().getChatListener().handleSystemMessage(
-                            Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", " + addedEntities.size() + ", " + removingEntities.size() + "]§e, after: §f[" + staticEntities.size() + ", " + pendingEntities.size() + ", " + removedEntities.size() + "]"),
-                            false
-                    );
+                    Minecraft.getInstance()
+                            .getChatListener()
+                            .handleSystemMessage(
+                                    Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", "
+                                            + addedEntities.size() + ", " + removingEntities.size() + "]§e, after: §f["
+                                            + staticEntities.size() + ", " + pendingEntities.size() + ", "
+                                            + removedEntities.size() + "]"),
+                                    false);
                 }
 
                 var newContents = new HashSet<AABB>();

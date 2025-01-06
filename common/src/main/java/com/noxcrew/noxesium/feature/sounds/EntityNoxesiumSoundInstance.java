@@ -11,7 +11,15 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
 
     private final Entity entity;
 
-    public EntityNoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Entity entity, float volume, float pitch, boolean looping, boolean attenuation, float startOffset) {
+    public EntityNoxesiumSoundInstance(
+            ResourceLocation sound,
+            SoundSource soundSource,
+            Entity entity,
+            float volume,
+            float pitch,
+            boolean looping,
+            boolean attenuation,
+            float startOffset) {
         super(sound, soundSource, entity.position(), volume, pitch, looping, attenuation, startOffset);
         this.entity = entity;
     }

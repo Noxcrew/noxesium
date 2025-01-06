@@ -34,14 +34,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * @param mapName     The display name of the current map localised to the client's language.
  */
 public record ClientboundMccGameStatePacket(
-        String phaseType,
-        String stage,
-        int round,
-        int totalRounds,
-        String mapId,
-        String mapName
-) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
+        String phaseType, String stage, int round, int totalRounds, String mapId, String mapName)
+        implements NoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundMccGameStatePacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ClientboundMccGameStatePacket::write, ClientboundMccGameStatePacket::new);
 
     private ClientboundMccGameStatePacket(RegistryFriendlyByteBuf buf) {
         this(buf.readUtf(), buf.readUtf(), buf.readVarInt(), buf.readVarInt(), buf.readUtf(), buf.readUtf());

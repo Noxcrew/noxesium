@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.mixin.rules.mouse.MouseHandlerExt;
-import net.minecraft.client.Minecraft;
-
 import java.util.Objects;
+import net.minecraft.client.Minecraft;
 
 /**
  * A special type of boolean rule that resets the accumulated mouse

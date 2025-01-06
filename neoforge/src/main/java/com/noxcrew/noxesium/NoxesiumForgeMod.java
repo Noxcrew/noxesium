@@ -4,6 +4,8 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.config.NoxesiumSettingsScreen;
 import com.noxcrew.noxesium.feature.CustomServerCreativeItems;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.api.distmarker.Dist;
@@ -16,9 +18,6 @@ import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-
 /**
  * Defines the main mod for NeoForge.
  */
@@ -27,7 +26,8 @@ public class NoxesiumForgeMod {
 
     public NoxesiumForgeMod(ModContainer container) {
         // Register the configuration menu accessible from the mods menu
-        container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) -> new NoxesiumSettingsScreen(screen));
+        container.registerExtensionPoint(
+                IConfigScreenFactory.class, (modContainer, screen) -> new NoxesiumSettingsScreen(screen));
 
         // Register this file as a listener
         NeoForge.EVENT_BUS.register(this);
@@ -79,7 +79,11 @@ public class NoxesiumForgeMod {
             }
 
             @Override
-            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, Executor executor, Executor executor1) {
+            public CompletableFuture<Void> reload(
+                    PreparationBarrier preparationBarrier,
+                    ResourceManager resourceManager,
+                    Executor executor,
+                    Executor executor1) {
                 return NoxesiumMod.cacheShaders(resourceManager);
             }
         });

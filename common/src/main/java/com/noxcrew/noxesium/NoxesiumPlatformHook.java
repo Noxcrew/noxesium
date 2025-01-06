@@ -3,12 +3,11 @@ package com.noxcrew.noxesium;
 import com.noxcrew.noxesium.network.NoxesiumPacket;
 import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
+import java.nio.file.Path;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-
-import java.nio.file.Path;
 
 /**
  * Provides various hooks with platform specific implementations.
@@ -54,10 +53,7 @@ public interface NoxesiumPlatformHook {
      * Registers a new packet type.
      */
     <T extends NoxesiumPacket> void registerPacket(
-            NoxesiumPayloadType<T> type,
-            StreamCodec<RegistryFriendlyByteBuf, T> codec,
-            boolean clientToServer
-    );
+            NoxesiumPayloadType<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer);
 
     /**
      * Sends the given packet to the server.

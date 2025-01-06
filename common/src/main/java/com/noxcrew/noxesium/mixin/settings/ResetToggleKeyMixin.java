@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LocalPlayer.class)
 public abstract class ResetToggleKeyMixin {
 
-    @WrapWithCondition(method = "respawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;resetToggleKeys()V"))
+    @WrapWithCondition(
+            method = "respawn",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/KeyMapping;resetToggleKeys()V"))
     public boolean onResetToggleKeys() {
         return NoxesiumMod.getInstance().getConfig().resetToggleKeys;
     }

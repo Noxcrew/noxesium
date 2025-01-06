@@ -1,20 +1,20 @@
 package com.noxcrew.noxesium.mixin.feature.component.ext;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.renderer.texture.SkinTextureDownloader;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
-
 @Mixin(SkinTextureDownloader.class)
 public interface SkinTextureDownloaderExt {
 
     @Invoker("registerTextureInManager")
-    static CompletableFuture<ResourceLocation> invokeRegisterTextureInManager(ResourceLocation resourceLocation, NativeImage nativeImage) {
+    static CompletableFuture<ResourceLocation> invokeRegisterTextureInManager(
+            ResourceLocation resourceLocation, NativeImage nativeImage) {
         throw new UnsupportedOperationException("Invalid operation");
     }
 

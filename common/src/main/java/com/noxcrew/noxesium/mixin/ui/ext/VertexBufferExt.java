@@ -14,4 +14,3 @@ public interface VertexBufferExt {
     @Accessor("vertexBuffer")
     GpuBuffer getGpuBuffer();
 }
-

@@ -12,27 +12,22 @@ public interface LivingEntityExtension {
     /**
      * Adds a client-side potion effect [instance].
      */
-    public default void noxesium$addClientsidePotionEffect(MobEffectInstance instance) {
-
-    }
+    public default void noxesium$addClientsidePotionEffect(MobEffectInstance instance) {}
 
     /**
      * Removes a client side potion [effect].
      */
-    public default void noxesium$removeClientsidePotionEffect(Holder<MobEffect> effect) {
-    }
+    public default void noxesium$removeClientsidePotionEffect(Holder<MobEffect> effect) {}
 
     /**
      * Updates the client-side potion effects.
      */
-    public default void noxesium$updateClientsidePotionEffects() {
-    }
+    public default void noxesium$updateClientsidePotionEffects() {}
 
     /**
      * Clears the client-side potion effects.
      */
-    public default void noxesium$clearClientsidePotionEffects() {
-    }
+    public default void noxesium$clearClientsidePotionEffects() {}
 
     /**
      * Returns whether a player has trident coyote time.
@@ -44,6 +39,5 @@ public interface LivingEntityExtension {
     /**
      * Resets coyote time for the riptide trident.
      */
-    public default void noxesium$resetTridentCoyoteTime() {
-    }
+    public default void noxesium$resetTridentCoyoteTime() {}
 }

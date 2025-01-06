@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.mixin.feature;
 
+import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
+import static com.noxcrew.noxesium.api.NoxesiumReferences.IMMOVABLE_TAG;
+
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -11,9 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
-import static com.noxcrew.noxesium.api.NoxesiumReferences.IMMOVABLE_TAG;
-
 /**
  * Mixin for preventing items dropped from the hotbar.
  * This only prevent items with the {@link com.noxcrew.noxesium.api.NoxesiumReferences#IMMOVABLE_TAG} from being moved.
@@ -23,14 +23,10 @@ public abstract class UnmovableInventoryMixin {
 
     @Inject(
             method = "removeFromSelected",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"
-            ),
-            cancellable = true
-    )
-    public void preventMovingImmovables(final boolean bl, final CallbackInfoReturnable<ItemStack> cir,
-                                        @Local final ItemStack stack) {
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z"),
+            cancellable = true)
+    public void preventMovingImmovables(
+            final boolean bl, final CallbackInfoReturnable<ItemStack> cir, @Local final ItemStack stack) {
         final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         if (data == null) return;
         final CompoundTag tag = data.getUnsafe();

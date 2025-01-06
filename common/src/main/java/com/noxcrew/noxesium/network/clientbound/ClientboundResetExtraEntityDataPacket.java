@@ -12,7 +12,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Resets the stored value for extra data on an entity.
  */
 public record ClientboundResetExtraEntityDataPacket(int entityId, IntList indices) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetExtraEntityDataPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundResetExtraEntityDataPacket::write, ClientboundResetExtraEntityDataPacket::new);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundResetExtraEntityDataPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(
+                    ClientboundResetExtraEntityDataPacket::write, ClientboundResetExtraEntityDataPacket::new);
 
     private ClientboundResetExtraEntityDataPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt(), buf.readIntIdList());

@@ -7,13 +7,12 @@ import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayer;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayeredDraw;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
+import java.util.function.BooleanSupplier;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-
-import java.util.function.BooleanSupplier;
 
 /**
  * Hooks into LayeredDraw and delegates it to Noxesium's implementation.
@@ -46,9 +45,13 @@ public class LayeredDrawMixin implements LayeredDrawExtension {
         return original.call(layer);
     }
 
-    @WrapMethod(method = "add(Lnet/minecraft/client/gui/LayeredDraw;Ljava/util/function/BooleanSupplier;)Lnet/minecraft/client/gui/LayeredDraw;")
-    private LayeredDraw addGroup(LayeredDraw layeredDraw, BooleanSupplier booleanSupplier, Operation<LayeredDraw> original) {
-        noxesium$layeredDraw.add(new NoxesiumLayer.NestedLayers(((LayeredDrawExtension) layeredDraw).noxesium$get(), booleanSupplier));
+    @WrapMethod(
+            method =
+                    "add(Lnet/minecraft/client/gui/LayeredDraw;Ljava/util/function/BooleanSupplier;)Lnet/minecraft/client/gui/LayeredDraw;")
+    private LayeredDraw addGroup(
+            LayeredDraw layeredDraw, BooleanSupplier booleanSupplier, Operation<LayeredDraw> original) {
+        noxesium$layeredDraw.add(
+                new NoxesiumLayer.NestedLayers(((LayeredDrawExtension) layeredDraw).noxesium$get(), booleanSupplier));
         return original.call(layeredDraw, booleanSupplier);
     }
 

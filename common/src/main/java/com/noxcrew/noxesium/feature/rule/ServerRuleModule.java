@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.feature.rule;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-
 import java.util.HashMap;
 import java.util.Map;
 

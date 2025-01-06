@@ -15,7 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(LivingEntity.class)
 public abstract class JumpHookMixin {
 
-    @Inject(method = "jumpFromGround", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getDeltaMovement()Lnet/minecraft/world/phys/Vec3;"))
+    @Inject(
+            method = "jumpFromGround",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/LivingEntity;getDeltaMovement()Lnet/minecraft/world/phys/Vec3;"))
     public void onJumpFromGround(CallbackInfo ci) {
         var entity = (LivingEntity) ((Object) this);
         if (entity instanceof LocalPlayer localPlayer) {

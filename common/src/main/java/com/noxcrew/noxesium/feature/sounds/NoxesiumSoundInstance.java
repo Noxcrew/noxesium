@@ -19,7 +19,15 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     private final float startOffset;
     private VolumeInterpolation volumeInterpolation;
 
-    public NoxesiumSoundInstance(ResourceLocation sound, SoundSource soundSource, Vec3 initialPosition, float volume, float pitch, boolean looping, boolean attenuation, float startOffset) {
+    public NoxesiumSoundInstance(
+            ResourceLocation sound,
+            SoundSource soundSource,
+            Vec3 initialPosition,
+            float volume,
+            float pitch,
+            boolean looping,
+            boolean attenuation,
+            float startOffset) {
         super(SoundEvent.createVariableRangeEvent(sound), soundSource, SoundInstance.createUnseededRandom());
         this.x = initialPosition.x();
         this.y = initialPosition.y();

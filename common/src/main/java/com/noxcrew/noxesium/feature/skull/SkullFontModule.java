@@ -16,12 +16,6 @@ import com.noxcrew.noxesium.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinManagerExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.SkinTextureDownloaderExt;
 import com.noxcrew.noxesium.mixin.feature.component.ext.TextureCacheExt;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.SkinManager;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,26 +30,32 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.SkinManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 
 /**
  * Stores information about the currently known server rules and their data.
  */
 public class SkullFontModule implements NoxesiumModule {
 
-    public static ResourceLocation RESOURCE_LOCATION = ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "skulls");
+    public static ResourceLocation RESOURCE_LOCATION =
+            ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "skulls");
 
     /**
      * The signature used when checking the skin. We do not care if this signature is correct, but
      * the signature needs to be of a valid length to not throw an error.
      */
-    private static final String RANDOM_SIGNATURE = "Lcgr04dLPH0GHOPFdI2/JdFM3wpXEEt2PGh0uc8P7AcUb+PLOpyazC7VWhtT2H2TyKA5qK6Qeg04pJ3dnFWW+ToRnnVkLxhk1pv7tZEVIj98d1eRy6BxQ4A6eihplyquSAjrb1xMii9W5PM0HcwHiai5yo/1keey9Sq4Nk3bI3DWzJjNGEEACAhsCdezYTzwPsIa8xqnXPi0r2vVQe0nLkgDInDWslyp+UbzKxmMx5IK920iEZhrHhDkmj9yC1Sn7L7lPW0kz7iRlXsnpVJ36JSCma/i57dOWDJbEWpZTnH8TqsyHLPY+voFU+D1UzUkgvOWXL3YAJfajhBZsk0NhFyio9iRh8delBksYdd87q7eu9q35gwUMiooaMxkJupz9tuS1MKMtalYTWXak3pxROMIBiS6kp85fpSd1a18JN6WivvjdDGjC6azL8zf2/ie2GFhSeo+a2HkaXqcuuYcWUTo2CDmTsgCYiTC0GpHA0rClFfpLaVVCZU9TPG4ErUy1HOXhc9R5+CRd4qQG+1LGbfddxsnNpp5Vv8DGS6roQw7zW4DwL7AOQZuw5QrEc6cqqEp/7/gejRSiYj2CXHw4wlVfhPqG+7w7waLHfq/5ZTCVXNLW/kCOD18vVFsNIc6oZjNgtDuwRrUjMX8LIFL2ERKx76FPlzUV40GQ4ZjJeE=";
+    private static final String RANDOM_SIGNATURE =
+            "Lcgr04dLPH0GHOPFdI2/JdFM3wpXEEt2PGh0uc8P7AcUb+PLOpyazC7VWhtT2H2TyKA5qK6Qeg04pJ3dnFWW+ToRnnVkLxhk1pv7tZEVIj98d1eRy6BxQ4A6eihplyquSAjrb1xMii9W5PM0HcwHiai5yo/1keey9Sq4Nk3bI3DWzJjNGEEACAhsCdezYTzwPsIa8xqnXPi0r2vVQe0nLkgDInDWslyp+UbzKxmMx5IK920iEZhrHhDkmj9yC1Sn7L7lPW0kz7iRlXsnpVJ36JSCma/i57dOWDJbEWpZTnH8TqsyHLPY+voFU+D1UzUkgvOWXL3YAJfajhBZsk0NhFyio9iRh8delBksYdd87q7eu9q35gwUMiooaMxkJupz9tuS1MKMtalYTWXak3pxROMIBiS6kp85fpSd1a18JN6WivvjdDGjC6azL8zf2/ie2GFhSeo+a2HkaXqcuuYcWUTo2CDmTsgCYiTC0GpHA0rClFfpLaVVCZU9TPG4ErUy1HOXhc9R5+CRd4qQG+1LGbfddxsnNpp5Vv8DGS6roQw7zW4DwL7AOQZuw5QrEc6cqqEp/7/gejRSiYj2CXHw4wlVfhPqG+7w7waLHfq/5ZTCVXNLW/kCOD18vVFsNIc6oZjNgtDuwRrUjMX8LIFL2ERKx76FPlzUV40GQ4ZjJeE=";
 
     private final BiMap<SkullProperties, Character> claims = HashBiMap.create();
     private final Map<SkullProperties, SkullConfig> lastConfig = new HashMap<>();
     private final Map<Integer, CustomSkullFont.Glyph> glyphs = new HashMap<>();
-    private final Cache<Integer, Integer> grayscaleMappings = CacheBuilder.newBuilder()
-        .expireAfterAccess(5, TimeUnit.MINUTES)
-        .build();
+    private final Cache<Integer, Integer> grayscaleMappings =
+            CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     private int nextCharacter = 32;
     private UUID cache = UUID.randomUUID();
 
@@ -142,16 +142,28 @@ public class SkullFontModule implements NoxesiumModule {
 
             try {
                 var gameProfile = new GameProfile(Util.NIL_UUID, "dummy_mcdummyface");
-                gameProfile.getProperties().put(GameProfileFetcher.PROPERTY_TEXTURES, new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, RANDOM_SIGNATURE));
+                gameProfile
+                        .getProperties()
+                        .put(
+                                GameProfileFetcher.PROPERTY_TEXTURES,
+                                new Property(GameProfileFetcher.PROPERTY_TEXTURES, texture, RANDOM_SIGNATURE));
 
                 // Let the session servers extract the texture, don't check the signature
-                var information = Minecraft.getInstance().getMinecraftSessionService().getTextures(gameProfile).skin();
+                var information = Minecraft.getInstance()
+                        .getMinecraftSessionService()
+                        .getTextures(gameProfile)
+                        .skin();
                 if (information != null) {
-                    String string = Hashing.sha1().hashUnencodedChars(information.getHash()).toString();
+                    String string = Hashing.sha1()
+                            .hashUnencodedChars(information.getHash())
+                            .toString();
 
-                    SkinManager.TextureCache skinTextures = ((SkinManagerExt) (Minecraft.getInstance().getSkinManager())).getSkinTextures();
+                    SkinManager.TextureCache skinTextures =
+                            ((SkinManagerExt) (Minecraft.getInstance().getSkinManager())).getSkinTextures();
                     Path rootPath = ((TextureCacheExt) skinTextures).getRootPath();
-                    File file2 = rootPath.resolve(string.length() > 2 ? string.substring(0, 2) : "xx").resolve(string).toFile();
+                    File file2 = rootPath.resolve(string.length() > 2 ? string.substring(0, 2) : "xx")
+                            .resolve(string)
+                            .toFile();
 
                     if (file2.exists()) {
                         // If the skin already exists we load it in
@@ -167,19 +179,26 @@ public class SkullFontModule implements NoxesiumModule {
                     } else {
                         // If this skin isn't known we download it first
                         var resourceLocation = ResourceLocation.withDefaultNamespace("skins/" + string);
-                        CompletableFuture.supplyAsync(() -> {
-                                // At this point the texture has been saved to the file, so we can read out the native image
-                                NativeImage nativeImage;
-                                try {
-                                    nativeImage = SkinTextureDownloaderExt.invokeProcessLegacySkin(SkinTextureDownloaderExt.invokeDownloadSkin(file2.toPath(), information.getUrl()), information.getUrl());
-                                    imageFuture.complete(processImage(nativeImage, properties.grayscale()));
-                                } catch (IOException x) {
-                                    throw new UncheckedIOException(x);
-                                }
-                                return nativeImage;
-                            }, Util.nonCriticalIoPool().forName("downloadTexture"))
-                            // Let the texture manager register the skin and do the downloading for us
-                            .thenCompose((nativeImage) -> SkinTextureDownloaderExt.invokeRegisterTextureInManager(resourceLocation, nativeImage));
+                        CompletableFuture.supplyAsync(
+                                        () -> {
+                                            // At this point the texture has been saved to the file, so we can read out
+                                            // the native image
+                                            NativeImage nativeImage;
+                                            try {
+                                                nativeImage = SkinTextureDownloaderExt.invokeProcessLegacySkin(
+                                                        SkinTextureDownloaderExt.invokeDownloadSkin(
+                                                                file2.toPath(), information.getUrl()),
+                                                        information.getUrl());
+                                                imageFuture.complete(processImage(nativeImage, properties.grayscale()));
+                                            } catch (IOException x) {
+                                                throw new UncheckedIOException(x);
+                                            }
+                                            return nativeImage;
+                                        },
+                                        Util.nonCriticalIoPool().forName("downloadTexture"))
+                                // Let the texture manager register the skin and do the downloading for us
+                                .thenCompose((nativeImage) -> SkinTextureDownloaderExt.invokeRegisterTextureInManager(
+                                        resourceLocation, nativeImage));
                     }
                 }
             } catch (Exception x) {
@@ -250,7 +269,8 @@ public class SkullFontModule implements NoxesiumModule {
         try {
             return grayscaleMappings.get(input, () -> {
                 var color = new Color(input, true);
-                var val = (int) Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
+                var val = (int)
+                        Math.round(0.2989 * color.getRed() + 0.5870 * color.getGreen() + 0.1140 * color.getBlue());
                 return new Color(val, val, val, color.getAlpha()).getRGB();
             });
         } catch (Exception x) {

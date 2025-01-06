@@ -23,7 +23,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TridentItem.class)
 public abstract class TridentItemMixin {
 
-    @Redirect(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
+    @Redirect(
+            method = "releaseUsing",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean isInWaterOrRain(Player player) {
         if (player.isInWaterOrRain()) return true;
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return false;
@@ -33,25 +35,40 @@ public abstract class TridentItemMixin {
         return player.noxesium$hasTridentCoyoteTime();
     }
 
-    @Redirect(method = "releaseUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
-    public void playSound(Level instance, Player ignored, Entity entity, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch, ItemStack itemStack, Level level, LivingEntity livingEntity, int i) {
+    @Redirect(
+            method = "releaseUsing",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
+    public void playSound(
+            Level instance,
+            Player ignored,
+            Entity entity,
+            SoundEvent soundEvent,
+            SoundSource soundSource,
+            float volume,
+            float pitch,
+            ItemStack itemStack,
+            Level level,
+            LivingEntity livingEntity,
+            int i) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
         var player = Minecraft.getInstance().player;
         if (entity != player || player == null) return;
 
         // Play a sound locally to replace the remote sound
-        instance.playLocalSound(
-                entity,
-                soundEvent,
-                soundSource,
-                volume,
-                pitch
-        );
+        instance.playLocalSound(entity, soundEvent, soundSource, volume, pitch);
 
         // Reset the coyote time as we've just activated the riptide.
         livingEntity.noxesium$resetTridentCoyoteTime();
 
         // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
-        new ServerboundRiptidePacket(player.getUsedItemHand() == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND).send();
+        new ServerboundRiptidePacket(
+                        player.getUsedItemHand() == InteractionHand.MAIN_HAND
+                                ? player.getInventory().selected
+                                : Inventory.SLOT_OFFHAND)
+                .send();
     }
 }

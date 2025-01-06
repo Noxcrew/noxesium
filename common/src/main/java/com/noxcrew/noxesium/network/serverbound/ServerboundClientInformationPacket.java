@@ -10,8 +10,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  * Sent to the server when the client first joins to establish the version of the
  * client being used.
  */
-public record ServerboundClientInformationPacket(int protocolVersion, String versionString) implements ServerboundNoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundClientInformationPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundClientInformationPacket::write, ServerboundClientInformationPacket::new);
+public record ServerboundClientInformationPacket(int protocolVersion, String versionString)
+        implements ServerboundNoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundClientInformationPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(
+                    ServerboundClientInformationPacket::write, ServerboundClientInformationPacket::new);
 
     private ServerboundClientInformationPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readInt(), buf.readUtf());

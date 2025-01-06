@@ -14,8 +14,22 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(Guardian.class)
 public class GuardianBubblesRuleMixin {
 
-    @Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"))
-    public void spawnBubbleParticle(Level instance, ParticleOptions parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    @Redirect(
+            method = "aiStep",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)V"))
+    public void spawnBubbleParticle(
+            Level instance,
+            ParticleOptions parameters,
+            double x,
+            double y,
+            double z,
+            double velocityX,
+            double velocityY,
+            double velocityZ) {
         var guardian = (Guardian) ((Object) this);
         if (!guardian.noxesium$getExtraData(ExtraEntityData.DISABLE_BUBBLES)) {
             instance.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);

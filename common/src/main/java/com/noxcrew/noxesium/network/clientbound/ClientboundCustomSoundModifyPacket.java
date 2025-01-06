@@ -13,8 +13,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
  *
  * @param startVolume An optional volume to start the interpolation from. If absent the current volume of the sound is used instead.
  */
-public record ClientboundCustomSoundModifyPacket(int id, float volume, int interpolationTicks, Float startVolume) implements NoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC = CustomPacketPayload.codec(ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
+public record ClientboundCustomSoundModifyPacket(int id, float volume, int interpolationTicks, Float startVolume)
+        implements NoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCustomSoundModifyPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(
+                    ClientboundCustomSoundModifyPacket::write, ClientboundCustomSoundModifyPacket::new);
 
     private ClientboundCustomSoundModifyPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readVarInt(), buf.readFloat(), buf.readVarInt(), buf.readBoolean() ? buf.readFloat() : null);

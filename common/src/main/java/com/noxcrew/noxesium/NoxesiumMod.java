@@ -25,6 +25,13 @@ import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -33,14 +40,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 /**
  * The main file for the client-side implementation of Noxesium.
@@ -225,7 +224,9 @@ public class NoxesiumMod {
             initialized = true;
 
             // Send a packet containing information about the client version of Noxesium
-            new ServerboundClientInformationPacket(NoxesiumReferences.VERSION, getPlatform().getNoxesiumVersion()).send();
+            new ServerboundClientInformationPacket(
+                            NoxesiumReferences.VERSION, getPlatform().getNoxesiumVersion())
+                    .send();
 
             // Inform the player about the GUI scale of the client
             syncGuiScale();
@@ -266,17 +267,15 @@ public class NoxesiumMod {
         var window = Minecraft.getInstance().getWindow();
         var options = Minecraft.getInstance().options;
 
-        new ServerboundClientSettingsPacket(
-                new ClientSettings(
+        new ServerboundClientSettingsPacket(new ClientSettings(
                         options.guiScale().get(),
                         window.getGuiScale(),
                         window.getGuiScaledWidth(),
                         window.getGuiScaledHeight(),
                         Minecraft.getInstance().isEnforceUnicode(),
                         options.touchscreen().get(),
-                        options.notificationDisplayTime().get()
-                )
-        ).send();
+                        options.notificationDisplayTime().get()))
+                .send();
     }
 
     /**
@@ -298,21 +297,19 @@ public class NoxesiumMod {
      */
     public static CompletableFuture<Void> cacheShaders(ResourceManager manager) {
         return CompletableFuture.supplyAsync(() -> {
-            var map = manager.listResources(
-                    "shaders",
-                    folder -> {
-                        // We include all namespaces because you need to be able to import shaders from elsewhere!
-                        var s = folder.getPath();
-                        return s.endsWith(".json")
-                                || CompiledShader.Type.byLocation(folder) != null
-                                || s.endsWith(".glsl");
-                    }
-            );
+            var map = manager.listResources("shaders", folder -> {
+                // We include all namespaces because you need to be able to import shaders from elsewhere!
+                var s = folder.getPath();
+                return s.endsWith(".json") || CompiledShader.Type.byLocation(folder) != null || s.endsWith(".glsl");
+            });
             var cache = new HashMap<ResourceLocation, Resource>();
             map.forEach((key, value) -> {
                 try (InputStream inputstream = value.open()) {
                     byte[] abyte = inputstream.readAllBytes();
-                    cache.put(ResourceLocation.fromNamespaceAndPath(key.getNamespace(), key.getPath().substring("shaders/".length())), new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
+                    cache.put(
+                            ResourceLocation.fromNamespaceAndPath(
+                                    key.getNamespace(), key.getPath().substring("shaders/".length())),
+                            new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
                 } catch (Exception exception) {
                     NoxesiumMod.getInstance().getLogger().warn("Failed to read resource {}", key, exception);
                 }

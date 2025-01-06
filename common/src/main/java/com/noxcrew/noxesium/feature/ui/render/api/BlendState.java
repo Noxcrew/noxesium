@@ -102,12 +102,11 @@ public class BlendState {
 
     @Override
     public String toString() {
-        return "BlendState[" +
-                "blend=" + blend +
-                ", srcRgb=" + srcRgb +
-                ", dstRgb=" + dstRgb +
-                ", srcAlpha=" + srcAlpha +
-                ", dstAlpha=" + dstAlpha +
-                ']';
+        return "BlendState[" + "blend="
+                + blend + ", srcRgb="
+                + srcRgb + ", dstRgb="
+                + dstRgb + ", srcAlpha="
+                + srcAlpha + ", dstAlpha="
+                + dstAlpha + ']';
     }
 }

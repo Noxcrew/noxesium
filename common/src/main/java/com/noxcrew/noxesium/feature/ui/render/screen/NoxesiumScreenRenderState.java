@@ -5,10 +5,9 @@ import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
+import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-
-import java.util.ArrayList;
 
 /**
  * Stores the render state for the on-screen UI element.

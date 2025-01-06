@@ -4,14 +4,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.KeyMapping;
-import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Adds hotkeys for making specific team colors receive glowing outlines.
@@ -28,8 +27,7 @@ public class TeamGlowHotkeys implements NoxesiumModule {
             ChatFormatting.AQUA, Pair.of("aqua", GLFW.GLFW_KEY_KP_1),
             ChatFormatting.BLUE, Pair.of("blue", GLFW.GLFW_KEY_KP_2),
             ChatFormatting.DARK_PURPLE, Pair.of("purple", GLFW.GLFW_KEY_KP_3),
-            ChatFormatting.LIGHT_PURPLE, Pair.of("pink", GLFW.GLFW_KEY_KP_0)
-    );
+            ChatFormatting.LIGHT_PURPLE, Pair.of("pink", GLFW.GLFW_KEY_KP_0));
 
     private final Map<KeyMapping, Runnable> keybinds = new HashMap<>();
     private final List<ChatFormatting> glowingTeams = new ArrayList<>();
@@ -48,20 +46,10 @@ public class TeamGlowHotkeys implements NoxesiumModule {
                         } else {
                             glowingTeams.add(team.getKey());
                         }
-                    }
-            );
+                    });
         }
-        register(
-                "key.noxesium.glow.all",
-                GLFW.GLFW_KEY_KP_ADD,
-                () -> glowingTeams.addAll(GLOW_TEAMS.keySet())
-        );
-        register(
-                "key.noxesium.glow.none",
-                GLFW.GLFW_KEY_KP_SUBTRACT,
-                glowingTeams::clear
-        );
-
+        register("key.noxesium.glow.all", GLFW.GLFW_KEY_KP_ADD, () -> glowingTeams.addAll(GLOW_TEAMS.keySet()));
+        register("key.noxesium.glow.none", GLFW.GLFW_KEY_KP_SUBTRACT, glowingTeams::clear);
     }
 
     /**

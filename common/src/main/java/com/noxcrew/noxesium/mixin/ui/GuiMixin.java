@@ -8,6 +8,8 @@ import com.noxcrew.noxesium.feature.ui.CustomMapUiWidget;
 import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
 import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
 import com.noxcrew.noxesium.feature.ui.render.screen.NoxesiumScreenRenderState;
+import java.util.ArrayList;
+import java.util.function.Supplier;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -25,9 +27,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /**
  * Adds additional render layers for Noxesium.
@@ -67,38 +66,52 @@ public abstract class GuiMixin {
             text.add(Component.translatable("debug.fps_overlay", minecraft.getFps()));
         }
         if (NoxesiumMod.getInstance().getConfig().showGameTimeOverlay) {
-            text.add(Component.translatable("debug.game_time_overlay", String.format("%.5f", RenderSystem.getShaderGameTime()), (int) (RenderSystem.getShaderGameTime() * 24000)));
+            text.add(Component.translatable(
+                    "debug.game_time_overlay", String.format("%.5f", RenderSystem.getShaderGameTime()), (int)
+                            (RenderSystem.getShaderGameTime() * 24000)));
         }
 
         // Add debug overlays if enabled, these are not using translations as they are purely for debugging purposes!
         // Start with qib system debug information
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging && minecraft.player != null) {
-            text.add(Component.literal("§bEntities in model: §7" + SpatialInteractionEntityTree.getModelContents().size()));
-            text.add(Component.literal("§bIn water: " + (minecraft.player.isInWaterOrRain() ? "§aYes" : minecraft.player.noxesium$hasTridentCoyoteTime() ? "§eGrace" : "§cNo")));
-            text.add(Component.literal("§bQib behavior amount: §7" + ServerRules.QIB_BEHAVIORS.getValue().size()));
+            text.add(Component.literal("§bEntities in model: §7"
+                    + SpatialInteractionEntityTree.getModelContents().size()));
+            text.add(Component.literal("§bIn water: "
+                    + (minecraft.player.isInWaterOrRain()
+                            ? "§aYes"
+                            : minecraft.player.noxesium$hasTridentCoyoteTime() ? "§eGrace" : "§cNo")));
+            text.add(Component.literal("§bQib behavior amount: §7"
+                    + ServerRules.QIB_BEHAVIORS.getValue().size()));
         }
 
         // If the dynamic UI updating is on we draw the current UI frame rates and group layouts
-        if (NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting && NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
+        if (NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting
+                && NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
             NoxesiumMod.forEachRenderStateHolder((it) -> {
                 var stateIn = it.get();
                 switch (stateIn) {
                     case NoxesiumUiRenderState state -> {
                         for (var group : state.groups()) {
                             var dynamic = group.dynamic();
-                            text.add(Component.literal("§b" + group.layerNames() + (group.dynamic().buffers() > 1 ? " §3(+" + (group.dynamic().buffers() - 1) + ")" : "") + (group.dynamic().isEmpty() ? " §9(empty)" : "") + ": §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
+                            text.add(Component.literal("§b" + group.layerNames()
+                                    + (group.dynamic().buffers() > 1
+                                            ? " §3(+" + (group.dynamic().buffers() - 1) + ")"
+                                            : "")
+                                    + (group.dynamic().isEmpty() ? " §9(empty)" : "") + ": §f" + dynamic.framerate()
+                                    + " - " + dynamic.matchRate()));
                         }
                     }
                     case NoxesiumScreenRenderState state -> {
                         // Only show this if we are currently running the screen optimizations
-                        if (Minecraft.getInstance().screen instanceof MenuAccess<?> ||
-                                Minecraft.getInstance().screen instanceof ChatScreen) {
+                        if (Minecraft.getInstance().screen instanceof MenuAccess<?>
+                                || Minecraft.getInstance().screen instanceof ChatScreen) {
                             var dynamic = state.dynamic();
-                            text.add(Component.literal("§eScreen: §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
+                            text.add(Component.literal(
+                                    "§eScreen: §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
                         }
                     }
-                    case null, default -> {
-                    }
+                    case null -> {}
+                    default -> throw new IllegalStateException("Unexpected value: " + stateIn);
                 }
             });
         }
@@ -130,13 +143,18 @@ public abstract class GuiMixin {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
-        noxesium$addRenderLayer("Noxesium Map UI", new CustomMapUiWidget(), () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi() &&
-                !ServerRules.DISABLE_MAP_UI.getValue());
+        noxesium$addRenderLayer(
+                "Noxesium Map UI",
+                new CustomMapUiWidget(),
+                () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi()
+                        && !ServerRules.DISABLE_MAP_UI.getValue());
 
-        noxesium$addRenderLayer("Noxesium Text Overlay", this::noxesium$renderTextOverlay, () -> !this.getDebugOverlay().showDebugScreen() &&
-                (NoxesiumMod.getInstance().getConfig().showFpsOverlay ||
-                        NoxesiumMod.getInstance().getConfig().showGameTimeOverlay ||
-                        NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging)
-        );
+        noxesium$addRenderLayer(
+                "Noxesium Text Overlay",
+                this::noxesium$renderTextOverlay,
+                () -> !this.getDebugOverlay().showDebugScreen()
+                        && (NoxesiumMod.getInstance().getConfig().showFpsOverlay
+                                || NoxesiumMod.getInstance().getConfig().showGameTimeOverlay
+                                || NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging));
     }
 }

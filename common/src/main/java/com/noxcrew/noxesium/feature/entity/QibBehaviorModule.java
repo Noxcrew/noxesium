@@ -5,6 +5,13 @@ import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,14 +25,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Applies qib behaviors whenever players clip interaction entities.
@@ -73,9 +72,11 @@ public class QibBehaviorModule implements NoxesiumModule {
                         currentLocation = currentLocation.add(diffX * factor, diffY * factor, diffZ * factor);
 
                         if (entities == null) {
-                            entities = SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation));
+                            entities = SpatialInteractionEntityTree.findEntities(
+                                    dimensions.makeBoundingBox(currentLocation));
                         } else {
-                            entities.addAll(SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation)));
+                            entities.addAll(SpatialInteractionEntityTree.findEntities(
+                                    dimensions.makeBoundingBox(currentLocation)));
                         }
                     }
                 }
@@ -171,8 +172,8 @@ public class QibBehaviorModule implements NoxesiumModule {
             var definition = knownBehaviors.get(behavior);
 
             // Try to trigger the entry
-            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior)) ||
-                (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(entity))) {
+            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior))
+                    || (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(entity))) {
                 if (definition.onEnter() != null) {
                     sendPacket(behavior, ServerboundQibTriggeredPacket.Type.ENTER, entity.getId());
                     executeBehavior(player, entity, definition.onEnter());
@@ -214,8 +215,8 @@ public class QibBehaviorModule implements NoxesiumModule {
             var definition = knownBehaviors.get(behavior);
 
             // Execute the behavior if we always do or if you've left this type
-            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior)) ||
-                (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(collision))) {
+            if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior))
+                    || (definition.triggerEnterLeaveOnSwitch() && !collidingWithEntities.containsKey(collision))) {
                 if (definition.onLeave() != null) {
                     sendPacket(behavior, ServerboundQibTriggeredPacket.Type.LEAVE, collision.getId());
                     executeBehavior(player, collision, definition.onLeave());
@@ -235,8 +236,14 @@ public class QibBehaviorModule implements NoxesiumModule {
                 }
             }
             case QibEffect.Stay stay -> {
-                var timeSpent = stay.global() ? collidingWithTypes.getOrDefault(entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger()).get() :
-                    collidingWithEntities.getOrDefault(entity, new AtomicInteger()).get();
+                var timeSpent = stay.global()
+                        ? collidingWithTypes
+                                .getOrDefault(
+                                        entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger())
+                                .get()
+                        : collidingWithEntities
+                                .getOrDefault(entity, new AtomicInteger())
+                                .get();
 
                 if (timeSpent >= stay.ticks()) {
                     executeBehavior(player, entity, stay.effect());
@@ -246,14 +253,15 @@ public class QibBehaviorModule implements NoxesiumModule {
                 pending.add(Pair.of(new AtomicInteger(wait.ticks()), Triple.of(player, entity, wait.effect())));
             }
             case QibEffect.Conditional conditional -> {
-                boolean result = switch (conditional.condition()) {
-                    case IS_GLIDING -> player.isFallFlying();
-                    case IS_RIPTIDING -> player.isAutoSpinAttack();
-                    case IS_IN_AIR -> !player.onGround();
-                    case IS_ON_GROUND -> player.onGround();
-                    case IS_IN_WATER -> player.isInWater();
-                    case IS_IN_WATER_OR_RAIN -> player.isInWaterOrRain();
-                };
+                boolean result =
+                        switch (conditional.condition()) {
+                            case IS_GLIDING -> player.isFallFlying();
+                            case IS_RIPTIDING -> player.isAutoSpinAttack();
+                            case IS_IN_AIR -> !player.onGround();
+                            case IS_ON_GROUND -> player.onGround();
+                            case IS_IN_WATER -> player.isInWater();
+                            case IS_IN_WATER_OR_RAIN -> player.isInWaterOrRain();
+                        };
 
                 // Trigger the effect if it matches
                 if (result == conditional.value()) {
@@ -261,29 +269,31 @@ public class QibBehaviorModule implements NoxesiumModule {
                 }
             }
             case QibEffect.PlaySound playSound -> {
-                player.level().playLocalSound(
-                    player,
-                    SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
-                    SoundSource.PLAYERS,
-                    playSound.volume(),
-                    playSound.pitch()
-                );
+                player.level()
+                        .playLocalSound(
+                                player,
+                                SoundEvent.createVariableRangeEvent(
+                                        ResourceLocation.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
+                                SoundSource.PLAYERS,
+                                playSound.volume(),
+                                playSound.pitch());
             }
             case QibEffect.GivePotionEffect giveEffect -> {
-                var type = BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path())).orElse(null);
-                player.noxesium$addClientsidePotionEffect(
-                    new MobEffectInstance(
+                var type = BuiltInRegistries.MOB_EFFECT
+                        .get(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path()))
+                        .orElse(null);
+                player.noxesium$addClientsidePotionEffect(new MobEffectInstance(
                         type,
                         giveEffect.duration(),
                         giveEffect.amplifier(),
                         giveEffect.ambient(),
                         giveEffect.visible(),
-                        giveEffect.showIcon()
-                    )
-                );
+                        giveEffect.showIcon()));
             }
             case QibEffect.RemovePotionEffect removeEffect -> {
-                player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
+                player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT
+                        .get(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path()))
+                        .orElse(null));
             }
             case QibEffect.RemoveAllPotionEffects ignored -> {
                 player.noxesium$clearClientsidePotionEffects();
@@ -298,17 +308,27 @@ public class QibBehaviorModule implements NoxesiumModule {
                 player.setDeltaMovement(setVelocity.x(), setVelocity.y(), setVelocity.z());
             }
             case QibEffect.SetVelocityYawPitch setVelocityYawPitch -> {
-                var yawRad = Math.toRadians(setVelocityYawPitch.yaw() + (setVelocityYawPitch.yawRelative() ? player.yRotO : 0));
-                var pitchRad = Math.toRadians(setVelocityYawPitch.pitch() + (setVelocityYawPitch.pitchRelative() ? player.xRotO : 0));
+                var yawRad = Math.toRadians(
+                        setVelocityYawPitch.yaw() + (setVelocityYawPitch.yawRelative() ? player.yRotO : 0));
+                var pitchRad = Math.toRadians(
+                        setVelocityYawPitch.pitch() + (setVelocityYawPitch.pitchRelative() ? player.xRotO : 0));
 
                 var x = -Math.cos(pitchRad) * Math.sin(yawRad);
                 var y = -Math.sin(pitchRad);
                 var z = Math.cos(pitchRad) * Math.cos(yawRad);
                 player.setDeltaMovement(
-                    Math.clamp(x * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
-                    Math.clamp(y * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
-                    Math.clamp(z * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit())
-                );
+                        Math.clamp(
+                                x * setVelocityYawPitch.strength(),
+                                -setVelocityYawPitch.limit(),
+                                setVelocityYawPitch.limit()),
+                        Math.clamp(
+                                y * setVelocityYawPitch.strength(),
+                                -setVelocityYawPitch.limit(),
+                                setVelocityYawPitch.limit()),
+                        Math.clamp(
+                                z * setVelocityYawPitch.strength(),
+                                -setVelocityYawPitch.limit(),
+                                setVelocityYawPitch.limit()));
             }
             case QibEffect.ModifyVelocity modifyVelocity -> {
                 var current = player.getDeltaMovement();

@@ -3,12 +3,11 @@ package com.noxcrew.noxesium.mixin.sodium;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.NoxesiumMod;
+import java.nio.charset.StandardCharsets;
 import net.caffeinemc.mods.sodium.client.gl.shader.ShaderLoader;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.mixin.Mixin;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * Based on <a href="https://github.com/lni-dev/SodiumCoreShaderSupport/blob/1.20.6/src/main/java/de/linusdev/mixin/MixinShaderLoader.java">Sodium Core Shader Support</a>.
@@ -33,7 +32,9 @@ public class SodiumShaderLoaderMixin {
             try {
                 return IOUtils.toString(resource.open(), StandardCharsets.UTF_8);
             } catch (Exception x) {
-                NoxesiumMod.getInstance().getLogger().error("Exception while reading shader for source {} from resource pack", name);
+                NoxesiumMod.getInstance()
+                        .getLogger()
+                        .error("Exception while reading shader for source {} from resource pack", name);
             }
         }
         return original.call(name);

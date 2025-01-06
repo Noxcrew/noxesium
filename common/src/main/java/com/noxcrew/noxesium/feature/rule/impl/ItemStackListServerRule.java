@@ -1,10 +1,9 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
+import java.util.List;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.List;
 
 /**
  * A standard server rule that stores a list of items.

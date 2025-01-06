@@ -17,12 +17,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ItemInHandRenderer.class)
 public class MapUiRenderingMixin {
 
-    @Inject(
-            method = "renderOneHandedMap",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    public void preventRenderingMap(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, float f, HumanoidArm humanoidArm, float g, ItemStack itemStack, CallbackInfo ci) {
+    @Inject(method = "renderOneHandedMap", at = @At("HEAD"), cancellable = true)
+    public void preventRenderingMap(
+            PoseStack poseStack,
+            MultiBufferSource multiBufferSource,
+            int i,
+            float f,
+            HumanoidArm humanoidArm,
+            float g,
+            ItemStack itemStack,
+            CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi()) {
             ci.cancel();
         }

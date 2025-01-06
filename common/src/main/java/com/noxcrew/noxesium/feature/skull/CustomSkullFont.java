@@ -4,6 +4,11 @@ import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.font.SheetGlyphInfo;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontSetExt;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.font.FontSet;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
@@ -13,12 +18,6 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 /**
  * A custom font that contains glyphs for each skull that needs to be rendered.
@@ -125,15 +124,20 @@ public class CustomSkullFont extends FontSet {
         }
     }
 
-    public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance,
-                        int ascent) implements GlyphInfo {
+    public record Glyph(CompletableFuture<NativeImage> image, boolean grayscale, float scale, int advance, int ascent)
+            implements GlyphInfo {
 
         public Glyph(CompletableFuture<NativeImage> image, SkullProperties properties) {
             this(image, properties.grayscale(), properties.scale(), properties.advance(), properties.ascent());
         }
 
         public Glyph(NativeImage image, GlyphProperties properties) {
-            this(CompletableFuture.completedFuture(image), properties.grayscale(), properties.scale(), properties.advance(), properties.ascent());
+            this(
+                    CompletableFuture.completedFuture(image),
+                    properties.grayscale(),
+                    properties.scale(),
+                    properties.advance(),
+                    properties.ascent());
         }
 
         @Override

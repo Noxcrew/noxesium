@@ -1,6 +1,9 @@
 package com.noxcrew.noxesium.network;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import java.lang.ref.WeakReference;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -9,10 +12,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.lang.ref.WeakReference;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A type of custom payload used by Noxesium for its packets.
@@ -27,7 +26,8 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * All listeners registered to this payload type.
      */
-    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, PacketContext>>> listeners = ConcurrentHashMap.newKeySet();
+    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, PacketContext>>> listeners =
+            ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a new Noxesium payload type which can be listened to
@@ -61,13 +61,20 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
         }
 
         if (NoxesiumMod.getInstance().getConfig().dumpIncomingPackets) {
-            Minecraft.getInstance().player.displayClientMessage(
-                    Component.empty()
-                            .append(Component.literal("[NOXESIUM] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
-                            .append(Component.literal("[INCOMING] ").withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.YELLOW)))
-                            .append(Component.literal(payload.toString()).withStyle(Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))),
-                    false
-            );
+            Minecraft.getInstance()
+                    .player
+                    .displayClientMessage(
+                            Component.empty()
+                                    .append(Component.literal("[NOXESIUM] ")
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
+                                    .append(Component.literal("[INCOMING] ")
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.YELLOW)))
+                                    .append(Component.literal(payload.toString())
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))),
+                            false);
         }
     }
 
@@ -86,7 +93,8 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Casts [reference] to type [R] of [consumer].
      */
-    private <R> void acceptAny(TriConsumer<R, T, PacketContext> consumer, Object reference, PacketContext context, Object payload) {
+    private <R> void acceptAny(
+            TriConsumer<R, T, PacketContext> consumer, Object reference, PacketContext context, Object payload) {
         consumer.accept((R) reference, (T) payload, context);
     }
 }

@@ -24,7 +24,13 @@ public abstract class CustomDebugHotkeysMixin {
     @Shadow
     private long debugCrashKeyTime;
 
-    @WrapOperation(method = "handleDebugKeys", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
+    @WrapOperation(
+            method = "handleDebugKeys",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
     public void extendHelpMessage(ChatComponent instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {

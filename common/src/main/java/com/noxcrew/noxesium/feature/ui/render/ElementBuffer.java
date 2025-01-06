@@ -1,4 +1,3 @@
-
 package com.noxcrew.noxesium.feature.ui.render;
 
 import com.google.common.base.Preconditions;
@@ -12,6 +11,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
+import java.io.Closeable;
+import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.Nullable;
@@ -19,10 +21,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL44;
-
-import java.io.Closeable;
-import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A wrapper around a RenderTarget used for capturing rendered UI elements
@@ -97,14 +95,7 @@ public class ElementBuffer implements Closeable {
 
         // TODO This causes micro-stutters!
         var window = Minecraft.getInstance().getWindow();
-        GL11.glReadPixels(0,
-                0,
-                window.getWidth(),
-                window.getHeight(),
-                GL30.GL_BGRA,
-                GL11.GL_UNSIGNED_BYTE,
-                0
-        );
+        GL11.glReadPixels(0, 0, window.getWidth(), window.getHeight(), GL30.GL_BGRA, GL11.GL_UNSIGNED_BYTE, 0);
 
         // GetTexImage produces weird results sometimes, it doesn't seem to catch
         // the crosshair changing and thinks the scoreboard changes every tick.
@@ -182,7 +173,8 @@ public class ElementBuffer implements Closeable {
                             GL44.glBufferStorage(GL30.GL_PIXEL_PACK_BUFFER, pbos[i].size, flags);
 
                             // Create a persistent buffer to the PBOs contents
-                            buffers[i] = Preconditions.checkNotNull(GL30.glMapBufferRange(GL30.GL_PIXEL_PACK_BUFFER, 0, pbos[i].size, flags));
+                            buffers[i] = Preconditions.checkNotNull(
+                                    GL30.glMapBufferRange(GL30.GL_PIXEL_PACK_BUFFER, 0, pbos[i].size, flags));
                         }
                     }
 

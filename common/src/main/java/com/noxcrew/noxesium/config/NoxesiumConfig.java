@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.config.BooleanOrDefault;
 import com.noxcrew.noxesium.api.config.MapLocation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,10 +1,9 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
+import java.util.Optional;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-
-import java.util.Optional;
 
 /**
  * A standard server rule that stores an optional enum.

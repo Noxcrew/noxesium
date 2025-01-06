@@ -9,8 +9,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 /**
  * Sent to the server to inform it that the client just triggered a qib interaction.
  */
-public record ServerboundQibTriggeredPacket(String behavior, Type qibType, int entityId) implements ServerboundNoxesiumPacket {
-    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundQibTriggeredPacket> STREAM_CODEC = CustomPacketPayload.codec(ServerboundQibTriggeredPacket::write, ServerboundQibTriggeredPacket::new);
+public record ServerboundQibTriggeredPacket(String behavior, Type qibType, int entityId)
+        implements ServerboundNoxesiumPacket {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundQibTriggeredPacket> STREAM_CODEC =
+            CustomPacketPayload.codec(ServerboundQibTriggeredPacket::write, ServerboundQibTriggeredPacket::new);
 
     /**
      * The type of qib interaction the client triggered.

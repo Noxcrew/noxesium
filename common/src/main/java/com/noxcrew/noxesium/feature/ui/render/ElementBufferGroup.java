@@ -2,16 +2,15 @@ package com.noxcrew.noxesium.feature.ui.render;
 
 import com.noxcrew.noxesium.feature.ui.LayerWithReference;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayer;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
-
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 
 /**
  * Holds a group of layers and the buffer they are rendering into.
@@ -121,7 +120,10 @@ public class ElementBufferGroup implements Closeable {
      * Returns the names of this group's layers as a readable string.
      */
     public String layerNames() {
-        return layers().stream().map(LayerWithReference::layer).map(NoxesiumLayer.Layer::name).collect(Collectors.joining("/"));
+        return layers().stream()
+                .map(LayerWithReference::layer)
+                .map(NoxesiumLayer.Layer::name)
+                .collect(Collectors.joining("/"));
     }
 
     /**

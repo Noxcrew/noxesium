@@ -13,6 +13,5 @@ public interface BeamColorStateExtension {
         throw new UnsupportedOperationException("Unimplemented");
     }
 
-    default void noxesium$setBeamColor(Integer color, Integer fade) {
-    }
+    default void noxesium$setBeamColor(Integer color, Integer fade) {}
 }

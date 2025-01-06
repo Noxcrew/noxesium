@@ -10,10 +10,7 @@ public sealed interface QibEffect {
     /**
      * Triggers a list of effects.
      */
-    public record Multiple(
-        List<QibEffect> effects
-    ) implements QibEffect {
-    }
+    public record Multiple(List<QibEffect> effects) implements QibEffect {}
 
     /**
      * Runs the effect if the player has been inside for a given
@@ -26,42 +23,22 @@ public sealed interface QibEffect {
      * This does not schedule it for when still inside, use Wait
      * in ENTER for that, or use in an INSIDE type effect.
      */
-    public record Stay(
-        int ticks,
-        boolean global,
-        QibEffect effect
-    ) implements QibEffect {
-    }
+    public record Stay(int ticks, boolean global, QibEffect effect) implements QibEffect {}
 
     /**
      * Waits for an amount of ticks before executing effect.
      */
-    public record Wait(
-        int ticks,
-        QibEffect effect
-    ) implements QibEffect {
-    }
+    public record Wait(int ticks, QibEffect effect) implements QibEffect {}
 
     /**
      * Continues based on some condition.
      */
-    public record Conditional(
-        QibCondition condition,
-        boolean value,
-        QibEffect effect
-    ) implements QibEffect {
-    }
+    public record Conditional(QibCondition condition, boolean value, QibEffect effect) implements QibEffect {}
 
     /**
      * Plays a sound effect.
      */
-    public record PlaySound(
-        String namespace,
-        String path,
-        float volume,
-        float pitch
-    ) implements QibEffect {
-    }
+    public record PlaySound(String namespace, String path, float volume, float pitch) implements QibEffect {}
 
     /**
      * Applies a client-authoritative potion effect.
@@ -79,25 +56,20 @@ public sealed interface QibEffect {
      * use this with caution and restraint!
      */
     public record GivePotionEffect(
-        String namespace,
-        String path,
-        int duration,
-        int amplifier,
-        boolean ambient,
-        boolean visible,
-        boolean showIcon
-    ) implements QibEffect {
-    }
+            String namespace,
+            String path,
+            int duration,
+            int amplifier,
+            boolean ambient,
+            boolean visible,
+            boolean showIcon)
+            implements QibEffect {}
 
     /**
      * Removes a client-authoritative potion effect.
      * This only affects effects added by a [GivePotionEffect] effect.
      */
-    public record RemovePotionEffect(
-        String namespace,
-        String path
-    ) implements QibEffect {
-    }
+    public record RemovePotionEffect(String namespace, String path) implements QibEffect {}
 
     /**
      * Removes all client-authoritative potion effects.
@@ -109,33 +81,18 @@ public sealed interface QibEffect {
     /**
      * Forces the player to make an instant relative movement.
      */
-    public record Move(
-        double x,
-        double y,
-        double z
-    ) implements QibEffect {
-    }
+    public record Move(double x, double y, double z) implements QibEffect {}
 
     /**
      * Adds the given velocity.
      */
-    public record AddVelocity(
-        double x,
-        double y,
-        double z
-    ) implements QibEffect {
-    }
+    public record AddVelocity(double x, double y, double z) implements QibEffect {}
 
     /**
      * Sets the velocity to a set value, removing
      * any previous velocity the client had.
      */
-    public record SetVelocity(
-        double x,
-        double y,
-        double z
-    ) implements QibEffect {
-    }
+    public record SetVelocity(double x, double y, double z) implements QibEffect {}
 
     /**
      * Sets the velocity to a set value based on a yaw
