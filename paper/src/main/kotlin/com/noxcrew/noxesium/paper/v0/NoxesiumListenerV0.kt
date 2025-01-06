@@ -61,10 +61,7 @@ public class NoxesiumListenerV0(
         registerOutgoingPluginChannel(NOXESIUM_RULES_CHANNEL)
     }
 
-    override fun createPacket(
-        player: Player,
-        packet: NoxesiumPacket,
-    ): ClientboundCustomPayloadPacket? =
+    override fun createPacket(player: Player, packet: NoxesiumPacket,): ClientboundCustomPayloadPacket? =
         if (packet is ClientboundResetServerRulesPacket) {
             player.createPayloadPacket(NOXESIUM_RULES_CHANNEL) { buffer ->
                 buffer.writeVarIntArray(packet.indices.toIntArray())

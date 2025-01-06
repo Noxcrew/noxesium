@@ -20,10 +20,7 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
             .asMap()
 
     /** Handles a new packet from [player]. */
-    public fun handle(
-        player: Player,
-        packet: T,
-    ) {
+    public fun handle(player: Player, packet: T,) {
         updateListeners.forEach { (ref, listeners) ->
             listeners.forEach { ref.it(packet, player) }
         }
@@ -36,10 +33,7 @@ public class ServerboundPacketType<T : ServerboundNoxesiumPacket>(
      * to avoid situations where the existence of [listener] holds the [reference]
      * captive, preventing it from being garbage collected.
      */
-    public fun <R : Any> addListener(
-        reference: R,
-        listener: R.(T, Player) -> Unit,
-    ) {
+    public fun <R : Any> addListener(reference: R, listener: R.(T, Player) -> Unit,) {
         @Suppress("UNCHECKED_CAST")
         updateListeners
             .computeIfAbsent(reference) {

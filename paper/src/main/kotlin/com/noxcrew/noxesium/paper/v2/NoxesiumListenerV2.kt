@@ -57,10 +57,7 @@ public class NoxesiumListenerV2(
         }
     }
 
-    override fun createPacket(
-        player: Player,
-        packet: NoxesiumPacket,
-    ): ClientboundCustomPayloadPacket? =
+    override fun createPacket(player: Player, packet: NoxesiumPacket,): ClientboundCustomPayloadPacket? =
         player.createPayloadPacket(Key.key(PACKET_NAMESPACE, packet.type.id)) { buffer ->
             when (packet) {
                 is ClientboundChangeServerRulesPacket -> {

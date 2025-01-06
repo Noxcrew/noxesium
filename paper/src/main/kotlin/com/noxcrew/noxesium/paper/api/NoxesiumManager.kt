@@ -126,10 +126,7 @@ public open class NoxesiumManager(
     /**
      * Sends this packet to the given [player].
      */
-    public fun createPacket(
-        player: Player,
-        packet: NoxesiumPacket,
-    ): ClientboundCustomPayloadPacket? {
+    public fun createPacket(player: Player, packet: NoxesiumPacket,): ClientboundCustomPayloadPacket? {
         val protocol = getProtocolVersion(player) ?: return null
 
         // Use the newest protocol this client supports!
@@ -145,10 +142,7 @@ public open class NoxesiumManager(
     /**
      * Sends this packet to the given [player].
      */
-    public fun sendPacket(
-        player: Player,
-        packet: NoxesiumPacket,
-    ) {
+    public fun sendPacket(player: Player, packet: NoxesiumPacket,) {
         // Use the newest protocol this client supports!
         val nmsPacket = createPacket(player, packet) ?: return
         val craftPlayer = player as CraftPlayer
@@ -160,11 +154,7 @@ public open class NoxesiumManager(
      * the player back various packets related to the server information and default
      * server rule values.
      */
-    internal fun registerPlayer(
-        player: Player,
-        protocolVersion: Int,
-        version: String,
-    ) {
+    internal fun registerPlayer(player: Player, protocolVersion: Int, version: String,) {
         logger.info("${player.name} is running Noxesium $version ($protocolVersion)")
         saveProtocol(player, version, protocolVersion)
 
@@ -193,10 +183,7 @@ public open class NoxesiumManager(
      * Sends updated server rules to [player] based on all rules in [profile]
      * that need to be updated.
      */
-    private fun updateServerRules(
-        player: Player,
-        profile: RuleHolder,
-    ) {
+    private fun updateServerRules(player: Player, profile: RuleHolder,) {
         sendPacket(
             player,
             ClientboundChangeServerRulesPacket(
@@ -211,35 +198,22 @@ public open class NoxesiumManager(
     }
 
     /** Stores the protocol version for [player] as [version] with [protocolVersion]. */
-    internal fun saveProtocol(
-        player: Player,
-        version: String,
-        protocolVersion: Int,
-    ) {
+    internal fun saveProtocol(player: Player, version: String, protocolVersion: Int,) {
         players[player.uniqueId] = protocolVersion
         exact[player.uniqueId] = version
         onPlayerVersionReceived(player, version, protocolVersion)
     }
 
     /** Stores client settings for [player] as [clientSettings]. */
-    internal fun saveSettings(
-        player: Player,
-        clientSettings: ClientSettings,
-    ) {
+    internal fun saveSettings(player: Player, clientSettings: ClientSettings,) {
         settings[player.uniqueId] = clientSettings
         onPlayerSettingsReceived(player, clientSettings)
     }
 
     /** Returns the given [rule] for [player]. */
-    public fun <T : Any> getServerRule(
-        player: Player,
-        rule: RuleFunction<T>,
-    ): RemoteServerRule<T>? = getServerRule(player, rule.index)
+    public fun <T : Any> getServerRule(player: Player, rule: RuleFunction<T>,): RemoteServerRule<T>? = getServerRule(player, rule.index)
 
-    override fun <T : Any> getServerRule(
-        player: Player,
-        index: Int,
-    ): RemoteServerRule<T>? =
+    override fun <T : Any> getServerRule(player: Player, index: Int,): RemoteServerRule<T>? =
         profiles.computeIfAbsent(player.uniqueId) { RuleHolder() }.let { holder ->
             serverRules.create(index, holder, getProtocolVersion(player) ?: -1)
         }
@@ -271,17 +245,10 @@ public open class NoxesiumManager(
     }
 
     /** Called when [player] informs the server they are on [protocolVersion]. */
-    protected open fun onPlayerVersionReceived(
-        player: Player,
-        version: String,
-        protocolVersion: Int,
-    ) {
+    protected open fun onPlayerVersionReceived(player: Player, version: String, protocolVersion: Int,) {
     }
 
     /** Called when [player] informs the server they are using [ClientSettings]. */
-    protected open fun onPlayerSettingsReceived(
-        player: Player,
-        clientSettings: ClientSettings,
-    ) {
+    protected open fun onPlayerSettingsReceived(player: Player, clientSettings: ClientSettings,) {
     }
 }

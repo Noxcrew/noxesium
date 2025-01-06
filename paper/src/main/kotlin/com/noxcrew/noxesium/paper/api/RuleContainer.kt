@@ -34,28 +34,18 @@ public data class RuleContainer(
         get() = rules
 
     /** Returns whether rule [index] is available on [version]. */
-    public fun isAvailable(
-        index: Int,
-        version: Int,
-    ): Boolean = version >= (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))
+    public fun isAvailable(index: Int, version: Int,): Boolean =
+        version >= (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))
 
     /** Registers a new rule with the given [index] and [ruleSupplier]. */
-    public fun register(
-        index: Int,
-        minimumProtocol: Int,
-        ruleSupplier: RuleFunction<*>,
-    ) {
+    public fun register(index: Int, minimumProtocol: Int, ruleSupplier: RuleFunction<*>,) {
         require(!rules.containsKey(index)) { "Can't double register index $index" }
         rules[index] = ruleSupplier
         minimumProtocols[index] = minimumProtocol
     }
 
     /** Creates a new rule object, to be stored in the given map. */
-    public fun <T : Any> create(
-        index: Int,
-        storage: MutableMap<Int, RemoteServerRule<*>>,
-        version: Int? = null,
-    ): RemoteServerRule<T>? {
+    public fun <T : Any> create(index: Int, storage: MutableMap<Int, RemoteServerRule<*>>, version: Int? = null,): RemoteServerRule<T>? {
         // Ensure that this player has the required protocol version, otherwise return `null`.
         if (version != null &&
             version < (minimumProtocols[index] ?: throw IllegalArgumentException("Cannot find rule with index $index"))

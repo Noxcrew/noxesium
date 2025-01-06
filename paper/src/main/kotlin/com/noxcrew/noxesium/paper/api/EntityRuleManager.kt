@@ -76,16 +76,10 @@ public class EntityRuleManager(
     }
 
     /** Returns the given [rule] for [entity]. */
-    public fun <T : Any> getEntityRule(
-        entity: Entity,
-        rule: RuleFunction<T>,
-    ): RemoteServerRule<T>? = getEntityRule(entity, rule.index)
+    public fun <T : Any> getEntityRule(entity: Entity, rule: RuleFunction<T>,): RemoteServerRule<T>? = getEntityRule(entity, rule.index)
 
     /** Returns the given [ruleIndex] for [entity]. */
-    public fun <T : Any> getEntityRule(
-        entity: Entity,
-        ruleIndex: Int,
-    ): RemoteServerRule<T>? =
+    public fun <T : Any> getEntityRule(entity: Entity, ruleIndex: Int,): RemoteServerRule<T>? =
         entities.computeIfAbsent(entity) { RuleHolder() }.let { holder ->
             manager.entityRules.create(ruleIndex, holder)
         }

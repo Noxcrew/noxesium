@@ -1,0 +1,31 @@
+root = true
+
+[*.{md}]
+ktlint_standard = disabled
+
+[*.{java}]
+max_line_length = 140
+
+[*.{kt,kts}]
+max_line_length = 140
+ij_continuation_indent_size = 4
+ij_kotlin_name_count_to_use_star_import = 100
+ij_kotlin_name_count_to_use_star_import_for_members = 100
+ij_kotlin_packages_to_use_import_on_demand = nothing
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_allow_trailing_comma = true
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
+ktlint_standard_package-name = disabled
+ktlint_standard_annotation = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_argument-list-wrapping = disabled
+ktlint_standard_parameter-list-wrapping = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_function-expression-body = disabled
+ktlint_function_signature_body_expression_wrapping = default
+ktlint_class_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = unset
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = unset
+
+[*.{yml,yaml}]
+indent_size = 4

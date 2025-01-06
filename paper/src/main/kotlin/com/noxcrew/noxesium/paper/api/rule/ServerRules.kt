@@ -95,11 +95,7 @@ public class ServerRules(
     public val riptideCoyoteTime: RuleFunction<Int> = register(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 10) { IntServerRule(it, 5) }
 
     /** Registers a new [rule]. */
-    private fun <T : Any> register(
-        index: Int,
-        minimumProtocol: Int,
-        rule: (Int) -> RemoteServerRule<T>,
-    ): RuleFunction<T> {
+    private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)
         manager.serverRules.register(index, minimumProtocol, function)
         return function

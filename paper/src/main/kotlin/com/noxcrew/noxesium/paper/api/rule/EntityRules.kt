@@ -39,11 +39,7 @@ public class EntityRules(
     public val beamFadeColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.BEAM_COLOR_FADE, 12, ::ColorServerRule)
 
     /** Registers a new [rule]. */
-    private fun <T : Any> register(
-        index: Int,
-        minimumProtocol: Int,
-        rule: (Int) -> RemoteServerRule<T>,
-    ): RuleFunction<T> {
+    private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)
         manager.entityRules.register(index, minimumProtocol, function)
         return function

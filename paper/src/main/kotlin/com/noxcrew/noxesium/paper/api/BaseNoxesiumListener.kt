@@ -38,10 +38,7 @@ public abstract class BaseNoxesiumListener(
      * Defines a plugin message [listener] that will be registered and unregistered with
      * this listener.
      */
-    protected fun registerIncomingPluginChannel(
-        channel: Key,
-        listener: PluginMessageListener,
-    ) {
+    protected fun registerIncomingPluginChannel(channel: Key, listener: PluginMessageListener,) {
         incomingPluginChannels[channel] = listener
         if (registered.get()) {
             plugin.server.messenger.registerIncomingPluginChannel(plugin, channel.asString(), listener)
@@ -85,10 +82,7 @@ public abstract class BaseNoxesiumListener(
     }
 
     /** Creates this packet for the given [player]. */
-    public abstract fun createPacket(
-        player: Player,
-        packet: NoxesiumPacket,
-    ): ClientboundCustomPayloadPacket?
+    public abstract fun createPacket(player: Player, packet: NoxesiumPacket,): ClientboundCustomPayloadPacket?
 }
 
 /** Sends a plugin message to a player. */
@@ -118,11 +112,7 @@ public fun Player.createPayloadPacket(
 }
 
 /** Sends a plugin message to a player. */
-public fun Player.sendPluginMessage(
-    channel: Key,
-    initialCapacity: Int? = null,
-    writer: (buffer: RegistryFriendlyByteBuf) -> Unit,
-) {
+public fun Player.sendPluginMessage(channel: Key, initialCapacity: Int? = null, writer: (buffer: RegistryFriendlyByteBuf) -> Unit,) {
     val packet = createPayloadPacket(channel, initialCapacity, writer)
     if (packet != null) {
         val craftPlayer = this as CraftPlayer
