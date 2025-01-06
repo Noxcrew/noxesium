@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.v1
 
-import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
 import com.noxcrew.noxesium.api.NoxesiumReferences
+import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
 import com.noxcrew.noxesium.paper.api.BaseNoxesiumListener
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.createPayloadPacket

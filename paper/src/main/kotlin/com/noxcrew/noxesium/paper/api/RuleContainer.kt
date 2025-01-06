@@ -28,7 +28,7 @@ public data class RuleHolder(
 /** Provides a container that holds rule types. */
 public data class RuleContainer(
     private val rules: MutableMap<Int, RuleFunction<*>> = ConcurrentHashMap(),
-    private val minimumProtocols: MutableMap<Int, Int> = ConcurrentHashMap()
+    private val minimumProtocols: MutableMap<Int, Int> = ConcurrentHashMap(),
 ) {
 
     /** All contents of this container. */

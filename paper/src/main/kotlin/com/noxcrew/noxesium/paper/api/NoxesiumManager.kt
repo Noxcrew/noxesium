@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.paper.api
 
+import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.api.protocol.ClientSettings
 import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
 import com.noxcrew.noxesium.api.protocol.NoxesiumServerManager
-import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
@@ -191,8 +191,8 @@ public open class NoxesiumManager(
                         (rule as RemoteServerRule<Any>).write(rule.value, buffer)
                         rule.changePending = false
                     }
-                }
-            )
+                },
+            ),
         )
     }
 

@@ -20,7 +20,7 @@ public data class ServerboundQibTriggeredPacket(
         JUMP,
         INSIDE,
         ENTER,
-        LEAVE
+        LEAVE,
     }
 
     public constructor(buffer: RegistryFriendlyByteBuf, player: Player, protocolVersion: Int) : this(

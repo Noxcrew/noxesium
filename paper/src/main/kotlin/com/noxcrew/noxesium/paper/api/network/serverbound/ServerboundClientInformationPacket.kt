@@ -21,6 +21,6 @@ public data class ServerboundClientInformationPacket(
 
     public constructor(buffer: RegistryFriendlyByteBuf, protocolVersion: Int) : this(
         protocolVersion,
-        if (protocolVersion >= NoxesiumFeature.NEW_MCC_FEATURES.minProtocolVersion) buffer.readUtf() else "unknown"
+        if (protocolVersion >= NoxesiumFeature.NEW_MCC_FEATURES.minProtocolVersion) buffer.readUtf() else "unknown",
     )
 }

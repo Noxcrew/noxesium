@@ -35,7 +35,7 @@ public class NoxesiumListCommand(private val noxesiumManager: NoxesiumManager) {
                 12 -> "v2.4.0"
                 else -> "None"
             }
-            val display = if (protocol != null) text("$exact (${protocol})", NamedTextColor.GOLD) else text("None", NamedTextColor.YELLOW)
+            val display = if (protocol != null) text("$exact ($protocol)", NamedTextColor.GOLD) else text("None", NamedTextColor.YELLOW)
             (protocol ?: 0) to display
         }
         for (pair in input.keys.sortedBy { it.first }) {
@@ -70,7 +70,7 @@ public class NoxesiumListCommand(private val noxesiumManager: NoxesiumManager) {
                                     ),
                                     // Show as empty for non-Noxesium clients
                                     "",
-                                )
+                                ),
                             )
                             add(player.displayName().color(NamedTextColor.AQUA))
                             if (!last) {
@@ -78,7 +78,7 @@ public class NoxesiumListCommand(private val noxesiumManager: NoxesiumManager) {
                             }
                         }
                         add(text("]", NamedTextColor.AQUA))
-                    }
+                    },
                 ),
             )
         }

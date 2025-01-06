@@ -26,6 +26,6 @@ public data class ServerboundClientSettingsPacket(
             buffer.readBoolean(),
             buffer.readBoolean(),
             buffer.readDouble(),
-        )
+        ),
     )
 }

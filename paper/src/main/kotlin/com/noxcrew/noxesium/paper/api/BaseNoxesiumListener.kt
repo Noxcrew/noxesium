@@ -24,7 +24,7 @@ public abstract class BaseNoxesiumListener(
     public val plugin: Plugin,
     public val logger: Logger,
     public val manager: NoxesiumManager,
-): Listener {
+) : Listener {
 
     public companion object {
         /** Base namespace of the plugin channel for Noxesium messages. */
@@ -95,8 +95,8 @@ public fun Player.createPayloadPacket(channel: Key, initialCapacity: Int? = null
             DiscardedPayload(
                 ResourceLocation.parse(StandardMessenger.validateAndCorrectChannel(channel.asString())),
                 // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-                RegistryFriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(), (Bukkit.getServer() as CraftServer).handle.server.registryAccess()).apply(writer)
-            )
+                RegistryFriendlyByteBuf(initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(), (Bukkit.getServer() as CraftServer).handle.server.registryAccess()).apply(writer),
+            ),
         )
     }
     Bukkit.getLogger().warning("Couldn't create packet of type $channel for player $name as they have not yet registered the required plugin channel")

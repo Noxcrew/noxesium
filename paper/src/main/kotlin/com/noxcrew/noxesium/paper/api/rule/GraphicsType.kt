@@ -6,5 +6,5 @@ package com.noxcrew.noxesium.paper.api.rule
 public enum class GraphicsType {
     FAST,
     FANCY,
-    FABULOUS
+    FABULOUS,
 }

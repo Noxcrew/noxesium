@@ -42,7 +42,8 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                 // Send the packet to all players that can see it
                 for (player in Bukkit.getOnlinePlayers()) {
                     if (!player.canSee(entity)) continue
-                    manager.sendPacket(player,
+                    manager.sendPacket(
+                        player,
                         ClientboundSetExtraEntityDataPacket(
                             entity.entityId,
                             holder.rules
@@ -53,11 +54,11 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                                 .ifEmpty { null }
                                 ?.mapValues { (_, rule) ->
                                     { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                                } ?: continue
-                        )
+                                } ?: continue,
+                        ),
                     )
                 }
-                
+
                 // Mark as updated after we have used the changePending values!
                 holder.markAllUpdated()
             }
@@ -93,7 +94,8 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
 
         for ((entity, holder) in entities) {
             if (!player.canSee(entity)) continue
-            manager.sendPacket(player,
+            manager.sendPacket(
+                player,
                 ClientboundSetExtraEntityDataPacket(
                     entity.entityId,
                     holder.rules
@@ -102,15 +104,15 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                         .ifEmpty { null }
                         ?.mapValues { (_, rule) ->
                             { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                        } ?: continue
-                )
+                        } ?: continue,
+                ),
             )
         }
     }
-    
+
     /**
      * When an entity starts being shown to a player we
-     * send its data along as well. 
+     * send its data along as well.
      * This will also send data about needed entities
      * when the player logs in / changes worlds.
      */
@@ -120,10 +122,11 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
         val protocol = manager.getProtocolVersion(e.player) ?: return
 
         // Add a 1 tick delay, since the player doesn't actually register
-        // the entity when beginning tracking, so on localhost the client 
+        // the entity when beginning tracking, so on localhost the client
         // fails to add the extra entity data.
         Bukkit.getScheduler().scheduleSyncDelayedTask(manager.plugin, {
-            manager.sendPacket(e.player,
+            manager.sendPacket(
+                e.player,
                 ClientboundSetExtraEntityDataPacket(
                     e.entity.entityId,
                     holder.rules
@@ -132,8 +135,8 @@ public class EntityRuleManager(private val manager: NoxesiumManager) : Listener 
                         .ifEmpty { null }
                         ?.mapValues { (_, rule) ->
                             { buffer -> (rule as RemoteServerRule<Any>).write(rule.value, buffer) }
-                        } ?: return@scheduleSyncDelayedTask
-                )
+                        } ?: return@scheduleSyncDelayedTask,
+                ),
             )
         }, 1)
     }
