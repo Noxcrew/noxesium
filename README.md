@@ -1,91 +1,67 @@
+![Noxesium Header Image](https://cdn.modrinth.com/data/Kw7Sm3Xf/09bf3e8a2e3e671272e5e8b1e34ca47cf7598e84_96.webp)
+
 Noxesium
 ---
-A Fabric and NeoForge mod that improves the user experience when playing on multiplayer servers.
+A Minecraft mod available on Fabric and NeoForge improves your experience when playing on large multiplayer servers. Here's some of the main things Noxesium does:
 
-Server developers are welcome to submit additional patches they need, feel free to open an issue to discuss your ideas.
+- Fixes various vanilla bugs such as [MC-263293](https://bugs.mojang.com/browse/MC-263293) (Dying resets toggle sprint) and [MC-259812](https://bugs.mojang.com/browse/MC-259812) (Transparent objects are invisible behind text displays).
+- Adds extra systems which lets servers add more content, including a custom sound system, creating custom speed boosters or jump pads, and drawing player heads in text.
+- Introduces optional performance settings for limiting the fps at which the user interface is rendered.
+
+Noxesium is directly developed by [Noxcrew](https://noxcrew.com/), creators of MC Championship and MCC Island, as a result most features of Noxesium originate directly from issues encountered by players of those projects.
+
+Noxesium is also automatically included on some versions of [Lunar Client](https://www.lunarclient.com/).
 
 # Usage
-Public builds of Noxesium are available on [Modrinth](https://modrinth.com/mod/noxesium) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods/noxesium). Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.
-
-Developers that want to use Noxesium as a dependency can add it can find the artifact on our [public Maven repository](https://maven.noxcrew.com/#/public/com/noxcrew/noxesium/api).
-
-The following artifacts are available:
-- api: General code for interacting with Noxesium on any platform.
-- common: Client mod specific code shared between Fabric and NeoForge.
-- fabric: Fabric-specific implementation.
-- neoforge: NeoForge-specific implementation.
-- paper: Server-side API implementation for Paper.
-
-Maven:
-```xml
-<repository>
-    <id>noxcrew-maven</id>
-    <name>Noxcrew Public Maven Repository</name>
-    <url>https://maven.noxcrew.com/public</url>
-</repository>
-
-<dependency>
-  <groupId>com.noxcrew.noxesium</groupId>
-  <artifactId>api</artifactId>
-  <version>NOXESIUM_VERSION</version>
-</dependency>
-```
-
-Gradle (Kotlin):
-```kotlin
-repositories {
-    maven("https://maven.noxcrew.com/public")
-}
-
-dependencies {
-    api("com.noxcrew.noxesium:api:NOXESIUM_VERSION")
-}
-```
+Public builds of Noxesium are available on [Modrinth](https://modrinth.com/mod/noxesium) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods/noxesium). Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub.  Developers interested in using Noxesium as an API can find more information on the [Wiki page](https://github.com/Noxcrew/noxesium/wiki).
 
 # Features
 
-### Additions
+Noxesium has a lot of different features, so they are split into various small groups below:
 
-Noxesium provides various additional features focussed around giving servers more control over how the client behaves. Some examples of additional things servers can do:
+<details>
+<summary>Vanilla Bugfixes</summary>
 
+- [MC-256850](https://bugs.mojang.com/browse/MC-256850): Moving piston walls don't flicker as much while moving
+- [MC-259812](https://bugs.mojang.com/browse/MC-259812): Transparent entity models are now properly visible behind text displays
+- [MC-263293](https://bugs.mojang.com/browse/MC-263293): Adds a new accessibility setting to disable toggle sprint resetting on death (enabled by default)
+- Passenger entities being teleported no longer jitter
+</details>
+
+<details>
+<summary>General Features</summary>
+
+- A new accessibility setting that can be used to render maps held in the off-hand as a UI element instead. This makes it easier to read the map especially when using View Bobbing. Servers can also remotely enable this feature if they want to enforce it.
+- Extra debug overlays which can be used to see your current fps or show extra information for server and shader developers.
+</details>
+
+<details>
+<summary>UI Performance</summary>
+
+Noxesium contains an optional feature to limit the framerate at which UI elements are rendered. For most players the fps impact is negligible as rendering the UI does not take that long. However, if you run a highly optimized client with mods such as [Sodium](https://github.com/CaffeineMC/sodium) or [Nvidium](https://github.com/MCRcortex/nvidium) the UI may start to become a bottleneck.
+
+For users with this issue Noxesium adds a new optional performance setting called "Limit UI Framerate", when enabled the user interface is rendered at at most 60 fps (this is also configurable).
+
+There is also an additional setting called "Dynamic UI Optimization" which is only available to Windows/Linux users that have at least OpenGL 4.4. This will attempt to lower the UI Framerate dynamically whenever no animations happen but return to the maximum framerate during animations. With this you can run a higher max UI framerate with good performance, but mileage may vary per user!
+
+</details>
+
+<details>
+<summary>Server Features</summary>
+
+Noxesium adds a number of extra features only accessible for server developers. This lets them bypass some vanilla restrictions and make better content.
+
+Here's a list of things Noxesium lets servers do:
 - Create custom interactables on the client like speed boosters or jump pads
-- Draw player heads in text messages
 - Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
+- Draw player heads in text messages
 - Tweak the behavior of riptide tridents to make them more usable in multiplayer games
 - Prevent moving items in GUIs
 - Locking camera movement
+</details>
 
-There are also a few improvements that do not require a server:
-- Prevents toggle sprint/sneak from resetting on death (can be configured)
-- Allow rendering off-hand maps as a UI element
-- Adds toggleable debug features for server and shader developers
+<details>
+<summary>MCC Island Integration</summary>
 
-### Performance
-
-Noxesium contains optional performance features which limit UI rendering to 60 fps while keeping everything else at your full framerate. This helps free up computation time to work on rendering instead of redrawing static UI elements. It is however only effective if your fps is above the UI framerate limit. There is an additional setting available to enable dynamic UI fps lowering, which lowers the limit down to 20 fps on a per-element basis.
-
-These performance optimizations can be enabled manually in the Noxesium mod settings menu.
-
-### Bugfixes
-
-Noxesium also fixes various small client bugs that relate to multiplayer servers.
-
-- Fixes jittery behavior of teleporting entities on mounts
-- Fixes MC-256850 so moving piston walls don't flicker as much while moving
-- Fixes MC-259812 so entity models are properly visible behind text displays
-
-
-### MCC Island-specific Features
-
-There are also a few features specific to MCC Island as Noxesium is developed alongside it:
-
-- Adds a setting to show player heads in UIs
-- Provides access to additional information sent by the server regarding the current server and current game state
-
-# For developers
-
-Any developers interested in writing code that interacts with Noxesium should have a look at the `api` module which contains various structures useful for setting up a server-side implementation that interacts with Noxesium.
-
-We also provide the `paper` module which contains our own server-side implementation written in Kotlin which allows you to interface with Noxesium clients. This also implements backwards compatibility for older Noxesium clients.
-
-Further information about specific features of the mod can be found on the [Wiki](https://github.com/Noxcrew/noxesium/wiki) page.
+Noxesium has extra features to integrate with MCC Island directly! MCC Island detects any user running Noxesium and sends the client extra information on your current location and game state. This allows other mods like [Island Utils](https://github.com/AsoDesu/IslandUtils) to use this information for its custom features.
+</details>
