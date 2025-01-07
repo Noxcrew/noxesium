@@ -34,7 +34,7 @@ public interface NoxesiumRenderStateHolder<T extends NoxesiumRenderState> {
      */
     default void requestCheck() {
         // Ignore checks if we're not using dynamic UI limiting!
-        if (!NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting) return;
+        if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) return;
 
         var state = get();
         if (state != null) {

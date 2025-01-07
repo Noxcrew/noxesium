@@ -58,7 +58,7 @@ public class LayeredDrawMixin implements LayeredDrawExtension {
     @WrapMethod(method = "render")
     private void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
         // Try to render through the UI limiting system, otherwise fall back to vanilla!
-        if (NoxesiumMod.getInstance().getConfig().enableUiLimiting) {
+        if (NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) {
             if (noxesium$layeredDraw.render(guiGraphics, deltaTracker)) return;
 
             // Reset the state if the rendering fails!

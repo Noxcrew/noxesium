@@ -92,7 +92,9 @@ public class NoxesiumOptions {
     private static final OptionInstance<Boolean> enableDynamicUiLimiting = OptionInstance.createBoolean(
             "noxesium.options.dynamic_ui_limiting.name",
             OptionInstance.cachedConstantTooltip(
-                    Component.translatable("noxesium.options.dynamic_ui_limiting.tooltip")),
+                    NoxesiumConfig.supportsDynamicUiLimiting
+                            ? Component.translatable("noxesium.options.dynamic_ui_limiting.tooltip")
+                            : Component.translatable("noxesium.options.dynamic_ui_limiting.disabled")),
             NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting,
             (newValue) -> {
                 NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting = newValue;

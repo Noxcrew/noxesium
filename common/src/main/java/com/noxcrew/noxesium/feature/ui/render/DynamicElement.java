@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendStateHook;
 import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
 import java.io.Closeable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,6 +30,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private boolean canCheck = true;
     private boolean lastBlending = true;
     private boolean hasChangedLayers = false;
+    private boolean dynamic = false;
 
     private int renders = 0;
     private long nextCheck = System.nanoTime() + 1000000000;
@@ -49,6 +49,20 @@ public class DynamicElement implements Closeable, BlendStateHook {
 
     public DynamicElement() {
         buffers.add(new ElementBuffer());
+    }
+
+    /**
+     * Returns whether this element should check for dynamic UI.
+     */
+    private boolean shouldCheck() {
+        if (canCheck) {
+            if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) {
+                canCheck = false;
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -152,7 +166,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         if (needsRedraw) return false;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                if (!buffer.hasValidPBO()) {
+                if (buffer instanceof PBOElementBuffer pboBuffer && !pboBuffer.hasValidPBO()) {
                     return false;
                 }
             }
@@ -198,17 +212,25 @@ public class DynamicElement implements Closeable, BlendStateHook {
      * Process recently taken snapshots to determine changes.
      */
     public void tick() {
+        // Reset dynamic UI if it's not enabled
+        if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) {
+            if (dynamic) {}
+            return;
+        }
+
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
         var verdict = !hasChangedLayers;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                // Process the snapshots
-                var snapshots = buffer.snapshots();
-                if (snapshots == null) return;
-                if (!compare(snapshots[0], snapshots[1])) {
-                    verdict = false;
-                    break;
+                if (buffer instanceof PBOElementBuffer pboBuffer) {
+                    // Process the snapshots
+                    var snapshots = pboBuffer.snapshots();
+                    if (snapshots == null) return;
+                    if (!snapshots[0].equals(snapshots[1])) {
+                        verdict = false;
+                        break;
+                    }
                 }
             }
         }
@@ -245,7 +267,9 @@ public class DynamicElement implements Closeable, BlendStateHook {
         // Request new PBOs from all buffers
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                buffer.requestNewPBO();
+                if (buffer instanceof PBOElementBuffer pboBuffer) {
+                    pboBuffer.requestNewPBO();
+                }
             }
         }
     }
@@ -256,7 +280,9 @@ public class DynamicElement implements Closeable, BlendStateHook {
     public boolean update(long nanoTime, GuiGraphics guiGraphics, Runnable draw) {
         // Always start by awaiting the GPU fence
         for (var buffer : buffers) {
-            buffer.awaitFence();
+            if (buffer instanceof PBOElementBuffer pboBuffer) {
+                pboBuffer.awaitFence();
+            }
         }
 
         // Determine if we are at the next render threshold yet, otherwise
@@ -302,7 +328,7 @@ public class DynamicElement implements Closeable, BlendStateHook {
         }
         bufferZeroInvalid = firstUnusedBufferIndex == 0;
 
-        // Unset check
+        // Unset check once we're done with this frame
         if (canCheck) {
             canCheck = false;
         }
@@ -412,8 +438,8 @@ public class DynamicElement implements Closeable, BlendStateHook {
     private void trySnapshotBuffer() {
         if (elementsWereDrawn && canCheck) {
             var target = getBuffer(bufferIndex);
-            if (target.canSnapshot()) {
-                target.snapshot();
+            if (target instanceof PBOElementBuffer pboBuffer && pboBuffer.canSnapshot()) {
+                pboBuffer.snapshot();
             }
         }
     }
@@ -423,12 +449,5 @@ public class DynamicElement implements Closeable, BlendStateHook {
         for (var buffer : buffers) {
             buffer.close();
         }
-    }
-
-    /**
-     * Compares two frame snapshots.
-     */
-    private boolean compare(ByteBuffer first, ByteBuffer second) {
-        return first.equals(second);
     }
 }

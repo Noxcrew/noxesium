@@ -29,5 +29,13 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
                 NoxesiumOptions.maxUiFramerate(),
                 NoxesiumOptions.enableDynamicUiLimiting(),
                 NoxesiumOptions.optimizationOverlay());
+
+        // Disable the dynamic UI limiting button
+        if (!NoxesiumConfig.supportsDynamicUiLimiting) {
+            var button = this.list.findOption(NoxesiumOptions.enableDynamicUiLimiting());
+            if (button != null) {
+                button.active = false;
+            }
+        }
     }
 }

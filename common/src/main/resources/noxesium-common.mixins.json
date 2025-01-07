@@ -55,6 +55,7 @@
     "sound.CustomNoxesiumSoundsMixin",
     "ui.CustomDebugHotkeysMixin",
     "ui.GlStateManagerMixin",
+    "ui.GLXMixin",
     "ui.GuiMixin",
     "ui.LayeredDrawMixin",
     "ui.MinecraftMixin",
