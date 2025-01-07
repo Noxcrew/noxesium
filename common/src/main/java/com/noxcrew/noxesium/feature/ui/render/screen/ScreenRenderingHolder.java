@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.render.screen;
 
+import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,6 +42,9 @@ public class ScreenRenderingHolder implements NoxesiumRenderStateHolder<Noxesium
         if (state != null) {
             state.close();
             state = null;
+
+            // Ensure everything is reset!
+            SharedVertexBuffer.reset();
         }
     }
 }

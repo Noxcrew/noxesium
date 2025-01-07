@@ -122,14 +122,12 @@ public class NoxesiumMod {
                 while (true) {
                     try {
                         SpatialInteractionEntityTree.rebuild();
-                        if (getConfig().enableDynamicUiLimiting) {
-                            forEachRenderStateHolder((it) -> {
-                                var state = it.get();
-                                if (state != null) {
-                                    state.tick();
-                                }
-                            });
-                        }
+                        forEachRenderStateHolder((it) -> {
+                            var state = it.get();
+                            if (state != null) {
+                                state.tick();
+                            }
+                        });
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;

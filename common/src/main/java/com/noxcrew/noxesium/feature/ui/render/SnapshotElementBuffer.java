@@ -15,9 +15,9 @@ import org.lwjgl.opengl.GL44;
 
 /**
  * An element buffer that also has an attached PBO
- * and bound buffer.
+ * and bound buffer so it can be snapshot.
  */
-public class PBOElementBuffer extends ElementBuffer {
+public class SnapshotElementBuffer extends ElementBuffer {
 
     private int currentIndex = 0;
     private int validPbos = 0;

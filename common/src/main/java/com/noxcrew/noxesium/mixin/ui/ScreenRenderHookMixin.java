@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.ui;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.screen.ScreenRenderingHolder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -29,6 +30,7 @@ public class ScreenRenderHookMixin {
                 && NoxesiumMod.getInstance().getConfig().enableUiLimiting) {
             // Create a new state object and let it render
             if (ScreenRenderingHolder.getInstance().render(guiGraphics, width, height, deltaTime, instance)) return;
+            SharedVertexBuffer.reset();
         } else {
             // Destroy the state if it exists
             ScreenRenderingHolder.getInstance().clear();

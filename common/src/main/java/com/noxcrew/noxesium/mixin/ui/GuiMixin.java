@@ -85,15 +85,18 @@ public abstract class GuiMixin {
         }
 
         // If the dynamic UI updating is on we draw the current UI frame rates and group layouts
-        if (NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()
-                && NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
+        if (NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
             NoxesiumMod.forEachRenderStateHolder((it) -> {
                 var stateIn = it.get();
                 switch (stateIn) {
                     case NoxesiumUiRenderState state -> {
                         for (var group : state.groups()) {
                             var dynamic = group.dynamic();
-                            text.add(Component.literal("§b" + group.layerNames()
+                            var name = group.layerNames();
+                            if (name.length() >= 100) {
+                                name = name.substring(0, 100);
+                            }
+                            text.add(Component.literal("§b" + name
                                     + (group.dynamic().buffers() > 1
                                             ? " §3(+" + (group.dynamic().buffers() - 1) + ")"
                                             : "")

@@ -57,20 +57,6 @@ public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUi
     }
 
     /**
-     * Resets any lingering data held by this object.
-     */
-    public void reset() {
-        if (state != null) {
-            // Destroy the state if it exists
-            state.close();
-            state = null;
-
-            // Ensure everything is disabled!
-            SharedVertexBuffer.reset();
-        }
-    }
-
-    /**
      * Renders the layered draw's contents. Returns false if it failed to draw properly.
      */
     public boolean render(GuiGraphics guiGraphics, @NotNull DeltaTracker deltaTracker) {
@@ -161,6 +147,9 @@ public class NoxesiumLayeredDraw implements NoxesiumRenderStateHolder<NoxesiumUi
         if (state != null) {
             state.close();
             state = null;
+
+            // Ensure everything is reset!
+            SharedVertexBuffer.reset();
         }
     }
 }

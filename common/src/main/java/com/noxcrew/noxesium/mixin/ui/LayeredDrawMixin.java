@@ -60,11 +60,9 @@ public class LayeredDrawMixin implements LayeredDrawExtension {
         // Try to render through the UI limiting system, otherwise fall back to vanilla!
         if (NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) {
             if (noxesium$layeredDraw.render(guiGraphics, deltaTracker)) return;
-
-            // Reset the state if the rendering fails!
             SharedVertexBuffer.reset();
         } else {
-            noxesium$layeredDraw.reset();
+            noxesium$layeredDraw.clear();
         }
         original.call(guiGraphics, deltaTracker);
     }

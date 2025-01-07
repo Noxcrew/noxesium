@@ -34,7 +34,7 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
      */
     public boolean render(GuiGraphics guiGraphics, DeltaTracker deltaTracker, NoxesiumLayeredDraw layeredDraw) {
         var nanoTime = System.nanoTime();
-        var dynamic = NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting;
+        var dynamic = NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting();
 
         // Update all groups, re-ordering where each layer is located
         updateGroups(layeredDraw, nanoTime, dynamic);

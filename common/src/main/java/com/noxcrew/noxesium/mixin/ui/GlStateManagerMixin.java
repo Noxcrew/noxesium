@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.mixin.ui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
+import com.noxcrew.noxesium.feature.ui.render.Element;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -65,6 +65,6 @@ public abstract class GlStateManagerMixin {
     @Inject(method = "_drawElements", at = @At("HEAD"))
     private static void onDrawElements(CallbackInfo ci) {
         // Note that some elements were drawn!
-        DynamicElement.elementsWereDrawn = true;
+        Element.elementsWereDrawn = true;
     }
 }

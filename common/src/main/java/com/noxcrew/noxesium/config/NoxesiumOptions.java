@@ -99,6 +99,9 @@ public class NoxesiumOptions {
             (newValue) -> {
                 NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
+
+                // Reset all screen UI state!
+                NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::clear);
             });
 
     private static final OptionInstance<Integer> maxUiFramerate = new OptionInstance<>(
