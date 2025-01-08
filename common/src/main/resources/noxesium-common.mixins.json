@@ -70,5 +70,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "ui.GLFWMixin"
   ]
 }

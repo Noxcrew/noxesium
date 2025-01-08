@@ -1,6 +1,9 @@
 package com.noxcrew.noxesium.feature.ui.render.api;
 
+import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
+
 import java.io.Closeable;
+import java.util.List;
 
 /**
  * The basis for a render state object.
@@ -13,17 +16,43 @@ public abstract class NoxesiumRenderState implements Closeable {
     public final PerSecondTrackedValue renders = new PerSecondTrackedValue();
 
     /**
+     * Returns all dynamic elements in this state.
+     */
+    public abstract List<DynamicElement> getDynamics();
+
+    /**
+     * Attempts to take a snapshot if required.
+     */
+    public void trySnapshot() {
+        for (var dynamic : getDynamics()) {
+            dynamic.trySnapshot();
+        }
+    }
+
+    /**
      * Ticks this render state.
      */
-    public abstract void tick();
+    public void tick() {
+        for (var dynamic : getDynamics()) {
+            dynamic.tick();
+        }
+    }
 
     /**
      * Indicates that a check should run the very next frame.
      */
-    public abstract void requestCheck();
+    public void requestCheck() {
+        for (var dynamic : getDynamics()) {
+            dynamic.redraw();
+        }
+    }
 
     /**
      * Triggers an update of the render framerate.
      */
-    public abstract void updateRenderFramerate();
+    public void updateRenderFramerate() {
+        for (var dynamic : getDynamics()) {
+            dynamic.resetToMax();
+        }
+    }
 }

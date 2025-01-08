@@ -40,7 +40,7 @@ public class NoxesiumConfig {
      * Whether dynamic UI limiting should be used.
      */
     public boolean shouldUseDynamicUiLimiting() {
-        return supportsDynamicUiLimiting && enableUiLimiting;
+        return supportsDynamicUiLimiting && enableDynamicUiLimiting;
     }
 
     /**

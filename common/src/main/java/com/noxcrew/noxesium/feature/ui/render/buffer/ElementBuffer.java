@@ -23,8 +23,8 @@ public class ElementBuffer implements Closeable {
 
     private final AtomicBoolean configuring = new AtomicBoolean(false);
 
-    private RenderTarget target;
-    private BlendState blendState;
+    protected RenderTarget target;
+    protected BlendState blendState;
 
     /**
      * Binds this buffer to the render target, replacing any previous target.

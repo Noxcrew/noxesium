@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.feature.ui.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
 import com.noxcrew.noxesium.feature.ui.render.buffer.ElementBuffer;
 import com.noxcrew.noxesium.feature.ui.render.buffer.SnapshotableElementBuffer;
@@ -17,9 +19,9 @@ public class DynamicElement extends Element {
     private final PerSecondRepeatingTask nextRender =
             new PerSecondRepeatingTask(NoxesiumMod.getInstance().getConfig().maxUiFramerate);
 
-    private boolean canCheck = true;
     private boolean movementDirection = false;
     private boolean hasBufferLayoutChanged = false;
+    private boolean hasRedrawnRecently = false;
     private long lastChange = System.currentTimeMillis();
     private int matches = 0;
 
@@ -45,8 +47,8 @@ public class DynamicElement extends Element {
     /**
      * Returns the percentage of matching frames.
      */
-    public String matchRate() {
-        return String.format("%.2f", ((double) matches) / 60d);
+    public int matchRate() {
+        return (int) ((((double) matches) / 60d) * 100d);
     }
 
     /**
@@ -70,13 +72,6 @@ public class DynamicElement extends Element {
             }
         }
         return true;
-    }
-
-    /**
-     * Indicates that a check should run the very next frame.
-     */
-    public void requestCheck() {
-        canCheck = true;
     }
 
     /**
@@ -104,7 +99,6 @@ public class DynamicElement extends Element {
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
         var verdict = !hasBufferLayoutChanged;
-        hasBufferLayoutChanged = false;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
                 if (buffer instanceof SnapshotableElementBuffer pboBuffer) {
@@ -118,6 +112,9 @@ public class DynamicElement extends Element {
                 }
             }
         }
+
+        // Update after we are committed to this tick
+        hasBufferLayoutChanged = false;
 
         // This means we are lowering fps, if anything changes more than thrice we go back.
         if (verdict) {
@@ -157,15 +154,26 @@ public class DynamicElement extends Element {
     }
 
     /**
-     * Tries to make a snapshot of the current buffer.
+     * Tries to make a snapshots of all buffers that can if
+     * this frame is useful.
      */
-    private void trySnapshot() {
-        if (elementsWereDrawn && canCheck) {
-            var target = getTargetBuffer();
-            if (target instanceof SnapshotableElementBuffer pboBuffer) {
-                pboBuffer.snapshot();
-            }
+    public void trySnapshot() {
+        // Only snapshot if we've redrawn recently
+        if (buffers.isEmpty() || !hasRedrawnRecently) return;
+
+        // Return if any buffer can't snapshot
+        for (var buffer : buffers) {
+            if (!buffer.canSnapshot()) return;
         }
+
+        // Update after we are committed
+        hasRedrawnRecently = false;
+
+        // Try to snapshot on every buffer and then unbind the main target
+        for (var buffer : buffers) {
+            buffer.snapshot();
+        }
+        // SharedVertexBuffer.rebindMainRenderTarget();
     }
 
     @Override
@@ -176,36 +184,21 @@ public class DynamicElement extends Element {
             buffer.awaitFence();
         }
 
-        if (super.update(nanoTime, guiGraphics, draw)) {
-            // Unset check once we're done with this frame, but
-            // snapshot first!
-            if (canCheck) {
-                trySnapshot();
-                canCheck = false;
-            }
-            return true;
+        var result = super.update(nanoTime, guiGraphics, draw);
+        if (result) {
+            hasRedrawnRecently = true;
         }
-        return false;
+        return result;
     }
 
     @Override
     public boolean shouldRedraw(long nanoTime) {
-        // If we can check we still increase the next render frame,
-        // but we ignore its result!
-        return nextRender.canInvoke(nanoTime) || canCheck;
+        return nextRender.canInvoke(nanoTime);
     }
 
     @Override
     public List<ElementBuffer> getBuffers() {
         return (List<ElementBuffer>) (List<?>) buffers;
-    }
-
-    @Override
-    protected void onBufferUntargeted(ElementBuffer buffer) {
-        super.onBufferUntargeted(buffer);
-
-        // Before targeting a new buffer we attempt to snapshot the previous one!
-        trySnapshot();
     }
 
     @Override

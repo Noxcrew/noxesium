@@ -129,7 +129,7 @@ public abstract class GuiMixin {
             name = name.substring(0, 100);
         }
         text.add(Component.literal(String.format(
-                "%s: §f%d renders, %d updates, %d draws, %s% matches",
+                "%s: §f%dr, %du, %dd, %d%%m",
                 name
                         + (dynamic.buffers() > 1 ? " §3(+" + (dynamic.buffers() - 1) + ")" : "")
                         + (dynamic.isEmpty() ? " §9(empty)" : ""),

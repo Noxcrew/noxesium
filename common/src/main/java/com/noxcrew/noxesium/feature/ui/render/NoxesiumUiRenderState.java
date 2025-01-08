@@ -4,13 +4,15 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayeredDraw;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
+import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
 import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Stores the entire render state of the current UI.
@@ -19,7 +21,7 @@ public class NoxesiumUiRenderState extends NoxesiumRenderState {
 
     private final List<LayerGroup> groups = new CopyOnWriteArrayList<>();
     private final Random random = new Random();
-    private long nextUpdate = -1;
+    private final PerSecondRepeatingTask updateGroupsTask = new PerSecondRepeatingTask(2.0);
     private int lastSize = 0;
 
     /**
@@ -94,7 +96,7 @@ public class NoxesiumUiRenderState extends NoxesiumRenderState {
      */
     private void updateGroups(NoxesiumLayeredDraw layeredDraw, long nanoTime, boolean dynamic) {
         // Update which groups exist if the layered draw object has changed
-        var intendedSize = dynamic ? layeredDraw.size() : 1;
+        var intendedSize = layeredDraw.size();
         if (lastSize != intendedSize) {
             lastSize = intendedSize;
             resetGroups();
@@ -121,35 +123,29 @@ public class NoxesiumUiRenderState extends NoxesiumRenderState {
             group.update();
         }
 
-        // If we're in dynamic mode we try to update groups.
-        if (dynamic) {
-            // Try to split up or merge together groups, but don't run this too frequently!
-            if (nextUpdate == -1 || nanoTime >= nextUpdate) {
-                // Schedule when we can next update the groups
-                nextUpdate = nanoTime + random.nextLong(500000000);
+        // Try to split up or merge together groups, but don't run this too frequently!
+        if (dynamic && updateGroupsTask.canInvoke(nanoTime)) {
+            // Iterate through all groups and make changes
+            var index = 0;
+            while (index < groups.size()) {
+                var group = groups.get(index++);
 
-                // Iterate through all groups and make changes
-                var index = 0;
-                while (index < groups.size()) {
-                    var group = groups.get(index++);
-
-                    // Try to merge if there are neighboring groups
-                    if (index > 2 && index < groups.size()) {
-                        if (group.canMerge(groups.get(index))) {
-                            group.join(groups.get(index));
-                            groups.remove(index).close();
-                            index--;
-                        } else if (groups.get(index - 2).canMerge(group)) {
-                            groups.get(index - 2).join(group);
-                            groups.remove(index - 1).close();
-                            index--;
-                        }
+                // Try to merge if there are neighboring groups
+                if (index > 2 && index < groups.size()) {
+                    if (group.canMerge(groups.get(index))) {
+                        group.join(groups.get(index));
+                        groups.remove(index).close();
+                        index--;
+                    } else if (groups.get(index - 2).canMerge(group)) {
+                        groups.get(index - 2).join(group);
+                        groups.remove(index - 1).close();
+                        index--;
                     }
+                }
 
-                    // Try to split up the group
-                    if (group.shouldSplit()) {
-                        groups.add(index++, group.split());
-                    }
+                // Try to split up the group
+                if (group.shouldSplit()) {
+                    groups.add(index++, group.split());
                 }
             }
         }
@@ -166,24 +162,12 @@ public class NoxesiumUiRenderState extends NoxesiumRenderState {
     }
 
     @Override
-    public void requestCheck() {
+    public List<DynamicElement> getDynamics() {
+        var result = new ArrayList<DynamicElement>();
         for (var group : groups) {
-            group.dynamic().requestCheck();
+            result.add(group.dynamic());
         }
-    }
-
-    @Override
-    public void updateRenderFramerate() {
-        for (var group : groups) {
-            group.dynamic().resetToMax();
-        }
-    }
-
-    @Override
-    public void tick() {
-        for (var group : groups) {
-            group.dynamic().tick();
-        }
+        return result;
     }
 
     @Override

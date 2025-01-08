@@ -6,6 +6,8 @@ import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
 import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
@@ -52,18 +54,8 @@ public class NoxesiumScreenRenderState extends NoxesiumRenderState {
     }
 
     @Override
-    public void requestCheck() {
-        dynamic.requestCheck();
-    }
-
-    @Override
-    public void updateRenderFramerate() {
-        dynamic.resetToMax();
-    }
-
-    @Override
-    public void tick() {
-        dynamic.tick();
+    public List<DynamicElement> getDynamics() {
+        return List.of(dynamic);
     }
 
     @Override
