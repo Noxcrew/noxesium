@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.render;
+package com.noxcrew.noxesium.feature.ui.render.api;
 
 /**
  * A value that we want to track every second.

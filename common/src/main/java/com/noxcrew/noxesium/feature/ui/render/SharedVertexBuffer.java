@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.noxcrew.noxesium.feature.CustomCoreShaders;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendStateHook;
-import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
+import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
 import java.io.Closeable;
 import java.util.List;
 import java.util.Objects;

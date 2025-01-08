@@ -3,8 +3,8 @@ package com.noxcrew.noxesium.feature.ui.render.screen;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
-import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
+import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
 import java.util.ArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 /**
  * Stores the render state for the on-screen UI element.
  */
-public class NoxesiumScreenRenderState implements NoxesiumRenderState {
+public class NoxesiumScreenRenderState extends NoxesiumRenderState {
 
     private Screen lastScreen;
     private final DynamicElement dynamic = new DynamicElement();
@@ -47,6 +47,7 @@ public class NoxesiumScreenRenderState implements NoxesiumRenderState {
         var ids = new ArrayList<BufferData>();
         dynamic.submitTextureIds(ids);
         SharedVertexBuffer.draw(ids);
+        renders.increment();
         return true;
     }
 
@@ -57,7 +58,7 @@ public class NoxesiumScreenRenderState implements NoxesiumRenderState {
 
     @Override
     public void updateRenderFramerate() {
-        dynamic.updateRenderFramerate();
+        dynamic.resetToMax();
     }
 
     @Override

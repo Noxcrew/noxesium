@@ -1,6 +1,9 @@
 package com.noxcrew.noxesium.feature.ui.render;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
+import com.noxcrew.noxesium.feature.ui.render.buffer.ElementBuffer;
+import com.noxcrew.noxesium.feature.ui.render.buffer.SnapshotableElementBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,40 +13,33 @@ import net.minecraft.client.gui.GuiGraphics;
  */
 public class DynamicElement extends Element {
 
-    private final List<SnapshotElementBuffer> buffers = new ArrayList<>();
+    private final List<SnapshotableElementBuffer> buffers = new ArrayList<>();
+    private final PerSecondRepeatingTask nextRender =
+            new PerSecondRepeatingTask(NoxesiumMod.getInstance().getConfig().maxUiFramerate);
 
     private boolean canCheck = true;
-
-    private long nextRender = -1;
-    private long nextCheck = System.nanoTime() + 1000000000;
-    private int lastFps = 0;
-
     private boolean movementDirection = false;
+    private boolean hasBufferLayoutChanged = false;
     private long lastChange = System.currentTimeMillis();
     private int matches = 0;
 
     /**
-     * The current fps at which we re-render the UI elements.
+     * Returns the repeating task used for rendering.
      */
-    private double renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+    public PerSecondRepeatingTask getRenderTask() {
+        return nextRender;
+    }
 
     /**
      * Resets the display fps back to the maximum.
      */
-    private void resetToMax() {
-        if (!movementDirection) return;
+    public void resetToMax() {
+        nextRender.changeFrequency(NoxesiumMod.getInstance().getConfig().maxUiFramerate);
 
-        renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
+        if (!movementDirection) return;
         movementDirection = false;
         matches = 0;
         lastChange = System.currentTimeMillis();
-    }
-
-    /**
-     * The current frame rate of this group.
-     */
-    public int renderFramerate() {
-        return (int) Math.floor(renderFps);
     }
 
     /**
@@ -61,15 +57,6 @@ public class DynamicElement extends Element {
     }
 
     /**
-     * Returns the true frame rate, the amount
-     * of times this element was rendered the last
-     * second.
-     */
-    public int framerate() {
-        return lastFps;
-    }
-
-    /**
      * Returns whether this element is ready to be considered
      * for group merging/joining.
      */
@@ -77,7 +64,7 @@ public class DynamicElement extends Element {
         if (needsRedraw()) return false;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                if (buffer instanceof SnapshotElementBuffer pboBuffer && !pboBuffer.hasValidPBO()) {
+                if (!buffer.hasValidPBO()) {
                     return false;
                 }
             }
@@ -90,15 +77,6 @@ public class DynamicElement extends Element {
      */
     public void requestCheck() {
         canCheck = true;
-    }
-
-    /**
-     * Triggers an update of the render framerate.
-     */
-    public void updateRenderFramerate() {
-        // Just set the render fps back to the max framerate
-        // whenever the maximum framerate has changed.
-        renderFps = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
     }
 
     /**
@@ -125,10 +103,11 @@ public class DynamicElement extends Element {
     public void tick() {
         // Determine if all buffers are the same,
         // return the entire method if any buffer is not ready.
-        var verdict = !hasChangedLayers;
+        var verdict = !hasBufferLayoutChanged;
+        hasBufferLayoutChanged = false;
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                if (buffer instanceof SnapshotElementBuffer pboBuffer) {
+                if (buffer instanceof SnapshotableElementBuffer pboBuffer) {
                     // Process the snapshots
                     var snapshots = pboBuffer.snapshots();
                     if (snapshots == null) return;
@@ -149,12 +128,12 @@ public class DynamicElement extends Element {
 
         if (movementDirection) {
             var max = NoxesiumMod.getInstance().getConfig().maxUiFramerate;
-            renderFps = Math.clamp(
+            nextRender.changeFrequency(Math.clamp(
                     Math.max(
                             max * (1.0 - ((double) (System.currentTimeMillis() - lastChange) / 10000d)),
                             max * ((double) (60 - matches) / 10d)),
                     0,
-                    max);
+                    max));
 
             // If matches falls too far
             if (matches <= 40) {
@@ -172,18 +151,18 @@ public class DynamicElement extends Element {
         // Request new PBOs from all buffers
         if (isNotEmpty()) {
             for (var buffer : buffers) {
-                if (buffer instanceof SnapshotElementBuffer pboBuffer) {
-                    pboBuffer.requestNewPBO();
-                }
+                buffer.requestNewPBO();
             }
         }
     }
 
-    /** Tries to make a snapshot of the current buffer. */
+    /**
+     * Tries to make a snapshot of the current buffer.
+     */
     private void trySnapshot() {
         if (elementsWereDrawn && canCheck) {
             var target = getTargetBuffer();
-            if (target instanceof SnapshotElementBuffer pboBuffer && pboBuffer.canSnapshot()) {
+            if (target instanceof SnapshotableElementBuffer pboBuffer) {
                 pboBuffer.snapshot();
             }
         }
@@ -191,27 +170,13 @@ public class DynamicElement extends Element {
 
     @Override
     public boolean update(long nanoTime, GuiGraphics guiGraphics, Runnable draw) {
-        // Always start by awaiting the GPU fence
+        // Always start by awaiting the GPU fence and updating if the PBO is ready
+        // for the next tick!
         for (var buffer : buffers) {
-            if (buffer instanceof SnapshotElementBuffer pboBuffer) {
-                pboBuffer.awaitFence();
-            }
+            buffer.awaitFence();
         }
 
-        // Initialize the value if it's missing
-        if (nextRender == -1) {
-            nextRender = nanoTime;
-        }
-
-        // Skip the update until we reach the next render time
-        if (!needsRedraw && !canCheck && (renderFps <= 20 || nextRender > nanoTime)) return false;
-        needsRedraw = false;
-
-        // Set the next render time
-        nextRender = nanoTime + (long) Math.floor(((1 / renderFps) * 1000000000));
-
-        var result = super.update(nanoTime, guiGraphics, draw);
-        if (result) {
+        if (super.update(nanoTime, guiGraphics, draw)) {
             // Unset check once we're done with this frame, but
             // snapshot first!
             if (canCheck) {
@@ -221,6 +186,13 @@ public class DynamicElement extends Element {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean shouldRedraw(long nanoTime) {
+        // If we can check we still increase the next render frame,
+        // but we ignore its result!
+        return nextRender.canInvoke(nanoTime) || canCheck;
     }
 
     @Override
@@ -237,7 +209,14 @@ public class DynamicElement extends Element {
     }
 
     @Override
+    protected void onBufferRemoved(ElementBuffer buffer) {
+        super.onBufferRemoved(buffer);
+        hasBufferLayoutChanged = true;
+    }
+
+    @Override
     public ElementBuffer createBuffer() {
-        return new SnapshotElementBuffer();
+        hasBufferLayoutChanged = true;
+        return new SnapshotableElementBuffer();
     }
 }

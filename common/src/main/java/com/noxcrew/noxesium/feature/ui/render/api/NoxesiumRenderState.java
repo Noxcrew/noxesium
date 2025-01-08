@@ -5,20 +5,25 @@ import java.io.Closeable;
 /**
  * The basis for a render state object.
  */
-public interface NoxesiumRenderState extends Closeable {
+public abstract class NoxesiumRenderState implements Closeable {
+
+    /**
+     * The amount of screen renders that occurred in the last second.
+     */
+    public final PerSecondTrackedValue renders = new PerSecondTrackedValue();
 
     /**
      * Ticks this render state.
      */
-    void tick();
+    public abstract void tick();
 
     /**
      * Indicates that a check should run the very next frame.
      */
-    void requestCheck();
+    public abstract void requestCheck();
 
     /**
      * Triggers an update of the render framerate.
      */
-    void updateRenderFramerate();
+    public abstract void updateRenderFramerate();
 }

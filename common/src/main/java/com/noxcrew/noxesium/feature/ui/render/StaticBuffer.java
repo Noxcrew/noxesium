@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.feature.ui.render;
 
+import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
+import com.noxcrew.noxesium.feature.ui.render.buffer.ElementBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +13,8 @@ import java.util.List;
 public class StaticBuffer extends Element {
 
     private final List<ElementBuffer> buffers = new ArrayList<>();
+    private final PerSecondRepeatingTask nextRender =
+            new PerSecondRepeatingTask(NoxesiumMod.getInstance().getConfig().maxUiFramerate);
 
     @Override
     public List<ElementBuffer> getBuffers() {
@@ -23,6 +28,6 @@ public class StaticBuffer extends Element {
 
     @Override
     public boolean shouldRedraw(long nanoTime) {
-        return true;
+        return nextRender.canInvoke(nanoTime);
     }
 }

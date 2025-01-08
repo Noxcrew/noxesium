@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.feature.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
+import com.noxcrew.noxesium.feature.ui.render.Element;
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import net.minecraft.client.gui.GuiGraphics;
 import org.lwjgl.opengl.GL14;
@@ -27,7 +27,7 @@ public class BufferHelper {
         GL14.glBlendColor(1f, 1f, 1f, 1f);
 
         // Pre-enable the blending state
-        DynamicElement.DEFAULT_BLEND_STATE.apply();
+        Element.DEFAULT_BLEND_STATE.apply();
     }
 
     /**

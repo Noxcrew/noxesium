@@ -3,8 +3,8 @@ package com.noxcrew.noxesium.feature.ui.render;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayeredDraw;
-import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
+import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,9 +15,9 @@ import net.minecraft.client.gui.GuiGraphics;
 /**
  * Stores the entire render state of the current UI.
  */
-public class NoxesiumUiRenderState implements NoxesiumRenderState {
+public class NoxesiumUiRenderState extends NoxesiumRenderState {
 
-    private final List<ElementBufferGroup> groups = new CopyOnWriteArrayList<>();
+    private final List<LayerGroup> groups = new CopyOnWriteArrayList<>();
     private final Random random = new Random();
     private long nextUpdate = -1;
     private int lastSize = 0;
@@ -25,7 +25,7 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
     /**
      * Returns all groups in this render state.
      */
-    public List<ElementBufferGroup> groups() {
+    public List<LayerGroup> groups() {
         return groups;
     }
 
@@ -84,6 +84,7 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
             group.dynamic().submitTextureIds(ids);
         }
         SharedVertexBuffer.draw(ids);
+        renders.increment();
         return true;
     }
 
@@ -104,12 +105,12 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
             if (dynamic) {
                 var chunked = chunked(flattened, flattened.size() / 4);
                 for (var chunk : chunked) {
-                    var group = new ElementBufferGroup();
+                    var group = new LayerGroup();
                     group.addLayers(chunk);
                     groups.add(group);
                 }
             } else {
-                var group = new ElementBufferGroup();
+                var group = new LayerGroup();
                 group.addLayers(flattened);
                 groups.add(group);
             }
@@ -167,14 +168,14 @@ public class NoxesiumUiRenderState implements NoxesiumRenderState {
     @Override
     public void requestCheck() {
         for (var group : groups) {
-            group.requestCheck();
+            group.dynamic().requestCheck();
         }
     }
 
     @Override
     public void updateRenderFramerate() {
         for (var group : groups) {
-            group.updateRenderFramerate();
+            group.dynamic().resetToMax();
         }
     }
 

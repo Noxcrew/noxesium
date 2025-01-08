@@ -6,7 +6,9 @@ import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.ui.CustomMapUiWidget;
 import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
+import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
 import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
+import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.screen.NoxesiumScreenRenderState;
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -91,26 +93,15 @@ public abstract class GuiMixin {
                 switch (stateIn) {
                     case NoxesiumUiRenderState state -> {
                         for (var group : state.groups()) {
-                            var dynamic = group.dynamic();
-                            var name = group.layerNames();
-                            if (name.length() >= 100) {
-                                name = name.substring(0, 100);
-                            }
-                            text.add(Component.literal("§b" + name
-                                    + (group.dynamic().buffers() > 1
-                                            ? " §3(+" + (group.dynamic().buffers() - 1) + ")"
-                                            : "")
-                                    + (group.dynamic().isEmpty() ? " §9(empty)" : "") + ": §f" + dynamic.framerate()
-                                    + " - " + dynamic.matchRate()));
+                            var name = "§b" + group.layerNames();
+                            noxesium$addLine(text, name, state, group.dynamic());
                         }
                     }
                     case NoxesiumScreenRenderState state -> {
                         // Only show this if we are currently running the screen optimizations
                         if (Minecraft.getInstance().screen instanceof MenuAccess<?>
                                 || Minecraft.getInstance().screen instanceof ChatScreen) {
-                            var dynamic = state.dynamic();
-                            text.add(Component.literal(
-                                    "§eScreen: §f" + dynamic.framerate() + " - " + dynamic.matchRate()));
+                            noxesium$addLine(text, "§eScreen", state, state.dynamic());
                         }
                     }
                     case null -> {}
@@ -126,6 +117,26 @@ public abstract class GuiMixin {
             graphics.fill(3, offset - 2, 6 + font.width(line), offset + 1 + font.lineHeight, -1873784752);
             graphics.drawString(font, line, 5, offset, 0xE0E0E0, false);
         }
+    }
+
+    /**
+     * Adds a line to the list of debugged elements.
+     */
+    @Unique
+    private void noxesium$addLine(
+            ArrayList<Component> text, String name, NoxesiumRenderState state, DynamicElement dynamic) {
+        if (name.length() >= 100) {
+            name = name.substring(0, 100);
+        }
+        text.add(Component.literal(String.format(
+                "%s: §f%d renders, %d updates, %d draws, %s% matches",
+                name
+                        + (dynamic.buffers() > 1 ? " §3(+" + (dynamic.buffers() - 1) + ")" : "")
+                        + (dynamic.isEmpty() ? " §9(empty)" : ""),
+                state.renders.get(),
+                dynamic.updates.get(),
+                dynamic.draws.get(),
+                dynamic.matchRate())));
     }
 
     /**

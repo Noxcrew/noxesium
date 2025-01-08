@@ -3,11 +3,13 @@ package com.noxcrew.noxesium.feature.ui.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendStateHook;
-import com.noxcrew.noxesium.feature.ui.render.api.BufferData;
+import com.noxcrew.noxesium.feature.ui.render.api.PerSecondTrackedValue;
+import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
+import com.noxcrew.noxesium.feature.ui.render.buffer.ElementBuffer;
 import java.io.Closeable;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.client.gui.GuiGraphics;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL14;
 
 /**
@@ -28,8 +30,15 @@ public abstract class Element implements Closeable, BlendStateHook {
     private boolean lastBlending = true;
     private int boundBufferIndex = -1;
 
-    private final PerSecondTrackedValue updates = new PerSecondTrackedValue();
-    private final PerSecondTrackedValue draws = new PerSecondTrackedValue();
+    /**
+     * The amount of updates that occurred in the last second.
+     */
+    public final PerSecondTrackedValue updates = new PerSecondTrackedValue();
+
+    /**
+     * The amount of draws that occurred in the last second.
+     */
+    public final PerSecondTrackedValue draws = new PerSecondTrackedValue();
 
     /**
      * Returns all buffers in this element.
@@ -118,7 +127,7 @@ public abstract class Element implements Closeable, BlendStateHook {
      */
     public boolean update(long nanoTime, GuiGraphics guiGraphics, Runnable draw) {
         this.updates.increment();
-        if (!shouldRedraw(nanoTime)) return false;
+        if (!needsRedraw && !shouldRedraw(nanoTime)) return false;
 
         // Bind the first buffer, abort is something goes wrong
         this.guiGraphics = guiGraphics;
@@ -149,7 +158,8 @@ public abstract class Element implements Closeable, BlendStateHook {
 
         var buffers = getBuffers();
         for (var index = Math.max(1, this.boundBufferIndex + 1); index < buffers.size(); index++) {
-            buffers.remove(index).close();
+            var oldBuffer = buffers.remove(index);
+            onBufferRemoved(oldBuffer);
         }
         return true;
     }
@@ -205,6 +215,13 @@ public abstract class Element implements Closeable, BlendStateHook {
         var newBuffer = createBuffer();
         buffers.add(newBuffer);
         return newBuffer;
+    }
+
+    /**
+     * Called when [buffer] is removed from the buffer list.
+     */
+    protected void onBufferRemoved(ElementBuffer buffer) {
+        buffer.close();
     }
 
     /**

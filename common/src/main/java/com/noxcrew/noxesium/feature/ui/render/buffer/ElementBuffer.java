@@ -1,10 +1,11 @@
-package com.noxcrew.noxesium.feature.ui.render;
+package com.noxcrew.noxesium.feature.ui.render.buffer;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.feature.ui.BufferHelper;
+import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
 import com.noxcrew.noxesium.feature.ui.render.api.BlendState;
 import java.io.Closeable;
 import java.util.concurrent.atomic.AtomicBoolean;

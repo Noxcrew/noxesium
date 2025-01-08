@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.feature.ui.render;
+package com.noxcrew.noxesium.feature.ui.render.buffer;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.buffers.BufferType;
@@ -17,27 +17,19 @@ import org.lwjgl.opengl.GL44;
  * An element buffer that also has an attached PBO
  * and bound buffer so it can be snapshot.
  */
-public class SnapshotElementBuffer extends ElementBuffer {
+public class SnapshotableElementBuffer extends ElementBuffer {
 
     private int currentIndex = 0;
     private int validPbos = 0;
-    private boolean pboReady;
     private GpuBuffer[] pbos;
     private ByteBuffer[] buffers;
     private GpuFence fence;
 
     /**
-     * Returns whether the buffer is ready for a snapshot.
-     */
-    public boolean canSnapshot() {
-        return !pboReady && fence == null && validPbos < 2;
-    }
-
-    /**
      * Returns the snapshots that were taken.
      */
     public ByteBuffer[] snapshots() {
-        return pboReady ? buffers : null;
+        return validPbos >= 2 ? buffers : null;
     }
 
     /**
@@ -51,7 +43,6 @@ public class SnapshotElementBuffer extends ElementBuffer {
      * Marks down that a new PBO should be updated.
      */
     public void requestNewPBO() {
-        pboReady = false;
         validPbos--;
     }
 
@@ -67,7 +58,6 @@ public class SnapshotElementBuffer extends ElementBuffer {
             // compared.
             validPbos++;
             fence = null;
-            pboReady = true;
         }
     }
 
@@ -75,19 +65,17 @@ public class SnapshotElementBuffer extends ElementBuffer {
      * Snapshots the current buffer contents to a PBO.
      */
     public void snapshot() {
-        if (fence != null || pbos == null || buffers == null) return;
-
-        // Flip which buffer we are drawing into
-        if (currentIndex == 1) currentIndex = 0;
-        else currentIndex = 1;
+        if (fence != null || validPbos >= 2 || pbos == null || buffers == null) return;
 
         // Bind the PBO to tell the GPU to read the frame buffer's
         // texture into it directly
         pbos[currentIndex].bind();
 
         // TODO This causes micro-stutters!
+        var start = System.nanoTime();
         var window = Minecraft.getInstance().getWindow();
         GL11.glReadPixels(0, 0, window.getWidth(), window.getHeight(), GL30.GL_BGRA, GL11.GL_UNSIGNED_BYTE, 0);
+        System.out.println("glReadPixels took " + (System.nanoTime() - start) + " ns");
 
         // GetTexImage produces weird results sometimes, it doesn't seem to catch
         // the crosshair changing and thinks the scoreboard changes every tick.
@@ -101,6 +89,10 @@ public class SnapshotElementBuffer extends ElementBuffer {
 
         // Unbind the PBO so it doesn't get modified afterwards
         GlStateManager._glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
+
+        // Flip which buffer we will use next
+        if (currentIndex == 1) currentIndex = 0;
+        else currentIndex = 1;
 
         // Start waiting for the GPU to return the data
         fence = new GpuFence();

@@ -13,9 +13,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 
 /**
- * Holds a group of layers and the buffer they are rendering into.
+ * Holds a group of layers and the dynamic buffer they are rendering into.
  */
-public class ElementBufferGroup implements Closeable {
+public class LayerGroup implements Closeable {
 
     private final DynamicElement dynamic = new DynamicElement();
     private final List<LayerWithReference> layers = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ElementBufferGroup implements Closeable {
     /**
      * Returns whether this group can merge with another.
      */
-    public boolean canMerge(ElementBufferGroup other) {
+    public boolean canMerge(LayerGroup other) {
         // If either needs a redraw we don't edit them as
         // things might be inaccurate!
         if (!dynamic.isReady() || !other.dynamic.isReady()) return false;
@@ -72,7 +72,9 @@ public class ElementBufferGroup implements Closeable {
         if (!dynamic.isMergeable() || !other.dynamic.isMergeable()) return false;
 
         // Don't allow merging when render fps is too different
-        return Math.abs(dynamic.renderFramerate() - other.dynamic.renderFramerate()) < 10;
+        return Math.abs(dynamic.getRenderTask().getFramerate()
+                        - other.dynamic.getRenderTask().getFramerate())
+                < 10;
     }
 
     /**
@@ -86,13 +88,13 @@ public class ElementBufferGroup implements Closeable {
      * Splits up this group into multiple, returns the
      * new group and edits this group.
      */
-    public ElementBufferGroup split() {
+    public LayerGroup split() {
         var total = size();
         if (total < 2) throw new IllegalArgumentException("Cannot split up an un-splittable group");
         var half = (int) Math.ceil(((double) total) / 2.0);
         var toSplit = new ArrayList<>(layers.subList(half, total));
         removeLayers(toSplit);
-        var newGroup = new ElementBufferGroup();
+        var newGroup = new LayerGroup();
         newGroup.addLayers(toSplit);
         return newGroup;
     }
@@ -100,7 +102,7 @@ public class ElementBufferGroup implements Closeable {
     /**
      * Merges another buffer group into this one.
      */
-    public void join(ElementBufferGroup other) {
+    public void join(LayerGroup other) {
         addLayers(other.layers);
     }
 
@@ -124,20 +126,6 @@ public class ElementBufferGroup implements Closeable {
                 .map(LayerWithReference::layer)
                 .map(NoxesiumLayer.Layer::name)
                 .collect(Collectors.joining("/"));
-    }
-
-    /**
-     * Indicates that a check should run the very next frame.
-     */
-    public void requestCheck() {
-        dynamic.requestCheck();
-    }
-
-    /**
-     * Triggers an update of the render framerate.
-     */
-    public void updateRenderFramerate() {
-        dynamic.updateRenderFramerate();
     }
 
     @Override
