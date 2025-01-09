@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.render.api;
 
 import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
-
 import java.io.Closeable;
 import java.util.List;
 
@@ -19,15 +18,6 @@ public abstract class NoxesiumRenderState implements Closeable {
      * Returns all dynamic elements in this state.
      */
     public abstract List<DynamicElement> getDynamics();
-
-    /**
-     * Attempts to take a snapshot if required.
-     */
-    public void trySnapshot() {
-        for (var dynamic : getDynamics()) {
-            dynamic.trySnapshot();
-        }
-    }
 
     /**
      * Ticks this render state.

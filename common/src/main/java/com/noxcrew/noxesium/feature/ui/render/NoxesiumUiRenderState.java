@@ -6,13 +6,12 @@ import com.noxcrew.noxesium.feature.ui.layer.NoxesiumLayeredDraw;
 import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
 import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
 import com.noxcrew.noxesium.feature.ui.render.buffer.BufferData;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Stores the entire render state of the current UI.

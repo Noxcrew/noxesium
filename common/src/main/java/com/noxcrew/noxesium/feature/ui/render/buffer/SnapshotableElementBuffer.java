@@ -1,20 +1,19 @@
 package com.noxcrew.noxesium.feature.ui.render.buffer;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.buffers.BufferType;
 import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuFence;
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.nio.ByteBuffer;
+
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL40;
+import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL44;
-
-import java.nio.ByteBuffer;
 
 /**
  * An element buffer that also has an attached PBO
@@ -76,27 +75,18 @@ public class SnapshotableElementBuffer extends ElementBuffer {
      * Snapshots the current buffer contents to a PBO.
      */
     public void snapshot() {
-        // Bind the frame buffer so we can snapshot from it
-        var start = System.nanoTime();
-        // GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, target.frameBufferId);
+        // Bind the frame buffer for reading (might already be bound but we check again)
+        SharedVertexBuffer.allowRebindingTarget = true;
+        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, target.frameBufferId);
+        SharedVertexBuffer.allowRebindingTarget = false;
 
-        // Bind the PBO to tell the GPU to read the frame buffer's
-        // texture into it directly
+        // Bind the PBO we currently want to use
         pbos[currentIndex].bind();
 
-        System.out.println("bind took " + (System.nanoTime() - start) + " ns");
-        start = System.nanoTime();
-
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, target.getColorTextureId());
-        GL11.glGetTexImage(
-                GL11.GL_TEXTURE_2D,
-                0,
-                GL30.GL_RGBA,
-                GL11.GL_UNSIGNED_BYTE,
-                0
-        );
-        // GL11.glReadPixels(0, 0, lastWidth, lastHeight, GL30.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 0);
-        System.out.println("read took " + (System.nanoTime() - start) + " ns");
+        // Read the contents of the frame buffer into the PBO
+        // TODO This call seems to be taking up to 0.3ms instead of being instant. It's unclear
+        // what exactly is causing that time and it's very hard to find any information.
+        GL11.glReadPixels(0, 0, lastWidth, lastHeight, GL30.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 0);
 
         // Unbind the PBO so it doesn't get modified afterwards
         GlStateManager._glBindBuffer(GL21.GL_PIXEL_PACK_BUFFER, 0);
@@ -117,9 +107,9 @@ public class SnapshotableElementBuffer extends ElementBuffer {
         if (pbos == null) {
             pbos = new GpuBuffer[2];
         }
-        /*if (buffers == null) {
+        if (buffers == null) {
             buffers = new ByteBuffer[2];
-        }*/
+        }
         for (var i = 0; i < 2; i++) {
             if (pbos[i] == null) {
                 pbos[i] = new GpuBuffer(BufferType.PIXEL_PACK, BufferUsage.STREAM_READ, 0);
@@ -128,7 +118,7 @@ public class SnapshotableElementBuffer extends ElementBuffer {
             lastWidth = width;
             lastHeight = height;
 
-            /*if (buffers[i] == null) {
+            if (buffers[i] == null) {
                 // Configure the buffer to have a persistent size so we can keep it bound permanently
                 var flags = GL30C.GL_MAP_READ_BIT | GL44.GL_MAP_PERSISTENT_BIT | GL44.GL_MAP_COHERENT_BIT;
                 GL44.glBufferStorage(GL30.GL_PIXEL_PACK_BUFFER, pbos[i].size, flags);
@@ -136,10 +126,10 @@ public class SnapshotableElementBuffer extends ElementBuffer {
                 // Create a persistent buffer to the PBOs contents
                 buffers[i] = Preconditions.checkNotNull(
                         GL30.glMapBufferRange(GL30.GL_PIXEL_PACK_BUFFER, 0, pbos[i].size, flags));
-            }*/
+            }
         }
 
-        // Unbind the PBOs
+        // Unbind the PBO as they are bound while resizing
         GlStateManager._glBindBuffer(GL30.GL_PIXEL_PACK_BUFFER, 0);
     }
 

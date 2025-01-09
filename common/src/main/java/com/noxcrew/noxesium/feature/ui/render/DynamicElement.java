@@ -1,8 +1,6 @@
 package com.noxcrew.noxesium.feature.ui.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.ui.BufferHelper;
 import com.noxcrew.noxesium.feature.ui.render.api.PerSecondRepeatingTask;
 import com.noxcrew.noxesium.feature.ui.render.buffer.ElementBuffer;
 import com.noxcrew.noxesium.feature.ui.render.buffer.SnapshotableElementBuffer;
@@ -173,7 +171,7 @@ public class DynamicElement extends Element {
         for (var buffer : buffers) {
             buffer.snapshot();
         }
-        // SharedVertexBuffer.rebindMainRenderTarget();
+        SharedVertexBuffer.rebindMainRenderTarget();
     }
 
     @Override
@@ -188,6 +186,7 @@ public class DynamicElement extends Element {
         if (result) {
             hasRedrawnRecently = true;
         }
+        trySnapshot();
         return result;
     }
 
@@ -199,6 +198,14 @@ public class DynamicElement extends Element {
     @Override
     public List<ElementBuffer> getBuffers() {
         return (List<ElementBuffer>) (List<?>) buffers;
+    }
+
+    @Override
+    protected void onBufferUntargeted(ElementBuffer buffer) {
+        super.onBufferUntargeted(buffer);
+
+        // Before targeting a new buffer we attempt to snapshot the previous one!
+        trySnapshot();
     }
 
     @Override

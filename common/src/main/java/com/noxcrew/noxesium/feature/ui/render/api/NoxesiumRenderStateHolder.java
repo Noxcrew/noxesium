@@ -30,19 +30,6 @@ public interface NoxesiumRenderStateHolder<T extends NoxesiumRenderState> {
     }
 
     /**
-     * Triggers a snapshot attempt.
-     */
-    default void trySnapshot() {
-        // Ignore if not on dynamic mode.
-        // if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) return;
-
-        var state = get();
-        if (state != null) {
-            state.trySnapshot();
-        }
-    }
-
-    /**
      * Indicates that a check should run the very next frame.
      */
     default void requestCheck() {
@@ -50,7 +37,7 @@ public interface NoxesiumRenderStateHolder<T extends NoxesiumRenderState> {
         // However, if we are using dynamic UI limiting we want to make
         // sure we always draw on frames after a client tick happened as
         // it has the newest frame data.
-        // if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) return;
+        if (!NoxesiumMod.getInstance().getConfig().shouldUseDynamicUiLimiting()) return;
 
         var state = get();
         if (state != null) {
