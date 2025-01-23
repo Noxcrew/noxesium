@@ -100,6 +100,13 @@ public sealed interface QibEffect {
     }
 
     /**
+     * Removes all client-authoritative potion effects.
+     * This only affects effects added by a [GivePotionEffect] effect.
+     */
+    public record RemoveAllPotionEffects() implements QibEffect {
+    }
+
+    /**
      * Forces the player to make an instant relative movement.
      */
     public record Move(
@@ -143,6 +150,22 @@ public sealed interface QibEffect {
         boolean pitchRelative,
         double strength,
         double limit
+    ) implements QibEffect {
+    }
+
+    /**
+     * Modifies each value of the player's velocity using provided value
+     * and expression.
+     * <p>
+     * Allows multiplying, adding, subtracting, dividing, and setting
+     */
+    public record ModifyVelocity(
+            double x,
+            QibOperation xOp,
+            double y,
+            QibOperation yOp,
+            double z,
+            QibOperation zOp
     ) implements QibEffect {
     }
 }
