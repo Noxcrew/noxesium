@@ -157,7 +157,7 @@ public sealed interface QibEffect {
      * Modifies each value of the player's velocity using provided value
      * and expression.
      * <p>
-     * Allows multiplying, adding, subtracting, dividing, and setting
+     * Allows multiplying, adding, subtracting, dividing, setting and clamping
      */
     public record ModifyVelocity(
             double x,
