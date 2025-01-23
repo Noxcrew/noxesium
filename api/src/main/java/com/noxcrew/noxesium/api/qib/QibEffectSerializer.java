@@ -27,10 +27,12 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
             case "PlaySound" -> context.deserialize(data, QibEffect.PlaySound.class);
             case "GivePotionEffect" -> context.deserialize(data, QibEffect.GivePotionEffect.class);
             case "RemovePotionEffect" -> context.deserialize(data, QibEffect.RemovePotionEffect.class);
+            case "RemoveAllPotionEffects" -> context.deserialize(data, QibEffect.RemoveAllPotionEffects.class);
             case "Move" -> context.deserialize(data, QibEffect.Move.class);
             case "AddVelocity" -> context.deserialize(data, QibEffect.AddVelocity.class);
             case "SetVelocity" -> context.deserialize(data, QibEffect.SetVelocity.class);
             case "SetVelocityYawPitch" -> context.deserialize(data, QibEffect.SetVelocityYawPitch.class);
+            case "ModifyVelocity" -> context.deserialize(data, QibEffect.ModifyVelocity.class);
             default -> throw new JsonParseException("Invalid input type " + object.getAsJsonPrimitive("type").getAsString());
         };
     }

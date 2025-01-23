@@ -285,6 +285,9 @@ public class QibBehaviorModule implements NoxesiumModule {
             case QibEffect.RemovePotionEffect removeEffect -> {
                 player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT.get(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path())).orElse(null));
             }
+            case QibEffect.RemoveAllPotionEffects ignored -> {
+                player.noxesium$clearClientsidePotionEffects();
+            }
             case QibEffect.Move move -> {
                 player.move(MoverType.SELF, new Vec3(move.x(), move.y(), move.z()));
             }
@@ -305,6 +308,14 @@ public class QibBehaviorModule implements NoxesiumModule {
                     Math.clamp(x * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
                     Math.clamp(y * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit()),
                     Math.clamp(z * setVelocityYawPitch.strength(), -setVelocityYawPitch.limit(), setVelocityYawPitch.limit())
+                );
+            }
+            case QibEffect.ModifyVelocity modifyVelocity -> {
+                var current = player.getDeltaMovement();
+                player.setDeltaMovement(
+                        modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
+                        modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
+                        modifyVelocity.zOp().apply(current.z, modifyVelocity.z())
                 );
             }
             default -> throw new IllegalStateException("Unexpected value: " + effect);

@@ -86,6 +86,11 @@ public enum NoxesiumFeature {
      * Fixes serialization of item stacks in rules.
      */
     FIXED_ITEM_STACK_SERIALIZATION(11),
+
+    /**
+     * Added support for ModifyVelocity and RemoveAllPotionEffects QibEffects.
+     */
+    NEW_QIB_EFFECTS(13),
     ;
 
     private final int minProtocolVersion;
