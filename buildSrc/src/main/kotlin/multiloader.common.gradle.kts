@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._38abe6feebbbb2ba8fa777a7b88e8035.jar
-import gradle.kotlin.dsl.accessors._38abe6feebbbb2ba8fa777a7b88e8035.java
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.kotlin.dsl.withType
 
