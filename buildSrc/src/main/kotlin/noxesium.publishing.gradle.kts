@@ -22,7 +22,7 @@ publishing {
             from(components["java"])
             pom {
                 name = "Noxesium"
-                description = "A client-side fabric mod that improves performance and play experience on large multiplayer servers."
+                description = "A client-side fabric mod that improves the play experience on large multiplayer servers."
                 url = "https://github.com/Noxcrew/noxesium"
                 scm {
                     url = "https://github.com/Noxcrew/noxesium"

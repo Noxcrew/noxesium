@@ -1,8 +1,9 @@
-package com.noxcrew.noxesium.feature.ui;
+package com.noxcrew.noxesium.feature;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,6 +34,15 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
+
+        // Check that this layer is enabled
+        if (NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi() && !ServerRules.DISABLE_MAP_UI.getValue())
+            return;
+
+        // Check that the main GUI is not hidden
+        if (minecraft.options.hideGui) return;
+
+        // Check that the player exists
         if (minecraft.player == null) return;
 
         var font = minecraft.font;

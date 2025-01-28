@@ -5,7 +5,6 @@ import com.mojang.blaze3d.shaders.CompiledShader;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
-import com.noxcrew.noxesium.feature.CustomCoreShaders;
 import com.noxcrew.noxesium.feature.CustomRenderTypes;
 import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
@@ -17,10 +16,6 @@ import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
-import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
-import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
-import com.noxcrew.noxesium.feature.ui.render.screen.ScreenRenderingHolder;
-import com.noxcrew.noxesium.mixin.ui.ext.GuiExt;
 import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
@@ -31,7 +26,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -111,23 +105,15 @@ public class NoxesiumMod {
         // Trigger registration of all server and entity rules and shaders
         Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
         ignored = ExtraEntityData.DISABLE_BUBBLES;
-        ignored = CustomCoreShaders.BLIT_SCREEN_MULTIPLE;
         ignored = CustomRenderTypes.linesNoDepth();
 
-        // Run rebuilds on a separate thread to not destroy fps unnecessarily, also run
-        // frame comparisons on this thread if they are enabled.
+        // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {
             @Override
             public void run() {
                 while (true) {
                     try {
                         SpatialInteractionEntityTree.rebuild();
-                        forEachRenderStateHolder((it) -> {
-                            var state = it.get();
-                            if (state != null) {
-                                state.tick();
-                            }
-                        });
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
@@ -274,20 +260,6 @@ public class NoxesiumMod {
                         options.touchscreen().get(),
                         options.notificationDisplayTime().get()))
                 .send();
-    }
-
-    /**
-     * Runs [consumer] for each render state holder.
-     */
-    public static void forEachRenderStateHolder(Consumer<NoxesiumRenderStateHolder<?>> consumer) {
-        var gui = ((GuiExt) Minecraft.getInstance().gui);
-        if (gui != null) {
-            var layeredDraw = ((LayeredDrawExtension) gui.getLayers()).noxesium$get();
-            if (layeredDraw != null) {
-                consumer.accept(layeredDraw);
-            }
-        }
-        consumer.accept(ScreenRenderingHolder.getInstance());
     }
 
     /**

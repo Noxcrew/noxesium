@@ -3,7 +3,6 @@ package com.noxcrew.noxesium;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.config.NoxesiumSettingsScreen;
 import com.noxcrew.noxesium.feature.CustomServerCreativeItems;
-import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -13,7 +12,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -58,14 +56,6 @@ public class NoxesiumForgeMod {
     @SubscribeEvent
     public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
         NoxesiumMod.getInstance().uninitialize();
-    }
-
-    /**
-     * Hook into client ticking for the UI optimizations.
-     */
-    @SubscribeEvent
-    public void onTickStart(ClientTickEvent.Pre event) {
-        NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::requestCheck);
     }
 
     /**

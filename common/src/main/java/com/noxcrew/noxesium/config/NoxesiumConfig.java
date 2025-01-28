@@ -17,9 +17,6 @@ public class NoxesiumConfig {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    /** Tests whether at least OpenGL 4.4 is present. */
-    public static boolean supportsDynamicUiLimiting = false;
-
     public boolean resetToggleKeys = false;
     public BooleanOrDefault renderMapsInUi = BooleanOrDefault.DEFAULT;
     public boolean showFpsOverlay = false;
@@ -31,17 +28,6 @@ public class NoxesiumConfig {
     public boolean printPacketExceptions = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
-    public boolean enableUiLimiting = false;
-    public boolean enableDynamicUiLimiting = false;
-    public boolean showUiDebugOverlay = false;
-    public int maxUiFramerate = 60;
-
-    /**
-     * Whether dynamic UI limiting should be used.
-     */
-    public boolean shouldUseDynamicUiLimiting() {
-        return supportsDynamicUiLimiting && enableDynamicUiLimiting;
-    }
 
     /**
      * Returns whether to render maps in the UI.

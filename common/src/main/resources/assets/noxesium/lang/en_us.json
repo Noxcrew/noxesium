@@ -30,16 +30,6 @@
   "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
   "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
 
-  "noxesium.options.ui_limiting.name": "Limit UI Framerate",
-  "noxesium.options.ui_limiting.tooltip": "§fRenders the UI at the set Max UI Framerate instead of every frame. This can improve fps at high values.",
-  "noxesium.options.max_ui_framerate.name": "Max UI Framerate",
-  "noxesium.options.max_ui_framerate.tooltip": "Sets the highest framerate at which UI elements are rendered. Only used if `Limit UI Framerate` is ON.",
-  "noxesium.options.dynamic_ui_limiting.name": "Dynamic UI Optimization",
-  "noxesium.options.dynamic_ui_limiting.tooltip": "§fEnables additional optimizations that dynamically adjust the framerate at which UI elements are rendered, capped at the Max UI Framerate.\n\n§cMay not result in performance improvements for all users, use with caution!",
-  "noxesium.options.dynamic_ui_limiting.disabled": "§cThis setting requires at least OpenGL 4.4 to use.",
-  "noxesium.options.ui_debug_overlay.name": "Debug Dynamic UI",
-  "noxesium.options.ui_debug_overlay.tooltip": "Adds a small overlay that shows debug information about the dynamic UI rendering optimizations.",
-
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",
   "noxesium.options.enum.false": "Never",

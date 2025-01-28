@@ -2,16 +2,10 @@ package com.noxcrew.noxesium.mixin.ui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
+import com.noxcrew.noxesium.feature.CustomMapUiWidget;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import com.noxcrew.noxesium.feature.ui.CustomMapUiWidget;
-import com.noxcrew.noxesium.feature.ui.layer.LayeredDrawExtension;
-import com.noxcrew.noxesium.feature.ui.render.DynamicElement;
-import com.noxcrew.noxesium.feature.ui.render.NoxesiumUiRenderState;
-import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderState;
-import com.noxcrew.noxesium.feature.ui.render.screen.NoxesiumScreenRenderState;
 import java.util.ArrayList;
-import java.util.function.Supplier;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,8 +13,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
-import net.minecraft.client.gui.screens.ChatScreen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,6 +50,15 @@ public abstract class GuiMixin {
     @Unique
     private void noxesium$renderTextOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
+
+        // Check that the main GUI is not hidden
+        if (minecraft.options.hideGui) return;
+
+        // Check that we have something to show
+        if (this.getDebugOverlay().showDebugScreen()
+                || (!NoxesiumMod.getInstance().getConfig().showFpsOverlay
+                        && !NoxesiumMod.getInstance().getConfig().showGameTimeOverlay)) return;
+
         var font = minecraft.font;
         var lineOffset = font.lineHeight + 5;
         var baseOffset = noxesium$getBaseTextOffset(font);
@@ -86,30 +87,6 @@ public abstract class GuiMixin {
                     + ServerRules.QIB_BEHAVIORS.getValue().size()));
         }
 
-        // If the dynamic UI updating is on we draw the current UI frame rates and group layouts
-        if (NoxesiumMod.getInstance().getConfig().showUiDebugOverlay) {
-            NoxesiumMod.forEachRenderStateHolder((it) -> {
-                var stateIn = it.get();
-                switch (stateIn) {
-                    case NoxesiumUiRenderState state -> {
-                        for (var group : state.groups()) {
-                            var name = "§b" + group.layerNames();
-                            noxesium$addLine(text, name, state, group.dynamic());
-                        }
-                    }
-                    case NoxesiumScreenRenderState state -> {
-                        // Only show this if we are currently running the screen optimizations
-                        if (Minecraft.getInstance().screen instanceof MenuAccess<?>
-                                || Minecraft.getInstance().screen instanceof ChatScreen) {
-                            noxesium$addLine(text, "§eScreen", state, state.dynamic());
-                        }
-                    }
-                    case null -> {}
-                    default -> throw new IllegalStateException("Unexpected value: " + stateIn);
-                }
-            });
-        }
-
         // Draw all the lines in order
         for (int index = 0; index < text.size(); index++) {
             var line = text.get(index);
@@ -119,56 +96,9 @@ public abstract class GuiMixin {
         }
     }
 
-    /**
-     * Adds a line to the list of debugged elements.
-     */
-    @Unique
-    private void noxesium$addLine(
-            ArrayList<Component> text, String name, NoxesiumRenderState state, DynamicElement dynamic) {
-        if (name.length() >= 100) {
-            name = name.substring(0, 100);
-        }
-        text.add(Component.literal(String.format(
-                "%s: §f%dr, %du, %dd, %d%%m",
-                name
-                        + (dynamic.buffers() > 1 ? " §3(+" + (dynamic.buffers() - 1) + ")" : "")
-                        + (dynamic.isEmpty() ? " §9(empty)" : ""),
-                state.renders.get(),
-                dynamic.updates.get(),
-                dynamic.draws.get(),
-                dynamic.matchRate())));
-    }
-
-    /**
-     * Adds a new rendered element to the UI with the given condition and layer.
-     */
-    @Unique
-    private void noxesium$addRenderLayer(String name, LayeredDraw.Layer layer, Supplier<Boolean> condition) {
-        ((LayeredDrawExtension) this.layers).noxesium$addLayer(name, ((guiGraphics, deltaTracker) -> {
-            // Check that the main GUI is not hidden
-            if (Minecraft.getInstance().options.hideGui) return;
-
-            // Check that the condition is met
-            if (condition.get()) {
-                layer.render(guiGraphics, deltaTracker);
-            }
-        }));
-    }
-
     @Inject(method = "<init>", at = @At("TAIL"))
     public void onInit(Minecraft minecraft, CallbackInfo ci) {
-        noxesium$addRenderLayer(
-                "Noxesium Map UI",
-                new CustomMapUiWidget(),
-                () -> NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi()
-                        && !ServerRules.DISABLE_MAP_UI.getValue());
-
-        noxesium$addRenderLayer(
-                "Noxesium Text Overlay",
-                this::noxesium$renderTextOverlay,
-                () -> !this.getDebugOverlay().showDebugScreen()
-                        && (NoxesiumMod.getInstance().getConfig().showFpsOverlay
-                                || NoxesiumMod.getInstance().getConfig().showGameTimeOverlay
-                                || NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging));
+        this.layers.add(new CustomMapUiWidget());
+        this.layers.add(this::noxesium$renderTextOverlay);
     }
 }

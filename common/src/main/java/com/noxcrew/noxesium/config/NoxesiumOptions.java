@@ -1,10 +1,6 @@
 package com.noxcrew.noxesium.config;
 
-import static net.minecraft.client.Options.genericValueLabel;
-
-import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
@@ -80,63 +76,6 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> enableUiLimiting = OptionInstance.createBoolean(
-            "noxesium.options.ui_limiting.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_limiting.tooltip")),
-            NoxesiumMod.getInstance().getConfig().enableUiLimiting,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().enableUiLimiting = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            });
-
-    private static final OptionInstance<Boolean> enableDynamicUiLimiting = OptionInstance.createBoolean(
-            "noxesium.options.dynamic_ui_limiting.name",
-            OptionInstance.cachedConstantTooltip(
-                    NoxesiumConfig.supportsDynamicUiLimiting
-                            ? Component.translatable("noxesium.options.dynamic_ui_limiting.tooltip")
-                            : Component.translatable("noxesium.options.dynamic_ui_limiting.disabled")),
-            NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().enableDynamicUiLimiting = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-
-                // Reset all screen UI state!
-                NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::clear);
-            });
-
-    private static final OptionInstance<Integer> maxUiFramerate = new OptionInstance<>(
-            "noxesium.options.max_ui_framerate.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.max_ui_framerate.tooltip")),
-            (text, value) -> value == 260
-                    ? genericValueLabel(text, Component.translatable("options.framerateLimit.max"))
-                    : genericValueLabel(text, Component.translatable("options.framerate", value)),
-            new OptionInstance.IntRange(3, 26).xmap(it -> it * 10, it -> it / 10),
-            Codec.intRange(30, 260),
-            NoxesiumMod.getInstance().getConfig().maxUiFramerate,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().maxUiFramerate = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-
-                NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::updateRenderFramerate);
-            });
-
-    private static final OptionInstance<Boolean> optimizationOverlay = OptionInstance.createBoolean(
-            "noxesium.options.ui_debug_overlay.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_debug_overlay.tooltip")),
-            NoxesiumMod.getInstance().getConfig().showUiDebugOverlay,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().showUiDebugOverlay = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            });
-
-    public static OptionInstance<Boolean> enableUiLimiting() {
-        return enableUiLimiting;
-    }
-
-    public static OptionInstance<Boolean> enableDynamicUiLimiting() {
-        return enableDynamicUiLimiting;
-    }
-
     public static OptionInstance<Boolean> fpsOverlay() {
         return fpsOverlay;
     }
@@ -163,13 +102,5 @@ public class NoxesiumOptions {
 
     public static OptionInstance<Boolean> playerGlowingKeybinds() {
         return playerGlowingKeybinds;
-    }
-
-    public static OptionInstance<Integer> maxUiFramerate() {
-        return maxUiFramerate;
-    }
-
-    public static OptionInstance<Boolean> optimizationOverlay() {
-        return optimizationOverlay;
     }
 }

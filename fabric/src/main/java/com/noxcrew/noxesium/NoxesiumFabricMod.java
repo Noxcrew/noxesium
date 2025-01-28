@@ -1,13 +1,10 @@
 package com.noxcrew.noxesium;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.feature.CustomServerCreativeItems;
-import com.noxcrew.noxesium.feature.ui.render.api.NoxesiumRenderStateHolder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -59,14 +56,6 @@ public class NoxesiumFabricMod implements ClientModInitializer {
             // running a proxy that doesn't use the configuration phase between servers
             // has their stuff set up well enough to remember the client's information.
             NoxesiumMod.getInstance().uninitialize();
-
-            // Clear out all UI rendering state when we start configuring
-            RenderSystem.recordRenderCall(() -> NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::clear));
-        });
-
-        // Hook into client ticking
-        ClientTickEvents.START_CLIENT_TICK.register((ignored) -> {
-            NoxesiumMod.forEachRenderStateHolder(NoxesiumRenderStateHolder::requestCheck);
         });
 
         // Listen to shaders that are loaded and cache them

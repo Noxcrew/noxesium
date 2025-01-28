@@ -13,8 +13,5 @@
   ],
   "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": [
     "com/noxcrew/noxesium/feature/entity/BeamColorStateExtension"
-  ],
-  "net/minecraft/client/gui/LayeredDraw": [
-    "com/noxcrew/noxesium/feature/ui/layer/LayeredDrawExtension"
   ]
 }
