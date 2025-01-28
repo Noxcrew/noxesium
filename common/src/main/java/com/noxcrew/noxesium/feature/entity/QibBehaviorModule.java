@@ -335,8 +335,7 @@ public class QibBehaviorModule implements NoxesiumModule {
                 player.setDeltaMovement(
                         modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
                         modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
-                        modifyVelocity.zOp().apply(current.z, modifyVelocity.z())
-                );
+                        modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
             }
             default -> throw new IllegalStateException("Unexpected value: " + effect);
         }

@@ -75,8 +75,7 @@ public sealed interface QibEffect {
      * Removes all client-authoritative potion effects.
      * This only affects effects added by a [GivePotionEffect] effect.
      */
-    public record RemoveAllPotionEffects() implements QibEffect {
-    }
+    public record RemoveAllPotionEffects() implements QibEffect {}
 
     /**
      * Forces the player to make an instant relative movement.
@@ -101,14 +100,8 @@ public sealed interface QibEffect {
      * of the player. Values are clamped at limit (also at -limit).
      */
     public record SetVelocityYawPitch(
-        double yaw,
-        boolean yawRelative,
-        double pitch,
-        boolean pitchRelative,
-        double strength,
-        double limit
-    ) implements QibEffect {
-    }
+            double yaw, boolean yawRelative, double pitch, boolean pitchRelative, double strength, double limit)
+            implements QibEffect {}
 
     /**
      * Modifies each value of the player's velocity using provided value
@@ -116,13 +109,6 @@ public sealed interface QibEffect {
      * <p>
      * Allows multiplying, adding, subtracting, dividing, setting and clamping
      */
-    public record ModifyVelocity(
-            double x,
-            QibOperation xOp,
-            double y,
-            QibOperation yOp,
-            double z,
-            QibOperation zOp
-    ) implements QibEffect {
-    }
+    public record ModifyVelocity(double x, QibOperation xOp, double y, QibOperation yOp, double z, QibOperation zOp)
+            implements QibEffect {}
 }

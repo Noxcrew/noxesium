@@ -9,8 +9,7 @@ public enum QibOperation {
     MUL,
     DIV,
     MIN,
-    MAX
-    ;
+    MAX;
 
     /**
      * Applies the operation to the given value with the given modifier resulting in the new value.

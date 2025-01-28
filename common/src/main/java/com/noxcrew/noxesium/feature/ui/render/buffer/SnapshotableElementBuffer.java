@@ -6,9 +6,8 @@ import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuFence;
 import com.mojang.blaze3d.platform.GlStateManager;
-import java.nio.ByteBuffer;
-
 import com.noxcrew.noxesium.feature.ui.render.SharedVertexBuffer;
+import java.nio.ByteBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
