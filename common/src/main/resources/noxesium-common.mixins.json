@@ -46,6 +46,8 @@
     "rules.qib.SpatialEntityMixin",
     "rules.trident.TridentHandModelMixin",
     "rules.trident.TridentItemMixin",
+    "settings.BetterTeamException",
+    "settings.DebugScoreboardTeamEdits",
     "settings.MapUiRenderingMixin",
     "settings.PacketDecoderMixin",
     "settings.PacketExceptionMixin",

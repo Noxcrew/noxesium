@@ -23,7 +23,7 @@ allprojects {
     version = "${property("mod_version")}+${getGitCommit()}"
 
     repositories {
-        maven("https://papermc.io/repo/repository/maven-public/")
+        maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.neoforged.net/releases/")
