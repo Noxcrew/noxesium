@@ -76,6 +76,16 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
+    private static final OptionInstance<Boolean> debugScoreboardTeams = OptionInstance.createBoolean(
+            "noxesium.options.debug_scoreboard_teams.name",
+            OptionInstance.cachedConstantTooltip(
+                    Component.translatable("noxesium.options.debug_scoreboard_teams.tooltip")),
+            NoxesiumMod.getInstance().getConfig().debugScoreboardTeams,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().debugScoreboardTeams = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
     public static OptionInstance<Boolean> fpsOverlay() {
         return fpsOverlay;
     }
@@ -102,5 +112,9 @@ public class NoxesiumOptions {
 
     public static OptionInstance<Boolean> playerGlowingKeybinds() {
         return playerGlowingKeybinds;
+    }
+
+    public static OptionInstance<Boolean> debugScoreboardTeams() {
+        return debugScoreboardTeams;
     }
 }

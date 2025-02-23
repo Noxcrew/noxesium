@@ -29,6 +29,8 @@
   "noxesium.options.extended_packet_logging.tooltip": "Adds additional error logs to various types of invalid packet exceptions.\n\n§cIntended for server developers.",
   "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
   "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
+  "noxesium.options.debug_scoreboard_teams.name": "Debug Scoreboard Teams",
+  "noxesium.options.debug_scoreboard_teams.tooltip": "Prints additional debugging information to the client logs concerning scoreboard teams. This can help servers debug protocol errors.\n\n§cIntended for helping server developers debug errors.",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",

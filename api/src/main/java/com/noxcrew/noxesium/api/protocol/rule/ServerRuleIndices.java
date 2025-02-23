@@ -100,4 +100,20 @@ public class ServerRuleIndices {
      * Sets the amount of ticks the riptide has coyote time for.
      */
     public static final int RIPTIDE_COYOTE_TIME = 17;
+
+    /**
+     * Allows a trident to always be charged. This defaults to false to match vanilla behavior.
+     * Pre-charging tridents can be beneficial if you design maps where you jump into water as it
+     * lets you start charging mid-air before reaching the water allowing for more fluid movement.
+     *
+     * Due to the slowdown while charging this partially balances out, and you may feel like it is
+     * more skillful to time it precisely such that you start charging the perfect time before touching
+     * water.
+     *
+     * This does not match vanilla behavior and will give anyone using this an advantage to players
+     * playing on a vanilla client. Historically though this was a mechanic on custom trident implementations
+     * because they use the regular throwing tridents which have no restrictions, and because blocking
+     * pre-charging makes it take longer for laggy players to be detected as having touched the water.
+     */
+    public static final int RIPTIDE_PRE_CHARGING = 18;
 }

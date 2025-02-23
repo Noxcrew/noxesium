@@ -94,6 +94,11 @@ public class ServerRules(
      */
     public val riptideCoyoteTime: RuleFunction<Int> = register(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 10) { IntServerRule(it, 5) }
 
+    /**
+     * Enables the ability to pre-charge riptide tridents.
+     */
+    public val riptidePreCharging: RuleFunction<Boolean> = register(ServerRuleIndices.RIPTIDE_PRE_CHARGING, 13, ::BooleanServerRule)
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)

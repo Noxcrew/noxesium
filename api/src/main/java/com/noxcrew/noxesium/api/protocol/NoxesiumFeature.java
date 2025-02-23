@@ -91,6 +91,10 @@ public enum NoxesiumFeature {
      * Added support for ModifyVelocity and RemoveAllPotionEffects QibEffects.
      */
     NEW_QIB_EFFECTS(13),
+    /**
+     * Adds an option to pre-charge tridents.
+     */
+    TRIDENT_PRE_CHARGE_OPTION(13),
     ;
 
     private final int minProtocolVersion;

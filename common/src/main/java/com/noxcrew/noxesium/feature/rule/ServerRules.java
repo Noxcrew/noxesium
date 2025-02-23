@@ -131,6 +131,11 @@ public class ServerRules {
     }
 
     /**
+     * Enables the ability to pre-charge riptide tridents.
+     */
+    public static ClientServerRule<Boolean> RIPTIDE_PRE_CHARGING = register(new BooleanServerRule(ServerRuleIndices.RIPTIDE_PRE_CHARGING, true));
+
+    /**
      * Registers a new server rule.
      */
     private static <T extends ClientServerRule<?>> T register(T rule) {
