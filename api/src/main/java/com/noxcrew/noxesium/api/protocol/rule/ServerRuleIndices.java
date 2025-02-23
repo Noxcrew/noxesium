@@ -114,6 +114,9 @@ public class ServerRuleIndices {
      * playing on a vanilla client. Historically though this was a mechanic on custom trident implementations
      * because they use the regular throwing tridents which have no restrictions, and because blocking
      * pre-charging makes it take longer for laggy players to be detected as having touched the water.
+     *
+     * If combined with [ENABLE_SMOOTHER_CLIENT_TRIDENT] the ready indicator is only played when you
+     * are able to release the trident (touch the water) even if you have charged it longer.
      */
     public static final int RIPTIDE_PRE_CHARGING = 18;
 }

@@ -17,7 +17,15 @@ public abstract class DebugScoreboardTeamEdits {
     @Inject(method = "handleSetPlayerTeamPacket", at = @At("HEAD"))
     public void onExceptionCaught(ClientboundSetPlayerTeamPacket packet, CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().debugScoreboardTeams) {
-            NoxesiumMod.getInstance().getLogger().info("Received set player team packet, team method: {}, player action: {}, name: {}, players: [{}], parameters: {}", packet.getTeamAction(), packet.getPlayerAction(), packet.getName(), String.join(", ", packet.getPlayers()), packet.getParameters().isPresent() ? "present" : "null");
+            NoxesiumMod.getInstance()
+                    .getLogger()
+                    .info(
+                            "Received set player team packet, team method: {}, player action: {}, name: {}, players: [{}], parameters: {}",
+                            packet.getTeamAction(),
+                            packet.getPlayerAction(),
+                            packet.getName(),
+                            String.join(", ", packet.getPlayers()),
+                            packet.getParameters().isPresent() ? "present" : "null");
         }
     }
 }

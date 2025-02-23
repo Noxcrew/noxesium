@@ -35,7 +35,9 @@ public abstract class TridentItemMixin {
         return player.noxesium$hasTridentCoyoteTime();
     }
 
-    @Redirect(method = "use", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
+    @Redirect(
+            method = "use",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean canStartChargingTrident(Player player) {
         // If pre-charging is allowed we always allow you to start charging it.
         if (ServerRules.RIPTIDE_PRE_CHARGING.getValue()) return true;
@@ -45,10 +47,10 @@ public abstract class TridentItemMixin {
     @Redirect(
             method = "releaseUsing",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
     public void playSound(
             Level instance,
             Player ignored,
@@ -75,9 +77,9 @@ public abstract class TridentItemMixin {
 
         // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
         new ServerboundRiptidePacket(
-                player.getUsedItemHand() == InteractionHand.MAIN_HAND
-                        ? player.getInventory().selected
-                        : Inventory.SLOT_OFFHAND)
+                        player.getUsedItemHand() == InteractionHand.MAIN_HAND
+                                ? player.getInventory().selected
+                                : Inventory.SLOT_OFFHAND)
                 .send();
     }
 }

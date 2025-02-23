@@ -123,17 +123,18 @@ public class ServerRules {
     public static ClientServerRule<Integer> RIPTIDE_COYOTE_TIME =
             register(new IntegerServerRule(ServerRuleIndices.RIPTIDE_COYOTE_TIME, 5));
 
+    /**
+     * Enables the ability to pre-charge riptide tridents.
+     */
+    public static ClientServerRule<Boolean> RIPTIDE_PRE_CHARGING =
+            register(new BooleanServerRule(ServerRuleIndices.RIPTIDE_PRE_CHARGING, false));
+
     static {
         // Register dummy listeners for removed rules so it doesn't
         // throw errors on old servers.
         register(new BooleanServerRule(7, false));
         register(new BooleanServerRule(9, false));
     }
-
-    /**
-     * Enables the ability to pre-charge riptide tridents.
-     */
-    public static ClientServerRule<Boolean> RIPTIDE_PRE_CHARGING = register(new BooleanServerRule(ServerRuleIndices.RIPTIDE_PRE_CHARGING, true));
 
     /**
      * Registers a new server rule.

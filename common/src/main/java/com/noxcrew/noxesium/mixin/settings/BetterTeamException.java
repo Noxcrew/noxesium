@@ -20,16 +20,17 @@ public abstract class BetterTeamException {
     public abstract PlayerTeam getPlayersTeam(String string);
 
     @ModifyArg(
-        method = "removePlayerFromTeam(Ljava/lang/String;Lnet/minecraft/world/scores/PlayerTeam;)V",
-        at = @At(value = "INVOKE", target = "Ljava/lang/IllegalStateException;<init>(Ljava/lang/String;)V"),
-        index = 0
-    )
-    public String onExceptionCaught(String ignored, @Local(argsOnly = true) String entity, @Local(argsOnly = true) PlayerTeam team) {
+            method = "removePlayerFromTeam(Ljava/lang/String;Lnet/minecraft/world/scores/PlayerTeam;)V",
+            at = @At(value = "INVOKE", target = "Ljava/lang/IllegalStateException;<init>(Ljava/lang/String;)V"),
+            index = 0)
+    public String onExceptionCaught(
+            String ignored, @Local(argsOnly = true) String entity, @Local(argsOnly = true) PlayerTeam team) {
         var currentTeam = getPlayersTeam(entity);
         if (currentTeam == null) {
             return "Player '" + entity + "' is not on any team. Cannot remove from team '" + team.getName() + "'.";
         } else {
-            return "Player '" + entity + "' is either on another team '" + currentTeam.getName() + "'. Cannot remove from team '" + team.getName() + "'.";
+            return "Player '" + entity + "' is either on another team '" + currentTeam.getName()
+                    + "'. Cannot remove from team '" + team.getName() + "'.";
         }
     }
 }

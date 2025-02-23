@@ -19,10 +19,12 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         this.list.addSmall(
                 NoxesiumOptions.fpsOverlay(),
                 NoxesiumOptions.gameTimeOverlay(),
+                NoxesiumOptions.playerGlowingKeybinds());
+        this.list.addSmall(
                 NoxesiumOptions.dumpIncomingPackets(),
                 NoxesiumOptions.dumpOutgoingPackets(),
-                NoxesiumOptions.extendedPacketLogging(),
-                NoxesiumOptions.playerGlowingKeybinds(),
-                NoxesiumOptions.qibSystemDebugVisuals());
+                NoxesiumOptions.qibSystemDebugVisuals(),
+                NoxesiumOptions.debugScoreboardTeams(),
+                NoxesiumOptions.extendedPacketLogging());
     }
 }

@@ -49,6 +49,9 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     private int noxesium$coyoteTime = 0;
 
     @Unique
+    private boolean noxesium$soundQueued = false;
+
+    @Unique
     private Map<Holder<MobEffect>, MobEffectInstance> noxesium$activeEffects = new IdentityHashMap<>();
 
     @Override
@@ -183,27 +186,38 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
             // Determine if you are charging a riptide!
             var useItem = entity.getUseItem();
-            if (useItem.isEmpty()) return;
-            if (useItem.getItem() != Items.TRIDENT) return;
+            if (useItem.isEmpty() || useItem.getItem() != Items.TRIDENT) {
+                noxesium$soundQueued = false;
+                return;
+            }
 
             // Only check riptide tridents!
             var spinAttack = EnchantmentHelper.getTridentSpinAttackStrength(useItem, player);
-            if (spinAttack <= 0f || noxesium$isTooDamagedToUse(useItem)) return;
+            if (spinAttack <= 0f || noxesium$isTooDamagedToUse(useItem)) {
+                noxesium$soundQueued = false;
+                return;
+            }
 
             // Check if there's been 9 ticks of charging exactly
             // since you can use it when we reach 10.
             var remaining = entity.getUseItemRemainingTicks();
             var duration = useItem.getUseDuration(entity) - remaining;
-            if (duration == 9) {
-                player.level()
-                        .playLocalSound(
-                                player,
-                                SoundEvent.createVariableRangeEvent(
-                                        ResourceLocation.fromNamespaceAndPath("noxesium", "trident.ready_indicator")),
-                                SoundSource.PLAYERS,
-                                1f,
-                                1f);
+            if (duration == 9 || noxesium$soundQueued) {
+                if (player.isInWaterOrRain()) {
+                    player.level()
+                            .playLocalSound(
+                                    player,
+                                    SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(
+                                            "noxesium", "trident.ready_indicator")),
+                                    SoundSource.PLAYERS,
+                                    1f,
+                                    1f);
+                } else {
+                    noxesium$soundQueued = true;
+                    return;
+                }
             }
+            noxesium$soundQueued = false;
         }
     }
 
