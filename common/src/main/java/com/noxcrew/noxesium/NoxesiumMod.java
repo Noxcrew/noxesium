@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.shaders.CompiledShader;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.protocol.ClientSettings;
 import com.noxcrew.noxesium.config.NoxesiumConfig;
@@ -20,18 +19,11 @@ import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
 import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +34,9 @@ public class NoxesiumMod {
 
     private static NoxesiumMod instance;
     private static NoxesiumPlatformHook platform;
+
+    private final NoxesiumConfig config;
+    private final Logger logger = LoggerFactory.getLogger("Noxesium");
 
     /**
      * All modules known to Noxesium that have been registered.
@@ -57,15 +52,6 @@ public class NoxesiumMod {
      * Whether the server connection has been initialized correctly.
      */
     private boolean initialized = false;
-
-    /**
-     * The mapping of cached shaders.
-     */
-    @Nullable
-    private Map<ResourceLocation, Resource> cachedShaders = null;
-
-    private final NoxesiumConfig config;
-    private final Logger logger = LoggerFactory.getLogger("Noxesium");
 
     /**
      * Returns the known Noxesium instance.
@@ -139,14 +125,6 @@ public class NoxesiumMod {
      */
     public NoxesiumConfig getConfig() {
         return config;
-    }
-
-    /**
-     * Returns a cache with all shaders in the Sodium namespace.
-     */
-    @Nullable
-    public Map<ResourceLocation, Resource> getCachedShaders() {
-        return cachedShaders;
     }
 
     /**
@@ -260,34 +238,5 @@ public class NoxesiumMod {
                         options.touchscreen().get(),
                         options.notificationDisplayTime().get()))
                 .send();
-    }
-
-    /**
-     * Caches all shaders that have been loaded. Used by Sodium core shader hooks.
-     */
-    public static CompletableFuture<Void> cacheShaders(ResourceManager manager) {
-        return CompletableFuture.supplyAsync(() -> {
-            var map = manager.listResources("shaders", folder -> {
-                // We include all namespaces because you need to be able to import shaders from elsewhere!
-                var s = folder.getPath();
-                return s.endsWith(".json") || CompiledShader.Type.byLocation(folder) != null || s.endsWith(".glsl");
-            });
-            var cache = new HashMap<ResourceLocation, Resource>();
-            map.forEach((key, value) -> {
-                try (InputStream inputstream = value.open()) {
-                    byte[] abyte = inputstream.readAllBytes();
-                    cache.put(
-                            ResourceLocation.fromNamespaceAndPath(
-                                    key.getNamespace(), key.getPath().substring("shaders/".length())),
-                            new Resource(value.source(), () -> new ByteArrayInputStream(abyte)));
-                } catch (Exception exception) {
-                    NoxesiumMod.getInstance().getLogger().warn("Failed to read resource {}", key, exception);
-                }
-            });
-
-            // Save the shaders here instead of in apply so we go before any other resource re-loader!
-            instance.cachedShaders = cache;
-            return null;
-        });
     }
 }

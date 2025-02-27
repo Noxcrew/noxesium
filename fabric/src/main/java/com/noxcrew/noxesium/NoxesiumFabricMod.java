@@ -1,18 +1,10 @@
 package com.noxcrew.noxesium;
 
-import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.feature.CustomServerCreativeItems;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
 
 /**
  * The main file for the client-side implementation of Noxesium.
@@ -57,24 +49,5 @@ public class NoxesiumFabricMod implements ClientModInitializer {
             // has their stuff set up well enough to remember the client's information.
             NoxesiumMod.getInstance().uninitialize();
         });
-
-        // Listen to shaders that are loaded and cache them
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
-                .registerReloadListener(new SimpleResourceReloadListener<Void>() {
-                    @Override
-                    public ResourceLocation getFabricId() {
-                        return ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "shaders");
-                    }
-
-                    @Override
-                    public CompletableFuture<Void> load(ResourceManager manager, Executor executor) {
-                        return NoxesiumMod.cacheShaders(manager);
-                    }
-
-                    @Override
-                    public CompletableFuture<Void> apply(Void data, ResourceManager manager, Executor executor) {
-                        return CompletableFuture.completedFuture(null);
-                    }
-                });
     }
 }

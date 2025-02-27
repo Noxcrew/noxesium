@@ -7,9 +7,7 @@
   "plugin": "com.noxcrew.noxesium.NoxesiumMixinPlugin",
   "client": [
     "SodiumDeferChunkUpdatesMixin",
-    "SodiumGlProgramMixin",
-    "SodiumSettingOverrideMixin",
-    "SodiumShaderLoaderMixin"
+    "SodiumSettingOverrideMixin"
   ],
   "injectors": {
     "defaultRequire": 1

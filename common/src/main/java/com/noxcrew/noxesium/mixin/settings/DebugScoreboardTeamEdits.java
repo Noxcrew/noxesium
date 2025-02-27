@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.settings;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class DebugScoreboardTeamEdits {
 
     @Inject(method = "handleSetPlayerTeamPacket", at = @At("HEAD"))
-    public void onExceptionCaught(ClientboundSetPlayerTeamPacket packet, CallbackInfo ci) {
-        if (NoxesiumMod.getInstance().getConfig().debugScoreboardTeams) {
+    public void handleSetPlayerTeamPacket(ClientboundSetPlayerTeamPacket packet, CallbackInfo ci) {
+        if (Minecraft.getInstance().isSameThread() && NoxesiumMod.getInstance().getConfig().debugScoreboardTeams) {
             NoxesiumMod.getInstance()
                     .getLogger()
                     .info(
