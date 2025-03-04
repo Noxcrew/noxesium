@@ -25,6 +25,7 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
                 NoxesiumOptions.dumpOutgoingPackets(),
                 NoxesiumOptions.qibSystemDebugVisuals(),
                 NoxesiumOptions.debugScoreboardTeams(),
-                NoxesiumOptions.extendedPacketLogging());
+                NoxesiumOptions.extendedPacketLogging(),
+                NoxesiumOptions.showCullingBoxes());
     }
 }
