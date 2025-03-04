@@ -86,6 +86,15 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
+    private static final OptionInstance<Boolean> showCullingBoxes = OptionInstance.createBoolean(
+            "noxesium.options.show_culling_boxes.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.show_culling_boxes.tooltip")),
+            NoxesiumMod.getInstance().getConfig().showCullingBoxes,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().showCullingBoxes = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
     public static OptionInstance<Boolean> fpsOverlay() {
         return fpsOverlay;
     }
@@ -116,5 +125,9 @@ public class NoxesiumOptions {
 
     public static OptionInstance<Boolean> debugScoreboardTeams() {
         return debugScoreboardTeams;
+    }
+
+    public static OptionInstance<Boolean> showCullingBoxes() {
+        return showCullingBoxes;
     }
 }
