@@ -95,7 +95,7 @@ public enum NoxesiumFeature {
      */
     TRIDENT_PRE_CHARGE_OPTION(13),
     /**
-     * Adds open link packet
+     * Added support for the ClientboundOpenLinkPacket.
      */
     OPEN_LINK_PACKET(14),
     ;
