@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSound
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSoundStopPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccGameStatePacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccServerPacket
+import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundOpenLinkPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServerRulesPacket
@@ -45,6 +46,8 @@ public object NoxesiumPackets {
 
     public val CLIENT_CHANGE_EXTRA_ENTITY_DATA: PacketType<ClientboundCustomSoundStopPacket> = client("change_extra_entity_data")
     public val CLIENT_RESET_EXTRA_ENTITY_DATA: PacketType<ClientboundResetExtraEntityDataPacket> = client("reset_extra_entity_data")
+
+    public val CLIENT_OPEN_LINK: PacketType<ClientboundOpenLinkPacket> = client("open_link")
 
     /** All registered client-bound packets. */
     public val clientboundPackets: Map<String, PacketType<*>>

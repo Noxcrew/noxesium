@@ -14,6 +14,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSound
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundCustomSoundStopPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccGameStatePacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundMccServerPacket
+import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundOpenLinkPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServerRulesPacket
@@ -21,8 +22,10 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInfor
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundSetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.handle
 import com.noxcrew.noxesium.paper.api.readPluginMessage
+import io.papermc.paper.adventure.PaperAdventure
 import it.unimi.dsi.fastutil.ints.IntImmutableList
 import net.kyori.adventure.key.Key
+import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -155,6 +158,12 @@ public class NoxesiumListenerV2(
                 is ClientboundResetExtraEntityDataPacket -> {
                     buffer.writeVarInt(packet.entityId)
                     buffer.writeIntIdList(packet.indices)
+                }
+
+                is ClientboundOpenLinkPacket -> {
+                    buffer.writeBoolean(packet.text != null)
+                    packet.text?.let { ComponentSerialization.STREAM_CODEC.encode(buffer, PaperAdventure.asVanilla(it)) }
+                    buffer.writeUtf(packet.url)
                 }
             }
         }

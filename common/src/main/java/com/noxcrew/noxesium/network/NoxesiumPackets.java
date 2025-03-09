@@ -10,6 +10,7 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStartPacke
 import com.noxcrew.noxesium.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetExtraEntityDataPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
@@ -83,6 +84,9 @@ public class NoxesiumPackets {
             NoxesiumPackets.client("change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> CLIENT_RESET_EXTRA_ENTITY_DATA =
             NoxesiumPackets.client("reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
+
+    public static final NoxesiumPayloadType<ClientboundOpenLinkPacket> CLIENT_OPEN_LINK =
+            NoxesiumPackets.client("open_link", ClientboundOpenLinkPacket.STREAM_CODEC);
 
     /**
      * Returns an unmodifiable copy of all registered groups.
