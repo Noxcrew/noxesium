@@ -98,6 +98,10 @@ public enum NoxesiumFeature {
      * Added support for the ClientboundOpenLinkPacket.
      */
     OPEN_LINK_PACKET(14),
+    /**
+     * Adds syntax to component styles to render text at an arbitrary x/y offset.
+     */
+    COMPONENT_OFFSET_SYNTAX(15),
     ;
 
     private final int minProtocolVersion;
