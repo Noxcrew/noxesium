@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.feature;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import java.util.List;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -10,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomModelData;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -32,7 +35,14 @@ public class CustomServerCreativeItems implements NoxesiumModule {
                             .title(Component.translatable("itemGroup.noxesium.server_items"))
                             .displayItems((parameters, output) ->
                                     output.acceptAll(ServerRules.CUSTOM_CREATIVE_ITEMS.getValue()))
-                            .icon(() -> new ItemStack(Items.STRUCTURE_BLOCK))
+                            .icon(() -> {
+                                var item = new ItemStack(Items.STRUCTURE_BLOCK);
+                                item.set(
+                                        DataComponents.CUSTOM_MODEL_DATA,
+                                        new CustomModelData(
+                                                List.of(), List.of(), List.of("server_items_header"), List.of()));
+                                return item;
+                            })
                             .build());
         });
     }
