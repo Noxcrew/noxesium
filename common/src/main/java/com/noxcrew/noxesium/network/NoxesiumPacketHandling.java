@@ -10,6 +10,11 @@ import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
 /**
@@ -146,6 +151,37 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                         .warn(
                                 "Received ClientboundResetExtraEntityDataPacket about unknown entity {}",
                                 packet.entityId());
+            }
+        });
+
+        NoxesiumPackets.CLIENT_OPEN_LINK.addListener(this, (reference, packet, context) -> {
+            try {
+                var uri = Util.parseAndValidateUntrustedUri(packet.url());
+                var minecraft = Minecraft.getInstance();
+
+                var text = packet.text() == null ?
+                        Component.empty() :
+                        packet.text().copy().append(CommonComponents.NEW_LINE).append(CommonComponents.NEW_LINE);
+
+                text.append(Component.translatable("chat.link.confirmTrusted"));
+                text.append(CommonComponents.NEW_LINE);
+                text.append(CommonComponents.NEW_LINE);
+                text.append(uri.toString());
+
+                var screen = new ConfirmLinkScreen(
+                        (result) -> {
+                            if (result) Util.getPlatform().openUri(uri);
+                            minecraft.setScreen(null);
+                        },
+                        Component.empty(), // Title, we dont use it because we override the whole message instead to allow for multiple lines
+                        text,
+                        uri,
+                        CommonComponents.GUI_CANCEL,
+                        true
+                );
+                minecraft.setScreen(screen);
+            } catch (Exception e) {
+                NoxesiumMod.getInstance().getLogger().warn("Failed to open link {}", packet.url(), e);
             }
         });
     }

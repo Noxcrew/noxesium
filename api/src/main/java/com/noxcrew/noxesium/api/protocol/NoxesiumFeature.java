@@ -86,7 +86,6 @@ public enum NoxesiumFeature {
      * Fixes serialization of item stacks in rules.
      */
     FIXED_ITEM_STACK_SERIALIZATION(11),
-
     /**
      * Added support for ModifyVelocity and RemoveAllPotionEffects QibEffects.
      */
@@ -95,6 +94,10 @@ public enum NoxesiumFeature {
      * Adds an option to pre-charge tridents.
      */
     TRIDENT_PRE_CHARGE_OPTION(13),
+    /**
+     * Added support for the ClientboundOpenLinkPacket.
+     */
+    OPEN_LINK_PACKET(14),
     ;
 
     private final int minProtocolVersion;
