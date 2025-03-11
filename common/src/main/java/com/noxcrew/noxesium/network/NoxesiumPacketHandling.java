@@ -159,9 +159,9 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                 var uri = Util.parseAndValidateUntrustedUri(packet.url());
                 var minecraft = Minecraft.getInstance();
 
-                var text = packet.text() == null ?
-                        Component.empty() :
-                        packet.text().copy().append(CommonComponents.NEW_LINE).append(CommonComponents.NEW_LINE);
+                var text = packet.text() == null
+                        ? Component.empty()
+                        : packet.text().copy().append(CommonComponents.NEW_LINE).append(CommonComponents.NEW_LINE);
 
                 text.append(Component.translatable("chat.link.confirmTrusted"));
                 text.append(CommonComponents.NEW_LINE);
@@ -173,12 +173,12 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
                             if (result) Util.getPlatform().openUri(uri);
                             minecraft.setScreen(null);
                         },
-                        Component.empty(), // Title, we dont use it because we override the whole message instead to allow for multiple lines
+                        Component.empty(), // Title, we dont use it because we override the whole message instead to
+                        // allow for multiple lines
                         text,
                         uri,
                         CommonComponents.GUI_CANCEL,
-                        true
-                );
+                        true);
                 minecraft.setScreen(screen);
             } catch (Exception e) {
                 NoxesiumMod.getInstance().getLogger().warn("Failed to open link {}", packet.url(), e);
