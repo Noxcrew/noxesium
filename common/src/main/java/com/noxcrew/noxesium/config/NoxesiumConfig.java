@@ -35,6 +35,9 @@ public class NoxesiumConfig {
      * Returns whether to render maps in the UI.
      */
     public boolean shouldRenderMapsInUi() {
+        if (ServerRules.DISABLE_MAP_UI.getValue()) {
+            return false;
+        }
         if (renderMapsInUi == BooleanOrDefault.DEFAULT) {
             return ServerRules.SHOW_MAP_IN_UI.getValue();
         }

@@ -35,15 +35,14 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
 
-        // Check that this layer is enabled
-        if (NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi() && !ServerRules.DISABLE_MAP_UI.getValue())
-            return;
-
         // Check that the main GUI is not hidden
         if (minecraft.options.hideGui) return;
 
         // Check that the player exists
         if (minecraft.player == null) return;
+
+        // Check that this layer is enabled
+        if (!NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi()) return;
 
         var font = minecraft.font;
         var offset = NoxesiumMod.getPlatform().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
