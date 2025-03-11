@@ -23,6 +23,8 @@ public class NoxesiumListCommand(
                 val protocol = noxesiumManager.getProtocolVersion(it)
                 val exact =
                     noxesiumManager.getExactVersion(it) ?: when (protocol) {
+                        // These are only used for old clients but we add all versions here
+                        // to keep a proper record of when protocol versions were raised.
                         0 -> "v0.1.0"
                         1 -> "v0.1.0"
                         2 -> "v0.1.6"
@@ -36,6 +38,8 @@ public class NoxesiumListCommand(
                         10 -> "v2.3.0"
                         11 -> "v2.3.2"
                         12 -> "v2.4.0"
+                        13 -> "v2.6.0"
+                        14 -> "v2.6.1"
                         else -> "None"
                     }
                 val display = if (protocol != null) text("$exact ($protocol)", NamedTextColor.GOLD) else text("None", NamedTextColor.YELLOW)
