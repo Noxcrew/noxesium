@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.feature;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
