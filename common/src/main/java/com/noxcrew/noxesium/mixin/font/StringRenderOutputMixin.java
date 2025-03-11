@@ -21,13 +21,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class StringRenderOutputMixin {
 
     @Shadow
-    private float x;
+    float x;
 
     @WrapOperation(
             method = "accept",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;x:F", opcode = Opcodes.GETFIELD)
-    )
-    public float redirectGetX(Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            at =
+                    @At(
+                            value = "FIELD",
+                            target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;x:F",
+                            opcode = Opcodes.GETFIELD))
+    public float redirectGetX(
+            Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
         var offset = OffsetStringFormatter.parseX(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;
@@ -47,9 +51,13 @@ public class StringRenderOutputMixin {
 
     @WrapOperation(
             method = "accept",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;y:F", opcode = Opcodes.GETFIELD)
-    )
-    public float redirectGetY(Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            at =
+                    @At(
+                            value = "FIELD",
+                            target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;y:F",
+                            opcode = Opcodes.GETFIELD))
+    public float redirectGetY(
+            Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
         var offset = OffsetStringFormatter.parseY(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;

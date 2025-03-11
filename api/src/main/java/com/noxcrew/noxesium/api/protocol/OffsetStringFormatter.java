@@ -56,6 +56,5 @@ public class OffsetStringFormatter {
     /**
      * Stores the offset to give to a component.
      */
-    public record ComponentOffset(float x, float y) {
-    }
+    public record ComponentOffset(float x, float y) {}
 }
