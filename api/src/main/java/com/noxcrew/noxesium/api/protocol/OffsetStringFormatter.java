@@ -44,7 +44,6 @@ public class OffsetStringFormatter {
             var commaIndex = base.indexOf(",");
             if (commaIndex != -1) {
                 var number = base.substring(commaIndex + 1);
-                System.out.println(number);
                 try {
                     return Float.parseFloat(number);
                 } catch (NumberFormatException x) {
