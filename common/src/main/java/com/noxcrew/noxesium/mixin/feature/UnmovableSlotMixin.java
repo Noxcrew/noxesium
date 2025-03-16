@@ -36,8 +36,8 @@ public abstract class UnmovableSlotMixin {
         final CompoundTag tag = data.getUnsafe();
         if (tag == null) return;
 
-        final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID);
-        if (!bukkit.contains(IMMOVABLE_TAG)) return;
+        final CompoundTag bukkit = tag.getCompound(BUKKIT_COMPOUND_ID).orElse(null);
+        if (bukkit == null || !bukkit.contains(IMMOVABLE_TAG)) return;
 
         cir.setReturnValue(false);
     }
