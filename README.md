@@ -2,7 +2,7 @@
 
 Noxesium
 ---
-A Minecraft mod available on Fabric and NeoForge improves your experience when playing on large multiplayer servers. Here's some of the main things Noxesium does:
+A Minecraft mod available on Fabric which improves your experience when playing on large multiplayer servers. Here's some of the main things Noxesium does:
 
 - Fixes various vanilla bugs such as [MC-263293](https://bugs.mojang.com/browse/MC-263293) (Dying resets toggle sprint) and [MC-259812](https://bugs.mojang.com/browse/MC-259812) (Transparent objects are invisible behind text displays).
 - Adds extra systems which lets servers add more content, including a custom sound system, creating custom speed boosters or jump pads, and drawing player heads in text.
@@ -19,7 +19,7 @@ Public builds of Noxesium are available on [Modrinth](https://modrinth.com/mod/n
 Noxesium has a lot of different features, so they are split into various small groups below:
 
 <details>
-<summary>Vanilla Bugfixes</summary>
+<summary>🐛 Vanilla Bugfixes</summary>
 
 - [MC-256850](https://bugs.mojang.com/browse/MC-256850): Moving piston walls don't flicker as much while moving
 - [MC-259812](https://bugs.mojang.com/browse/MC-259812): Transparent entity models are now properly visible behind text displays
@@ -28,14 +28,14 @@ Noxesium has a lot of different features, so they are split into various small g
 </details>
 
 <details>
-<summary>General Features</summary>
+<summary>📜 General Features</summary>
 
 - A new accessibility setting that can be used to render maps held in the off-hand as a UI element instead. This makes it easier to read the map especially when using View Bobbing. Servers can also remotely enable this feature if they want to enforce it.
 - Extra debug overlays which can be used to see your current fps or show extra information for server and shader developers.
 </details>
 
 <details>
-<summary>Server Features</summary>
+<summary>💻 Server Features</summary>
 
 Noxesium adds a number of extra features only accessible for server developers. This lets them bypass some vanilla restrictions and make better content.
 
@@ -43,13 +43,14 @@ Here's a list of things Noxesium lets servers do:
 - Create custom interactables on the client like speed boosters or jump pads
 - Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
 - Draw player heads in text messages
+- Draw text with any x/y offset to its position
 - Tweak the behavior of riptide tridents to make them more usable in multiplayer games
 - Prevent moving items in GUIs
 - Locking camera movement
 </details>
 
 <details>
-<summary>MCC Island Integration</summary>
+<summary>🏝️ MCC Island Integration</summary>
 
 Noxesium has extra features to integrate with MCC Island directly! MCC Island detects any user running Noxesium and sends the client extra information on your current location and game state. This allows other mods like [Island Utils](https://github.com/AsoDesu/IslandUtils) to use this information for its custom features.
 </details>
