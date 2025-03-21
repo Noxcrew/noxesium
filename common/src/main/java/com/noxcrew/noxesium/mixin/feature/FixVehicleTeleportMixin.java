@@ -18,15 +18,16 @@ public abstract class FixVehicleTeleportMixin {
 
     @WrapOperation(
             method = "handleTeleportEntity",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isControlledByLocalInstance()Z"))
-    private boolean forceTeleportRider(Entity instance, Operation<Boolean> original) {
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/Entity;hasIndirectPassenger(Lnet/minecraft/world/entity/Entity;)Z"))
+    private boolean forceTeleportRider(Entity instance, Entity entity, Operation<Boolean> original) {
         if (instance.getVehicle() != null) {
             // Teleport the entity to be on top of their vehicle
             instance.getVehicle().positionRider(instance);
-
-            // This makes the regular packet handler stop execution right here
-            return true;
         }
-        return original.call(instance);
+        return original.call(instance, entity);
     }
 }

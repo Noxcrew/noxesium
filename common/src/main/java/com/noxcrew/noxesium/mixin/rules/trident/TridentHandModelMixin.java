@@ -36,7 +36,6 @@ public abstract class TridentHandModelMixin {
             LivingEntity livingEntity,
             ItemStack itemStack,
             ItemDisplayContext itemDisplayContext,
-            boolean bl,
             PoseStack poseStack,
             MultiBufferSource multiBufferSource,
             int i);
@@ -100,7 +99,6 @@ public abstract class TridentHandModelMixin {
                 p_109372_,
                 p_109377_,
                 flag3 ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
-                !flag3,
                 p_109379_,
                 p_109380_,
                 p_109381_);

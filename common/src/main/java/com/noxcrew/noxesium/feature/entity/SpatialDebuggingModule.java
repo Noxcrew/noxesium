@@ -1,21 +1,6 @@
 package com.noxcrew.noxesium.feature.entity;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
-import java.awt.Color;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.CoreShaders;
-import net.minecraft.client.renderer.ShapeRenderer;
-import net.minecraft.util.profiling.Profiler;
-import org.lwjgl.opengl.GL32;
 
 /**
  * Helps in debugging the spatial interaction tree.
@@ -24,10 +9,12 @@ public class SpatialDebuggingModule implements NoxesiumModule {
 
     @Override
     public void onStartup() {
-        NoxesiumMod.getPlatform().registerRenderHook(this::onRenderHook);
+        // NoxesiumMod.getPlatform().registerRenderHook(this::onRenderHook);
     }
 
-    private void onRenderHook() {
+    // TODO Re-implement in the future!
+
+    /*private void onRenderHook() {
         if (!NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) return;
 
         // Don't show this view when rendering hitboxes!
@@ -85,5 +72,5 @@ public class SpatialDebuggingModule implements NoxesiumModule {
         RenderSystem.enableCull();
 
         Profiler.get().pop();
-    }
+    }*/
 }

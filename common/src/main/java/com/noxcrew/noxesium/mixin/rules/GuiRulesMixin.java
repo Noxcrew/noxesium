@@ -33,7 +33,7 @@ public abstract class GuiRulesMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/world/entity/player/Inventory;getSelected()Lnet/minecraft/world/item/ItemStack;"))
+                                    "Lnet/minecraft/world/entity/player/Inventory;getSelectedItem()Lnet/minecraft/world/item/ItemStack;"))
     public ItemStack getSelected(Inventory inventory) {
         return InventoryHelper.getRealSelected(inventory);
     }

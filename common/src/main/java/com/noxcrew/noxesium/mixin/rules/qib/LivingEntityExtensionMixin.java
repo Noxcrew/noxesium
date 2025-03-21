@@ -114,8 +114,12 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
             var holder = iterator.next();
             var mobeffectinstance = noxesium$activeEffects.get(holder);
 
-            if (!mobeffectinstance.tick(
-                    (LivingEntity) (Object) this, () -> noxesium$onEffectUpdated(mobeffectinstance))) {
+            // Perform client ticking
+            mobeffectinstance.tickClient();
+
+            // Perform server ticking (effects need to be client-only anyway)
+            if (!mobeffectinstance.tickServer(
+                    null, (LivingEntity) (Object) this, () -> noxesium$onEffectUpdated(mobeffectinstance))) {
                 iterator.remove();
                 noxesium$onEffectRemoved(holder);
             }

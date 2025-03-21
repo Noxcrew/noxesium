@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.feature.skull;
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.font.SheetGlyphInfo;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.noxcrew.noxesium.mixin.feature.component.ext.FontSetExt;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -173,8 +175,10 @@ public class CustomSkullFont extends FontSet {
                 }
 
                 @Override
-                public void upload(int i, int j) {
-                    image.upload(0, i, j, 0, 0, 8, 8, false);
+                public void upload(int i, int j, GpuTexture gpuTexture) {
+                    RenderSystem.getDevice()
+                            .createCommandEncoder()
+                            .writeToTexture(gpuTexture, image, 0, i, j, 8, 8, 0, 0);
                 }
 
                 @Override
