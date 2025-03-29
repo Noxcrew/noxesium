@@ -101,7 +101,7 @@ public fun Player.createPayloadPacket(
                 RegistryFriendlyByteBuf(
                     initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(),
                     (Bukkit.getServer() as CraftServer).handle.server.registryAccess(),
-                ).apply(writer),
+                ).apply(writer).array(),
             ),
         )
     }
