@@ -102,6 +102,10 @@ public enum NoxesiumFeature {
      * Adds syntax to component styles to render text at an arbitrary x/y offset.
      */
     COMPONENT_OFFSET_SYNTAX(15),
+    /**
+     * Adds custom RGB glowing colors to entities.
+     */
+    CUSTOM_GLOW_COLOR(16),
     ;
 
     private final int minProtocolVersion;

@@ -38,6 +38,11 @@ public class EntityRules(
      */
     public val beamFadeColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.BEAM_COLOR_FADE, 12, ::ColorServerRule)
 
+    /**
+     * Defines a custom color to use for glowing by this entity.
+     */
+    public val customGlowColor: RuleFunction<Optional<Color>> = register(EntityRuleIndices.CUSTOM_GLOW_COLOR, 16, ::ColorServerRule)
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)
