@@ -37,6 +37,7 @@
     "rules.entity.GuardianBubblesRuleMixin",
     "rules.entity.GuardianStateMixin",
     "rules.entity.CustomGlowColorRendererMixin",
+    "rules.entity.RandomCowGlowingMixin",
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseLockMixin",
     "rules.qib.InteractionExtensionMixin",

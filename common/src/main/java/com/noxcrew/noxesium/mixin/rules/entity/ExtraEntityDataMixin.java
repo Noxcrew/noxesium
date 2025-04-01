@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.mixin.rules.entity;
 
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataHolder;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
@@ -41,6 +42,7 @@ public abstract class ExtraEntityDataMixin implements ExtraEntityDataHolder {
         if (noxesium$extraData == null) {
             noxesium$extraData = new HashMap<>();
         }
+        NoxesiumMod.getInstance().getLogger().warn("[3] Set Rule:" + rule + "  Value:" + value);
         noxesium$extraData.put(rule.getIndex(), value);
 
         // If this is the width of an interaction entity we update its bounding box!
