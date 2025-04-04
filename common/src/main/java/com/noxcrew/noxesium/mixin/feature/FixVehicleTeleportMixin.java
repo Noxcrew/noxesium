@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
- * Hooks in to packet handling to override the [ClientboundTeleportEntityPacket].
+ * Hooks in to packet handling to override the [ClientboundEntityPositionSyncPacket].
  * Make entities controlled by vehicles run positionRider() instead of performing the
  * teleport since they'll get teleported anyway next tick. This effectively turns
  * this teleport packet into a forced teleport into loaded chunks if applicable.
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class FixVehicleTeleportMixin {
 
     @WrapOperation(
-            method = "handleTeleportEntity",
+            method = "handleEntityPositionSync",
             at =
                     @At(
                             value = "INVOKE",
