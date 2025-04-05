@@ -34,12 +34,12 @@ public abstract class FixVehicleTeleportMixin {
     // Temporarily we also apply this patch to the older packet for any outdated servers that haven't
     // started using the new packet yet!
     @WrapOperation(
-        method = "handleTeleportEntity",
-        at =
-        @At(
-            value = "INVOKE",
-            target =
-                "Lnet/minecraft/world/entity/Entity;hasIndirectPassenger(Lnet/minecraft/world/entity/Entity;)Z"))
+            method = "handleTeleportEntity",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/entity/Entity;hasIndirectPassenger(Lnet/minecraft/world/entity/Entity;)Z"))
     private boolean forceTeleportLegacy(Entity instance, Entity entity, Operation<Boolean> original) {
         if (instance.getVehicle() != null) {
             // Teleport the entity to be on top of their vehicle
