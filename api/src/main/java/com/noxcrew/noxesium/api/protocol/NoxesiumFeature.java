@@ -102,6 +102,11 @@ public enum NoxesiumFeature {
      * Adds syntax to component styles to render text at an arbitrary x/y offset.
      */
     COMPONENT_OFFSET_SYNTAX(15),
+    /**
+     * Changes item stack rules to use a non-registry based serializer that works
+     * across minor versions.
+     */
+    UNIVERSAL_ITEM_SERIALIZERS(16),
     ;
 
     private final int minProtocolVersion;

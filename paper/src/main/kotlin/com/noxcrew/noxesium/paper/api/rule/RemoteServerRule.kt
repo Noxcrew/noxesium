@@ -4,8 +4,6 @@ import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import com.noxcrew.noxesium.api.qib.QibDefinition
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
-import org.bukkit.Material
-import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.awt.Color
 import java.util.Optional
@@ -94,24 +92,12 @@ public class StringListServerRule(
 }
 
 /** A server rule that stores an item stack. */
-public class ItemStackServerRule(
-    index: Int,
-    default: ItemStack = ItemStack(Material.AIR),
-) : RemoteServerRule<ItemStack>(index, default) {
-    override fun write(value: ItemStack, buffer: RegistryFriendlyByteBuf,) {
-        net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC
-            .encode(buffer, CraftItemStack.asNMSCopy(value))
-    }
-}
-
-/** A server rule that stores an item stack. */
 public class ItemStackListServerRule(
     index: Int,
     default: List<ItemStack> = emptyList(),
 ) : RemoteServerRule<List<ItemStack>>(index, default) {
-    override fun write(value: List<ItemStack>, buffer: RegistryFriendlyByteBuf,) {
-        net.minecraft.world.item.ItemStack.OPTIONAL_LIST_STREAM_CODEC
-            .encode(buffer, value.map { CraftItemStack.asNMSCopy(it) })
+    override fun write(value: List<ItemStack>, buffer: RegistryFriendlyByteBuf) {
+        buffer.writeCollection(value) { _, item -> ItemStackServerRule.write(buffer, item) }
     }
 }
 
