@@ -23,7 +23,7 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         this.list.addSmall(
                 NoxesiumOptions.dumpIncomingPackets(),
                 NoxesiumOptions.dumpOutgoingPackets(),
-                // NoxesiumOptions.qibSystemDebugVisuals(),
+                NoxesiumOptions.qibSystemDebugVisuals(),
                 NoxesiumOptions.debugScoreboardTeams(),
                 NoxesiumOptions.extendedPacketLogging(),
                 NoxesiumOptions.showCullingBoxes());

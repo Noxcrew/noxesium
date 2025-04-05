@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -21,7 +20,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -66,23 +64,6 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
     @Override
     public void registerKeyBinding(KeyMapping keyMapping) {
         keyMappings.add(keyMapping);
-    }
-
-    @Override
-    public void registerRenderHook(Runnable runnable) {
-        NeoForge.EVENT_BUS.<RenderLevelStageEvent>addListener((event) -> {
-            if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) {
-                // If Fabulous mode is used we want to render earlier!
-                if (Minecraft.getInstance().options.graphicsMode().get() == GraphicsStatus.FABULOUS) {
-                    runnable.run();
-                }
-            } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
-                // If not using Fabulous we render last
-                if (Minecraft.getInstance().options.graphicsMode().get() != GraphicsStatus.FABULOUS) {
-                    runnable.run();
-                }
-            }
-        });
     }
 
     @SubscribeEvent
