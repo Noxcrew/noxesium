@@ -27,7 +27,7 @@ public class DebugRendererMixin {
             double cameraY,
             double cameraZ,
             CallbackInfo ci) {
-        if (!NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
+        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
             noxesium$spatialDebugRenderer.render(poseStack, bufferSource, cameraX, cameraY, cameraZ);
         }
     }

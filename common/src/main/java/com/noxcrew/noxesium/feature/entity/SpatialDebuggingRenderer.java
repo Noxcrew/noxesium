@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.feature.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumModule;
 import java.awt.Color;
 import net.minecraft.client.Minecraft;
@@ -22,10 +21,12 @@ public class SpatialDebuggingRenderer implements NoxesiumModule, DebugRenderer.S
         // Don't show this view when rendering hitboxes!
         if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
 
-        var models = SpatialInteractionEntityTree.getModelContents();
         Profiler.get().push("noxesium-debug");
-        VertexConsumer vertexconsumer = multiBufferSource.getBuffer(RenderType.debugLineStrip(2.0));
+        var models = SpatialInteractionEntityTree.getModelContents();
         var color = new Color(255, 214, 31);
+        var vertexconsumer = multiBufferSource.getBuffer(RenderType.debugLine(2.0));
+        poseStack.pushPose();
+        poseStack.translate(-cameraX, -cameraY, -cameraZ);
         for (var model : models) {
             ShapeRenderer.renderLineBox(
                     poseStack,
@@ -36,6 +37,7 @@ public class SpatialDebuggingRenderer implements NoxesiumModule, DebugRenderer.S
                     color.getBlue() / 255f,
                     1.0F);
         }
+        poseStack.popPose();
         Profiler.get().pop();
     }
 }
