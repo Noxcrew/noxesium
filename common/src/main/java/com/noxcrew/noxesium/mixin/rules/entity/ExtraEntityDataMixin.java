@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.mixin.rules.entity;
 
-import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataHolder;
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
