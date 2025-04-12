@@ -32,4 +32,9 @@ public class EntityRuleIndices {
      * Defines a color used in combination with [BEAM_COLOR] to create a linear fade.
      */
     public static final int BEAM_COLOR_FADE = 4;
+
+    /**
+     * Defines a custom color to use for glowing by this entity.
+     */
+    public static final int CUSTOM_GLOW_COLOR = 5;
 }

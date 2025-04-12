@@ -107,6 +107,10 @@ public enum NoxesiumFeature {
      * across minor versions.
      */
     UNIVERSAL_ITEM_SERIALIZERS(16),
+    /**
+     * Adds custom RGB glowing colors to entities.
+     */
+    CUSTOM_GLOW_COLOR(17),
     ;
 
     private final int minProtocolVersion;

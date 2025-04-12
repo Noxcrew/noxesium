@@ -48,6 +48,12 @@ public class ExtraEntityData {
             register(new ColorServerRule(EntityRuleIndices.BEAM_COLOR_FADE, Optional.empty()));
 
     /**
+     * Defines a custom color to use for glowing by this entity.
+     */
+    public static ClientServerRule<Optional<Color>> CUSTOM_GLOW_COLOR =
+            register(new ColorServerRule(EntityRuleIndices.CUSTOM_GLOW_COLOR, Optional.empty()));
+
+    /**
      * Registers a new extra entity data key.
      */
     private static <T extends ClientServerRule<?>> T register(T rule) {
