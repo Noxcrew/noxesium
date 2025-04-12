@@ -42,7 +42,6 @@ public abstract class ExtraEntityDataMixin implements ExtraEntityDataHolder {
         if (noxesium$extraData == null) {
             noxesium$extraData = new HashMap<>();
         }
-        NoxesiumMod.getInstance().getLogger().warn("[3] Set Rule:" + rule + "  Value:" + value);
         noxesium$extraData.put(rule.getIndex(), value);
 
         // If this is the width of an interaction entity we update its bounding box!

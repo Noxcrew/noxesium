@@ -24,21 +24,11 @@ public abstract class CustomGlowColorRendererMixin {
         Entity entity = ((Entity)(Object)this);
         Player player = Minecraft.getInstance().player;
 
-        NoxesiumMod.getInstance().getLogger().warn("[5] Glowing here!");
-
         if (player == null) {
             return;
         }
 
-        NoxesiumMod.getInstance().getLogger().warn("[6] Glowing here!");
-
         Optional<Color> customGlowColor = entity.noxesium$getExtraData(ExtraEntityData.CUSTOM_GLOW_COLOR);
-
-        NoxesiumMod.getInstance().getLogger().warn("[6.5] Entity has ID: " + entity.getId());
-        NoxesiumMod.getInstance().getLogger().warn("[7] Custom Color is: " + customGlowColor);
-
         customGlowColor.ifPresent(color -> cir.setReturnValue(color.getRGB()));
-
-        NoxesiumMod.getInstance().getLogger().warn("[8] Custom Color is: " + customGlowColor);
     }
 }
