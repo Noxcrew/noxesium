@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * A standard server rule that stores a list of items.
+ * A server rule that stores a list of items.
  */
 public class ItemStackListServerRule extends ClientServerRule<List<ItemStack>> {
 
@@ -42,12 +42,12 @@ public class ItemStackListServerRule extends ClientServerRule<List<ItemStack>> {
 
     @Override
     public List<ItemStack> read(RegistryFriendlyByteBuf buffer) {
-        return ItemStack.OPTIONAL_LIST_STREAM_CODEC.decode(buffer);
+        return buffer.readList((ignored) -> ItemStackServerRule.readItemStackFromBuffer(buffer));
     }
 
     @Override
     public void write(List<ItemStack> value, RegistryFriendlyByteBuf buffer) {
-        ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode(buffer, value);
+        buffer.writeCollection(value, (ignored, item) -> ItemStackServerRule.writeItemStackToBuffer(buffer, item));
     }
 
     @Override

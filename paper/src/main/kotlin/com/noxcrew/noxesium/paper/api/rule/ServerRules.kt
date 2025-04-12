@@ -43,7 +43,7 @@ public class ServerRules(
      * the player's hand are resolved. This applies to adventure mode
      * breaking/placing restrictions as well as tool modifications.
      */
-    public val handItemOverride: RuleFunction<ItemStack> = register(ServerRuleIndices.HAND_ITEM_OVERRIDE, 11, ::ItemStackServerRule)
+    public val handItemOverride: RuleFunction<ItemStack> = register(ServerRuleIndices.HAND_ITEM_OVERRIDE, 16, ::ItemStackServerRule)
 
     /**
      * Moves the handheld map to be shown in the top left/right corner instead of
@@ -63,7 +63,7 @@ public class ServerRules(
      * Defines a list of items to show in a custom creative tab.
      */
     public val customCreativeItems: RuleFunction<List<ItemStack>> =
-        register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 11, ::ItemStackListServerRule)
+        register(ServerRuleIndices.CUSTOM_CREATIVE_ITEMS, 16, ::ItemStackListServerRule)
 
     /**
      * Defines all known qib behaviors that can be triggered by players interacting with marked interaction entities.

@@ -35,11 +35,6 @@ public interface NoxesiumPlatformHook {
     void registerTickEventHandler(Runnable runnable);
 
     /**
-     * Registers a new rendering hook.
-     */
-    void registerRenderHook(Runnable runnable);
-
-    /**
      * Registers a new key mapping.
      */
     void registerKeyBinding(KeyMapping keyMapping);

@@ -103,9 +103,14 @@ public enum NoxesiumFeature {
      */
     COMPONENT_OFFSET_SYNTAX(15),
     /**
+     * Changes item stack rules to use a non-registry based serializer that works
+     * across minor versions.
+     */
+    UNIVERSAL_ITEM_SERIALIZERS(16),
+    /**
      * Adds custom RGB glowing colors to entities.
      */
-    CUSTOM_GLOW_COLOR(16),
+    CUSTOM_GLOW_COLOR(17),
     ;
 
     private final int minProtocolVersion;

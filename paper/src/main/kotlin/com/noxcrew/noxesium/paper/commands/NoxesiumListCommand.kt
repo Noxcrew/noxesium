@@ -41,6 +41,7 @@ public class NoxesiumListCommand(
                         13 -> "v2.6.0"
                         14 -> "v2.6.1"
                         15 -> "v2.6.2"
+                        16 -> "v2.7.3"
                         else -> "None"
                     }
                 val display = if (protocol != null) text("$exact ($protocol)", NamedTextColor.GOLD) else text("None", NamedTextColor.YELLOW)

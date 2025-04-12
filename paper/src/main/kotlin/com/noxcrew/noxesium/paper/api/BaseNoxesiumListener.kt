@@ -101,7 +101,12 @@ public fun Player.createPayloadPacket(
                 RegistryFriendlyByteBuf(
                     initialCapacity?.let(Unpooled::buffer) ?: Unpooled.buffer(),
                     (Bukkit.getServer() as CraftServer).handle.server.registryAccess(),
-                ).apply(writer).array(),
+                ).apply(writer).let {
+                    // Copy only the used bytes otherwise we send lingering empty data which crashes clients
+                    val out = ByteArray(it.readableBytes())
+                    System.arraycopy(it.array(), 0, out, 0, it.readableBytes())
+                    out
+                },
             ),
         )
     }

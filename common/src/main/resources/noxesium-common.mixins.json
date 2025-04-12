@@ -30,6 +30,7 @@
     "rules.HandItemOverrideRenderMixin",
     "rules.OptionInstanceMixin",
     "rules.SpinAttackCollisionMixin",
+    "rules.entity.DebugRendererMixin",
     "rules.entity.EndCrystalBeamRendererMixin",
     "rules.entity.EndCrystalRendererMixin",
     "rules.entity.ExtraEntityDataMixin",
