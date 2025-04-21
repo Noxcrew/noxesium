@@ -14,14 +14,20 @@ import java.util.List;
 public class IntListServerRule extends ClientServerRule<List<Integer>> {
 
     private final List<Integer> defaultValue;
+    private final Runnable onChange;
 
     public IntListServerRule(int index) {
         this(index, Collections.emptyList());
     }
 
     public IntListServerRule(int index, List<Integer> defaultValue) {
+        this(index, defaultValue, () -> {});
+    }
+
+    public IntListServerRule(int index, List<Integer> defaultValue, Runnable onChange) {
         super(index);
         this.defaultValue = new ArrayList<>(defaultValue);
+        this.onChange = onChange;
         setValue(new ArrayList<>(defaultValue));
     }
 
@@ -38,5 +44,11 @@ public class IntListServerRule extends ClientServerRule<List<Integer>> {
     @Override
     public void write(List<Integer> value, RegistryFriendlyByteBuf buffer) {
         buffer.writeCollection(value, FriendlyByteBuf::writeVarInt);
+    }
+
+    @Override
+    protected void onValueChanged(List<Integer> oldValue, List<Integer> newValue) {
+        super.onValueChanged(oldValue, newValue);
+        onChange.run();
     }
 }
