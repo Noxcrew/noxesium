@@ -9,7 +9,7 @@ import com.noxcrew.noxesium.feature.TeamGlowHotkeys;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.feature.entity.QibBehaviorModule;
-import com.noxcrew.noxesium.feature.entity.SpatialDebuggingModule;
+import com.noxcrew.noxesium.feature.entity.SpatialDebuggingRenderer;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
@@ -86,7 +86,7 @@ public class NoxesiumMod {
         instance.registerModule(new NoxesiumPacketHandling());
         instance.registerModule(new ExtraEntityDataModule());
         instance.registerModule(new QibBehaviorModule());
-        instance.registerModule(new SpatialDebuggingModule());
+        instance.registerModule(new SpatialDebuggingRenderer());
 
         // Trigger registration of all server and entity rules and shaders
         Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;

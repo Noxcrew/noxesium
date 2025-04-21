@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
@@ -44,23 +43,6 @@ public class NoxesiumFabricHook implements NoxesiumPlatformHook {
     @Override
     public void registerTickEventHandler(Runnable runnable) {
         ClientTickEvents.END_CLIENT_TICK.register((ignored) -> runnable.run());
-    }
-
-    @Override
-    public void registerRenderHook(Runnable runnable) {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(ctx -> {
-            // If Fabulous mode is used we want to render earlier!
-            if (ctx.advancedTranslucency()) {
-                runnable.run();
-            }
-        });
-
-        WorldRenderEvents.LAST.register(ctx -> {
-            // If not using Fabulous we render last
-            if (!ctx.advancedTranslucency()) {
-                runnable.run();
-            }
-        });
     }
 
     @Override
