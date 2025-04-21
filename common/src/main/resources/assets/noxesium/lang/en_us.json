@@ -43,6 +43,9 @@
   "noxesium.options.enum.top_flipped": "Opposite Top Corner",
   "noxesium.options.enum.bottom_flipped": "Opposite Bottom Corner",
 
+  "noxesium.warning.debug_option.disabled": "This debug option is disabled.",
+  "noxesium.warning.debug_option.disabled_by_server": "The server you are playing on has disabled this debug option.",
+
   "itemGroup.noxesium.server_items": "Custom Blocks",
 
   "category.noxesium": "Noxesium",
