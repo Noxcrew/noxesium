@@ -133,3 +133,13 @@ public class QibBehaviorServerRule(
         }
     }
 }
+
+/** A server rule that stores a list of integers. */
+public class IntListServerRule(
+    index: Int,
+    default: List<Int> = emptyList(),
+) : RemoteServerRule<List<Int>>(index, default) {
+    override fun write(value: List<Int>, buffer: RegistryFriendlyByteBuf) {
+        buffer.writeCollection(value, FriendlyByteBuf::writeVarInt)
+    }
+}

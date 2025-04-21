@@ -99,6 +99,12 @@ public class ServerRules(
      */
     public val riptidePreCharging: RuleFunction<Boolean> = register(ServerRuleIndices.RIPTIDE_PRE_CHARGING, 13, ::BooleanServerRule)
 
+    /**
+     * Restricts available debug options available to the player.
+     */
+    public var restrictDebugOptions: RuleFunction<List<Int>> = register(ServerRuleIndices.RESTRICT_DEBUG_OPTIONS, 17, ::IntListServerRule)
+
+
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)
