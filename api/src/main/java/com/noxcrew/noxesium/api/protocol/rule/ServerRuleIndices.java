@@ -119,4 +119,9 @@ public class ServerRuleIndices {
      * are able to release the trident (touch the water) even if you have charged it longer.
      */
     public static final int RIPTIDE_PRE_CHARGING = 18;
+
+    /**
+     * Restricts available debug options available to the player.
+     */
+    public static final int RESTRICT_DEBUG_OPTIONS = 19;
 }

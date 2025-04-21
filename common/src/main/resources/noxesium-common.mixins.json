@@ -28,6 +28,7 @@
     "rules.HandItemOverrideAttackFix",
     "rules.HandItemOverrideInventoryMixin",
     "rules.HandItemOverrideRenderMixin",
+    "rules.KeyboardHandlerMixin",
     "rules.OptionInstanceMixin",
     "rules.SpinAttackCollisionMixin",
     "rules.entity.DebugRendererMixin",
