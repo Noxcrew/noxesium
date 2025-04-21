@@ -102,7 +102,7 @@ public class ServerRules(
     /**
      * Restricts available debug options available to the player.
      */
-    public var restrictDebugOptions: RuleFunction<List<Int>> = register(ServerRuleIndices.RESTRICT_DEBUG_OPTIONS, 17, ::IntListServerRule)
+    public var restrictDebugOptions: RuleFunction<List<Int>> = register(ServerRuleIndices.RESTRICT_DEBUG_OPTIONS, 18, ::IntListServerRule)
 
 
     /** Registers a new [rule]. */

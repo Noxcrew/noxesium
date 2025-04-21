@@ -13,7 +13,7 @@ public class NoxesiumReferences {
      * Add the versions when this value changes to [NoxesiumListCommand] to serve as a proper record
      * of when it was raised. Protocol version should only raise once per release.
      */
-    public static final int VERSION = 17;
+    public static final int VERSION = 18;
 
     /**
      * The name space to use for Noxesium.
