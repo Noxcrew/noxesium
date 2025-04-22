@@ -9,6 +9,7 @@
     "debug.CreativeModeInventoryScreenMixin",
     "debug.DebugRendererMixin",
     "debug.EntityRenderDispatcherMixin",
+    "debug.GameRendererPauseMixin",
     "debug.ScreenTooltipMixin",
     "feature.EntityOutlineMixin",
     "feature.FixMovingPistonFlickeringMixin",
