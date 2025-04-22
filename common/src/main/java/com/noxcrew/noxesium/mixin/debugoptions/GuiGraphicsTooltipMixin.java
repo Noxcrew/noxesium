@@ -1,19 +1,17 @@
-package com.noxcrew.noxesium.mixin.debug;
+package com.noxcrew.noxesium.mixin.debugoptions;
 
 import com.noxcrew.noxesium.api.util.DebugOption;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(CreativeModeInventoryScreen.class)
-public class CreativeModeInventoryScreenMixin {
+@Mixin(GuiGraphics.class)
+public class GuiGraphicsTooltipMixin {
 
     @Redirect(
-            method = "getTooltipFromContainerItem",
+            method = "renderComponentHoverEffect",
             at = @At(
                 value = "FIELD",
                 target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"

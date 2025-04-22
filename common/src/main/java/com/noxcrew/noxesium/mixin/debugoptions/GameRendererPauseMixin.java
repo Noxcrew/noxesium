@@ -1,30 +1,30 @@
-package com.noxcrew.noxesium.mixin.debug;
+package com.noxcrew.noxesium.mixin.debugoptions;
 
 import com.noxcrew.noxesium.api.util.DebugOption;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(GuiGraphics.class)
-public class GuiGraphicsTooltipMixin {
+@Mixin(GameRenderer.class)
+public class GameRendererPauseMixin {
 
     @Redirect(
-            method = "renderComponentHoverEffect",
+            method = "render",
             at = @At(
                 value = "FIELD",
-                target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"
+                target = "Lnet/minecraft/client/Options;pauseOnLostFocus:Z"
             )
     )
-    private boolean redirectAdvancedItemTooltipsAccess(net.minecraft.client.Options options) {
-        boolean original = options.advancedItemTooltips;
+    private boolean redirectPauseOnLostFocusAccess(net.minecraft.client.Options options) {
+        boolean original = options.pauseOnLostFocus;
         
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {
             var restrictedOptions = ServerRules.RESTRICT_DEBUG_OPTIONS.getValue();
             if (restrictedOptions != null && !restrictedOptions.isEmpty() &&
-                restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
-                return false;
+                restrictedOptions.contains(DebugOption.PAUSE_ON_LOST_FOCUS.getKeyCode())) {
+                return true;
             }
         }
         

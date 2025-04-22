@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.mixin.debug;
+package com.noxcrew.noxesium.mixin.debugoptions;
 
 import com.noxcrew.noxesium.api.util.DebugOption;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
