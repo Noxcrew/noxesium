@@ -17,7 +17,7 @@ public class GuiGraphicsTooltipMixin {
                 target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"
             )
     )
-    private boolean redirectAdvancedItemTooltipsAccess(net.minecraft.client.Options options) {
+    private boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
         boolean original = options.advancedItemTooltips;
         
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {

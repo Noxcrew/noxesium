@@ -16,7 +16,7 @@ public class EntityRenderDispatcherMixin {
     private boolean renderHitBoxes;
 
     @Inject(method = "shouldRenderHitBoxes", at = @At("HEAD"), cancellable = true)
-    private void preventRestrictedHitBoxRendering(CallbackInfoReturnable<Boolean> cir) {
+    private void restrictHitBoxRendering(CallbackInfoReturnable<Boolean> cir) {
         if (renderHitBoxes && ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.SHOW_HITBOXES.getKeyCode())) {
             cir.setReturnValue(false);
         }

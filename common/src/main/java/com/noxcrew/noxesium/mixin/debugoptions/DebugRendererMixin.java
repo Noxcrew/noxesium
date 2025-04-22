@@ -19,10 +19,10 @@ public class DebugRendererMixin {
     private boolean renderChunkborder;
 
     @Inject(method = "render", at = @At("HEAD"))
-    private void preventRestrictedChunkBorderRendering(PoseStack poseStack, Frustum frustum,
-                                                       MultiBufferSource.BufferSource bufferSource,
-                                                       double x, double y, double z,
-                                                       CallbackInfo ci) {
+    private void restrictChunkBorderRendering(PoseStack poseStack, Frustum frustum,
+                                              MultiBufferSource.BufferSource bufferSource,
+                                              double x, double y, double z,
+                                              CallbackInfo ci) {
         if (renderChunkborder && ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.CHUNK_BOUNDARIES.getKeyCode())) {
             renderChunkborder = false;
         }

@@ -17,7 +17,7 @@ public class GameRendererPauseMixin {
                 target = "Lnet/minecraft/client/Options;pauseOnLostFocus:Z"
             )
     )
-    private boolean redirectPauseOnLostFocusAccess(net.minecraft.client.Options options) {
+    private boolean restrictPauseOnLostFocus(net.minecraft.client.Options options) {
         boolean original = options.pauseOnLostFocus;
         
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {

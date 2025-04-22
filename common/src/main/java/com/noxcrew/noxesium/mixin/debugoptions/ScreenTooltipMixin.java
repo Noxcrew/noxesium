@@ -17,7 +17,7 @@ public class ScreenTooltipMixin {
                     target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"
             )
     )
-    private static boolean redirectAdvancedItemTooltipsAccess(net.minecraft.client.Options options) {
+    private static boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
         boolean original = options.advancedItemTooltips;
 
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {
