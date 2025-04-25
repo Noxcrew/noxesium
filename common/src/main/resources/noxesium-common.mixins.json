@@ -30,6 +30,7 @@
     "rules.HandItemOverrideRenderMixin",
     "rules.OptionInstanceMixin",
     "rules.SpinAttackCollisionMixin",
+    "rules.entity.CustomGlowColorRendererMixin",
     "rules.entity.DebugRendererMixin",
     "rules.entity.EndCrystalBeamRendererMixin",
     "rules.entity.EndCrystalRendererMixin",
@@ -37,7 +38,6 @@
     "rules.entity.GuardianBeamColorRendererMixin",
     "rules.entity.GuardianBubblesRuleMixin",
     "rules.entity.GuardianStateMixin",
-    "rules.entity.CustomGlowColorRendererMixin",
     "rules.mouse.MouseHandlerExt",
     "rules.mouse.MouseLockMixin",
     "rules.qib.InteractionExtensionMixin",
@@ -66,6 +66,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "feature.ServerAuthoritativeArrowsMixin",
     "rules.ext.InventoryExt"
   ]
 }

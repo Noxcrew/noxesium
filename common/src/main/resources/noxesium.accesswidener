@@ -1,5 +1,7 @@
 accessWidener v1 named
 
+accessible field net/minecraft/world/entity/projectile/AbstractArrow ID_FLAGS Lnet/minecraft/network/syncher/EntityDataAccessor;
+
 accessible class net/minecraft/client/resources/SkinManager$TextureCache
 accessible class net/minecraft/client/gui/Font$StringRenderOutput
 
