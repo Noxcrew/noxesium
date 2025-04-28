@@ -6,6 +6,11 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "GlowingHotkeyOverrideMixin",
+    "debugoptions.CreativeModeInventoryScreenMixin",
+    "debugoptions.DebugRendererMixin",
+    "debugoptions.EntityRenderDispatcherMixin",
+    "debugoptions.GameRendererPauseMixin",
+    "debugoptions.ScreenTooltipMixin",
     "feature.EntityOutlineMixin",
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",

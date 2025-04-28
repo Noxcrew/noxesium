@@ -1,5 +1,8 @@
 {
   "debug.noxesium_settings.help": "F3 + V = Open Noxesium settings menu",
+  "debug.warning.option.disabled": "This debug option is disabled.",
+  "debug.warning.option.disabled_by_server": "The server you are playing on has disabled this debug option.",
+
 
   "debug.fps_overlay": "%s fps",
   "debug.game_time_overlay": "%s st, %s gt",

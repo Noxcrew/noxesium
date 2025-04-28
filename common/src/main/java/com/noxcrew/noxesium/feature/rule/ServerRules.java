@@ -2,14 +2,9 @@ package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
-import com.noxcrew.noxesium.feature.rule.impl.BooleanServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.CameraLockedRule;
-import com.noxcrew.noxesium.feature.rule.impl.EnableMusicRule;
-import com.noxcrew.noxesium.feature.rule.impl.IntegerServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.ItemStackListServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.ItemStackServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.OptionalEnumServerRule;
-import com.noxcrew.noxesium.feature.rule.impl.QibBehaviorServerRule;
+import com.noxcrew.noxesium.feature.rule.impl.*;
+
+import java.util.Collections;
 import java.util.Optional;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
@@ -121,6 +116,22 @@ public class ServerRules {
      */
     public static ClientServerRule<Boolean> RIPTIDE_PRE_CHARGING =
             register(new BooleanServerRule(ServerRuleIndices.RIPTIDE_PRE_CHARGING, false));
+
+    /**
+     * Restricts available debug options available to the player.
+     */
+    public static IntListServerRule RESTRICT_DEBUG_OPTIONS = register(
+            new IntListServerRule(
+                    ServerRuleIndices.RESTRICT_DEBUG_OPTIONS,
+                    Collections.emptyList(), () -> {
+                if (Minecraft.getInstance().options != null) {
+                    Minecraft.getInstance().options.save();
+                }
+                // We need to call this when hitboxes & chunk boundaries are updated.
+                if (Minecraft.getInstance().levelRenderer != null) {
+                    Minecraft.getInstance().levelRenderer.allChanged();
+                }
+            }));
 
     static {
         // Register dummy listeners for removed rules so it doesn't
