@@ -12,22 +12,19 @@ public class GuiGraphicsTooltipMixin {
 
     @Redirect(
             method = "renderComponentHoverEffect",
-            at = @At(
-                value = "FIELD",
-                target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"
-            )
-    )
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"))
     private boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
         boolean original = options.advancedItemTooltips;
-        
+
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {
             var restrictedOptions = ServerRules.RESTRICT_DEBUG_OPTIONS.getValue();
-            if (restrictedOptions != null && !restrictedOptions.isEmpty() &&
-                restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
+            if (restrictedOptions != null
+                    && !restrictedOptions.isEmpty()
+                    && restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
                 return false;
             }
         }
-        
+
         return original;
     }
 }

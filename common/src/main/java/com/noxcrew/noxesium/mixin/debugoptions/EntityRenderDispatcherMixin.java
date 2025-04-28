@@ -11,13 +11,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
-    
+
     @Shadow
     private boolean renderHitBoxes;
 
     @Inject(method = "shouldRenderHitBoxes", at = @At("HEAD"), cancellable = true)
     private void restrictHitBoxRendering(CallbackInfoReturnable<Boolean> cir) {
-        if (renderHitBoxes && ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.SHOW_HITBOXES.getKeyCode())) {
+        if (renderHitBoxes
+                && ServerRules.RESTRICT_DEBUG_OPTIONS != null
+                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.SHOW_HITBOXES.getKeyCode())) {
             cir.setReturnValue(false);
         }
     }

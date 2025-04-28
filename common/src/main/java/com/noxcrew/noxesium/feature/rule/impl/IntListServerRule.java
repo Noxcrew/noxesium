@@ -1,12 +1,11 @@
 package com.noxcrew.noxesium.feature.rule.impl;
 
 import com.noxcrew.noxesium.feature.rule.ClientServerRule;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 /**
  * A server rule that stores a list of integers.

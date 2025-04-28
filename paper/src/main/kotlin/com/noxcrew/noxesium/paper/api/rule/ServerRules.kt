@@ -104,7 +104,6 @@ public class ServerRules(
      */
     public var restrictDebugOptions: RuleFunction<List<Int>> = register(ServerRuleIndices.RESTRICT_DEBUG_OPTIONS, 18, ::IntListServerRule)
 
-
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {
         val function = RuleFunction(index, rule)

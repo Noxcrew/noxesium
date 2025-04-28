@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.feature.rule;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
 import com.noxcrew.noxesium.feature.rule.impl.*;
-
 import java.util.Collections;
 import java.util.Optional;
 import net.minecraft.client.GraphicsStatus;
@@ -120,10 +119,8 @@ public class ServerRules {
     /**
      * Restricts available debug options available to the player.
      */
-    public static IntListServerRule RESTRICT_DEBUG_OPTIONS = register(
-            new IntListServerRule(
-                    ServerRuleIndices.RESTRICT_DEBUG_OPTIONS,
-                    Collections.emptyList(), () -> {
+    public static IntListServerRule RESTRICT_DEBUG_OPTIONS =
+            register(new IntListServerRule(ServerRuleIndices.RESTRICT_DEBUG_OPTIONS, Collections.emptyList(), () -> {
                 if (Minecraft.getInstance().options != null) {
                     Minecraft.getInstance().options.save();
                 }

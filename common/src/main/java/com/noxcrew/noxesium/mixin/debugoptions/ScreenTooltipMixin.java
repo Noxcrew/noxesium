@@ -12,17 +12,15 @@ public class ScreenTooltipMixin {
 
     @Redirect(
             method = "getTooltipFromItem",
-            at = @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"
-            )
-    )
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"))
     private static boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
         boolean original = options.advancedItemTooltips;
 
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {
             var restrictedOptions = ServerRules.RESTRICT_DEBUG_OPTIONS.getValue();
-            if (restrictedOptions != null && !restrictedOptions.isEmpty() && restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
+            if (restrictedOptions != null
+                    && !restrictedOptions.isEmpty()
+                    && restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
                 return false;
             }
         }

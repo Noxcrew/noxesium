@@ -68,20 +68,26 @@ public abstract class CustomDebugHotkeysMixin {
 
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
     private void interceptDebugKey(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
+                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
             if (minecraft != null) {
-                minecraft.gui.getChat().addMessage(
-                        Component.translatable("debug.warning.option.disabled")
-                                .withStyle(ChatFormatting.RED)
-                );
+                minecraft
+                        .gui
+                        .getChat()
+                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                                .withStyle(ChatFormatting.RED));
             }
             cir.setReturnValue(true);
         }
     }
 
-    @Redirect(method = "handleDebugKeys",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
+    @Redirect(
+            method = "handleDebugKeys",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
     private void modifyAllHelpMessages(ChatComponent chatComponent, Component message) {
         String translationKey = noxesium$getTranslationKey(message);
 
@@ -91,12 +97,13 @@ public abstract class CustomDebugHotkeysMixin {
             if (debugOption != null) {
                 int keyCode = debugOption.getKeyCode();
 
-                if (ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+                if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
+                        && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
                     Component modifiedMessage = Component.translatable(translationKey)
-                            .withStyle(style -> style
-                                    .withStrikethrough(true)
+                            .withStyle(style -> style.withStrikethrough(true)
                                     .withColor(0xFF9999)
-                                    .withHoverEvent(new HoverEvent.ShowText(Component.translatable("debug.warning.option.disabled_by_server"))));
+                                    .withHoverEvent(new HoverEvent.ShowText(
+                                            Component.translatable("debug.warning.option.disabled_by_server"))));
                     chatComponent.addMessage(modifiedMessage);
                     return;
                 }
@@ -108,12 +115,14 @@ public abstract class CustomDebugHotkeysMixin {
 
     @Inject(method = "handleChunkDebugKeys", at = @At("HEAD"), cancellable = true)
     private void onHandleChunkDebugKeys(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
+                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
             if (minecraft != null) {
-                minecraft.gui.getChat().addMessage(
-                        Component.translatable("debug.warning.option.disabled")
-                                .withStyle(ChatFormatting.RED)
-                );
+                minecraft
+                        .gui
+                        .getChat()
+                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                                .withStyle(ChatFormatting.RED));
             }
             cir.setReturnValue(true);
         }
