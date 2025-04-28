@@ -2,6 +2,8 @@ accessWidener v1 named
 
 accessible field net/minecraft/world/entity/projectile/AbstractArrow ID_FLAGS Lnet/minecraft/network/syncher/EntityDataAccessor;
 
+accessible field net/minecraft/world/effect/MobEffectInstance blendState Lnet/minecraft/world/effect/MobEffectInstance$BlendState;
+
 accessible class net/minecraft/client/resources/SkinManager$TextureCache
 accessible class net/minecraft/client/gui/Font$StringRenderOutput
 
