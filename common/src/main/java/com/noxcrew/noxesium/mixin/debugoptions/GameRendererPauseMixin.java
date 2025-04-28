@@ -1,19 +1,22 @@
 package com.noxcrew.noxesium.mixin.debugoptions;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.util.DebugOption;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import net.minecraft.client.Options;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GameRenderer.class)
 public class GameRendererPauseMixin {
 
-    @Redirect(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;pauseOnLostFocus:Z"))
-    private boolean restrictPauseOnLostFocus(net.minecraft.client.Options options) {
-        boolean original = options.pauseOnLostFocus;
-
+    // Uses WrapOperation because Axiom already redirects the base field!
+    @WrapOperation(
+            method = "render",
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;pauseOnLostFocus:Z"))
+    private boolean restrictPauseOnLostFocus(Options instance, Operation<Boolean> original) {
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null) {
             var restrictedOptions = ServerRules.RESTRICT_DEBUG_OPTIONS.getValue();
             if (restrictedOptions != null
@@ -23,6 +26,6 @@ public class GameRendererPauseMixin {
             }
         }
 
-        return original;
+        return original.call(instance);
     }
 }
