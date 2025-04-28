@@ -128,9 +128,9 @@ public class ServerRules {
                     Minecraft.getInstance().options.save();
                 }
                 // We need to call this when hitboxes & chunk boundaries are updated.
-//                if (Minecraft.getInstance().levelRenderer != null) {
-//                    Minecraft.getInstance().levelRenderer.allChanged();
-//                }
+                if (Minecraft.getInstance().levelRenderer != null) {
+                    Minecraft.getInstance().levelRenderer.allChanged();
+                }
             }));
 
     static {

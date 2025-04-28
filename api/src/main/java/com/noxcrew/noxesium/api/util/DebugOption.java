@@ -2,6 +2,10 @@ package com.noxcrew.noxesium.api.util;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Provides an enum storing all available debug options and their corresponding keycodes.
+ * This should be used in correspondence with the RESTRICT_DEBUG_OPTIONS ServerRule.
+ */
 public enum DebugOption {
     TOGGLE_PROFILER(49, null),
     TOGGLE_FPS_CHARTS(50, null),
@@ -26,19 +30,41 @@ public enum DebugOption {
     private final int keyCode;
     private final @Nullable String translationKey;
 
+    /**
+     * Constructs a new debug option.
+     *
+     * @param keyCode             The key code associated with this debug option.
+     * @param helpTranslationKey  The translation key used by Minecraft.
+     */
     DebugOption(int keyCode, @Nullable String helpTranslationKey) {
         this.keyCode = keyCode;
         this.translationKey = helpTranslationKey;
     }
 
+    /**
+     * Gets the key code associated with this debug option.
+     *
+     * @return The key code integer.
+     */
     public int getKeyCode() {
         return keyCode;
     }
 
+    /**
+     * Gets the translation key for this debug option's help text.
+     *
+     * @return The translation key, or null if no help text is available.
+     */
     public @Nullable String getTranslationKey() {
         return translationKey;
     }
 
+    /**
+     * Finds a debug option by its translation key.
+     *
+     * @param translationKey The translation key to search for.
+     * @return The matching debug option, or null if none is found.
+     */
     public static @Nullable DebugOption getByTranslationKey(String translationKey) {
         for (DebugOption key : values()) {
             if (key.translationKey != null && key.translationKey.equals(translationKey)) {
@@ -48,6 +74,12 @@ public enum DebugOption {
         return null;
     }
 
+    /**
+     * Finds a debug option by its key code.
+     *
+     * @param keyCode The key code to search for.
+     * @return The matching debug option, or null if none is found.
+     */
     public static @Nullable DebugOption getByKeyCode(int keyCode) {
         for (DebugOption key : values()) {
             if (key.keyCode == keyCode) {
