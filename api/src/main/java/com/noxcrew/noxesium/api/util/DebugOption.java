@@ -3,8 +3,9 @@ package com.noxcrew.noxesium.api.util;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Provides an enum storing all available debug options and their corresponding keycodes.
- * This should be used in correspondence with the RESTRICT_DEBUG_OPTIONS ServerRule.
+ * Provides an enum storing all available debug options to the client.
+ * Each debug option has an associated keycode and translation key.
+ * This should be used in conjunction with the RESTRICT_DEBUG_OPTIONS ServerRule.
  */
 public enum DebugOption {
     TOGGLE_PROFILER(49, null),
