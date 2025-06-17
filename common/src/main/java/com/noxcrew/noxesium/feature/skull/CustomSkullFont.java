@@ -178,7 +178,7 @@ public class CustomSkullFont extends FontSet {
                 public void upload(int i, int j, GpuTexture gpuTexture) {
                     RenderSystem.getDevice()
                             .createCommandEncoder()
-                            .writeToTexture(gpuTexture, image, 0, i, j, 8, 8, 0, 0);
+                            .writeToTexture(gpuTexture, image, 0, 0, i, j, 8, 8, 0, 0);
                 }
 
                 @Override

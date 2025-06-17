@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.mixin.ui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.CustomMapUiWidget;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
@@ -11,10 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.network.chat.Component;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,10 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(Gui.class)
 public abstract class GuiMixin {
-
-    @Shadow
-    @Final
-    private LayeredDraw layers;
 
     @Shadow
     public abstract DebugScreenOverlay getDebugOverlay();
@@ -69,9 +62,12 @@ public abstract class GuiMixin {
             text.add(Component.translatable("debug.fps_overlay", minecraft.getFps()));
         }
         if (NoxesiumMod.getInstance().getConfig().showGameTimeOverlay) {
+            var gameTimeInt = minecraft.level == null ? 0L : minecraft.level.getGameTime();
+            var gameTimeShader = ((float) (gameTimeInt % 24000L)
+                            + minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false))
+                    / 24000.0;
             text.add(Component.translatable(
-                    "debug.game_time_overlay", String.format("%.5f", RenderSystem.getShaderGameTime()), (int)
-                            (RenderSystem.getShaderGameTime() * 24000)));
+                    "debug.game_time_overlay", String.format("%.5f", gameTimeShader), (int) (gameTimeShader * 24000)));
         }
 
         // Add debug overlays if enabled, these are not using translations as they are purely for debugging purposes!
@@ -88,6 +84,8 @@ public abstract class GuiMixin {
         }
 
         // Draw all the lines in order
+        if (text.isEmpty()) return;
+        graphics.nextStratum();
         for (int index = 0; index < text.size(); index++) {
             var line = text.get(index);
             var offset = baseOffset + (lineOffset * index);
@@ -96,9 +94,9 @@ public abstract class GuiMixin {
         }
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
-    public void onInit(Minecraft minecraft, CallbackInfo ci) {
-        this.layers.add(new CustomMapUiWidget());
-        this.layers.add(this::noxesium$renderTextOverlay);
+    @Inject(method = "render", at = @At("TAIL"))
+    public void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        noxesium$renderTextOverlay(graphics, deltaTracker);
+        CustomMapUiWidget.render(graphics, deltaTracker);
     }
 }

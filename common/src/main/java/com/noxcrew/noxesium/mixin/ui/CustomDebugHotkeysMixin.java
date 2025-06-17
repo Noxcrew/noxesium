@@ -38,17 +38,19 @@ public abstract class CustomDebugHotkeysMixin {
     @Shadow
     private long debugCrashKeyTime;
 
+    @Shadow protected abstract void showDebugChat(Component p_415869_);
+
     @WrapOperation(
             method = "handleDebugKeys",
             at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
-    public void extendHelpMessage(ChatComponent instance, Component component, Operation<Void> original) {
+            @At(
+                    value = "INVOKE",
+                    target =
+                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+    public void extendHelpMessage(KeyboardHandler instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
-                instance.addMessage(Component.translatable("debug.noxesium_settings.help"));
+                showDebugChat(Component.translatable("debug.noxesium_settings.help"));
             }
         }
         original.call(instance, component);
@@ -84,11 +86,11 @@ public abstract class CustomDebugHotkeysMixin {
     @Redirect(
             method = "handleDebugKeys",
             at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/gui/components/ChatComponent;addMessage(Lnet/minecraft/network/chat/Component;)V"))
-    private void modifyAllHelpMessages(ChatComponent chatComponent, Component message) {
+            @At(
+                    value = "INVOKE",
+                    target =
+                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+    private void modifyAllHelpMessages(KeyboardHandler instance, Component message) {
         String translationKey = noxesium$getTranslationKey(message);
 
         if (translationKey != null) {
@@ -104,13 +106,13 @@ public abstract class CustomDebugHotkeysMixin {
                                     .withColor(0xFF9999)
                                     .withHoverEvent(new HoverEvent.ShowText(
                                             Component.translatable("debug.warning.option.disabled_by_server"))));
-                    chatComponent.addMessage(modifiedMessage);
+                    showDebugChat(modifiedMessage);
                     return;
                 }
             }
         }
 
-        chatComponent.addMessage(message);
+        showDebugChat(message);
     }
 
     @Inject(method = "handleChunkDebugKeys", at = @At("HEAD"), cancellable = true)

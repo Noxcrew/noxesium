@@ -1,14 +1,11 @@
 package com.noxcrew.noxesium.feature;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.NoxesiumMod;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -17,21 +14,23 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
-import org.joml.Matrix4f;
+import org.joml.Matrix3x2fStack;
 
 /**
  * Renders heldheld maps as UI elements.
  */
-public class CustomMapUiWidget implements LayeredDraw.Layer {
+public class CustomMapUiWidget {
 
-    private static final RenderType MAP_BACKGROUND =
-            RenderType.text(ResourceLocation.withDefaultNamespace("textures/map/map_background.png"));
-    private static final RenderType MAP_BACKGROUND_CHECKERBOARD =
-            RenderType.text(ResourceLocation.withDefaultNamespace("textures/map/map_background_checkerboard.png"));
-    private final MapRenderState mapRenderState = new MapRenderState();
+    private static final ResourceLocation MAP_BACKGROUND =
+            ResourceLocation.withDefaultNamespace("map/map_background");
+    private static final ResourceLocation MAP_BACKGROUND_CHECKERBOARD =
+            ResourceLocation.withDefaultNamespace("map/map_background_checkerboard");
+    private static final MapRenderState mapRenderState = new MapRenderState();
 
-    @Override
-    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    /**
+     * Renders the map UI widget.
+     */
+    public static void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
 
         // Check that the main GUI is not hidden
@@ -45,10 +44,12 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
 
         var font = minecraft.font;
         var offset = NoxesiumMod.getPlatform().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
-        var pose = guiGraphics.pose();
         var mainArm = minecraft.player.getMainArm();
         for (var arm : HumanoidArm.values()) {
             if (hasMapItem(minecraft.player, arm)) {
+                guiGraphics.nextStratum();
+                var pose = guiGraphics.pose();
+                pose.pushMatrix();
                 renderMap(
                         minecraft,
                         guiGraphics,
@@ -58,6 +59,7 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
                         minecraft.player.getItemInHand(
                                 mainArm == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND),
                         offset);
+                pose.popMatrix();
             }
         }
     }
@@ -77,15 +79,14 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
     /**
      * Renders a map to the UI.
      */
-    private void renderMap(
+    private static void renderMap(
             Minecraft minecraft,
             GuiGraphics graphics,
             DeltaTracker deltaTracker,
-            PoseStack pose,
+            Matrix3x2fStack pose,
             HumanoidArm arm,
             ItemStack item,
             int offset) {
-        pose.pushPose();
         var scale = 1f
                 / ((float) minecraft.getWindow().getGuiScale())
                 * 4f
@@ -97,58 +98,42 @@ public class CustomMapUiWidget implements LayeredDraw.Layer {
         if ((arm == HumanoidArm.RIGHT) != flipped) {
             if (bottom) {
                 // Translate it to be at the bottom right of the GUI
-                pose.translate(graphics.guiWidth() - (148f * scale), graphics.guiHeight() - (148f * scale), 0f);
+                pose.translate(graphics.guiWidth() - (148f * scale), graphics.guiHeight() - (148f * scale));
             } else {
                 // Only translate to the right of the GUI
-                pose.translate(graphics.guiWidth() - (148f * scale), 0f, 0f);
+                pose.translate(graphics.guiWidth() - (148f * scale), 0f);
             }
         } else {
             if (bottom) {
                 // Translate it to be at the bottom of the GUI
-                pose.translate(0f, graphics.guiHeight() - (148f * scale), 0f);
+                pose.translate(0f, graphics.guiHeight() - (148f * scale));
             } else {
                 // Only add the offset on the left top side!
-                pose.translate(0f, offset, 0f);
+                pose.translate(0f, offset);
             }
         }
 
-        pose.scale(1f * scale, 1f * scale, -1f);
-        pose.translate(10f, 10f, 0f);
+        pose.scale(1f * scale, 1f * scale);
+        pose.translate(10f, 10f);
         var mapId = item.get(DataComponents.MAP_ID);
         var mapitemsaveddata = MapItem.getSavedData(mapId, minecraft.level);
-        graphics.drawSpecial(bufferSource -> {
-            VertexConsumer vertexconsumer =
-                    bufferSource.getBuffer(mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
-            Matrix4f matrix4f = pose.last().pose();
-            var light = minecraft
-                    .getEntityRenderDispatcher()
-                    .getPackedLightCoords(minecraft.player, deltaTracker.getGameTimeDeltaPartialTick(true));
-            vertexconsumer
-                    .addVertex(matrix4f, -7.0F, 135.0F, 0.0F)
-                    .setColor(-1)
-                    .setUv(0.0F, 1.0F)
-                    .setLight(light);
-            vertexconsumer
-                    .addVertex(matrix4f, 135.0F, 135.0F, 0.0F)
-                    .setColor(-1)
-                    .setUv(1.0F, 1.0F)
-                    .setLight(light);
-            vertexconsumer
-                    .addVertex(matrix4f, 135.0F, -7.0F, 0.0F)
-                    .setColor(-1)
-                    .setUv(1.0F, 0.0F)
-                    .setLight(light);
-            vertexconsumer
-                    .addVertex(matrix4f, -7.0F, -7.0F, 0.0F)
-                    .setColor(-1)
-                    .setUv(0.0F, 0.0F)
-                    .setLight(light);
-            if (mapitemsaveddata != null) {
-                var mapRenderer = minecraft.getMapRenderer();
-                mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);
-                mapRenderer.render(mapRenderState, pose, bufferSource, false, light);
-            }
-        });
-        pose.popPose();
+
+        // Draw the background
+        graphics.blitSprite(
+                RenderPipelines.GUI_TEXTURED,
+                mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD,
+                -7,
+                -7,
+                135,
+                135
+        );
+
+        if (mapitemsaveddata != null) {
+            // Draw the contents of the map itself, including all decorations!
+            var mapRenderer = minecraft.getMapRenderer();
+            mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);
+            mapRenderState.decorations.forEach(it -> it.renderOnFrame = true);
+            graphics.submitMapRenderState(mapRenderState);
+        }
     }
 }

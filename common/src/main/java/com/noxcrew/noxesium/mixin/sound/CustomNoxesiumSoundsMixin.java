@@ -2,8 +2,6 @@ package com.noxcrew.noxesium.mixin.sound;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
-import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
@@ -16,7 +14,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Overrides functionality of the sound engine to allow music-type tracks to continue playing even if they are muted.
@@ -37,15 +38,15 @@ public abstract class CustomNoxesiumSoundsMixin {
     @Inject(
             method = "play",
             at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V",
-                            shift = At.Shift.AFTER),
+            @At(
+                    value = "INVOKE",
+                    target =
+                            "Lnet/minecraft/client/sounds/ChannelAccess$ChannelHandle;execute(Ljava/util/function/Consumer;)V",
+                    shift = At.Shift.AFTER),
             cancellable = true)
     private void handleNoxesiumSounds(
             SoundInstance soundInstance,
-            CallbackInfo ci,
+            CallbackInfoReturnable<SoundEngine.PlayResult> ci,
             @Local Sound sound,
             @Local(ordinal = 1) boolean isLooping,
             @Local(ordinal = 2) boolean streaming,

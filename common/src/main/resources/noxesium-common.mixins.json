@@ -25,7 +25,7 @@
     "feature.component.ext.SkinManagerExt",
     "feature.component.ext.SkinTextureDownloaderExt",
     "feature.component.ext.TextureCacheExt",
-    "font.StringRenderOutputMixin",
+    "font.PreparedTextBuilderMixin",
     "rules.BoatCollisionMixin",
     "rules.CustomCreativeReloadMixin",
     "rules.DisableMusicMixin",

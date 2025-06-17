@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Mixes in to fonts and reads an optional x, y rendering offset from the
  * style's insertion value.
  */
-@Mixin(Font.StringRenderOutput.class)
-public class StringRenderOutputMixin {
+@Mixin(Font.PreparedTextBuilder.class)
+public class PreparedTextBuilderMixin {
 
     @Shadow
     float x;
@@ -28,10 +28,10 @@ public class StringRenderOutputMixin {
             at =
                     @At(
                             value = "FIELD",
-                            target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;x:F",
+                            target = "Lnet/minecraft/client/gui/Font$PreparedTextBuilder;x:F",
                             opcode = Opcodes.GETFIELD))
     public float redirectGetX(
-            Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            Font.PreparedTextBuilder instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
         var offset = OffsetStringFormatter.parseX(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;
@@ -54,10 +54,10 @@ public class StringRenderOutputMixin {
             at =
                     @At(
                             value = "FIELD",
-                            target = "Lnet/minecraft/client/gui/Font$StringRenderOutput;y:F",
+                            target = "Lnet/minecraft/client/gui/Font$PreparedTextBuilder;y:F",
                             opcode = Opcodes.GETFIELD))
     public float redirectGetY(
-            Font.StringRenderOutput instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            Font.PreparedTextBuilder instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
         var offset = OffsetStringFormatter.parseY(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;
