@@ -11,7 +11,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -38,15 +37,16 @@ public abstract class CustomDebugHotkeysMixin {
     @Shadow
     private long debugCrashKeyTime;
 
-    @Shadow protected abstract void showDebugChat(Component p_415869_);
+    @Shadow
+    protected abstract void showDebugChat(Component p_415869_);
 
     @WrapOperation(
             method = "handleDebugKeys",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     public void extendHelpMessage(KeyboardHandler instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
@@ -61,7 +61,7 @@ public abstract class CustomDebugHotkeysMixin {
         if (this.debugCrashKeyTime > 0L && this.debugCrashKeyTime < Util.getMillis() - 100L) {
             return original;
         }
-        if (keyCode == InputConstants.KEY_V) {
+        if (keyCode == InputConstants.KEY_W) {
             Minecraft.getInstance().setScreen(new NoxesiumSettingsScreen(null));
             return true;
         }
@@ -86,10 +86,10 @@ public abstract class CustomDebugHotkeysMixin {
     @Redirect(
             method = "handleDebugKeys",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     private void modifyAllHelpMessages(KeyboardHandler instance, Component message) {
         String translationKey = noxesium$getTranslationKey(message);
 

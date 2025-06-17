@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Noxesium felhasználói felületi javítások kikapcsolva",
   "debug.experimental_patches.enabled": "Noxesium felhasználói felületi javítások bekapcsolva",
   "debug.experimental_patches.help": "F3 + W = Noxesium felhasználói felületi javítások be-/kikapcsolása",
-  "debug.noxesium_settings.help": "F3 + V = Noxesium beállítások menü megnyitása",
+  "debug.noxesium_settings.help": "F3 + W = Noxesium beállítások menü megnyitása",
 
   "debug.fps_overlay.disabled": "FPS számláló kikapcsolva",
   "debug.fps_overlay.enabled": "FPS számláló bekapcsolva (kikapcsolható az F3 + Y billentyűkombinációval)",

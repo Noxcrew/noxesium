@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Noxesium UI 性能补丁现在已关闭",
   "debug.experimental_patches.enabled": "Noxesium UI 性能补丁现在已开启",
   "debug.experimental_patches.help": "F3 + W = 切换 Noxesium UI 性能补丁",
-  "debug.noxesium_settings.help": "F3 + V = 打开 Noxesium 设置菜单",
+  "debug.noxesium_settings.help": "F3 + W = 打开 Noxesium 设置菜单",
 
   "debug.fps_overlay.disabled": "帧率显示现在已关闭",
   "debug.fps_overlay.enabled": "帧率显示现在已开启（使用 F3 + Y 关闭）",

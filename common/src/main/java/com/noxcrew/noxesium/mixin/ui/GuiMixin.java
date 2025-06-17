@@ -12,6 +12,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -90,13 +91,13 @@ public abstract class GuiMixin {
             var line = text.get(index);
             var offset = baseOffset + (lineOffset * index);
             graphics.fill(3, offset - 2, 6 + font.width(line), offset + 1 + font.lineHeight, -1873784752);
-            graphics.drawString(font, line, 5, offset, 0xE0E0E0, false);
+            graphics.drawString(font, line, 5, offset, ARGB.color(255, 0xE0E0E0), false);
         }
     }
 
     @Inject(method = "render", at = @At("TAIL"))
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        noxesium$renderTextOverlay(graphics, deltaTracker);
         CustomMapUiWidget.render(graphics, deltaTracker);
+        noxesium$renderTextOverlay(graphics, deltaTracker);
     }
 }

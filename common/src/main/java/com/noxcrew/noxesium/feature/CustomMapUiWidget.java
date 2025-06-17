@@ -21,10 +21,10 @@ import org.joml.Matrix3x2fStack;
  */
 public class CustomMapUiWidget {
 
-    private static final ResourceLocation MAP_BACKGROUND =
-            ResourceLocation.withDefaultNamespace("map/map_background");
-    private static final ResourceLocation MAP_BACKGROUND_CHECKERBOARD =
+    public static final ResourceLocation MAP_BACKGROUND = ResourceLocation.withDefaultNamespace("map/map_background");
+    public static final ResourceLocation MAP_BACKGROUND_CHECKERBOARD =
             ResourceLocation.withDefaultNamespace("map/map_background_checkerboard");
+
     private static final MapRenderState mapRenderState = new MapRenderState();
 
     /**
@@ -124,9 +124,8 @@ public class CustomMapUiWidget {
                 mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD,
                 -7,
                 -7,
-                135,
-                135
-        );
+                142,
+                142);
 
         if (mapitemsaveddata != null) {
             // Draw the contents of the map itself, including all decorations!

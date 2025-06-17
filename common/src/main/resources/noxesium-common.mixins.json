@@ -64,6 +64,7 @@
     "settings.screen.AccessibilitySettingsScreenMixin",
     "sound.ChannelExt",
     "sound.CustomNoxesiumSoundsMixin",
+    "ui.AddMapSpritesToAtlas",
     "ui.CustomDebugHotkeysMixin",
     "ui.GuiMixin"
   ],

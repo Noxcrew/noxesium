@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Noxesium 介面效能強化已關閉",
   "debug.experimental_patches.enabled": "Noxesium 介面效能強化已開啟",
   "debug.experimental_patches.help": "F3 + W = 切換 Noxesium 介面效能強化",
-  "debug.noxesium_settings.help": "F3 + V = 開啟 Noxesium 設定選單",
+  "debug.noxesium_settings.help": "F3 + W = 開啟 Noxesium 設定選單",
 
   "debug.fps_overlay.disabled": "FPS 計數器已關閉",
   "debug.fps_overlay.enabled": "FPS 計數器已開啟（F3 + Y 關閉）",
