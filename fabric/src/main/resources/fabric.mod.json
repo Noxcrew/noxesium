@@ -52,8 +52,8 @@
   "depends": {
     "fabric": "*",
     "fabricloader": ">=0.16.14",
-    "fabric-api": ">=0.127.0",
-    "minecraft": ">=1.21.6"
+    "fabric-api": ">=0.128.1",
+    "minecraft": ">=1.21.7"
   },
   "suggests": {
     "sodium": ">=0.6.13"

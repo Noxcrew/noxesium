@@ -21,7 +21,6 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -100,7 +99,7 @@ public class NoxesiumForgeHook implements NoxesiumPlatformHook {
 
     @Override
     public void sendPacket(ServerboundNoxesiumPacket packet) {
-        PacketDistributor.sendToServer(packet);
+        // TODO: PacketDistributor.sendToServer(packet);
     }
 
     @Override
