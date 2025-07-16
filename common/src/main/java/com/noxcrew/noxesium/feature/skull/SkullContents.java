@@ -6,10 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.NoxesiumMod;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -20,6 +17,11 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A custom chat component that renders a player's face at its location. The
@@ -62,7 +64,7 @@ public class SkullContents extends TranslatableContents {
             int advance,
             int ascent,
             float scale) {
-        super("", null, new Object[] {});
+        super("", null, new Object[]{});
         this.uuid = uuid;
         this.texture = texture;
         this.grayscale = grayscale;
@@ -74,7 +76,7 @@ public class SkullContents extends TranslatableContents {
 
     public SkullContents(
             Optional<UUID> uuid, Optional<String> textureIn, boolean grayscale, int advance, int ascent, float scale) {
-        super("", null, new Object[] {});
+        super("", null, new Object[]{});
         CompletableFuture<String> texture = new CompletableFuture<>();
         if (textureIn.isPresent()) {
             texture.complete(textureIn.get());
@@ -186,5 +188,32 @@ public class SkullContents extends TranslatableContents {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), uuid, grayscale, advance, ascent, scale);
+    }
+
+    /**
+     * Creates a new skull component out of the given info.
+     */
+    public static Component create(SkullStringFormatter.SkullInfo info) {
+        if (info.raw()) {
+            return create(info.value(), info.grayscale(), info.advance(), info.ascent(), info.scale());
+        } else {
+            return create(UUID.fromString(info.value()), info.grayscale(), info.advance(), info.ascent(), info.scale());
+        }
+    }
+
+    /**
+     * Creates a new skull component for the player with the given uuid.
+     */
+    public static Component create(UUID uuid, boolean grayscale, int advance, int ascent, float scale) {
+        return MutableComponent.create(
+                new SkullContents(Optional.of(uuid), Optional.empty(), grayscale, advance, ascent, scale));
+    }
+
+    /**
+     * Creates a new skull component using the given texture.
+     */
+    public static Component create(String texture, boolean grayscale, int advance, int ascent, float scale) {
+        return MutableComponent.create(
+                new SkullContents(Optional.empty(), Optional.of(texture), grayscale, advance, ascent, scale));
     }
 }
