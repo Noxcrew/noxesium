@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseButtonClickMixin {
 
     @Inject(method = "onPress", at = @At("HEAD"))
-    private void onPress(long screen, int button, int action, int mods, CallbackInfo ci) {
+    private void onPress(long window, int button, int action, int mods, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
 
