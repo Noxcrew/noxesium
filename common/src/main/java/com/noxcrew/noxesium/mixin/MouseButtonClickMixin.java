@@ -1,12 +1,8 @@
-package com.noxcrew.noxesium.mixin.feature;
+package com.noxcrew.noxesium.mixin;
 
 import com.noxcrew.noxesium.network.serverbound.ServerboundMouseButtonClickPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.components.ChatComponent;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseButtonClickMixin {
 
     @Inject(method = "onPress", at = @At("HEAD"))
-    private void onPress(long p_91531_, int p_91532_, int p_91533_, int p_91534_, CallbackInfo ci) {
+    private void onPress(long screen, int button, int action, int mods, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
         Player player = client.player;
 
@@ -26,23 +22,20 @@ public class MouseButtonClickMixin {
         }
 
         if (!client.gui.getChat().isChatFocused() && client.screen == null) {
-            if (p_91533_ == 1) {
-                if (p_91532_ == 0) {
-                    player.displayClientMessage(Component.literal("Pressed Left click"), false);
+            if (action == 1) {
+                if (button == 0) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.LEFT).send();
-                } else if (p_91532_ == 2) {
-                    player.displayClientMessage(Component.literal("Pressed Middle click"), false);
+                } else if (button == 2) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.MIDDLE).send();
-                } else if (p_91532_ == 1) {
-                    player.displayClientMessage(Component.literal("Pressed Right click"), false);
+                } else if (button == 1) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.RIGHT).send();
                 }
-            } else if (p_91533_ == 0) {
-                if (p_91532_ == 0) {
+            } else if (action == 0) {
+                if (button == 0) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.LEFT).send();
-                } else if (p_91532_ == 2) {
+                } else if (button == 2) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.MIDDLE).send();
-                } else if (p_91532_ == 1) {
+                } else if (button == 1) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.RIGHT).send();
                 }
             }

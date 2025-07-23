@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "GlowingHotkeyOverrideMixin",
+    "MouseButtonClickMixin",
     "debugoptions.CreativeModeInventoryScreenMixin",
     "debugoptions.DebugRendererMixin",
     "debugoptions.EntityRenderDispatcherMixin",
@@ -15,7 +16,6 @@
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
     "feature.FixVehicleTeleportMixin",
-    "feature.MouseButtonClickMixin",
     "feature.UnmovableInventoryMixin",
     "feature.UnmovableSlotMixin",
     "feature.component.DisguisedSkullTranslatableContentsMixin",
