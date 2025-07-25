@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.mixin;
 import com.noxcrew.noxesium.network.serverbound.ServerboundMouseButtonClickPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,11 +18,11 @@ import java.util.List;
 public class MouseButtonClickMixin {
 
     @Unique
-    private List<Integer> pressedButtons = new ArrayList<>();
+    private final List<Integer> noxesium$pressedButtons = new ArrayList<>();
 
     @Inject(method = "releaseMouse", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
     private void onReleaseMouse(CallbackInfo ci) {
-        Iterator<Integer> iterator = pressedButtons.iterator();
+        Iterator<Integer> iterator = noxesium$pressedButtons.iterator();
         while (iterator.hasNext()) {
             int button = iterator.next();
             if (button == 0) {
@@ -52,27 +51,27 @@ public class MouseButtonClickMixin {
             if (!client.gui.getChat().isChatFocused() && client.screen == null) {
                 if (button == 0) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.LEFT).send();
-                    pressedButtons.add(button);
+                    noxesium$pressedButtons.add(button);
                 } else if (button == 2) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.MIDDLE).send();
-                    pressedButtons.add(button);
+                    noxesium$pressedButtons.add(button);
                 } else if (button == 1) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, ServerboundMouseButtonClickPacket.Button.RIGHT).send();
-                    pressedButtons.add(button);
+                    noxesium$pressedButtons.add(button);
                 }
             }
         } else if (action == 0) {
 
-            if (pressedButtons.contains(button)) {
+            if (noxesium$pressedButtons.contains(button)) {
                 if (button == 0) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.LEFT).send();
-                    pressedButtons.remove((Object) button);
+                    noxesium$pressedButtons.remove((Object) button);
                 } else if (button == 2) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.MIDDLE).send();
-                    pressedButtons.remove((Object) button);
+                    noxesium$pressedButtons.remove((Object) button);
                 } else if (button == 1) {
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, ServerboundMouseButtonClickPacket.Button.RIGHT).send();
-                    pressedButtons.remove((Object) button);
+                    noxesium$pressedButtons.remove((Object) button);
                 }
             }
         }
