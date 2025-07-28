@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Экспериментальные оптимизации интерфейса от Noxesium выключены",
   "debug.experimental_patches.enabled": "Экспериментальные оптимизации интерфейса от Noxesium включены",
   "debug.experimental_patches.help": "F3 + W = Переключить экспериментальные оптимизации интерфейса от Noxesium",
-  "debug.noxesium_settings.help": "F3 + V = Открыть настройки Noxesium",
+  "debug.noxesium_settings.help": "F3 + W = Открыть настройки Noxesium",
 
   "debug.fps_overlay.disabled": "FPS Оверлей отключен.",
   "debug.fps_overlay.enabled": "FPS Оверлей включен (чтобы отключить используйте F3 + Y)",

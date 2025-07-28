@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Overrides functionality of the sound engine to allow music-type tracks to continue playing even if they are muted.
@@ -45,7 +45,7 @@ public abstract class CustomNoxesiumSoundsMixin {
             cancellable = true)
     private void handleNoxesiumSounds(
             SoundInstance soundInstance,
-            CallbackInfo ci,
+            CallbackInfoReturnable<SoundEngine.PlayResult> ci,
             @Local Sound sound,
             @Local(ordinal = 1) boolean isLooping,
             @Local(ordinal = 2) boolean streaming,

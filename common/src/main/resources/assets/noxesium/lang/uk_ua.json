@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Екпериментальні оптимізації UI від Noxesium вимкнені",
   "debug.experimental_patches.enabled": "Екпериментальні оптимізації UI від Noxesium увімкнені",
   "debug.experimental_patches.help": "F3 + W = Перемикання експериментальних оптимізацій UI від Noxesium",
-  "debug.noxesium_settings.help": "F3 + V = Відкрити налаштування Noxesium",
+  "debug.noxesium_settings.help": "F3 + W = Відкрити налаштування Noxesium",
   "debug.fps_overlay.disabled": "Лічильник FPS вимкнуто",
   "debug.fps_overlay.enabled": "Лічильник FPS увімкнуто (можна вимнути через F3 + Y)",
   "debug.fps_overlay.help": "F3 + Y = Перемикання лічильника FPS",

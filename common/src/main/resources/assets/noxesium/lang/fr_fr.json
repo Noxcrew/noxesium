@@ -2,7 +2,7 @@
   "debug.experimental_patches.disabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant désactivés.",
   "debug.experimental_patches.enabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant activés.",
   "debug.experimental_patches.help": "F3 + W = Basculer les correctifs de performance de l'Interface Utilisateur de Noxesium.",
-  "debug.noxesium_settings.help": "F3 + V = Ouvrir le menu de paramètres de Noxesium",
+  "debug.noxesium_settings.help": "F3 + W = Ouvrir le menu de paramètres de Noxesium",
 
   "debug.fps_overlay.disabled": "Le compteur d'IPS est maintenant désactivé.",
   "debug.fps_overlay.enabled": "Le compteur d'IPS est maintenant activé. (Désactivables avec F3 + Y)",
