@@ -5,12 +5,13 @@ import com.noxcrew.noxesium.feature.HoverSoundTag;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -22,10 +23,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Random;
+
 import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
 
 @Mixin(AbstractContainerScreen.class)
-public class HoverSoundMixin {
+public abstract class HoverSoundMixin {
 
     @Unique
     private static ItemStack noxesium$lastHoveredStack = ItemStack.EMPTY;
@@ -34,8 +37,11 @@ public class HoverSoundMixin {
     @Nullable
     protected Slot hoveredSlot;
 
+    @Unique
+    private final static Random noxesium$random = new Random();
+
     @Inject(method = "onClose", at = @At("HEAD"))
-    private void onClose(CallbackInfo ci) {
+    private void noxesium$onClose(CallbackInfo ci) {
         hoveredSlot = null;
     }
 
@@ -43,7 +49,6 @@ public class HoverSoundMixin {
     private void noxesium$render(GuiGraphics guiGraphics, int i, int j, float k, CallbackInfo ci) {
         ItemStack currentStack = this.hoveredSlot != null ? this.hoveredSlot.getItem() : ItemStack.EMPTY;
 
-        // If the hovered item has not changed, dont need to do anything
         if (ItemStack.matches(currentStack, noxesium$lastHoveredStack)) {
             return;
         }
@@ -51,16 +56,24 @@ public class HoverSoundMixin {
         // play hover off sound
         if (!noxesium$lastHoveredStack.isEmpty()) {
             var hoverSoundTag = noxesium$getHoverSoundTag(noxesium$lastHoveredStack);
-            if (hoverSoundTag != null && hoverSoundTag.hoverOff().isPresent()) {
-                noxesium$playSound(hoverSoundTag.hoverOff().get());
+            if (hoverSoundTag != null) {
+                if (noxesium$shouldPlaySound(hoverSoundTag)) {
+                    if (hoverSoundTag.hoverOff().isPresent()) {
+                        noxesium$playSound(hoverSoundTag.hoverOff().get());
+                    }
+                }
             }
         }
 
         // play hover on sound
         if (!currentStack.isEmpty()) {
             var hoverSoundTag = noxesium$getHoverSoundTag(currentStack);
-            if (hoverSoundTag != null && hoverSoundTag.hoverOn().isPresent()) {
-                noxesium$playSound(hoverSoundTag.hoverOn().get());
+            if (hoverSoundTag != null) {
+                if (noxesium$shouldPlaySound(hoverSoundTag)) {
+                    if (hoverSoundTag.hoverOn().isPresent()) {
+                        noxesium$playSound(hoverSoundTag.hoverOn().get());
+                    }
+                }
             }
         }
 
@@ -83,14 +96,31 @@ public class HoverSoundMixin {
 
         if (hoverTag == null) return null;
 
-        return HoverSoundTag.CODEC.decode(NbtOps.INSTANCE, hoverTag).getOrThrow().getFirst();
+        var result = HoverSoundTag.CODEC.decode(NbtOps.INSTANCE, hoverTag);
+        if (result.isSuccess()) {
+            return result.getOrThrow().getFirst();
+        } else {
+            return null;
+        }
     }
 
     @Unique
-    private void noxesium$playSound(ResourceLocation resourceLocation) {
-        var soundEvent = BuiltInRegistries.SOUND_EVENT.get(resourceLocation);
+    private void noxesium$playSound(HoverSoundTag.Sound sound) {
+        var soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound.sound());
         if (soundEvent.isEmpty()) return;
 
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(soundEvent.get().value(), 1.0F));
+        float pitch = sound.pitchMax() == sound.pitchMin() ? sound.pitchMax() : noxesium$random.nextFloat(sound.pitchMin(), sound.pitchMax());
+
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(soundEvent.get().value(), pitch, sound.volume()));
     }
+
+    @Unique
+    private boolean noxesium$shouldPlaySound(HoverSoundTag tag) {
+        if (tag.onlyPlayInNonPlayerInventories()) {
+            var currentScreen = (AbstractContainerScreen) (Object) this;
+            return !(currentScreen instanceof InventoryScreen || currentScreen instanceof CreativeModeInventoryScreen);
+        }
+        return true;
+    }
+
 }
