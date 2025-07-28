@@ -15,6 +15,7 @@
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
     "feature.FixVehicleTeleportMixin",
+    "feature.HoverSoundMixin",
     "feature.UnmovableInventoryMixin",
     "feature.UnmovableSlotMixin",
     "feature.component.DisguisedSkullTranslatableContentsMixin",

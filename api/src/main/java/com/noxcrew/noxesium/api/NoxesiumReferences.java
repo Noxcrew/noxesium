@@ -9,7 +9,7 @@ public class NoxesiumReferences {
      * The current protocol version of the mod. Servers can use this version to determine which functionality
      * of Noxesium is available on the client. The protocol version will increment every full release, as such
      * ít is recommended to work with >= comparisons.
-     *
+     * <p>
      * Add the versions when this value changes to [NoxesiumListCommand] to serve as a proper record
      * of when it was raised. Protocol version should only raise once per release.
      */
@@ -29,4 +29,9 @@ public class NoxesiumReferences {
      * The NBT tag used for an immovable item.
      */
     public static final String IMMOVABLE_TAG = NoxesiumReferences.NAMESPACE + ":immovable";
+
+    /**
+     * The NBT tag used for adding hover sound data to item stack
+     */
+    public static final String HOVER_SOUND_TAG = NoxesiumReferences.NAMESPACE + ":hover_sound";
 }
