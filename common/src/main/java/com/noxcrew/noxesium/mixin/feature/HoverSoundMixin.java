@@ -23,7 +23,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 
 import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
 
@@ -53,31 +55,21 @@ public abstract class HoverSoundMixin {
             return;
         }
 
-        // play hover off sound
-        if (!noxesium$lastHoveredStack.isEmpty()) {
-            var hoverSoundTag = noxesium$getHoverSoundTag(noxesium$lastHoveredStack);
-            if (hoverSoundTag != null) {
-                if (noxesium$shouldPlaySound(hoverSoundTag)) {
-                    if (hoverSoundTag.hoverOff().isPresent()) {
-                        noxesium$playSound(hoverSoundTag.hoverOff().get());
-                    }
-                }
-            }
-        }
+        // hover off sound for the previous item
+        noxesium$tryPlaySound(noxesium$lastHoveredStack, HoverSoundTag::hoverOff);
 
-        // play hover on sound
-        if (!currentStack.isEmpty()) {
-            var hoverSoundTag = noxesium$getHoverSoundTag(currentStack);
-            if (hoverSoundTag != null) {
-                if (noxesium$shouldPlaySound(hoverSoundTag)) {
-                    if (hoverSoundTag.hoverOn().isPresent()) {
-                        noxesium$playSound(hoverSoundTag.hoverOn().get());
-                    }
-                }
-            }
-        }
+        // hover on sound for current item
+        noxesium$tryPlaySound(currentStack, HoverSoundTag::hoverOn);
 
         noxesium$lastHoveredStack = currentStack.copy();
+    }
+
+    @Unique
+    private void noxesium$tryPlaySound(ItemStack stack, Function<HoverSoundTag, Optional<HoverSoundTag.Sound>> sound) {
+        Optional.ofNullable(noxesium$getHoverSoundTag(stack))
+                .filter(this::noxesium$shouldPlaySound)
+                .flatMap(sound)
+                .ifPresent(this::noxesium$playSound);
     }
 
     @Unique
@@ -122,5 +114,4 @@ public abstract class HoverSoundMixin {
         }
         return true;
     }
-
 }
