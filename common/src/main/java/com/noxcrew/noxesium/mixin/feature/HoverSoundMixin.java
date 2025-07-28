@@ -79,11 +79,14 @@ public abstract class HoverSoundMixin {
 
         final CompoundTag rootTag = data.getUnsafe();
 
-        @Nullable CompoundTag hoverTag;
+        @Nullable CompoundTag hoverTag = null;
         if (rootTag.contains(NoxesiumReferences.HOVER_SOUND_TAG)) {
             hoverTag = rootTag.getCompound(NoxesiumReferences.HOVER_SOUND_TAG).orElse(null);
         } else {
-            hoverTag = rootTag.getCompound(BUKKIT_COMPOUND_ID).orElse(null);
+            var bukkitCompound = rootTag.getCompound(BUKKIT_COMPOUND_ID).orElse(null);
+            if (bukkitCompound != null) {
+                hoverTag = bukkitCompound.getCompound(NoxesiumReferences.HOVER_SOUND_TAG).orElse(null);
+            }
         }
 
         if (hoverTag == null) return null;
