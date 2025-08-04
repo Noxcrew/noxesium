@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.mixin.rules.qib;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.entity.LivingEntityExtension;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import java.util.ArrayList;
@@ -208,14 +209,16 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
             var duration = useItem.getUseDuration(entity) - remaining;
             if (duration == 9 || noxesium$soundQueued) {
                 if (player.isInWaterOrRain()) {
-                    player.level()
-                            .playLocalSound(
-                                    player,
-                                    SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(
-                                            "noxesium", "trident.ready_indicator")),
-                                    SoundSource.PLAYERS,
-                                    1f,
-                                    1f);
+                    if (NoxesiumMod.getInstance().getConfig().shouldPlayTridentReadyIndicator) {
+                        player.level()
+                                .playLocalSound(
+                                        player,
+                                        SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(
+                                                "noxesium", "trident.ready_indicator")),
+                                        SoundSource.PLAYERS,
+                                        1f,
+                                        1f);
+                    }
                 } else {
                     noxesium$soundQueued = true;
                     return;

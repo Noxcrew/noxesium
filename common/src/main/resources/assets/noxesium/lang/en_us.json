@@ -21,6 +21,8 @@
   "noxesium.options.ui_map_size.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
   "noxesium.options.ui_map_location.name": "Map UI Location",
   "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting.",
+  "noxesium.options.play_trident_ready_indicator.name": "Trident Ready Indicator",
+  "noxesium.options.play_trident_ready_indicator.tooltip" : "Plays a sound when you are able to launch a riptide trident.",
 
   "noxesium.options.dump_incoming_packets.name": "Dump Incoming Packets",
   "noxesium.options.dump_incoming_packets.tooltip": "Enables logging of Noxesium packets that are handled by the client.\n\n§cIntended for server developers working on Noxesium integrations.",

@@ -20,7 +20,8 @@ public abstract class AccessibilitySettingsScreenMixin {
                 VanillaOptions.resetToggleKeys(),
                 VanillaOptions.renderMapsAsUi(),
                 VanillaOptions.mapUiSize(),
-                VanillaOptions.mapUiLocation());
+                VanillaOptions.mapUiLocation(),
+                VanillaOptions.shouldPlayTridentReadyIndicator());
         var newArray = new OptionInstance<?>[original.length + newOptions.size()];
         System.arraycopy(original, 0, newArray, 0, original.length);
         for (int i = newOptions.size(); i > 0; i--) {

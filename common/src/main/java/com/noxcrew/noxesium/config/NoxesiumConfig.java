@@ -30,6 +30,7 @@ public class NoxesiumConfig {
     public boolean showCullingBoxes = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
+    public boolean shouldPlayTridentReadyIndicator = true;
 
     /**
      * Returns whether to render maps in the UI.

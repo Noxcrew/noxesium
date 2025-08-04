@@ -59,6 +59,15 @@ public class VanillaOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
+    private static final OptionInstance<Boolean> shouldPlayTridentReadyIndicator = OptionInstance.createBoolean(
+            "noxesium.options.play_trident_ready_indicator.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.play_trident_ready_indicator.tooltip")),
+            NoxesiumMod.getInstance().getConfig().shouldPlayTridentReadyIndicator,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().shouldPlayTridentReadyIndicator = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
     public static OptionInstance<Boolean> resetToggleKeys() {
         return resetToggleKeys;
     }
@@ -73,6 +82,10 @@ public class VanillaOptions {
 
     public static OptionInstance<MapLocation> mapUiLocation() {
         return mapUiLocation;
+    }
+
+    public static OptionInstance<Boolean> shouldPlayTridentReadyIndicator() {
+        return shouldPlayTridentReadyIndicator;
     }
 
     private static Component percentValueLabel(Component component, double d) {
