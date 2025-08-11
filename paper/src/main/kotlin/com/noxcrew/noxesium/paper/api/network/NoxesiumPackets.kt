@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundResetServer
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientInformationPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundClientSettingsPacket
+import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundMouseButtonClickPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundNoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundQibTriggeredPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.ServerboundRiptidePacket
@@ -31,6 +32,7 @@ public object NoxesiumPackets {
     public val SERVER_QIB_TRIGGERED: ServerboundPacketType<ServerboundQibTriggeredPacket> =
         server("qib_triggered", ::ServerboundQibTriggeredPacket)
     public val SERVER_RIPTIDE: ServerboundPacketType<ServerboundRiptidePacket> = server("riptide", ::ServerboundRiptidePacket)
+    public val SERVER_MOUSE_BUTTON_CLICK: ServerboundPacketType<ServerboundMouseButtonClickPacket> = server("mouse_button_click", ::ServerboundMouseButtonClickPacket)
 
     public val CLIENT_CHANGE_SERVER_RULES: PacketType<ClientboundChangeServerRulesPacket> = client("change_server_rules")
     public val CLIENT_RESET_SERVER_RULES: PacketType<ClientboundResetServerRulesPacket> = client("reset_server_rules")

@@ -16,11 +16,8 @@ import com.noxcrew.noxesium.network.clientbound.ClientboundResetPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundResetServerRulesPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundServerInformationPacket;
 import com.noxcrew.noxesium.network.clientbound.ClientboundSetExtraEntityDataPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundClientInformationPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundNoxesiumPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundQibTriggeredPacket;
-import com.noxcrew.noxesium.network.serverbound.ServerboundRiptidePacket;
+import com.noxcrew.noxesium.network.serverbound.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,6 +55,8 @@ public class NoxesiumPackets {
             NoxesiumPackets.server("qib_triggered", ServerboundQibTriggeredPacket.STREAM_CODEC);
     public static final NoxesiumPayloadType<ServerboundRiptidePacket> SERVER_RIPTIDE =
             NoxesiumPackets.server("riptide", ServerboundRiptidePacket.STREAM_CODEC);
+    public static final NoxesiumPayloadType<ServerboundMouseButtonClickPacket> SERVER_MOUSE_BUTTON_CLICK =
+            NoxesiumPackets.server("mouse_button_click", ServerboundMouseButtonClickPacket.STREAM_CODEC);
 
     public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CLIENT_CUSTOM_SOUND_MODIFY =
             NoxesiumPackets.client("modify_sound", ClientboundCustomSoundModifyPacket.STREAM_CODEC);
