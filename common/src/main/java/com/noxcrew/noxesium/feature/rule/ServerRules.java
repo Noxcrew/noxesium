@@ -130,6 +130,14 @@ public class ServerRules {
                 }
             }));
 
+    /**
+     * Allows tripwires and note blocks to have server authoritative updates. This means the client does not
+     * attempt to make any local block state changes for these blocks.
+     */
+    public static ClientServerRule<Boolean> SERVER_AUTHORITATIVE_BLOCK_UPDATES =
+            register(new BooleanServerRule(ServerRuleIndices.SERVER_AUTHORITATIVE_BLOCK_UPDATES, false));
+
+
     static {
         // Register dummy listeners for removed rules so it doesn't
         // throw errors on old servers.
