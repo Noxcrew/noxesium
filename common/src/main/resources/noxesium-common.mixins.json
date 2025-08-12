@@ -27,6 +27,8 @@
     "feature.component.ext.SkinManagerExt",
     "feature.component.ext.SkinTextureDownloaderExt",
     "feature.component.ext.TextureCacheExt",
+    "feature.ServerAuthoritativeNoteBlockUpdatesMixin",
+    "feature.ServerAuthoritativeTripwireUpdatesMixin",
     "font.PreparedTextBuilderMixin",
     "rules.BoatCollisionMixin",
     "rules.CustomCreativeReloadMixin",
