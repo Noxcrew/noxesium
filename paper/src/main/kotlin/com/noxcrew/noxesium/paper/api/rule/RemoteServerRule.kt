@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import com.noxcrew.noxesium.api.qib.QibDefinition
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
+import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import java.awt.Color
 import java.util.Optional
@@ -97,7 +98,7 @@ public class ItemStackListServerRule(
     default: List<ItemStack> = emptyList(),
 ) : RemoteServerRule<List<ItemStack>>(index, default) {
     override fun write(value: List<ItemStack>, buffer: RegistryFriendlyByteBuf) {
-        buffer.writeCollection(value) { _, item -> ItemStackServerRule.write(buffer, item) }
+        buffer.writeCollection(value) { _, item -> ItemStackServerRule.write(buffer, Bukkit.getOnlinePlayers().first(), item) } // TODO pass down versioning info
     }
 }
 

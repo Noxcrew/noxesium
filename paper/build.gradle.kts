@@ -18,6 +18,7 @@ dependencies {
     api(libs.kotlin.serialization.hocon)
     api(libs.slf4j)
     api(libs.caffeine)
+    api(libs.viaversion)
 
     // Add the API module as a dependency
     api(project(":api"))

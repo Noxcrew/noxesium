@@ -1,14 +1,15 @@
 package com.noxcrew.noxesium.paper.api.rule
 
-import net.minecraft.core.component.DataComponentType
-import net.minecraft.core.registries.BuiltInRegistries
+import com.viaversion.viaversion.api.Via
+import com.viaversion.viaversion.api.type.Types
+import io.netty.buffer.Unpooled
 import net.minecraft.network.RegistryFriendlyByteBuf
-import net.minecraft.network.codec.StreamCodec
+import net.minecraft.server.MinecraftServer
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.Optional
-import kotlin.jvm.optionals.getOrNull
 
 /** A server rule that stores an item stack. */
 public class ItemStackServerRule(
@@ -17,47 +18,34 @@ public class ItemStackServerRule(
 ) : RemoteServerRule<ItemStack>(index, default) {
     public companion object {
         /** Writes [item] to the given [buffer]. */
-        public fun write(buffer: RegistryFriendlyByteBuf, item: ItemStack) {
-            if (item.isEmpty) {
-                buffer.writeVarInt(0)
-            } else {
-                val nms = CraftItemStack.asNMSCopy(item)
-                buffer.writeVarInt(item.amount)
-                buffer.writeUtf(
-                    nms.itemHolder
-                        .unwrapKey()
-                        .getOrNull()
-                        ?.location()
-                        ?.toString() ?: "unknown"
-                )
-                val components = mutableListOf<Map.Entry<DataComponentType<*>, Optional<*>>>()
-                val emptyComponents = mutableListOf<Map.Entry<DataComponentType<*>, Optional<*>>>()
-                for (entry in nms.componentsPatch.entrySet()) {
-                    if (entry.value.isPresent) {
-                        components += entry
-                    } else {
-                        emptyComponents += entry
-                    }
-                }
-                buffer.writeVarInt(components.size)
-                buffer.writeVarInt(emptyComponents.size)
-                for ((key, value) in components) {
-                    buffer.writeUtf(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(key).toString())
-                    key.streamCodec().encode(buffer, value)
-                }
-                for ((key) in emptyComponents) {
-                    buffer.writeUtf(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(key).toString())
+        public fun write(buffer: RegistryFriendlyByteBuf, player: Player, item: ItemStack) {
+            // Write the ItemStack to a temporary buffer
+            val tempBuffer = Unpooled.buffer()
+            net.minecraft.world.item.ItemStack.STREAM_CODEC.encode(
+                RegistryFriendlyByteBuf(tempBuffer, MinecraftServer.getServer().registryAccess()),
+                CraftItemStack.asNMSCopy(item),
+            )
+
+            // Process the temporary buffer using ViaVersion
+            var item = Types.ITEM1_20_2.read(tempBuffer)
+
+            // Parse the item to the intended destination format
+            val connection = Via.getAPI().getConnection(player.uniqueId)
+            Via.getManager().protocolManager.getProtocolPath(
+                Via.getAPI().getPlayerProtocolVersion(player.uniqueId),
+                Via.getManager().protocolManager.serverProtocolVersion.highestSupportedProtocolVersion(),
+            )?.forEach { protocol ->
+                protocol.protocol().itemRewriter?.handleItemToClient(connection, item)?.let {
+                    item = it
                 }
             }
-        }
 
-        /** Encodes [value] into [buffer] using this codec. */
-        public fun <T : Any> StreamCodec<in RegistryFriendlyByteBuf, T>.encode(buffer: RegistryFriendlyByteBuf, value: Optional<*>) {
-            encode(buffer, value.get() as T)
+            // Write the destination item to the buffer
+            Types.ITEM1_20_2.write(buffer, item)
         }
     }
 
     override fun write(value: ItemStack, buffer: RegistryFriendlyByteBuf) {
-        write(buffer, value)
+        write(buffer, Bukkit.getOnlinePlayers().first(), value)
     }
 }

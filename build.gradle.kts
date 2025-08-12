@@ -31,6 +31,7 @@ allprojects {
         maven("https://maven.terraformersmc.com/")
         maven("https://maven.shedaniel.me/")
         maven("https://maven.covers1624.net/")
+        maven("https://repo.viaversion.com")
         mavenCentral()
         maven {
             setUrl("https://api.modrinth.com/maven")

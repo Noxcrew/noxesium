@@ -22,6 +22,7 @@ import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInfor
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundSetExtraEntityDataPacket
 import com.noxcrew.noxesium.paper.api.network.serverbound.handle
 import com.noxcrew.noxesium.paper.api.readPluginMessage
+import com.viaversion.viaversion.api.Via
 import io.papermc.paper.adventure.PaperAdventure
 import it.unimi.dsi.fastutil.ints.IntImmutableList
 import net.kyori.adventure.key.Key
