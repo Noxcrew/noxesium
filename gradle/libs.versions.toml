@@ -28,6 +28,9 @@ fabric-api = "0.131.0+1.21.8"
 sodium = "mc1.21.6-0.6.13-fabric"
 modmenu = "15.0.0-beta.3"
 
+# Paper
+viaversion = "5.4.2"
+
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -55,3 +58,5 @@ fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.r
 
 sodium = { group = "maven.modrinth", name = "sodium", version.ref = "sodium" }
 modmenu = { group = "com.terraformersmc", name = "modmenu", version.ref = "modmenu" }
+
+viaversion = { group = "com.viaversion", name = "viaversion-api", version.ref = "viaversion" }

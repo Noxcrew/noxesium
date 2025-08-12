@@ -19,3 +19,5 @@ accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/m
 
 accessible field net/minecraft/client/renderer/RenderPipelines TEXT_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
+
+accessible field net/minecraft/core/component/DataComponents ENCODER_CACHE Lnet/minecraft/util/EncoderCache;

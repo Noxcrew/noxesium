@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import net.kyori.adventure.key.Key;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -40,7 +41,7 @@ public class NoxesiumGameComponentTypes {
     private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         return NoxesiumRegistries.GAME_COMPONENTS.register(
                 Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, key), codec, streamCodec)
+                new NoxesiumComponentType<T>(ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, key), DataComponents.ENCODER_CACHE.wrap(codec), streamCodec)
         );
     }
 }
