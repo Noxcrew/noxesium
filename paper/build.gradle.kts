@@ -3,14 +3,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.10"
+    kotlin("jvm") version "2.2.0"
     alias(libs.plugins.paperweight)
 }
 
 val javaVersion: Int = 21
 
 dependencies {
-    paperweight.paperDevBundle("1.21.5-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
     compileOnlyApi(libs.guava)
 
     api(libs.kotlin.coroutines)

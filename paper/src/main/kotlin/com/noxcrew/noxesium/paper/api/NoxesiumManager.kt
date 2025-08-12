@@ -10,8 +10,6 @@ import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
-import com.noxcrew.noxesium.paper.v0.NoxesiumListenerV0
-import com.noxcrew.noxesium.paper.v1.NoxesiumListenerV1
 import com.noxcrew.noxesium.paper.v2.NoxesiumListenerV2
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.Bukkit
@@ -41,8 +39,6 @@ public open class NoxesiumManager(
     private val ready = ConcurrentHashMap.newKeySet<UUID>()
     private val pending = ConcurrentHashMap<UUID, Pair<Int, String>>()
 
-    private lateinit var v0: BaseNoxesiumListener
-    private lateinit var v1: BaseNoxesiumListener
     private lateinit var v2: BaseNoxesiumListener
     private var task: Int = -1
 
@@ -59,8 +55,6 @@ public open class NoxesiumManager(
      * Registers this manager and all listener variants.
      */
     public fun register() {
-        v0 = NoxesiumListenerV0(plugin, logger, this).register()
-        v1 = NoxesiumListenerV1(plugin, logger, this).register()
         v2 = NoxesiumListenerV2(plugin, logger, this).register()
 
         // Send server rule updates once a tick in a batch
@@ -98,8 +92,6 @@ public open class NoxesiumManager(
 
         Bukkit.getScheduler().cancelTask(task)
 
-        v0.unregister()
-        v1.unregister()
         v2.unregister()
     }
 
@@ -130,12 +122,10 @@ public open class NoxesiumManager(
         val protocol = getProtocolVersion(player) ?: return null
 
         // Use the newest protocol this client supports!
-        return if (protocol < NoxesiumFeature.API_V1.minProtocolVersion) {
-            v0.createPacket(player, packet)
-        } else if (protocol < NoxesiumFeature.API_V2.minProtocolVersion) {
-            v1.createPacket(player, packet)
-        } else {
+        return if (protocol >= NoxesiumFeature.API_V2.minProtocolVersion) {
             v2.createPacket(player, packet)
+        } else {
+            null
         }
     }
 

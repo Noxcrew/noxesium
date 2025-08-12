@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.noxcrew.noxesium.fabric.mixin.sodium",
+  "refmap": "noxesium.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "com.noxcrew.noxesium.fabric.NoxesiumMixinPlugin",
+  "client": [
+    "SodiumDeferChunkUpdatesMixin",
+    "SodiumSettingOverrideMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

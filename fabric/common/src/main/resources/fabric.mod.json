@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "noxesium",
+  "version": "${version}",
+  "name": "Noxesium",
+  "description": "Improves play experience on large multiplayer servers.",
+  "authors": [
+    "Noxcrew"
+  ],
+  "contact": {
+    "repo": "https://github.com/Noxcrew/noxesium",
+    "homepage": "https://github.com/Noxcrew/noxesium",
+    "issues": "https://github.com/Noxcrew/noxesium/issues"
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "assets/noxesium/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.noxcrew.noxesium.fabric.NoxesiumMod"
+    ],
+    "noxesium": [
+      "com.noxcrew.noxesium.fabric.CommonNoxesiumEntrypoint",
+      "com.noxcrew.noxesium.fabric.mcc.MccNoxesiumEntrypoint"
+    ],
+    "modmenu": [
+      "com.noxcrew.noxesium.fabric.integration.modmenu.ModMenuIntegration"
+    ]
+  },
+  "accessWidener": "noxesium.accesswidener",
+  "custom": {
+    "loom:injected_interfaces": {
+      "net/minecraft/world/entity/Entity": [
+        "com/noxcrew/noxesium/fabric/feature/entity/ExtraEntityDataHolder"
+      ],
+      "net/minecraft/world/entity/LivingEntity": [
+        "com/noxcrew/noxesium/fabric/feature/entity/LivingEntityExtension"
+      ],
+      "net/minecraft/world/entity/Interaction": [
+        "com/noxcrew/noxesium/fabric/feature/entity/InteractionExtension"
+      ],
+      "net/minecraft/client/renderer/entity/state/GuardianRenderState": [
+        "com/noxcrew/noxesium/fabric/feature/entity/BeamColorStateExtension"
+      ],
+      "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": [
+        "com/noxcrew/noxesium/fabric/feature/entity/BeamColorStateExtension"
+      ]
+    }
+  },
+  "mixins": [
+    "noxesium-api.mixins.json",
+    "noxesium-common.mixins.json",
+    "noxesium-sodium.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "fabricloader": ">=0.16.14",
+    "fabric-api": ">=0.128.1",
+    "minecraft": ">=1.21.7"
+  },
+  "suggests": {
+    "sodium": ">=0.6.13"
+  }
+}

@@ -15,7 +15,6 @@ plugins {
     id("noxesium.publishing") apply false
 
     alias(libs.plugins.loom) apply false
-    alias(libs.plugins.moddev) apply false
     alias(libs.plugins.spotless) apply false
 }
 
@@ -29,8 +28,9 @@ allprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.neoforged.net/releases/")
         maven("https://maven.terraformersmc.com/")
+        maven("https://maven.shedaniel.me/")
+        maven("https://maven.covers1624.net/")
         mavenCentral()
         maven {
             setUrl("https://api.modrinth.com/maven")

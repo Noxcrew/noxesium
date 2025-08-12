@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.paper.api.rule
 
-import com.noxcrew.noxesium.api.protocol.rule.EntityRuleIndices
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.RuleFunction
+import com.noxcrew.noxesium.paper.v2.EntityRuleIndices
 import java.awt.Color
 import java.util.Optional
 

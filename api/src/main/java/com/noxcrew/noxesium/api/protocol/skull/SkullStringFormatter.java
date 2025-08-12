@@ -30,7 +30,7 @@ public class SkullStringFormatter {
      * Parses the given input string into skull info.
      * @throws IllegalArgumentException If the string is invalid
      */
-    public static SkullInfo parse(String input) throws IllegalArgumentException, NumberFormatException {
+    public static SkullInfo parse(String input) throws IllegalArgumentException {
         boolean raw = false;
         String[] values;
         if (input.startsWith("%nox_uuid%")) {

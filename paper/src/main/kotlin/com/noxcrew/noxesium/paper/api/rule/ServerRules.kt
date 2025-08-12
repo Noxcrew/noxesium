@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.paper.api.rule
 
-import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices
 import com.noxcrew.noxesium.api.qib.QibDefinition
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.RuleFunction
+import com.noxcrew.noxesium.paper.v2.ServerRuleIndices
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 

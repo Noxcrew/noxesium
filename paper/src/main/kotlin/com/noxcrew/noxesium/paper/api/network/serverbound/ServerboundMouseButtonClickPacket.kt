@@ -11,7 +11,6 @@ public data class ServerboundMouseButtonClickPacket(
     public val action: Action,
     public val button: Button,
 ) : ServerboundNoxesiumPacket(NoxesiumPackets.SERVER_MOUSE_BUTTON_CLICK) {
-
     public enum class Action {
         PRESS_DOWN,
         RELEASE,
