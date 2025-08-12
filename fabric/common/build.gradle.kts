@@ -47,8 +47,13 @@ dependencies {
         include(target)
         implementation(target)
     }
+    fun includeModImplementation(target: Any) {
+        include(target)
+        modImplementation(target)
+    }
     includeImplementation(project(":api"))
     includeImplementation(libs.prtree)
+    includeModImplementation(libs.adventure.fabric)
 }
 
 // Include the resources from the fabric-api folder too

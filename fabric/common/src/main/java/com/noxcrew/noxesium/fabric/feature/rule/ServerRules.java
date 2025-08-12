@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.fabric.feature.rule;
 
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.fabric.ServerRuleIndices;
 import com.noxcrew.noxesium.fabric.feature.rule.impl.*;
 import java.util.Collections;
 import java.util.Optional;
@@ -13,20 +14,6 @@ import net.minecraft.world.item.ItemStack;
  * for a server to modify.
  */
 public class ServerRules {
-    /**
-     * If `true` disables the riptide spin attack on the trident from colliding with any entities,
-     * useful for non-pvp mini-games where the trident is used as a movement tool.
-     */
-    public static ClientServerRule<Boolean> DISABLE_SPIN_ATTACK_COLLISIONS =
-            register(new BooleanServerRule(ServerRuleIndices.DISABLE_SPIN_ATTACK_COLLISIONS, false));
-
-    /**
-     * An integer pixel amount to vertically offset the HUD held item name.
-     * Useful for avoiding overlapping faction icons. Positive values move the text up.
-     */
-    public static ClientServerRule<Integer> HELD_ITEM_NAME_OFFSET =
-            register(new IntegerServerRule(ServerRuleIndices.HELD_ITEM_NAME_OFFSET, 0));
-
     /**
      * Whether the player should currently prevent any mouse inputs from moving their camera.
      */

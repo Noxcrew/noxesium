@@ -14,6 +14,8 @@ public class HandshakePackets extends PacketCollection {
 
     public final NoxesiumPayloadType<ClientboundHandshakeAcknowledgePacket> CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE =
             client("clientbound_handshake_ack", ClientboundHandshakeAcknowledgePacket.STREAM_CODEC);
+    public final NoxesiumPayloadType<ClientboundRegistryIdentifiersPacket> CLIENTBOUND_REGISTRY_IDS =
+            client("clientbound_registry_ids", ClientboundRegistryIdentifiersPacket.STREAM_CODEC);
 
     public final NoxesiumPayloadType<ServerboundHandshakePacket> SERVERBOUND_HANDSHAKE =
             server("serverbound_handshake", ServerboundHandshakePacket.STREAM_CODEC);

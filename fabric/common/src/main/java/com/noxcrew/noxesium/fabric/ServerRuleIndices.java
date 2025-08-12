@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.paper.v2;
+package com.noxcrew.noxesium.fabric;
 
 /**
  * A static location to fetch all server rule indices.

@@ -16,6 +16,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
+    modImplementation(libs.adventure.fabric)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

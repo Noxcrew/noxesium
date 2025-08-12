@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.fabric.network.handshake;
 import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ClientboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.fabric.network.handshake.ClientboundRegistryIdentifiersPacket;
 import com.noxcrew.noxesium.api.fabric.network.handshake.EntrypointProtocol;
 import com.noxcrew.noxesium.api.fabric.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ServerboundHandshakeAcknowledgePacket;
@@ -39,9 +40,6 @@ public class NoxesiumInitializer {
      * Registers the initializer.
      */
     public void register() {
-        // Register the handshake packet collection at all times
-        HandshakePackets.INSTANCE.register();
-
         // Every time the client joins a server we send over information on the version being used,
         // we initialize when both packets are known ad we are in the PLAY phase, whenever both have
         // happened.
@@ -68,6 +66,11 @@ public class NoxesiumInitializer {
         HandshakePackets.INSTANCE.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (ignored, packet, ignored3) -> {
             handle(packet);
         });
+
+        // Whenever we receive registry packets we update the registries
+        HandshakePackets.INSTANCE.CLIENTBOUND_REGISTRY_IDS.addListener(this, (ignored, packet, ignored3) -> {
+            handle(packet);
+        });
     }
 
     /**
@@ -82,6 +85,9 @@ public class NoxesiumInitializer {
 
         // Check if the connection has been established first, just in case
         if (Minecraft.getInstance().getConnection() == null) return;
+
+        // Register the handshake packet collection at all times
+        HandshakePackets.INSTANCE.register();
 
         // Mark down that we are handshaking the connection
         state = HandshakeState.INITIAL_SERVER_REQUEST;
@@ -152,11 +158,19 @@ public class NoxesiumInitializer {
     }
 
     /**
+     * Handles the server sending across registry contents.
+     */
+    private void handle(ClientboundRegistryIdentifiersPacket packet) {
+
+    }
+
+    /**
      * Un-initializes the connection with the server.
      */
     public void uninitialize() {
-        if (state != HandshakeState.COMPLETE) return;
+        if (state == HandshakeState.NONE) return;
         state = HandshakeState.NONE;
+        HandshakePackets.INSTANCE.unregister();
         NoxesiumMod.getInstance().unregisterAll();
     }
 }

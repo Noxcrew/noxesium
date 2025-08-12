@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.fabric.feature.entity;
 
+import com.noxcrew.noxesium.fabric.EntityRuleIndices;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.feature.rule.ClientServerRule;
 import com.noxcrew.noxesium.fabric.feature.rule.impl.BooleanServerRule;
@@ -30,6 +31,7 @@ public class ExtraEntityData {
      * Allows defining qib behavior for an interaction entity. You can find more information
      * about the qib system in the qib package.
      */
+    // TODO Allow inlining a qib definition for a specific entity
     public static ClientServerRule<String> QIB_BEHAVIOR =
             register(new StringServerRule(EntityRuleIndices.QIB_BEHAVIOR, ""));
 
@@ -37,6 +39,7 @@ public class ExtraEntityData {
      * Allows defining the width of an interaction entity on the Z-axis for the context of
      * qib collisions. The regular width is seen as its width on the X-axis.
      */
+    // TODO Allow defining the hitbox z of any entity instead of just interaction
     public static ClientServerRule<Double> QIB_WIDTH_Z =
             register(new DoubleServerRule(EntityRuleIndices.QIB_WIDTH_Z, 1.0));
 

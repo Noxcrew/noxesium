@@ -17,6 +17,7 @@ gson = "2.10"
 prtree = "1.5.0"
 caffeine = "3.1.8"
 adventure = "4.23.0"
+adventure-fabric = "6.5.1"
 
 # Fabric - https://modmuss50.me/fabric.html
 minecraft = "1.21.8"
@@ -45,7 +46,8 @@ annotations = { group = "org.jetbrains", name = "annotations", version.ref = "an
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }
 prtree = { group = "org.khelekore", name = "prtree", version.ref = "prtree" }
-adventure = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-fabric = { module = "net.kyori:adventure-platform-fabric", version.ref = "adventure-fabric" }
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }
