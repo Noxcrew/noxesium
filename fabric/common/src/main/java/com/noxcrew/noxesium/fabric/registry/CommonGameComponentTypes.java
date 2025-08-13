@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraStreamCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
+import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.GraphicsStatus;
@@ -129,6 +130,14 @@ public class CommonGameComponentTypes {
      */
     public static NoxesiumComponentType<Unit> SERVER_AUTHORITATIVE_BLOCK_UPDATES =
             register("server_authoritative_block_updates", Unit.CODEC, Unit.STREAM_CODEC);
+
+    /**
+     * If set, the client sends a {@link ServerboundMouseButtonClickPacket} for every
+     * mouse click at most once per tick per type. Clicks more frequent than once per
+     * tick are ignored.
+     */
+    public static NoxesiumComponentType<Unit> REPORT_MOUSE_CLICKS =
+            register("report_mouse_clicks", Unit.CODEC, Unit.STREAM_CODEC);
 
     /**
      * Registers a new component type to the registry.

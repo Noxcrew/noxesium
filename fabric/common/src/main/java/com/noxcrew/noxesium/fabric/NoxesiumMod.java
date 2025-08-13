@@ -9,11 +9,15 @@ import com.noxcrew.noxesium.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.fabric.feature.render.CustomRenderTypes;
 import com.noxcrew.noxesium.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.fabric.network.NoxesiumInitializer;
+import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.fabric.registry.CommonBlockEntityComponentTypes;
 import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
+import java.util.HashSet;
+import java.util.Set;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
@@ -47,6 +51,11 @@ public class NoxesiumMod implements ClientModInitializer {
      * Whether the creative tab has changed.
      */
     public boolean hasCreativeTabChanged = false;
+
+    /**
+     * The types of button clicks that have already been sent this tick.
+     */
+    public Set<ServerboundMouseButtonClickPacket.Button> sentButtonClicks = new HashSet<>();
 
     /**
      * Creates a new NoxesiumMod instance.
@@ -115,6 +124,13 @@ public class NoxesiumMod implements ClientModInitializer {
 
         // Determine if Iris is present or not
         isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
+
+        // Clear the packet list every tick
+        ClientTickEvents.END_CLIENT_TICK.register((ignored2) -> {
+            if (!sentButtonClicks.isEmpty()) {
+                sentButtonClicks.clear();
+            }
+        });
     }
 
     /**

@@ -1,12 +1,12 @@
 package com.noxcrew.noxesium.fabric.mixin;
 
+import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundMouseButtonClickPacket;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MouseButtonClickMixin {
 
     @Unique
-    private final List<Integer> noxesium$pressedButtons = new ArrayList<>();
+    private final List<ServerboundMouseButtonClickPacket.Button> noxesium$pressedButtons = new ArrayList<>();
 
     @Inject(
             method = "releaseMouse",
@@ -26,85 +26,48 @@ public class MouseButtonClickMixin {
                             value = "INVOKE",
                             target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
     private void onReleaseMouse(CallbackInfo ci) {
-        Iterator<Integer> iterator = noxesium$pressedButtons.iterator();
+        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
+        var iterator = noxesium$pressedButtons.iterator();
         while (iterator.hasNext()) {
-            int button = iterator.next();
-            if (button == 0) {
-                new ServerboundMouseButtonClickPacket(
-                                ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                ServerboundMouseButtonClickPacket.Button.LEFT)
-                        .send();
-                iterator.remove();
-            } else if (button == 2) {
-                new ServerboundMouseButtonClickPacket(
-                                ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                ServerboundMouseButtonClickPacket.Button.MIDDLE)
-                        .send();
-                iterator.remove();
-            } else if (button == 1) {
-                new ServerboundMouseButtonClickPacket(
-                                ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                ServerboundMouseButtonClickPacket.Button.RIGHT)
-                        .send();
-                iterator.remove();
-            }
+            var button = iterator.next();
+            new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, button).send();
+            iterator.remove();
         }
     }
 
     @Inject(method = "onPress", at = @At("HEAD"))
-    private void onPress(long window, int button, int action, int mods, CallbackInfo ci) {
-        Minecraft client = Minecraft.getInstance();
-        Player player = client.player;
+    private void onPress(long window, int buttonId, int action, int mods, CallbackInfo ci) {
+        var client = Minecraft.getInstance();
+        var player = client.player;
+        if (player == null) return;
+        if (!client.noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
 
-        if (player == null) {
-            return;
-        }
+        // Check that the action and button is valid
+        if (action != 0 && action != 1) return;
+        if (buttonId < 0 || buttonId > 2) return;
+
+        // Determine which button this id refers to
+        var button =
+                switch (buttonId) {
+                    case 0 -> ServerboundMouseButtonClickPacket.Button.LEFT;
+                    case 1 -> ServerboundMouseButtonClickPacket.Button.RIGHT;
+                    case 2 -> ServerboundMouseButtonClickPacket.Button.MIDDLE;
+                    default -> throw new IllegalStateException("Unexpected value: " + buttonId);
+                };
 
         if (action == 1) {
             if (!client.gui.getChat().isChatFocused() && client.screen == null) {
-                if (button == 0) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.PRESS_DOWN,
-                                    ServerboundMouseButtonClickPacket.Button.LEFT)
-                            .send();
-                    noxesium$pressedButtons.add(button);
-                } else if (button == 2) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.PRESS_DOWN,
-                                    ServerboundMouseButtonClickPacket.Button.MIDDLE)
-                            .send();
-                    noxesium$pressedButtons.add(button);
-                } else if (button == 1) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.PRESS_DOWN,
-                                    ServerboundMouseButtonClickPacket.Button.RIGHT)
-                            .send();
-                    noxesium$pressedButtons.add(button);
-                }
-            }
-        } else if (action == 0) {
+                // Only check for one press per tick to avoid spam!
+                if (NoxesiumMod.getInstance().sentButtonClicks.contains(button)) return;
+                NoxesiumMod.getInstance().sentButtonClicks.add(button);
 
-            if (noxesium$pressedButtons.contains(button)) {
-                if (button == 0) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                    ServerboundMouseButtonClickPacket.Button.LEFT)
-                            .send();
-                    noxesium$pressedButtons.remove((Object) button);
-                } else if (button == 2) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                    ServerboundMouseButtonClickPacket.Button.MIDDLE)
-                            .send();
-                    noxesium$pressedButtons.remove((Object) button);
-                } else if (button == 1) {
-                    new ServerboundMouseButtonClickPacket(
-                                    ServerboundMouseButtonClickPacket.Action.RELEASE,
-                                    ServerboundMouseButtonClickPacket.Button.RIGHT)
-                            .send();
-                    noxesium$pressedButtons.remove((Object) button);
-                }
+                new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, button)
+                        .send();
+                noxesium$pressedButtons.add(button);
             }
+        } else if (noxesium$pressedButtons.contains(button)) {
+            new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, button).send();
+            noxesium$pressedButtons.remove(button);
         }
     }
 }
