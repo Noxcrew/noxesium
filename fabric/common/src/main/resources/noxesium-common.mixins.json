@@ -12,6 +12,7 @@
     "debugoptions.DebugRendererMixin",
     "debugoptions.EntityRenderDispatcherMixin",
     "debugoptions.GameRendererPauseMixin",
+    "debugoptions.GuiGraphicsTooltipMixin",
     "debugoptions.ScreenTooltipMixin",
     "feature.EntityOutlineMixin",
     "feature.FixMovingPistonFlickeringMixin",

@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium.fabric.mixin.rules;
 
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.fabric.util.InventoryHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -24,7 +25,9 @@ public abstract class GuiRulesMixin {
             method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",
             constant = @Constant(intValue = 59))
     public int raiseHeldItemHeight(int constant) {
-        return constant + ServerRules.HELD_ITEM_NAME_OFFSET.getValue();
+        return constant
+                + Minecraft.getInstance()
+                        .noxesium$getComponentOr(CommonGameComponentTypes.HELD_ITEM_NAME_OFFSET, () -> 0);
     }
 
     @Redirect(

@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
 import net.minecraft.world.item.CreativeModeTab;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

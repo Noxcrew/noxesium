@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.feature;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.fabric.feature.misc.ImmovableTag;
+import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +21,7 @@ public abstract class UnmovableInventoryMixin {
             cancellable = true)
     public void preventMovingImmovables(
             final boolean bl, final CallbackInfoReturnable<ItemStack> cir, @Local final ItemStack stack) {
-        if (ImmovableTag.isImmovable(stack)) {
+        if (stack.noxesium$hasComponent(CommonItemComponentTypes.IMMOVABLE)) {
             cir.setReturnValue(ItemStack.EMPTY);
         }
     }

@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.entity;
 
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityData;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.level.Level;
@@ -31,7 +31,7 @@ public class GuardianBubblesRuleMixin {
             double velocityY,
             double velocityZ) {
         var guardian = (Guardian) ((Object) this);
-        if (!guardian.noxesium$getExtraData(ExtraEntityData.DISABLE_BUBBLES)) {
+        if (!guardian.noxesium$hasComponent(CommonEntityComponentTypes.DISABLE_BUBBLES)) {
             instance.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
         }
     }

@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.mouse;
 
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.util.SmoothDouble;
 import org.spongepowered.asm.mixin.Final;
@@ -24,7 +25,7 @@ public abstract class MouseLockMixin {
     @Inject(method = "turnPlayer", at = @At("HEAD"), cancellable = true)
     public void lockPlayerRotation(CallbackInfo ci) {
         // Cancel mouse movement during camera lock
-        if (ServerRules.CAMERA_LOCKED.getValue()) {
+        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CAMERA_LOCKED)) {
             ci.cancel();
 
             // Reset smooth turning variables

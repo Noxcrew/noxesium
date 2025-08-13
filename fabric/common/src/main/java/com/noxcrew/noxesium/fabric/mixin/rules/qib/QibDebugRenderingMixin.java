@@ -2,11 +2,12 @@ package com.noxcrew.noxesium.fabric.mixin.rules.qib;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.fabric.feature.render.CustomRenderTypes;
 import java.awt.Color;
 import java.util.Random;
+
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -57,7 +58,7 @@ public class QibDebugRenderingMixin {
 
             // Draw a custom hitbox with the color of the associated qib behavior if it has loaded
             var noDepthBuffer = multiBufferSource.getBuffer(CustomRenderTypes.linesNoDepth());
-            var qibBehavior = entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
+            var qibBehavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
             if (qibBehavior != null) {
                 var seededRandom = new Random(qibBehavior.hashCode());
                 var color = new Color(seededRandom.nextInt());

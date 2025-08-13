@@ -61,10 +61,10 @@ public class CommonEntityComponentTypes {
     public static NoxesiumComponentType<Vector3f> HITBOX_OVERRIDE =
             register("hitbox_override", ExtraCodecs.VECTOR3F, ByteBufCodecs.VECTOR3F); // default: not present
     /*
-        On change listener:
-        // Update the bounding box of the entity whenever a new override is received
-        this.setBoundingBox(this.makeBoundingBox());
-     */
+       On change listener:
+       // Update the bounding box of the entity whenever a new override is received
+       this.setBoundingBox(this.makeBoundingBox());
+    */
 
     /**
      * Registers a new component type to the registry.

@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.qib;
 
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityData;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +23,7 @@ public class QibInteractionMixin {
     @Inject(method = "skipAttackInteraction", at = @At("HEAD"), cancellable = true)
     public void skipAttackInteraction(Entity entity, CallbackInfoReturnable<Boolean> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
+        if (interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
             cir.setReturnValue(false);
         }
     }
@@ -32,7 +32,7 @@ public class QibInteractionMixin {
     public void interact(
             Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) {
+        if (interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
             cir.setReturnValue(InteractionResult.PASS);
         }
     }
@@ -40,7 +40,9 @@ public class QibInteractionMixin {
     @Inject(method = "makeBoundingBox", at = @At("HEAD"), cancellable = true)
     public void interact(CallbackInfoReturnable<AABB> cir) {
         var interaction = (Interaction) ((Object) this);
-        if (interaction.noxesium$hasExtraData(ExtraEntityData.QIB_WIDTH_Z)) {
+
+        // TODO Rework this
+        if (interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_WIDTH_Z)) {
             var dimensions = interaction.getDimensions(Pose.STANDING);
             var position = interaction.position();
             var x = position.x;

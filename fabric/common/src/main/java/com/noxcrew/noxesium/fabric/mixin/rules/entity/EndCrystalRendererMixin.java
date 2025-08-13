@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.fabric.mixin.rules.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.fabric.feature.entity.EndCrystalRenderHolder;
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityData;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import java.awt.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EndCrystalRenderer;
@@ -46,11 +46,11 @@ public class EndCrystalRendererMixin {
     public void includeBeamInformation(
             EndCrystal endCrystal, EndCrystalRenderState endCrystalRenderState, float f, CallbackInfo ci) {
         var color = endCrystal
-                .noxesium$getExtraData(ExtraEntityData.BEAM_COLOR)
+                .noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR)
                 .map(Color::getRGB)
                 .orElse(null);
         var fade = endCrystal
-                .noxesium$getExtraData(ExtraEntityData.BEAM_COLOR_FADE)
+                .noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR_FADE)
                 .map(Color::getRGB)
                 .orElse(null);
         endCrystalRenderState.noxesium$setBeamColor(color, fade);

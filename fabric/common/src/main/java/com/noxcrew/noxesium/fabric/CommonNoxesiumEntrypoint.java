@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.fabric.feature.entity.SpatialDebuggingRenderer;
 import com.noxcrew.noxesium.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.fabric.feature.misc.TeamGlowHotkeys;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.fabric.network.CommonPackets;
@@ -48,7 +47,6 @@ public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
     public Collection<NoxesiumFeature> getAllFeatures() {
         var features = new ArrayList<NoxesiumFeature>();
         features.add(new SyncGuiScale());
-        features.add(new ServerRuleModule());
         features.add(new SkullFontModule());
         features.add(new NoxesiumSoundModule());
         features.add(new TeamGlowHotkeys());

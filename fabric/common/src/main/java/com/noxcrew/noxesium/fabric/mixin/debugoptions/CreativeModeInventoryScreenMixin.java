@@ -15,13 +15,11 @@ public class CreativeModeInventoryScreenMixin {
             method = "getTooltipFromContainerItem",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"))
     private boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
-        boolean original = options.advancedItemTooltips;
-        var optional = Minecraft.getInstance().noxesium$getOptionalComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
-        if (optional.isPresent()) {
-            var restrictedOptions = optional.get();
-            if (restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
-                return false;
-            }
+        var original = options.advancedItemTooltips;
+        var restrictedOptions =
+                Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+        if (restrictedOptions != null && restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
+            return false;
         }
         return original;
     }

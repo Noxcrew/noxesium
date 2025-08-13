@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.feature;
 
-import com.noxcrew.noxesium.fabric.feature.misc.ImmovableTag;
+import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ public abstract class UnmovableSlotMixin {
 
     @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
     public void preventMovingImmovables(final Player player, final CallbackInfoReturnable<Boolean> cir) {
-        if (ImmovableTag.isImmovable(getItem())) {
+        if (getItem().noxesium$hasComponent(CommonItemComponentTypes.IMMOVABLE)) {
             cir.setReturnValue(false);
         }
     }

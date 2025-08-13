@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.fabric.mixin.ui;
 
+import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.fabric.feature.render.CustomMapUiWidget;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
 import java.util.ArrayList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.DeltaTracker;
@@ -82,7 +82,7 @@ public abstract class GuiMixin {
                             ? "§aYes"
                             : minecraft.player.noxesium$hasTridentCoyoteTime() ? "§eGrace" : "§cNo")));
             text.add(Component.literal("§bQib behavior amount: §7"
-                    + ServerRules.QIB_BEHAVIORS.getValue().size()));
+                    + NoxesiumRegistries.QIB_EFFECTS.getContents().size()));
         }
 
         // Draw all the lines in order

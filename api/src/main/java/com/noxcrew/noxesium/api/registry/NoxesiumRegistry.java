@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.api.registry;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
@@ -20,6 +22,13 @@ public class NoxesiumRegistry<T> {
     public void reset() {
         byId.clear();
         byKey.clear();
+    }
+
+    /**
+     * Returns all contents of this registry.
+     */
+    public Collection<T> getContents() {
+        return byKey.values();
     }
 
     /**

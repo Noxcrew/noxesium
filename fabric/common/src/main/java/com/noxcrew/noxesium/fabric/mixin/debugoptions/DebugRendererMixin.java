@@ -2,7 +2,8 @@ package com.noxcrew.noxesium.fabric.mixin.debugoptions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.api.client.DebugOption;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -27,10 +28,12 @@ public class DebugRendererMixin {
             double y,
             double z,
             CallbackInfo ci) {
-        if (renderChunkborder
-                && ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.CHUNK_BOUNDARIES.getKeyCode())) {
-            renderChunkborder = false;
+        if (renderChunkborder) {
+            var restrictedOptions =
+                    Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+            if (restrictedOptions != null && restrictedOptions.contains(DebugOption.CHUNK_BOUNDARIES.getKeyCode())) {
+                renderChunkborder = false;
+            }
         }
     }
 }

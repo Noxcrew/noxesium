@@ -2,8 +2,9 @@ package com.noxcrew.noxesium.fabric.mixin.rules.trident;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.fabric.util.InventoryHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -64,7 +65,7 @@ public abstract class TridentHandModelMixin {
             MultiBufferSource p_109380_,
             int p_109381_,
             CallbackInfo ci) {
-        if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
+        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
         // the trident

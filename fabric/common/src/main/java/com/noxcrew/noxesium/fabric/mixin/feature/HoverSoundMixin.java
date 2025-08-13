@@ -1,25 +1,17 @@
 package com.noxcrew.noxesium.fabric.mixin.feature;
 
-import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
-
-import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.fabric.feature.item.HoverSound;
+import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,11 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public abstract class HoverSoundMixin {
 
-    // TODO Use onStopHovering instead of manually tracking
-
-    @Unique
-    private static ItemStack noxesium$lastHoveredStack = ItemStack.EMPTY;
-
     @Shadow
     @Nullable
     protected Slot hoveredSlot;
@@ -43,79 +30,57 @@ public abstract class HoverSoundMixin {
     @Unique
     private static final Random noxesium$random = new Random();
 
-    @Inject(method = "onClose", at = @At("HEAD"))
-    private void noxesium$onClose(CallbackInfo ci) {
-        hoveredSlot = null;
-    }
+    @Inject(method = "onStopHovering", at = @At("HEAD"))
+    private void noxesium$onStopHovering(Slot oldSlot, CallbackInfo ci) {
+        // Ignore if the inventory was closed!
+        if (Minecraft.getInstance().screen == null) return;
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void noxesium$render(GuiGraphics guiGraphics, int i, int j, float k, CallbackInfo ci) {
+        ItemStack previousStack = oldSlot.getItem();
         ItemStack currentStack = this.hoveredSlot != null ? this.hoveredSlot.getItem() : ItemStack.EMPTY;
 
-        if (ItemStack.matches(currentStack, noxesium$lastHoveredStack)) {
-            return;
-        }
+        // Ignore if no change was made to the hovered item type
+        if (ItemStack.matches(previousStack, currentStack)) return;
 
-        // hover off sound for the previous item
-        noxesium$tryPlaySound(noxesium$lastHoveredStack, HoverSound::hoverOff);
+        // Hover off sound for the previous item
+        noxesium$tryPlaySound(previousStack, HoverSound::hoverOff);
 
-        // hover on sound for current item
+        // Hover on sound for current item
         noxesium$tryPlaySound(currentStack, HoverSound::hoverOn);
-
-        noxesium$lastHoveredStack = currentStack.copy();
     }
 
     @Unique
     private void noxesium$tryPlaySound(ItemStack stack, Function<HoverSound, Optional<HoverSound.Sound>> sound) {
-        Optional.ofNullable(noxesium$getHoverSoundTag(stack))
-                .filter(this::noxesium$shouldPlaySound)
-                .flatMap(sound)
-                .ifPresent(this::noxesium$playSound);
-    }
+        // Ignore empty stacks
+        if (stack.isEmpty()) return;
 
-    @Unique
-    private @Nullable HoverSound noxesium$getHoverSoundTag(ItemStack stack) {
-        final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data == null) return null;
+        // Read the hover sound data
+        var data = stack.noxesium$getComponent(CommonItemComponentTypes.HOVER_SOUND);
+        if (data == null) return;
 
-        final CompoundTag rootTag = data.getUnsafe();
+        // If this sound should not play we ignore it
+        if (!noxesium$shouldPlaySound(data)) return;
 
-        @Nullable CompoundTag hoverTag = null;
-        if (rootTag.contains(NoxesiumReferences.HOVER_SOUND_TAG)) {
-            hoverTag = rootTag.getCompound(NoxesiumReferences.HOVER_SOUND_TAG).orElse(null);
-        } else {
-            var bukkitCompound = rootTag.getCompound(BUKKIT_COMPOUND_ID).orElse(null);
-            if (bukkitCompound != null) {
-                hoverTag = bukkitCompound
-                        .getCompound(NoxesiumReferences.HOVER_SOUND_TAG)
-                        .orElse(null);
-            }
-        }
-
-        if (hoverTag == null) return null;
-
-        var result = HoverSound.CODEC.decode(NbtOps.INSTANCE, hoverTag);
-        if (result.isSuccess()) {
-            return result.getOrThrow().getFirst();
-        } else {
-            return null;
-        }
+        // Play the sound effect
+        var optional = sound.apply(data);
+        if (optional.isEmpty()) return;
+        noxesium$playSound(optional.get());
     }
 
     @Unique
     private void noxesium$playSound(HoverSound.Sound sound) {
-        var soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound.sound());
-        if (soundEvent.isEmpty()) return;
-
-        float pitch = sound.pitchMax() == sound.pitchMin()
-                ? sound.pitchMax()
+        var soundEvent = sound.sound();
+        var pitch = sound.pitchMax() <= sound.pitchMin()
+                ? Math.max(sound.pitchMin(), sound.pitchMax())
                 : noxesium$random.nextFloat(sound.pitchMin(), sound.pitchMax());
 
         Minecraft.getInstance()
                 .getSoundManager()
-                .play(SimpleSoundInstance.forUI(soundEvent.get().value(), pitch, sound.volume()));
+                .play(SimpleSoundInstance.forUI(soundEvent.value(), pitch, sound.volume()));
     }
 
+    /**
+     * Determines whether the given sound should be played in the current screen.
+     */
     @Unique
     private boolean noxesium$shouldPlaySound(HoverSound tag) {
         if (tag.onlyPlayInNonPlayerInventories()) {

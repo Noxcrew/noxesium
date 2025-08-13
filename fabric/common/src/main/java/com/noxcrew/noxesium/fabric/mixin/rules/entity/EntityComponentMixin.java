@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.fabric.mixin.rules.entity;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
-import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.world.entity.Entity;

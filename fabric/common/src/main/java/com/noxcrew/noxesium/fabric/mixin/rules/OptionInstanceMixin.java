@@ -3,10 +3,10 @@ package com.noxcrew.noxesium.fabric.mixin.rules;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.feature.misc.SyncGuiScale;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRuleModule;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import java.util.function.Consumer;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
@@ -35,7 +35,7 @@ public abstract class OptionInstanceMixin<T> {
     private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
         var options = Minecraft.getInstance().options;
         if (instance == options.touchscreen() || instance == options.notificationDisplayTime()) {
-            NoxesiumMod.getInstance().getFeature(SyncGuiScale.class).syncGuiScale();
+            NoxesiumApi.getInstance().getFeature(SyncGuiScale.class).syncGuiScale();
         }
         return original.call(instance);
     }
@@ -46,20 +46,19 @@ public abstract class OptionInstanceMixin<T> {
         if (options == null) return original;
 
         // Ignore if we're in a nested settings menu override
-        if (ServerRuleModule.noxesium$disableSettingOverrides) return original;
+        if (NoxesiumMod.getInstance().disableSettingOverrides) return original;
 
         if (((Object) (this)) == options.prioritizeChunkUpdates()
-                && ServerRules.DISABLE_DEFERRED_CHUNK_UPDATES.getValue()) {
+                && Minecraft.getInstance()
+                        .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {
             return (T) PrioritizeChunkUpdates.NEARBY;
         }
-        if (((Object) (this)) == options.graphicsMode()
-                && ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().isPresent()) {
-            var graphics = (T) ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().get();
-            if (ServerRuleModule.noxesium$isUsingIris && graphics == GraphicsStatus.FABULOUS) {
-                // Don't use fabulous graphics when using Iris!
-                return original;
+        if (((Object) (this)) == options.graphicsMode()) {
+            var graphics =
+                    Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE);
+            if (graphics != null && (!NoxesiumMod.getInstance().isUsingIris || graphics != GraphicsStatus.FABULOUS)) {
+                return (T) graphics;
             }
-            return graphics;
         }
         return original;
     }

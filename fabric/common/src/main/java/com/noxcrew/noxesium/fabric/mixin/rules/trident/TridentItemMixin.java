@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.trident;
 
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundRiptidePacket;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -28,7 +28,7 @@ public abstract class TridentItemMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean isInWaterOrRain(Player player) {
         if (player.isInWaterOrRain()) return true;
-        if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return false;
+        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return false;
         if (player != Minecraft.getInstance().player) return false;
 
         // Only for the local player do we check if they have coyote time currently!
@@ -40,7 +40,7 @@ public abstract class TridentItemMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean canStartChargingTrident(Player player) {
         // If pre-charging is allowed we always allow you to start charging it.
-        if (ServerRules.RIPTIDE_PRE_CHARGING.getValue()) return true;
+        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING)) return true;
         return player.isInWaterOrRain();
     }
 
@@ -64,7 +64,7 @@ public abstract class TridentItemMixin {
             LivingEntity livingEntity,
             int i) {
         var player = Minecraft.getInstance().player;
-        if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue() || entity != player || player == null) {
+        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT) || entity != player || player == null) {
             instance.playSound(ignored, entity, soundEvent, soundSource, volume, pitch);
             return;
         }

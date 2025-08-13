@@ -3,17 +3,16 @@ package com.noxcrew.noxesium.api.fabric;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides shared API for Noxesium's various available APIs.

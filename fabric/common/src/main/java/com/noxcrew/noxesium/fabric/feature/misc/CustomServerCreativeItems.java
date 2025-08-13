@@ -2,9 +2,8 @@ package com.noxcrew.noxesium.fabric.feature.misc;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
-import java.util.List;
-
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import java.util.List;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Registry;
@@ -36,8 +35,8 @@ public class CustomServerCreativeItems implements NoxesiumFeature {
                 CREATIVE_TAB,
                 FabricItemGroup.builder()
                         .title(Component.translatable("itemGroup.noxesium.server_items"))
-                        .displayItems(
-                                (parameters, output) -> output.acceptAll(Minecraft.getInstance().noxesium$getComponentOr(CommonGameComponentTypes.CUSTOM_CREATIVE_ITEMS, List::of)))
+                        .displayItems((parameters, output) -> output.acceptAll(Minecraft.getInstance()
+                                .noxesium$getComponentOr(CommonGameComponentTypes.CUSTOM_CREATIVE_ITEMS, List::of)))
                         .icon(() -> {
                             var item = new ItemStack(Items.STRUCTURE_BLOCK);
                             item.set(

@@ -6,7 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.api.client.DebugOption;
 import com.noxcrew.noxesium.fabric.config.NoxesiumSettingsScreen;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
@@ -70,8 +70,9 @@ public abstract class CustomDebugHotkeysMixin {
 
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
     private void interceptDebugKey(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+        var restrictedOptions =
+                Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+        if (restrictedOptions != null && restrictedOptions.contains(keyCode)) {
             if (minecraft != null) {
                 minecraft
                         .gui
@@ -91,16 +92,15 @@ public abstract class CustomDebugHotkeysMixin {
                             target =
                                     "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     private void modifyAllHelpMessages(KeyboardHandler instance, Component message) {
-        String translationKey = noxesium$getTranslationKey(message);
-
+        var translationKey = noxesium$getTranslationKey(message);
         if (translationKey != null) {
-            DebugOption debugOption = DebugOption.getByTranslationKey(translationKey);
-
+            var debugOption = DebugOption.getByTranslationKey(translationKey);
             if (debugOption != null) {
-                int keyCode = debugOption.getKeyCode();
+                var restrictedOptions =
+                        Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+                var keyCode = debugOption.getKeyCode();
 
-                if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                        && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+                if (restrictedOptions != null && restrictedOptions.contains(keyCode)) {
                     Component modifiedMessage = Component.translatable(translationKey)
                             .withStyle(style -> style.withStrikethrough(true)
                                     .withColor(0xFF9999)
@@ -113,21 +113,6 @@ public abstract class CustomDebugHotkeysMixin {
         }
 
         showDebugChat(message);
-    }
-
-    @Inject(method = "handleChunkDebugKeys", at = @At("HEAD"), cancellable = true)
-    private void onHandleChunkDebugKeys(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
-            if (minecraft != null) {
-                minecraft
-                        .gui
-                        .getChat()
-                        .addMessage(Component.translatable("debug.warning.option.disabled")
-                                .withStyle(ChatFormatting.RED));
-            }
-            cir.setReturnValue(true);
-        }
     }
 
     @Unique

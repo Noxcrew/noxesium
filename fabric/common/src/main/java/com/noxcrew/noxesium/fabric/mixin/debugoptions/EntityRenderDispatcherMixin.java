@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium.fabric.mixin.debugoptions;
 
 import com.noxcrew.noxesium.api.client.DebugOption;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,10 +18,12 @@ public class EntityRenderDispatcherMixin {
 
     @Inject(method = "shouldRenderHitBoxes", at = @At("HEAD"), cancellable = true)
     private void restrictHitBoxRendering(CallbackInfoReturnable<Boolean> cir) {
-        if (renderHitBoxes
-                && ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.SHOW_HITBOXES.getKeyCode())) {
-            cir.setReturnValue(false);
+        if (renderHitBoxes) {
+            var restrictedOptions =
+                    Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+            if (restrictedOptions != null && restrictedOptions.contains(DebugOption.SHOW_HITBOXES.getKeyCode())) {
+                cir.setReturnValue(false);
+            }
         }
     }
 }
