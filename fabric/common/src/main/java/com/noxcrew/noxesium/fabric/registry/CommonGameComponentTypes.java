@@ -7,9 +7,9 @@ import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraStreamCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import java.util.ArrayList;
 import java.util.List;
-import net.kyori.adventure.key.Key;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -22,6 +22,8 @@ import net.minecraft.world.item.ItemStack;
  * Stores all Noxesium game component types.
  */
 public class CommonGameComponentTypes {
+    public static final RegistryCollection<NoxesiumComponentType<?>> INSTANCE =
+            new RegistryCollection<>(NoxesiumRegistries.GAME_COMPONENTS);
 
     /**
      * If set, disables the riptide spin attack on the trident from colliding with any entities,
@@ -133,13 +135,12 @@ public class CommonGameComponentTypes {
      */
     private static <T> NoxesiumComponentType<T> register(
             String key, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        return NoxesiumRegistries.GAME_COMPONENTS.register(
-                Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(
-                        NoxesiumReferences.NAMESPACE,
-                        key,
-                        codec,
-                        streamCodec,
-                        new NoxesiumComponentListener<T, Minecraft>()));
+        return RegistryCollection.register(
+                INSTANCE,
+                NoxesiumReferences.NAMESPACE,
+                key,
+                codec,
+                streamCodec,
+                new NoxesiumComponentListener<T, Minecraft>());
     }
 }

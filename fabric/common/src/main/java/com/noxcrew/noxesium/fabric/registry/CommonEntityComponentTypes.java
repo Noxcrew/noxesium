@@ -7,8 +7,8 @@ import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumExtraStreamCodecs;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import java.awt.Color;
-import net.kyori.adventure.key.Key;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,6 +21,8 @@ import org.joml.Vector3f;
  * Stores all Noxesium entity component types.
  */
 public class CommonEntityComponentTypes {
+    public static final RegistryCollection<NoxesiumComponentType<?>> INSTANCE =
+            new RegistryCollection<>(NoxesiumRegistries.ENTITY_COMPONENTS);
 
     /**
      * If set, bubbles are removed from guardian beams shot by this entity.
@@ -66,13 +68,12 @@ public class CommonEntityComponentTypes {
      */
     private static <T> NoxesiumComponentType<T> register(
             String key, Codec<T> codec, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        return NoxesiumRegistries.ENTITY_COMPONENTS.register(
-                Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(
-                        NoxesiumReferences.NAMESPACE,
-                        key,
-                        codec,
-                        streamCodec,
-                        new NoxesiumComponentListener<T, Entity>()));
+        return RegistryCollection.register(
+                INSTANCE,
+                NoxesiumReferences.NAMESPACE,
+                key,
+                codec,
+                streamCodec,
+                new NoxesiumComponentListener<T, Entity>());
     }
 }

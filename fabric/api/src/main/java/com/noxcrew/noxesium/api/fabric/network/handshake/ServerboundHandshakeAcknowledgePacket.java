@@ -29,6 +29,6 @@ public record ServerboundHandshakeAcknowledgePacket(Collection<EntrypointProtoco
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return HandshakePackets.INSTANCE.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE;
+        return HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE;
     }
 }

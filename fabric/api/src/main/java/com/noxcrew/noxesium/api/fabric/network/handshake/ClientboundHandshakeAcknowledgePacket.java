@@ -29,6 +29,6 @@ public record ClientboundHandshakeAcknowledgePacket(Map<String, String> entrypoi
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return HandshakePackets.INSTANCE.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE;
+        return HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE;
     }
 }

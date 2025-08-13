@@ -11,10 +11,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * The base class for a set of packets that can be registered
+ * A collector of different packets that can be registered and unregistered
  * as a group.
  */
-public class PacketCollection {
+public final class PacketCollection {
     private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
 
     /**
@@ -24,9 +24,9 @@ public class PacketCollection {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(
-            String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
-        return register(id, codec, false);
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(
+            PacketCollection collection, String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
+        return collection.register(id, codec, false);
     }
 
     /**
@@ -36,9 +36,9 @@ public class PacketCollection {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public <T extends NoxesiumPacket> NoxesiumPayloadType<T> server(
-            String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
-        return register(id, codec, true);
+    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> server(
+            PacketCollection collection, String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
+        return collection.register(id, codec, true);
     }
 
     /**

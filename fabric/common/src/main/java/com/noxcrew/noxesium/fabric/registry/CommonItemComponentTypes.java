@@ -4,15 +4,17 @@ import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import com.noxcrew.noxesium.fabric.feature.item.HoverSound;
 import com.noxcrew.noxesium.fabric.feature.item.Hoverable;
-import net.kyori.adventure.key.Key;
 import net.minecraft.util.Unit;
 
 /**
  * Stores all Noxesium item component types.
  */
 public class CommonItemComponentTypes {
+    public static final RegistryCollection<NoxesiumComponentType<?>> INSTANCE =
+            new RegistryCollection<>(NoxesiumRegistries.ITEM_COMPONENTS);
 
     /**
      * If set, prevents the item stack from being picked up. Prevents flickering when clicking
@@ -34,8 +36,6 @@ public class CommonItemComponentTypes {
      * Registers a new component type to the registry.
      */
     private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec) {
-        return NoxesiumRegistries.ITEM_COMPONENTS.register(
-                Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(NoxesiumReferences.NAMESPACE, key, codec, null, null));
+        return RegistryCollection.register(INSTANCE, NoxesiumReferences.NAMESPACE, key, codec, null, null);
     }
 }

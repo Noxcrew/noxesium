@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.fabric;
 
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -67,6 +68,13 @@ public interface NoxesiumEntrypoint {
      * Returns all packet collections included in this entrypoint.
      */
     default Collection<PacketCollection> getPacketCollections() {
+        return List.of();
+    }
+
+    /**
+     * Returns all registry collections included in this entrypoint.
+     */
+    default Collection<RegistryCollection<?>> getRegistryCollections() {
         return List.of();
     }
 

@@ -31,6 +31,6 @@ public record ClientboundRegistryIdentifiersPacket(ResourceLocation registry, Ma
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return HandshakePackets.INSTANCE.CLIENTBOUND_REGISTRY_IDS;
+        return HandshakePackets.CLIENTBOUND_REGISTRY_IDS;
     }
 }

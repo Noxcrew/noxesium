@@ -9,6 +9,7 @@ import com.noxcrew.noxesium.api.fabric.network.handshake.EntrypointProtocol;
 import com.noxcrew.noxesium.api.fabric.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ServerboundHandshakePacket;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,12 +64,12 @@ public class NoxesiumInitializer {
         });
 
         // Listen to the server response to the handshake
-        HandshakePackets.INSTANCE.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (ignored, packet, ignored3) -> {
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (ignored, packet, ignored3) -> {
             handle(packet);
         });
 
         // Whenever we receive registry packets we update the registries
-        HandshakePackets.INSTANCE.CLIENTBOUND_REGISTRY_IDS.addListener(this, (ignored, packet, ignored3) -> {
+        HandshakePackets.CLIENTBOUND_REGISTRY_IDS.addListener(this, (ignored, packet, ignored3) -> {
             handle(packet);
         });
     }
@@ -81,7 +82,7 @@ public class NoxesiumInitializer {
         if (state != HandshakeState.NONE) return;
 
         // Don't allow if the server doesn't accept any handshakes
-        if (!NoxesiumNetworking.canSend(HandshakePackets.INSTANCE.SERVERBOUND_HANDSHAKE)) return;
+        if (!NoxesiumNetworking.canSend(HandshakePackets.SERVERBOUND_HANDSHAKE)) return;
 
         // Check if the connection has been established first, just in case
         if (Minecraft.getInstance().getConnection() == null) return;
@@ -151,6 +152,7 @@ public class NoxesiumInitializer {
                     entrypoint.getId(), entrypoint.getProtocolVersion(), entrypoint.getRawVersion()));
             entrypoint.getAllFeatures().forEach(api::registerFeature);
             entrypoint.getPacketCollections().forEach(api::registerPackets);
+            entrypoint.getRegistryCollections().forEach(RegistryCollection::register);
         }
 
         // Inform the server about the handshake success

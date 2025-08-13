@@ -22,6 +22,6 @@ includeGroup(
     "fabric",
     "api",
     "common",
-    // "example"
+    "example"
 )
 include("paper")

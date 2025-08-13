@@ -27,6 +27,6 @@ public record ServerboundHandshakePacket(Map<String, String> entrypoints) implem
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return HandshakePackets.INSTANCE.SERVERBOUND_HANDSHAKE;
+        return HandshakePackets.SERVERBOUND_HANDSHAKE;
     }
 }

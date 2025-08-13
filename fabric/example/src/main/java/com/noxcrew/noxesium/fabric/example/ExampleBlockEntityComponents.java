@@ -1,22 +1,23 @@
-package com.noxcrew.noxesium.fabric.registry;
+package com.noxcrew.noxesium.fabric.example;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
+import net.minecraft.util.Unit;
 
 /**
- * Stores all Noxesium block entity component types.
+ * Stores an example custom block entity component.
  */
-public class CommonBlockEntityComponentTypes {
+public class ExampleBlockEntityComponents {
     public static final RegistryCollection<NoxesiumComponentType<?>> INSTANCE =
             new RegistryCollection<>(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS);
 
     /**
-     * Sets the default height of a beacon beam.
+     * Makes a block entity invisible.
      */
-    public static NoxesiumComponentType<Integer> BEACON_BEAM_HEIGHT = register("beacon_beam_height", Codec.INT);
+    public static NoxesiumComponentType<Unit> INVISIBLE = register("invisible", Unit.CODEC);
 
     /**
      * Registers a new component type to the registry.

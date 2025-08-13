@@ -4,12 +4,17 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
+import com.noxcrew.noxesium.api.fabric.registry.RegistryCollection;
 import com.noxcrew.noxesium.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.fabric.feature.misc.TeamGlowHotkeys;
 import com.noxcrew.noxesium.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.fabric.network.CommonPackets;
 import com.noxcrew.noxesium.fabric.network.NoxesiumPacketHandling;
+import com.noxcrew.noxesium.fabric.registry.CommonBlockEntityComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
 import com.noxcrew.noxesium.fabric.registry.ComponentChangeListeners;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,6 +66,15 @@ public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
     @Override
     public Collection<PacketCollection> getPacketCollections() {
         return List.of(CommonPackets.INSTANCE);
+    }
+
+    @Override
+    public Collection<RegistryCollection<?>> getRegistryCollections() {
+        return List.of(
+                CommonBlockEntityComponentTypes.INSTANCE,
+                CommonEntityComponentTypes.INSTANCE,
+                CommonGameComponentTypes.INSTANCE,
+                CommonItemComponentTypes.INSTANCE);
     }
 
     @Override

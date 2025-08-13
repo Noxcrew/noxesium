@@ -144,6 +144,6 @@ public record ClientboundCustomSoundStartPacket(
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_START;
+        return CommonPackets.CLIENT_CUSTOM_SOUND_START;
     }
 }

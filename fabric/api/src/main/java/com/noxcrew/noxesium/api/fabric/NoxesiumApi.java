@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.api.fabric;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
+import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,6 +80,7 @@ public class NoxesiumApi {
         features.clear();
         packets.forEach(PacketCollection::unregister);
         packets.clear();
+        NoxesiumRegistries.REGISTRIES.forEach(NoxesiumRegistry::reset);
     }
 
     /**

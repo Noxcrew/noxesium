@@ -28,6 +28,6 @@ public record ClientboundOpenLinkPacket(Optional<Component> text, String url) im
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.CLIENT_OPEN_LINK;
+        return CommonPackets.CLIENT_OPEN_LINK;
     }
 }

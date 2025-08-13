@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.fabric.registry;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
+import java.util.List;
 
 /**
  * Stores the different Noxesium registries.
@@ -34,4 +35,8 @@ public class NoxesiumRegistries {
      */
     public static ClientNoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS =
             new ClientNoxesiumRegistry<>();
+
+    /** All main registries. */
+    public static List<ClientNoxesiumRegistry<?>> REGISTRIES =
+            List.of(QIB_EFFECTS, GAME_COMPONENTS, ENTITY_COMPONENTS, ITEM_COMPONENTS, BLOCK_ENTITY_COMPONENTS);
 }

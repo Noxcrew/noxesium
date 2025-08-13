@@ -17,7 +17,7 @@ import net.minecraft.network.chat.Component;
 public class NoxesiumPacketHandling extends NoxesiumFeature {
 
     public NoxesiumPacketHandling() {
-        CommonPackets.INSTANCE.CLIENT_UPDATE_COMPONENTS.addListener(this, (reference, packet, context) -> {
+        CommonPackets.CLIENT_UPDATE_COMPONENTS.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
 
             // No entity id being specified refers to the game itself, otherwise find the
@@ -35,7 +35,7 @@ public class NoxesiumPacketHandling extends NoxesiumFeature {
             }
         });
 
-        CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
+        CommonPackets.CLIENT_CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
@@ -80,7 +80,7 @@ public class NoxesiumPacketHandling extends NoxesiumFeature {
             manager.play(packet.id(), sound, packet.ignoreIfPlaying());
         });
 
-        CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
+        CommonPackets.CLIENT_CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
@@ -89,14 +89,14 @@ public class NoxesiumPacketHandling extends NoxesiumFeature {
             sound.setVolume(packet.volume(), packet.startVolume(), packet.interpolationTicks());
         });
 
-        CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
+        CommonPackets.CLIENT_CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
             manager.stopSound(packet.id());
         });
 
-        CommonPackets.INSTANCE.CLIENT_OPEN_LINK.addListener(this, (reference, packet, context) -> {
+        CommonPackets.CLIENT_OPEN_LINK.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
             try {
                 var uri = Util.parseAndValidateUntrustedUri(packet.url());

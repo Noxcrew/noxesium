@@ -24,6 +24,6 @@ public record ClientboundCustomSoundStopPacket(int id) implements NoxesiumPacket
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_STOP;
+        return CommonPackets.CLIENT_CUSTOM_SOUND_STOP;
     }
 }

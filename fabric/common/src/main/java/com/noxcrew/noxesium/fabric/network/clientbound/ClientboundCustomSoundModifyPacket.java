@@ -37,6 +37,6 @@ public record ClientboundCustomSoundModifyPacket(int id, float volume, int inter
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_MODIFY;
+        return CommonPackets.CLIENT_CUSTOM_SOUND_MODIFY;
     }
 }

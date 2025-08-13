@@ -23,8 +23,8 @@ loom {
 dependencies {
     minecraft(libs.minecraft)
     mappings(loom.officialMojangMappings())
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
+    modApi(libs.fabric.loader)
+    modApi(libs.fabric.api)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
@@ -40,20 +40,20 @@ dependencies {
     localRuntime("net.covers1624:DevLogin:0.1.0.5")
 
     // Pull in the Fabric API module code
-    implementation(project(path = ":fabric:fabric-api", configuration = "namedElements"))
+    api(project(path = ":fabric:fabric-api", configuration = "namedElements"))
 
     // Include the base API and PRTree in the jar
     fun includeImplementation(target: Any) {
         include(target)
-        implementation(target)
+        api(target)
     }
-    fun includeModImplementation(target: Any) {
+    fun includeMod(target: Any) {
         include(target)
-        modImplementation(target)
+        modApi(target)
     }
     includeImplementation(project(":api"))
     includeImplementation(libs.prtree)
-    includeModImplementation(libs.adventure.fabric)
+    includeMod(libs.adventure.fabric)
 }
 
 // Include the resources from the fabric-api folder too

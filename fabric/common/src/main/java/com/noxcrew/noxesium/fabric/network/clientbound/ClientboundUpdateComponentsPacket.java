@@ -46,6 +46,6 @@ public record ClientboundUpdateComponentsPacket(Optional<Integer> entityId, bool
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.CLIENT_UPDATE_COMPONENTS;
+        return CommonPackets.CLIENT_UPDATE_COMPONENTS;
     }
 }

@@ -25,6 +25,6 @@ public record ServerboundRiptidePacket(int slot) implements ServerboundNoxesiumP
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.SERVER_RIPTIDE;
+        return CommonPackets.SERVER_RIPTIDE;
     }
 }

@@ -26,6 +26,6 @@ public record ClientboundMccServerPacket(String serverType, String subType, Stri
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return MccPackets.INSTANCE.CLIENT_MCC_SERVER;
+        return MccPackets.CLIENT_MCC_SERVER;
     }
 }

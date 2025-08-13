@@ -42,6 +42,6 @@ public record ServerboundMouseButtonClickPacket(Action action, Button button) im
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.SERVER_MOUSE_BUTTON_CLICK;
+        return CommonPackets.SERVER_MOUSE_BUTTON_CLICK;
     }
 }

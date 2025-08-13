@@ -39,6 +39,6 @@ public record ServerboundClientSettingsPacket(ClientSettings settings) implement
 
     @Override
     public NoxesiumPayloadType<?> noxesiumType() {
-        return CommonPackets.INSTANCE.SERVER_CLIENT_SETTINGS;
+        return CommonPackets.SERVER_CLIENT_SETTINGS;
     }
 }
