@@ -124,4 +124,10 @@ public class ServerRuleIndices {
      * Restricts available debug options available to the player.
      */
     public static final int RESTRICT_DEBUG_OPTIONS = 19;
+
+    /**
+     * Allows tripwires and note blocks to have server authoritative updates. This means the client does not
+     * attempt to make any local block state changes for these blocks.
+     */
+    public static final int SERVER_AUTHORITATIVE_BLOCK_UPDATES = 20;
 }
