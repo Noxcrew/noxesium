@@ -1,4 +1,5 @@
 import java.io.ByteArrayOutputStream
+import org.gradle.jvm.tasks.Jar
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
 
@@ -47,10 +48,23 @@ subprojects {
     apply<Noxesium_publishingPlugin>()
     apply<SpotlessPlugin>()
 
-    tasks.withType<JavaCompile> {
-        options.release.set(javaVersion)
-        sourceCompatibility = javaVersion.toString()
-        targetCompatibility = javaVersion.toString()
+    tasks {
+        withType<Jar> {
+            from("LICENSE") {
+                rename { return@rename "${it}_${rootProject.name}" }
+            }
+        }
+
+        withType<JavaCompile> {
+            options.release.set(javaVersion)
+            options.encoding = Charsets.UTF_8.name()
+            sourceCompatibility = javaVersion.toString()
+            targetCompatibility = javaVersion.toString()
+        }
+
+        withType<AbstractArchiveTask> {
+            archiveBaseName.set("noxesium-${project.name}")
+        }
     }
 
     extensions.configure<SpotlessExtension> {
@@ -75,6 +89,7 @@ subprojects {
     }
 
     extensions.configure<JavaPluginExtension> {
+        withSourcesJar()
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }

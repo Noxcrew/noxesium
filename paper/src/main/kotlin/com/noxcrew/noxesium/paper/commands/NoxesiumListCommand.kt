@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.paper.commands
 
-import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter
+import com.noxcrew.noxesium.core.util.SkullStringFormatter
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

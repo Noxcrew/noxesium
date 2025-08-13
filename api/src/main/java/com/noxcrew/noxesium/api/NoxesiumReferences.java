@@ -19,19 +19,4 @@ public class NoxesiumReferences {
      * The name space to use for Noxesium.
      */
     public static final String NAMESPACE = "noxesium";
-
-    /**
-     * The name of the custom NBT component used by Bukkit for custom values.
-     */
-    public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
-
-    /**
-     * The NBT tag used for an immovable item.
-     */
-    public static final String IMMOVABLE_TAG = NoxesiumReferences.NAMESPACE + ":immovable";
-
-    /**
-     * The NBT tag used for adding hover sound data to item stack
-     */
-    public static final String HOVER_SOUND_TAG = NoxesiumReferences.NAMESPACE + ":hover_sound";
 }

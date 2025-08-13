@@ -12,7 +12,7 @@
   "environment": "client",
   "entrypoints": {
     "noxesium": [
-      "com.noxcrew.noxesium.fabric.example.ExampleNoxesiumEntrypoint"
+      "com.noxcrew.noxesium.core.fabric.example.ExampleNoxesiumEntrypoint"
     ]
   },
   "mixins": [

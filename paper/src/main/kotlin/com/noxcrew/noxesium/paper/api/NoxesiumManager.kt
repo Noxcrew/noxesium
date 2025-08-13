@@ -1,16 +1,16 @@
 package com.noxcrew.noxesium.paper.api
 
 import com.noxcrew.noxesium.api.NoxesiumReferences
-import com.noxcrew.noxesium.api.protocol.ClientSettings
-import com.noxcrew.noxesium.api.protocol.NoxesiumFeature
-import com.noxcrew.noxesium.api.protocol.NoxesiumServerManager
+import com.noxcrew.noxesium.core.client.setting.ClientSettings
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundChangeServerRulesPacket
 import com.noxcrew.noxesium.paper.api.network.clientbound.ClientboundServerInformationPacket
 import com.noxcrew.noxesium.paper.api.rule.RemoteServerRule
+import com.noxcrew.noxesium.paper.v2.NoxesiumFeature
 import com.noxcrew.noxesium.paper.v2.NoxesiumListenerV2
+import com.noxcrew.noxesium.paper.v2.NoxesiumServerManager
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer

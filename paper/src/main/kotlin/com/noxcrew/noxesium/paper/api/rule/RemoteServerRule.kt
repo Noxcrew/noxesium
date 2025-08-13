@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.api.rule
 
-import com.noxcrew.noxesium.api.protocol.rule.ServerRule
 import com.noxcrew.noxesium.api.qib.QibDefinition
+import com.noxcrew.noxesium.paper.v2.ServerRule
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.Bukkit
