@@ -5,11 +5,8 @@ import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
 import com.noxcrew.noxesium.fabric.feature.entity.QibBehaviorModule;
-import com.noxcrew.noxesium.fabric.feature.entity.SpatialDebuggingRenderer;
-import com.noxcrew.noxesium.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.fabric.feature.misc.TeamGlowHotkeys;
-import com.noxcrew.noxesium.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.fabric.network.CommonPackets;
 import com.noxcrew.noxesium.fabric.network.NoxesiumPacketHandling;
@@ -25,6 +22,11 @@ import org.jetbrains.annotations.Nullable;
  * Implements the common Noxesium entrypoint.
  */
 public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
+
+    private final TeamGlowHotkeys teamGlowHotkeys = new TeamGlowHotkeys();
+    private final QibBehaviorModule qibBehaviorModule = new QibBehaviorModule();
+    private final NoxesiumPacketHandling noxesiumPacketHandling = new NoxesiumPacketHandling();
+    private final ComponentChangeListeners componentChangeListeners = new ComponentChangeListeners();
 
     @Override
     public String getId() {
@@ -48,14 +50,11 @@ public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
     public Collection<NoxesiumFeature> getAllFeatures() {
         var features = new ArrayList<NoxesiumFeature>();
         features.add(new SyncGuiScale());
-        features.add(new SkullFontModule());
         features.add(new NoxesiumSoundModule());
-        features.add(new TeamGlowHotkeys());
-        features.add(new QibBehaviorModule());
-        features.add(new SpatialDebuggingRenderer());
-        features.add(new CustomServerCreativeItems());
-        features.add(new NoxesiumPacketHandling());
-        features.add(new ComponentChangeListeners());
+        features.add(componentChangeListeners);
+        features.add(noxesiumPacketHandling);
+        features.add(qibBehaviorModule);
+        features.add(teamGlowHotkeys);
         return features;
     }
 

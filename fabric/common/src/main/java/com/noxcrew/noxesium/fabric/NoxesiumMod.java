@@ -5,7 +5,9 @@ import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialInteractionEntityTree;
+import com.noxcrew.noxesium.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.fabric.feature.render.CustomRenderTypes;
+import com.noxcrew.noxesium.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.fabric.network.NoxesiumInitializer;
 import com.noxcrew.noxesium.fabric.registry.CommonBlockEntityComponentTypes;
 import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
@@ -28,6 +30,7 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     private final NoxesiumConfig config;
+    private final SkullFontModule skullFontModule;
 
     /**
      * If enabled settings are not overridden. This should be true while rendering the settings menu.
@@ -41,11 +44,20 @@ public class NoxesiumMod implements ClientModInitializer {
     public boolean isUsingIris = false;
 
     /**
+     * Whether the creative tab has changed.
+     */
+    public boolean hasCreativeTabChanged = false;
+
+    /**
      * Creates a new NoxesiumMod instance.
      */
     public NoxesiumMod() {
         instance = this;
         config = NoxesiumConfig.load();
+        skullFontModule = new SkullFontModule();
+
+        // Create the custom creative tab at start-up as it uses a registry
+        new CustomServerCreativeItems();
 
         // Set the packet dumping values which are needed by the API
         NoxesiumNetworking.dumpIncomingPackets = config.getDumpIncomingPackets();
@@ -110,5 +122,12 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public NoxesiumConfig getConfig() {
         return config;
+    }
+
+    /**
+     * Returns the skull font module.
+     */
+    public SkullFontModule getSkullFontModule() {
+        return skullFontModule;
     }
 }

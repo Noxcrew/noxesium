@@ -1,8 +1,10 @@
 package com.noxcrew.noxesium.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundQibTriggeredPacket;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.kyori.adventure.key.Key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,7 +31,7 @@ import org.apache.commons.lang3.tuple.Triple;
 /**
  * Applies qib behaviors whenever players clip interaction entities.
  */
-public class QibBehaviorModule implements NoxesiumFeature {
+public class QibBehaviorModule extends NoxesiumFeature {
 
     private AABB lastBoundingBox;
     private final Map<String, AtomicInteger> collidingWithTypes = new HashMap<>();
@@ -36,11 +39,13 @@ public class QibBehaviorModule implements NoxesiumFeature {
     private final Set<Entity> triggeredJump = new HashSet<>();
     private final List<Pair<AtomicInteger, Triple<LocalPlayer, Entity, QibEffect>>> pending = new ArrayList<>();
 
-    @Override
-    public void onRegister() {
+    public QibBehaviorModule() {
         ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
+            // Ignore unless registered!
+            if (!isRegistered()) return;
+
             // If there are no qib behaviors set, do nothing!
-            if (ServerRules.QIB_BEHAVIORS.getValue().isEmpty()) return;
+            if (NoxesiumRegistries.QIB_EFFECTS.isEmpty()) return;
 
             // Check if the player is colliding with any interaction entities
             tickEffects();
@@ -111,13 +116,15 @@ public class QibBehaviorModule implements NoxesiumFeature {
             if (triggeredJump.contains(entity)) continue;
 
             // Check the behavior of the entity
-            if (!entity.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
-            var behavior = entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
-            var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
-            if (!knownBehaviors.containsKey(behavior)) continue;
+            var behavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
+            if (behavior == null) continue;
+
+            var key = Key.key(behavior);
+            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
 
             // Try to trigger the jump behavior
-            var definition = knownBehaviors.get(behavior);
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            if (definition == null) continue;
             if (definition.onJump() != null) {
                 sendPacket(behavior, ServerboundQibTriggeredPacket.Type.JUMP, entity.getId());
                 executeBehavior(player, entity, definition.onJump());
@@ -162,13 +169,14 @@ public class QibBehaviorModule implements NoxesiumFeature {
         var collidingTypes = new ArrayList<String>();
         for (var entity : entities) {
             // Stop colliding with this entity
-            if (!entity.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
+            var behavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
+            if (behavior == null) continue;
 
             // Determine this entity's behavior
-            var behavior = entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
-            var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
-            if (!knownBehaviors.containsKey(behavior)) continue;
-            var definition = knownBehaviors.get(behavior);
+            var key = Key.key(behavior);
+            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            if (definition == null) continue;
 
             // Try to trigger the entry
             if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior))
@@ -205,13 +213,14 @@ public class QibBehaviorModule implements NoxesiumFeature {
             triggeredJump.remove(collision);
 
             // Stop colliding with this entity
-            if (!collision.noxesium$hasExtraData(ExtraEntityData.QIB_BEHAVIOR)) continue;
+            var behavior = collision.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
+            if (behavior == null) continue;
 
             // Determine this entity's behavior
-            var behavior = collision.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
-            var knownBehaviors = ServerRules.QIB_BEHAVIORS.getValue();
-            if (!knownBehaviors.containsKey(behavior)) continue;
-            var definition = knownBehaviors.get(behavior);
+            var key = Key.key(behavior);
+            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            if (definition == null) continue;
 
             // Execute the behavior if we always do or if you've left this type
             if ((!definition.triggerEnterLeaveOnSwitch() && !collidingWithTypes.containsKey(behavior))
@@ -238,7 +247,8 @@ public class QibBehaviorModule implements NoxesiumFeature {
                 var timeSpent = stay.global()
                         ? collidingWithTypes
                                 .getOrDefault(
-                                        entity.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR), new AtomicInteger())
+                                        entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR),
+                                        new AtomicInteger())
                                 .get()
                         : collidingWithEntities
                                 .getOrDefault(entity, new AtomicInteger())

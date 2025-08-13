@@ -5,8 +5,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter;
+import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -139,8 +139,7 @@ public class SkullContents extends TranslatableContents {
      * Returns the plain-text representation of this skull in the skull font.
      */
     public String getText() {
-        return Character.toString(
-                NoxesiumApi.getInstance().getFeature(SkullFontModule.class).claim(config));
+        return Character.toString(NoxesiumMod.getInstance().getSkullFontModule().claim(config));
     }
 
     public SkullConfig getConfig() {

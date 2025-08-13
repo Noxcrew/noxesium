@@ -38,6 +38,6 @@ public class CommonItemComponentTypes {
     private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec) {
         return NoxesiumRegistries.ITEM_COMPONENTS.register(
                 Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(NoxesiumReferences.NAMESPACE, key, codec, null));
+                new NoxesiumComponentType<T>(NoxesiumReferences.NAMESPACE, key, codec, null, null));
     }
 }

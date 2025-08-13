@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.api.fabric.registry;
 
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.qib.QibEffect;
+import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
 
 /**
@@ -11,7 +11,7 @@ public class NoxesiumRegistries {
     /**
      * Stores all different effects qibs can have.
      */
-    public static ClientNoxesiumRegistry<QibEffect> QIB_EFFECTS = new ClientNoxesiumRegistry<>();
+    public static ClientNoxesiumRegistry<QibDefinition> QIB_EFFECTS = new ClientNoxesiumRegistry<>();
 
     /**
      * Defines all components that can be applied to the entire game, allowing them to control

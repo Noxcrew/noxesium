@@ -9,7 +9,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.fabric.mixin.feature.component.ext.FontManagerExt;
 import com.noxcrew.noxesium.fabric.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.fabric.mixin.feature.component.ext.SkinManagerExt;
@@ -30,6 +29,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.SkinManager;
@@ -39,7 +39,7 @@ import net.minecraft.util.ARGB;
 /**
  * Stores information about the currently known server rules and their data.
  */
-public class SkullFontModule implements NoxesiumFeature {
+public class SkullFontModule {
 
     public static ResourceLocation RESOURCE_LOCATION =
             ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "skulls");
@@ -61,20 +61,17 @@ public class SkullFontModule implements NoxesiumFeature {
 
     private CustomSkullFont currentFont;
 
-    @Override
-    public void onRegister() {
+    public SkullFontModule() {
+        ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
+            // Clear out all font claims as we can now safely assume
+            // we don't need the old ones anymore and there won't be
+            // any components that persist between before/after this point
+            clearCaches();
+        });
         ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
             // Create the custom skull font if it's not already created
             createIfNecessary();
         });
-    }
-
-    @Override
-    public void onUnregister() {
-        // Clear out all font claims as we can now safely assume
-        // we don't need the old ones anymore and there won't be
-        // any components that persist between before/after this point
-        clearCaches();
     }
 
     /**

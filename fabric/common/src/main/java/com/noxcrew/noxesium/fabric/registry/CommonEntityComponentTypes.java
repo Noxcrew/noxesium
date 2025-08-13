@@ -43,8 +43,8 @@ public class CommonEntityComponentTypes {
 
     /**
      * Allows defining qib behavior for an interaction entity. You can find more information
-     * about the qib system in the qib package. This can either be the identifier of a behavior
-     * as found in the registry or an inlined behavior.
+     * about the qib system in the qib package. This has to be an identifier present in the
+     * qib behavior registry!
      */
     public static NoxesiumComponentType<String> QIB_BEHAVIOR =
             register("qib_behavior", Codec.STRING, ByteBufCodecs.STRING_UTF8);

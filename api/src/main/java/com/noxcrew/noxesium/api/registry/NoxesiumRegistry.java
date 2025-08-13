@@ -32,6 +32,20 @@ public class NoxesiumRegistry<T> {
     }
 
     /**
+     * Returns whether this registry contains the given key.
+     */
+    public boolean contains(Key key) {
+        return byKey.containsKey(key);
+    }
+
+    /**
+     * Returns whether the registry is empty.
+     */
+    public boolean isEmpty() {
+        return byKey.isEmpty();
+    }
+
+    /**
      * Registers a new entry into this registry.
      */
     public <V extends T> V register(Key key, V value) {

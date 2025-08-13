@@ -108,8 +108,8 @@ public class ServerRules(
      * Allows tripwires and note blocks to have server authoritative updates. This means the client does not
      * attempt to make any local block state changes for these blocks.
      */
-    public var serverAuthoritativeBlockUpdates: RuleFunction<List<Int>> = register(ServerRuleIndices.SERVER_AUTHORITATIVE_BLOCK_UPDATES, 19, ::BooleanServerRule)
-
+    public var serverAuthoritativeBlockUpdates: RuleFunction<Boolean> =
+        register(ServerRuleIndices.SERVER_AUTHORITATIVE_BLOCK_UPDATES, 19, ::BooleanServerRule)
 
     /** Registers a new [rule]. */
     private fun <T : Any> register(index: Int, minimumProtocol: Int, rule: (Int) -> RemoteServerRule<T>,): RuleFunction<T> {

@@ -14,12 +14,15 @@
     "debugoptions.GameRendererPauseMixin",
     "debugoptions.GuiGraphicsTooltipMixin",
     "debugoptions.ScreenTooltipMixin",
+    "feature.BeaconRendererMixin",
     "feature.EntityOutlineMixin",
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
     "feature.FixVehicleTeleportMixin",
     "feature.HoverSoundMixin",
     "feature.ServerAuthoritativeArrowsMixin",
+    "feature.ServerAuthoritativeNoteBlockUpdatesMixin",
+    "feature.ServerAuthoritativeTripwireUpdatesMixin",
     "feature.UnmovableInventoryMixin",
     "feature.UnmovableSlotMixin",
     "feature.component.DisguisedSkullTranslatableContentsMixin",
@@ -30,8 +33,6 @@
     "feature.component.ext.SkinManagerExt",
     "feature.component.ext.SkinTextureDownloaderExt",
     "feature.component.ext.TextureCacheExt",
-    "feature.ServerAuthoritativeNoteBlockUpdatesMixin",
-    "feature.ServerAuthoritativeTripwireUpdatesMixin",
     "font.PreparedTextBuilderMixin",
     "rules.BoatCollisionMixin",
     "rules.CustomCreativeReloadMixin",
@@ -47,6 +48,7 @@
     "rules.entity.EndCrystalBeamRendererMixin",
     "rules.entity.EndCrystalRendererMixin",
     "rules.entity.EntityComponentMixin",
+    "rules.entity.EntityHitboxMixin",
     "rules.entity.GuardianBeamColorRendererMixin",
     "rules.entity.GuardianBubblesRuleMixin",
     "rules.entity.GuardianStateMixin",
@@ -61,6 +63,7 @@
     "rules.qib.QibPacketHooksMixin",
     "rules.qib.SpatialEntityAdditionMixin",
     "rules.qib.SpatialEntityMixin",
+    "rules.server.MinecraftComponentMixin",
     "rules.trident.TridentHandModelMixin",
     "rules.trident.TridentItemMixin",
     "settings.BetterTeamException",
@@ -80,6 +83,5 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "rules.server.MinecraftComponentMixin"
   ]
 }

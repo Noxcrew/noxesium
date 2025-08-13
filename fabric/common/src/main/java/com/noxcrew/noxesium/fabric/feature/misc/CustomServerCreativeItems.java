@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.fabric.feature.misc;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import java.util.List;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -22,14 +21,13 @@ import net.minecraft.world.item.component.CustomModelData;
  * Adds an extra creative tab which contains various items defined by the server. This allows
  * servers to add custom items and have them easily show up in the clients.
  */
-public class CustomServerCreativeItems implements NoxesiumFeature {
+public class CustomServerCreativeItems {
 
     private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
 
-    @Override
-    public void onRegister() {
+    public CustomServerCreativeItems() {
         Registry.register(
                 BuiltInRegistries.CREATIVE_MODE_TAB,
                 CREATIVE_TAB,

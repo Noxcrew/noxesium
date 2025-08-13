@@ -122,6 +122,13 @@ public class CommonGameComponentTypes {
             ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.VAR_INT));
 
     /**
+     * Allows tripwires and note blocks to have server authoritative updates. This means the client does not
+     * attempt to make any local block state changes for these blocks.
+     */
+    public static NoxesiumComponentType<Unit> SERVER_AUTHORITATIVE_BLOCK_UPDATES =
+            register("server_authoritative_block_updates", Unit.CODEC, Unit.STREAM_CODEC);
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <T> NoxesiumComponentType<T> register(

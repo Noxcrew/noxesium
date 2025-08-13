@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 /**
  * Adds hotkeys for making specific team colors receive glowing outlines.
  */
-public class TeamGlowHotkeys implements NoxesiumFeature {
+public class TeamGlowHotkeys extends NoxesiumFeature {
 
     private static final Map<ChatFormatting, Pair<String, Integer>> GLOW_TEAMS = Map.of(
             ChatFormatting.RED, Pair.of("red", GLFW.GLFW_KEY_KP_7),
@@ -52,6 +52,16 @@ public class TeamGlowHotkeys implements NoxesiumFeature {
         }
         register("key.noxesium.glow.all", GLFW.GLFW_KEY_KP_ADD, () -> glowingTeams.addAll(GLOW_TEAMS.keySet()));
         register("key.noxesium.glow.none", GLFW.GLFW_KEY_KP_SUBTRACT, glowingTeams::clear);
+
+        // Set up an end of tick listener to go through each keybind and check for their usage
+        ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
+            if (!isRegistered()) return;
+            keybinds.forEach((key, handler) -> {
+                while (key.consumeClick()) {
+                    handler.run();
+                }
+            });
+        });
     }
 
     /**
@@ -70,18 +80,6 @@ public class TeamGlowHotkeys implements NoxesiumFeature {
      */
     public String getKeybindCategory() {
         return "category.noxesium";
-    }
-
-    @Override
-    public void onRegister() {
-        // Set up an end of tick listener to go through each keybind and check for their usage
-        ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
-            keybinds.forEach((key, handler) -> {
-                while (key.consumeClick()) {
-                    handler.run();
-                }
-            });
-        });
     }
 
     @Override

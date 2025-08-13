@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.fabric.component.ComponentChangeContext;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.mixin.rules.mouse.MouseHandlerExt;
 import java.util.function.BiConsumer;
 import net.minecraft.client.Minecraft;
@@ -12,9 +13,8 @@ import net.minecraft.world.entity.Entity;
 /**
  * Registers listeners for component changes.
  */
-public class ComponentChangeListeners implements NoxesiumFeature {
-    @Override
-    public void onRegister() {
+public class ComponentChangeListeners extends NoxesiumFeature {
+    public ComponentChangeListeners() {
         listenEntity(CommonEntityComponentTypes.HITBOX_OVERRIDE, (ignored, context) -> {
             // Update the bounding box of the entity whenever a new override is received
             var entity = context.receiver();
@@ -53,6 +53,10 @@ public class ComponentChangeListeners implements NoxesiumFeature {
                 Minecraft.getInstance().levelRenderer.allChanged();
             }
         });
+        listenGame(CommonGameComponentTypes.CUSTOM_CREATIVE_ITEMS, (ignored, context) -> {
+            // Mark that the creative tab has changed so it is updated.
+            NoxesiumMod.getInstance().hasCreativeTabChanged = true;
+        });
     }
 
     /**
@@ -62,7 +66,11 @@ public class ComponentChangeListeners implements NoxesiumFeature {
             NoxesiumComponentType<T> type,
             BiConsumer<ComponentChangeListeners, ComponentChangeContext<T, Entity>> consumer) {
         if (type.listener() == null) return;
-        ((NoxesiumComponentListener<T, Entity>) type.listener()).addListener(this, consumer);
+        ((NoxesiumComponentListener<T, Entity>) type.listener()).addListener(this, (reference, context) -> {
+            if (isRegistered()) {
+                consumer.accept(reference, context);
+            }
+        });
     }
 
     /**
@@ -72,6 +80,10 @@ public class ComponentChangeListeners implements NoxesiumFeature {
             NoxesiumComponentType<T> type,
             BiConsumer<ComponentChangeListeners, ComponentChangeContext<T, Minecraft>> consumer) {
         if (type.listener() == null) return;
-        ((NoxesiumComponentListener<T, Minecraft>) type.listener()).addListener(this, consumer);
+        ((NoxesiumComponentListener<T, Minecraft>) type.listener()).addListener(this, (reference, context) -> {
+            if (isRegistered()) {
+                consumer.accept(reference, context);
+            }
+        });
     }
 }

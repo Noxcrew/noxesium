@@ -14,11 +14,12 @@ import net.minecraft.network.chat.Component;
 /**
  * Registers default listeners for all base packets.
  */
-public class NoxesiumPacketHandling implements NoxesiumFeature {
+public class NoxesiumPacketHandling extends NoxesiumFeature {
 
-    @Override
-    public void onRegister() {
+    public NoxesiumPacketHandling() {
         CommonPackets.INSTANCE.CLIENT_UPDATE_COMPONENTS.addListener(this, (reference, packet, context) -> {
+            if (!isRegistered()) return;
+
             // No entity id being specified refers to the game itself, otherwise find the
             // relevant entity that the packet is referencing.
             var target = packet.entityId();
@@ -35,7 +36,9 @@ public class NoxesiumPacketHandling implements NoxesiumFeature {
         });
 
         CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_START.addListener(this, (reference, packet, context) -> {
-            var manager = NoxesiumApi.getInstance().getFeature(NoxesiumSoundModule.class);
+            if (!isRegistered()) return;
+            var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
+            if (manager == null) return;
 
             // Determine the sound instance to play
             NoxesiumSoundInstance sound = null;
@@ -78,18 +81,23 @@ public class NoxesiumPacketHandling implements NoxesiumFeature {
         });
 
         CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, context) -> {
-            var manager = NoxesiumApi.getInstance().getFeature(NoxesiumSoundModule.class);
+            if (!isRegistered()) return;
+            var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
+            if (manager == null) return;
             var sound = manager.getSound(packet.id());
             if (sound == null) return;
             sound.setVolume(packet.volume(), packet.startVolume(), packet.interpolationTicks());
         });
 
         CommonPackets.INSTANCE.CLIENT_CUSTOM_SOUND_STOP.addListener(this, (reference, packet, context) -> {
-            var manager = NoxesiumApi.getInstance().getFeature(NoxesiumSoundModule.class);
+            if (!isRegistered()) return;
+            var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
+            if (manager == null) return;
             manager.stopSound(packet.id());
         });
 
         CommonPackets.INSTANCE.CLIENT_OPEN_LINK.addListener(this, (reference, packet, context) -> {
+            if (!isRegistered()) return;
             try {
                 var uri = Util.parseAndValidateUntrustedUri(packet.url());
                 var minecraft = Minecraft.getInstance();

@@ -4,15 +4,42 @@ package com.noxcrew.noxesium.api.fabric.feature;
  * A feature in Noxesium that has hooks called when the feature is
  * constructed and destroyed.
  */
-public interface NoxesiumFeature {
+public abstract class NoxesiumFeature {
+
+    private boolean registered;
+
+    /**
+     * Returns whether this feature is registered.
+     */
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    /**
+     * Registers the feature.
+     */
+    public final void register() {
+        if (registered) return;
+        registered = true;
+        onRegister();
+    }
+
+    /**
+     * Unregisters the feature.
+     */
+    public final void unregister() {
+        if (!registered) return;
+        registered = false;
+        onUnregister();
+    }
 
     /**
      * Called when this feature is registered.
      */
-    default void onRegister() {}
+    public void onRegister() {}
 
     /**
      * Called when this feature is unregistered.
      */
-    default void onUnregister() {}
+    public void onUnregister() {}
 }

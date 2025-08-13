@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
  * Sends the server the GUI scale of the client and other relevant
  * client information.
  */
-public class SyncGuiScale implements NoxesiumFeature {
+public class SyncGuiScale extends NoxesiumFeature {
 
     @Override
     public void onRegister() {

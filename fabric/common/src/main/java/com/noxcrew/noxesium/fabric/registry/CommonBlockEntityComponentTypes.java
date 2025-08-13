@@ -14,8 +14,7 @@ public class CommonBlockEntityComponentTypes {
     /**
      * Sets the default height of a beacon beam.
      */
-    public static NoxesiumComponentType<Integer> BEACON_BEAM_HEIGHT =
-            register("beacon_beam_height", Codec.INT); // default: 2048
+    public static NoxesiumComponentType<Integer> BEACON_BEAM_HEIGHT = register("beacon_beam_height", Codec.INT);
 
     /**
      * Registers a new component type to the registry.
@@ -23,6 +22,6 @@ public class CommonBlockEntityComponentTypes {
     private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec) {
         return NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS.register(
                 Key.key(NoxesiumReferences.NAMESPACE, key),
-                new NoxesiumComponentType<T>(NoxesiumReferences.NAMESPACE, key, codec, null));
+                new NoxesiumComponentType<T>(NoxesiumReferences.NAMESPACE, key, codec, null, null));
     }
 }

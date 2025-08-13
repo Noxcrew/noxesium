@@ -58,7 +58,7 @@ public class NoxesiumApi {
                 !features.containsKey(feature.getClass()),
                 "Feature " + feature.getClass().getSimpleName() + " is already registered");
         features.put(feature.getClass(), feature);
-        feature.onRegister();
+        feature.register();
     }
 
     /**
@@ -74,7 +74,7 @@ public class NoxesiumApi {
      * Unregisters all features and packet collections.
      */
     public void unregisterAll() {
-        features.values().forEach(NoxesiumFeature::onUnregister);
+        features.values().forEach(NoxesiumFeature::unregister);
         features.clear();
         packets.forEach(PacketCollection::unregister);
         packets.clear();
@@ -86,16 +86,6 @@ public class NoxesiumApi {
     @Nullable
     public <T extends NoxesiumFeature> T getFeatureOrNull(Class<T> clazz) {
         return (T) features.get(clazz);
-    }
-
-    /**
-     * Returns the feature of type [T] if one is registered or throws an exception if no feature
-     * of that class has been registered.
-     */
-    @NotNull
-    public <T extends NoxesiumFeature> T getFeature(Class<T> clazz) {
-        return (T)
-                Preconditions.checkNotNull(getFeatureOrNull(clazz), "Could not get feature " + clazz.getSimpleName());
     }
 
     /**

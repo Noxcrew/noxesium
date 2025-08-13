@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Manages and stores the currently playing sounds
  */
-public class NoxesiumSoundModule implements NoxesiumFeature {
+public class NoxesiumSoundModule extends NoxesiumFeature {
 
     private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
 
@@ -40,6 +40,8 @@ public class NoxesiumSoundModule implements NoxesiumFeature {
     @Override
     public void onUnregister() {
         // Clear all information about pending sounds on quit
+        var soundManager = Minecraft.getInstance().getSoundManager();
+        sounds.values().forEach(soundManager::stop);
         sounds.clear();
     }
 

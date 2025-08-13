@@ -25,7 +25,9 @@ public abstract class JumpHookMixin {
     public void onJumpFromGround(CallbackInfo ci) {
         var entity = (LivingEntity) ((Object) this);
         if (entity instanceof LocalPlayer localPlayer) {
-            NoxesiumApi.getInstance().getFeature(QibBehaviorModule.class).onPlayerJump(localPlayer);
+            NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .ifPresent(it -> it.onPlayerJump(localPlayer));
         }
     }
 }

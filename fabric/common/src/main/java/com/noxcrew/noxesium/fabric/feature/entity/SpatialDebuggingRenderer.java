@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.fabric.feature.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import java.awt.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,7 +12,7 @@ import net.minecraft.util.profiling.Profiler;
 /**
  * Helps in debugging the spatial interaction tree.
  */
-public class SpatialDebuggingRenderer implements NoxesiumFeature, DebugRenderer.SimpleDebugRenderer {
+public class SpatialDebuggingRenderer implements DebugRenderer.SimpleDebugRenderer {
 
     @Override
     public void render(
