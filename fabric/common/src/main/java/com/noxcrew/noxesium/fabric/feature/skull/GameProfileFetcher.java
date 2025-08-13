@@ -30,10 +30,14 @@ public class GameProfileFetcher {
                     Property property =
                             Iterables.getFirst(newProfile.getProperties().get(PROPERTY_TEXTURES), null);
                     if (property == null) {
-                        newProfile = Minecraft.getInstance()
-                                .getMinecraftSessionService()
-                                .fetchProfile(newProfile.getId(), true)
-                                .profile();
+                        try {
+                            newProfile = Minecraft.getInstance()
+                                    .getMinecraftSessionService()
+                                    .fetchProfile(newProfile.getId(), true)
+                                    .profile();
+                        } catch (Exception ignored) {
+                            // If there are any errors with fetching skins, we just ignore them!
+                        }
                     }
                     consumer.accept(newProfile);
                 },
