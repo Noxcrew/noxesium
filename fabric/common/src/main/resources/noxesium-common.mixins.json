@@ -19,6 +19,7 @@
     "feature.FixMovingPistonFlickeringMixin",
     "feature.FixTextDisplayTransparencyMixin",
     "feature.FixVehicleTeleportMixin",
+    "feature.HighlightableSlotMixin",
     "feature.HoverSoundMixin",
     "feature.ServerAuthoritativeArrowsMixin",
     "feature.ServerAuthoritativeNoteBlockUpdatesMixin",
