@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.fabric.network;
 
 import static com.noxcrew.noxesium.api.util.ByteUtil.hasFlag;
 
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityDataModule;
@@ -122,8 +123,7 @@ public class NoxesiumPacketHandling implements NoxesiumFeature {
                     entity.noxesium$setExtraData(rule, packet.values().get(idx));
                 }
             } else {
-                NoxesiumMod.getInstance()
-                        .getLogger()
+                NoxesiumApi.getLogger()
                         .warn(
                                 "Received ClientboundSetExtraEntityDataPacket about unknown entity {}",
                                 packet.entityId());
@@ -140,8 +140,7 @@ public class NoxesiumPacketHandling implements NoxesiumFeature {
                     entity.noxesium$resetExtraData(rule);
                 }
             } else {
-                NoxesiumMod.getInstance()
-                        .getLogger()
+                NoxesiumApi.getLogger()
                         .warn(
                                 "Received ClientboundResetExtraEntityDataPacket about unknown entity {}",
                                 packet.entityId());
@@ -175,7 +174,7 @@ public class NoxesiumPacketHandling implements NoxesiumFeature {
                         true);
                 minecraft.setScreen(screen);
             } catch (Exception e) {
-                NoxesiumMod.getInstance().getLogger().warn("Failed to open link {}", packet.url(), e);
+                NoxesiumApi.getLogger().warn("Failed to open link {}", packet.url(), e);
             }
         });
     }

@@ -1,5 +1,6 @@
-package com.noxcrew.noxesium.fabric.network.handshake;
+package com.noxcrew.noxesium.fabric.network;
 
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ClientboundHandshakeAcknowledgePacket;
@@ -8,7 +9,6 @@ import com.noxcrew.noxesium.api.fabric.network.handshake.EntrypointProtocol;
 import com.noxcrew.noxesium.api.fabric.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.fabric.network.handshake.ServerboundHandshakePacket;
-import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -95,7 +95,7 @@ public class NoxesiumInitializer {
 
         // Determine all entrypoints and their encrypted ids
         var ids = new HashMap<String, String>();
-        NoxesiumMod.getInstance().getAllEntrypoints().forEach(entrypoint -> {
+        NoxesiumApi.getInstance().getAllEntrypoints().forEach(entrypoint -> {
             // Determine a secret UUID for every entrypoint that we send to the server
             // as encrypted and expect it to send back unencrypted!
             var secret = UUID.randomUUID().toString();
@@ -116,7 +116,7 @@ public class NoxesiumInitializer {
                         ids.put(encryptedId, encryptedSecret);
                     }
                 } catch (Exception x) {
-                    NoxesiumMod.getInstance().getLogger().error("Failed to encrypt entrypoint id {}", id);
+                    NoxesiumApi.getLogger().error("Failed to encrypt entrypoint id {}", id);
                     return;
                 }
             }
@@ -133,13 +133,14 @@ public class NoxesiumInitializer {
      * Handles the server acknowledging the handshake packet.
      */
     private void handle(ClientboundHandshakeAcknowledgePacket packet) {
+        var api = NoxesiumApi.getInstance();
         var entrypoints = new HashSet<EntrypointProtocol>();
         for (var pair : packet.entrypoints().entrySet()) {
             var id = pair.getKey();
             var challengeResult = pair.getValue();
 
             // Determine which entrypoint this is
-            var entrypoint = NoxesiumMod.getInstance().getEntrypoint(id);
+            var entrypoint = api.getEntrypoint(id);
             if (entrypoint == null) continue;
 
             // If the challenge result is invalid ignore this!
@@ -148,9 +149,8 @@ public class NoxesiumInitializer {
             // Initialize this entrypoint and add it to the list
             entrypoints.add(new EntrypointProtocol(
                     entrypoint.getId(), entrypoint.getProtocolVersion(), entrypoint.getRawVersion()));
-            entrypoint.getAllFeatures().forEach(it -> NoxesiumMod.getInstance().registerFeature(it));
-            entrypoint.getPacketCollections().forEach(it -> NoxesiumMod.getInstance()
-                    .registerPackets(it));
+            entrypoint.getAllFeatures().forEach(api::registerFeature);
+            entrypoint.getPacketCollections().forEach(api::registerPackets);
         }
 
         // Inform the server about the handshake success
@@ -161,7 +161,7 @@ public class NoxesiumInitializer {
      * Handles the server sending across registry contents.
      */
     private void handle(ClientboundRegistryIdentifiersPacket packet) {
-
+        // TODO implement
     }
 
     /**
@@ -171,6 +171,7 @@ public class NoxesiumInitializer {
         if (state == HandshakeState.NONE) return;
         state = HandshakeState.NONE;
         HandshakePackets.INSTANCE.unregister();
-        NoxesiumMod.getInstance().unregisterAll();
+        NoxesiumApi.getInstance().unregisterAll();
+        Minecraft.getInstance().noxesium$clearComponents();
     }
 }

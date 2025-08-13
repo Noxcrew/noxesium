@@ -1,27 +1,18 @@
 package com.noxcrew.noxesium.fabric;
 
-import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
-import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
-import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
 import com.noxcrew.noxesium.fabric.config.NoxesiumConfig;
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityData;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.fabric.feature.render.CustomRenderTypes;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
-import com.noxcrew.noxesium.fabric.network.handshake.NoxesiumInitializer;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.noxcrew.noxesium.fabric.network.NoxesiumInitializer;
+import com.noxcrew.noxesium.fabric.registry.CommonBlockEntityComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonItemComponentTypes;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The base for the fabric mod which loads in all entrypoints and manages registries.
@@ -29,18 +20,25 @@ import org.slf4j.LoggerFactory;
 public class NoxesiumMod implements ClientModInitializer {
     private static NoxesiumMod instance;
 
-    private final Logger logger = LoggerFactory.getLogger("Noxesium");
-    private final Map<Class<? extends NoxesiumFeature>, NoxesiumFeature> features = new HashMap<>();
-    private final Set<PacketCollection> packets = new HashSet<>();
-    private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
-    private final NoxesiumConfig config;
-
     /**
      * Returns the known Noxesium instance.
      */
     public static NoxesiumMod getInstance() {
         return instance;
     }
+
+    private final NoxesiumConfig config;
+
+    /**
+     * If enabled settings are not overridden. This should be true while rendering the settings menu.
+     */
+    public boolean disableSettingOverrides = false;
+
+    /**
+     * Whether Iris is being used. If true we don't allow the graphics setting to be changed to Fabulous! as
+     * to not break Iris.
+     */
+    public boolean isUsingIris = false;
 
     /**
      * Creates a new NoxesiumMod instance.
@@ -57,28 +55,31 @@ public class NoxesiumMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Go through all entrypoints and register them
+        var logger = NoxesiumApi.getLogger();
+        var api = NoxesiumApi.getInstance();
         FabricLoader.getInstance()
                 .getEntrypointContainers("noxesium", NoxesiumEntrypoint.class)
                 .forEach(entrypoint -> {
                     try {
-                        entrypoints.put(entrypoint.getEntrypoint().getId(), entrypoint.getEntrypoint());
+                        api.registerEndpoint(entrypoint.getEntrypoint());
                     } catch (Exception e) {
-                        getLogger()
-                                .error(
-                                        "Failed to initialize Noxesium entrypoint from mod {}",
-                                        entrypoint.getProvider().getMetadata().getId());
+                        logger.error(
+                                "Failed to initialize Noxesium entrypoint from mod {}",
+                                entrypoint.getProvider().getMetadata().getId());
                     }
                 });
 
         // Log how many entrypoints were successfully loaded
-        getLogger().info("Loaded {} extensions to Noxesium", entrypoints.size());
+        logger.info("Loaded {} extensions to Noxesium", api.getAllEntrypoints().size());
 
         // Set up the initializer
         new NoxesiumInitializer().register();
 
-        // Trigger registration of all server and entity rules and render types
-        Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
-        ignored = ExtraEntityData.DISABLE_BUBBLES;
+        // Trigger registration of all registries
+        Object ignored = CommonEntityComponentTypes.BEAM_COLOR;
+        ignored = CommonGameComponentTypes.DISABLE_SPIN_ATTACK_COLLISIONS;
+        ignored = CommonItemComponentTypes.HOVER_SOUND;
+        ignored = CommonBlockEntityComponentTypes.BEACON_BEAM_HEIGHT;
         ignored = CustomRenderTypes.linesNoDepth();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
@@ -99,13 +100,9 @@ public class NoxesiumMod implements ClientModInitializer {
         };
         backgroundTaskThread.setDaemon(true);
         backgroundTaskThread.start();
-    }
 
-    /**
-     * Returns the logger instance to use.
-     */
-    public Logger getLogger() {
-        return logger;
+        // Determine if Iris is present or not
+        isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
     }
 
     /**
@@ -113,66 +110,5 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public NoxesiumConfig getConfig() {
         return config;
-    }
-
-    /**
-     * Adds a new feature to the list of features that should
-     * be registered. Usually called by the initializer.
-     */
-    public void registerFeature(NoxesiumFeature feature) {
-        Preconditions.checkState(
-                !features.containsKey(feature.getClass()),
-                "Feature " + feature.getClass().getSimpleName() + " is already registered");
-        features.put(feature.getClass(), feature);
-        feature.onRegister();
-    }
-
-    /**
-     * Registers a new collection of packets.
-     * Usually called by the initializer.
-     */
-    public void registerPackets(PacketCollection collection) {
-        packets.add(collection);
-        collection.register();
-    }
-
-    /**
-     * Unregisters all features and packet collections.
-     */
-    public void unregisterAll() {
-        features.values().forEach(NoxesiumFeature::onUnregister);
-        features.clear();
-        packets.forEach(PacketCollection::unregister);
-        packets.clear();
-    }
-
-    /**
-     * Returns the feature of type [T] if one is registered.
-     */
-    @NotNull
-    public <T extends NoxesiumFeature> T getFeature(Class<T> clazz) {
-        return (T) Preconditions.checkNotNull(features.get(clazz), "Could not get feature " + clazz.getSimpleName());
-    }
-
-    /**
-     * Returns all registered features.
-     */
-    public Collection<NoxesiumFeature> getAllFeatures() {
-        return features.values();
-    }
-
-    /**
-     * Returns the entrypoint with the given id.
-     */
-    @Nullable
-    public NoxesiumEntrypoint getEntrypoint(String id) {
-        return entrypoints.get(id);
-    }
-
-    /**
-     * Returns all registered entry points.
-     */
-    public Collection<NoxesiumEntrypoint> getAllEntrypoints() {
-        return entrypoints.values();
     }
 }

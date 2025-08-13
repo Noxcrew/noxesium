@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.fabric.network.handshake;
+package com.noxcrew.noxesium.fabric.network;
 
 /**
  * The different states of handshaking.

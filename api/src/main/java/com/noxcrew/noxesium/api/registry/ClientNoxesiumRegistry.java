@@ -2,8 +2,6 @@ package com.noxcrew.noxesium.api.registry;
 
 import net.kyori.adventure.key.Key;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * A variant of the Noxesium registry for the client-side.
  */

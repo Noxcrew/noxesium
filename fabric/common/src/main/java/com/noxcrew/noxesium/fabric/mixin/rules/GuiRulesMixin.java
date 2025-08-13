@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules;
 
-import com.noxcrew.noxesium.fabric.feature.rule.InventoryHelper;
 import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.util.InventoryHelper;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;

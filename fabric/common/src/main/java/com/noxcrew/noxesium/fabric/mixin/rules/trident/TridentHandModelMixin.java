@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.fabric.mixin.rules.trident;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.noxcrew.noxesium.fabric.feature.rule.InventoryHelper;
 import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
+import com.noxcrew.noxesium.fabric.util.InventoryHelper;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;

@@ -31,14 +31,20 @@ public class ItemStackServerRule(
 
             // Parse the item to the intended destination format
             val connection = Via.getAPI().getConnection(player.uniqueId)
-            Via.getManager().protocolManager.getProtocolPath(
-                Via.getAPI().getPlayerProtocolVersion(player.uniqueId),
-                Via.getManager().protocolManager.serverProtocolVersion.highestSupportedProtocolVersion(),
-            )?.forEach { protocol ->
-                protocol.protocol().itemRewriter?.handleItemToClient(connection, item)?.let {
-                    item = it
+            Via
+                .getManager()
+                .protocolManager
+                .getProtocolPath(
+                    Via.getAPI().getPlayerProtocolVersion(player.uniqueId),
+                    Via
+                        .getManager()
+                        .protocolManager.serverProtocolVersion
+                        .highestSupportedProtocolVersion(),
+                )?.forEach { protocol ->
+                    protocol.protocol().itemRewriter?.handleItemToClient(connection, item)?.let {
+                        item = it
+                    }
                 }
-            }
 
             // Write the destination item to the buffer
             Types.ITEM1_20_2.write(buffer, item)

@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.qib.QibEffect;
-import com.noxcrew.noxesium.fabric.feature.rule.ServerRules;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundQibTriggeredPacket;
 import java.util.ArrayList;
 import java.util.HashMap;

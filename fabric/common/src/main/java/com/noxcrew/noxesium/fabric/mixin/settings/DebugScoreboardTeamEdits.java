@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.settings;
 
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -18,8 +19,7 @@ public abstract class DebugScoreboardTeamEdits {
     @Inject(method = "handleSetPlayerTeamPacket", at = @At("HEAD"))
     public void handleSetPlayerTeamPacket(ClientboundSetPlayerTeamPacket packet, CallbackInfo ci) {
         if (Minecraft.getInstance().isSameThread() && NoxesiumMod.getInstance().getConfig().debugScoreboardTeams) {
-            NoxesiumMod.getInstance()
-                    .getLogger()
+            NoxesiumApi.getLogger()
                     .info(
                             "Received set player team packet, team method: {}, player action: {}, name: {}, players: [{}], parameters: {}",
                             packet.getTeamAction(),

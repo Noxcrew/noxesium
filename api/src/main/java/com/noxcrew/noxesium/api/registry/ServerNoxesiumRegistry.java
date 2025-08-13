@@ -1,8 +1,7 @@
 package com.noxcrew.noxesium.api.registry;
 
-import net.kyori.adventure.key.Key;
-
 import java.util.concurrent.atomic.AtomicInteger;
+import net.kyori.adventure.key.Key;
 
 /**
  * A variant of the Noxesium registry for the server-side.
@@ -17,10 +16,11 @@ public class ServerNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
     }
 
     @Override
-    public void register(Key key, T value) {
+    public <V extends T> V register(Key key, V value) {
         super.register(key, value);
 
         var id = lastId.getAndIncrement();
         byId.put(id, value);
+        return value;
     }
 }

@@ -1,9 +1,11 @@
 package com.noxcrew.noxesium.api.fabric.component;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A Noxesium component is a custom version of Mojang's Data Component system which allows
@@ -19,8 +21,19 @@ import net.minecraft.resources.ResourceLocation;
  * Component types are defined in a custom registry similar to vanilla components.
  */
 public record NoxesiumComponentType<T>(
-        ResourceLocation id,
-        Codec<T> codec,
-        StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec
-) {
+        ResourceLocation id, Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+
+    /**
+     * Creates a new component type automatically for the given namespace and key with the default encoder cache enabled.
+     */
+    public NoxesiumComponentType(
+            String namespace,
+            String key,
+            Codec<T> codec,
+            @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        this(
+                ResourceLocation.fromNamespaceAndPath(namespace, key),
+                DataComponents.ENCODER_CACHE.wrap(codec),
+                streamCodec);
+    }
 }

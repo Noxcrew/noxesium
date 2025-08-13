@@ -1,10 +1,9 @@
 package com.noxcrew.noxesium.api.registry;
 
-import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import net.kyori.adventure.key.Key;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A registry used by Noxesium for its different types of custom components. Registries

@@ -98,7 +98,8 @@ public class ItemStackListServerRule(
     default: List<ItemStack> = emptyList(),
 ) : RemoteServerRule<List<ItemStack>>(index, default) {
     override fun write(value: List<ItemStack>, buffer: RegistryFriendlyByteBuf) {
-        buffer.writeCollection(value) { _, item -> ItemStackServerRule.write(buffer, Bukkit.getOnlinePlayers().first(), item) } // TODO pass down versioning info
+        buffer.writeCollection(value) { _, item -> ItemStackServerRule.write(buffer, Bukkit.getOnlinePlayers().first(), item) }
+        // TODO pass down versioning info
     }
 }
 

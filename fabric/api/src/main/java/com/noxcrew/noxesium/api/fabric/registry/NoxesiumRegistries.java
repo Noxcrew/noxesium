@@ -32,5 +32,6 @@ public class NoxesiumRegistries {
     /**
      * Defines custom block entity components that can be read from any block entity's NBT data.
      */
-    public static ClientNoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS = new ClientNoxesiumRegistry<>();
+    public static ClientNoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS =
+            new ClientNoxesiumRegistry<>();
 }

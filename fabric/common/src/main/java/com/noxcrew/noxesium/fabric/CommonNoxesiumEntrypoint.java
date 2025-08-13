@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
-import com.noxcrew.noxesium.fabric.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialDebuggingRenderer;
 import com.noxcrew.noxesium.fabric.feature.misc.CustomServerCreativeItems;
@@ -54,7 +53,6 @@ public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
         features.add(new NoxesiumSoundModule());
         features.add(new TeamGlowHotkeys());
         features.add(new NoxesiumPacketHandling());
-        features.add(new ExtraEntityDataModule());
         features.add(new QibBehaviorModule());
         features.add(new SpatialDebuggingRenderer());
         features.add(new CustomServerCreativeItems());

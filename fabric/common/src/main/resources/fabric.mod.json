@@ -30,8 +30,11 @@
   "accessWidener": "noxesium.accesswidener",
   "custom": {
     "loom:injected_interfaces": {
+      "net/minecraft/client/Minecraft": [
+        "com/noxcrew/noxesium/api/fabric/component/NoxesiumComponentHolder"
+      ],
       "net/minecraft/world/entity/Entity": [
-        "com/noxcrew/noxesium/fabric/feature/entity/ExtraEntityDataHolder"
+        "com/noxcrew/noxesium/api/fabric/component/NoxesiumComponentHolder"
       ],
       "net/minecraft/world/entity/LivingEntity": [
         "com/noxcrew/noxesium/fabric/feature/entity/LivingEntityExtension"

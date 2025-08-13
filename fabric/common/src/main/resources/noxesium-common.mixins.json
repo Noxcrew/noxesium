@@ -45,7 +45,7 @@
     "rules.entity.DebugRendererMixin",
     "rules.entity.EndCrystalBeamRendererMixin",
     "rules.entity.EndCrystalRendererMixin",
-    "rules.entity.ExtraEntityDataMixin",
+    "rules.entity.EntityComponentMixin",
     "rules.entity.GuardianBeamColorRendererMixin",
     "rules.entity.GuardianBubblesRuleMixin",
     "rules.entity.GuardianStateMixin",
@@ -77,5 +77,8 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "rules.server.MinecraftComponentMixin"
+  ]
 }

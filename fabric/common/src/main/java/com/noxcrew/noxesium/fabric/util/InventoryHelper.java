@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.fabric.feature.rule;
+package com.noxcrew.noxesium.fabric.util;
 
 import com.noxcrew.noxesium.fabric.mixin.rules.ext.InventoryExt;
 import net.minecraft.world.entity.player.Inventory;

@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.fabric.mixin.feature;
 import static com.noxcrew.noxesium.api.NoxesiumReferences.BUKKIT_COMPOUND_ID;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.fabric.feature.item.HoverSoundTag;
+import com.noxcrew.noxesium.fabric.feature.item.HoverSound;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
@@ -31,6 +31,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractContainerScreen.class)
 public abstract class HoverSoundMixin {
 
+    // TODO Use onStopHovering instead of manually tracking
+
     @Unique
     private static ItemStack noxesium$lastHoveredStack = ItemStack.EMPTY;
 
@@ -55,16 +57,16 @@ public abstract class HoverSoundMixin {
         }
 
         // hover off sound for the previous item
-        noxesium$tryPlaySound(noxesium$lastHoveredStack, HoverSoundTag::hoverOff);
+        noxesium$tryPlaySound(noxesium$lastHoveredStack, HoverSound::hoverOff);
 
         // hover on sound for current item
-        noxesium$tryPlaySound(currentStack, HoverSoundTag::hoverOn);
+        noxesium$tryPlaySound(currentStack, HoverSound::hoverOn);
 
         noxesium$lastHoveredStack = currentStack.copy();
     }
 
     @Unique
-    private void noxesium$tryPlaySound(ItemStack stack, Function<HoverSoundTag, Optional<HoverSoundTag.Sound>> sound) {
+    private void noxesium$tryPlaySound(ItemStack stack, Function<HoverSound, Optional<HoverSound.Sound>> sound) {
         Optional.ofNullable(noxesium$getHoverSoundTag(stack))
                 .filter(this::noxesium$shouldPlaySound)
                 .flatMap(sound)
@@ -72,7 +74,7 @@ public abstract class HoverSoundMixin {
     }
 
     @Unique
-    private @Nullable HoverSoundTag noxesium$getHoverSoundTag(ItemStack stack) {
+    private @Nullable HoverSound noxesium$getHoverSoundTag(ItemStack stack) {
         final CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         if (data == null) return null;
 
@@ -92,7 +94,7 @@ public abstract class HoverSoundMixin {
 
         if (hoverTag == null) return null;
 
-        var result = HoverSoundTag.CODEC.decode(NbtOps.INSTANCE, hoverTag);
+        var result = HoverSound.CODEC.decode(NbtOps.INSTANCE, hoverTag);
         if (result.isSuccess()) {
             return result.getOrThrow().getFirst();
         } else {
@@ -101,7 +103,7 @@ public abstract class HoverSoundMixin {
     }
 
     @Unique
-    private void noxesium$playSound(HoverSoundTag.Sound sound) {
+    private void noxesium$playSound(HoverSound.Sound sound) {
         var soundEvent = BuiltInRegistries.SOUND_EVENT.get(sound.sound());
         if (soundEvent.isEmpty()) return;
 
@@ -115,7 +117,7 @@ public abstract class HoverSoundMixin {
     }
 
     @Unique
-    private boolean noxesium$shouldPlaySound(HoverSoundTag tag) {
+    private boolean noxesium$shouldPlaySound(HoverSound tag) {
         if (tag.onlyPlayInNonPlayerInventories()) {
             var currentScreen = (AbstractContainerScreen) (Object) this;
             return !(currentScreen instanceof InventoryScreen || currentScreen instanceof CreativeModeInventoryScreen);
