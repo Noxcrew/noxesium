@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.trident;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundRiptidePacket;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
@@ -15,7 +18,6 @@ import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * Adds patches to the trident to make it entirely client-side.
@@ -23,11 +25,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TridentItem.class)
 public abstract class TridentItemMixin {
 
-    @Redirect(
+    @WrapOperation(
             method = "releaseUsing",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
-    public boolean isInWaterOrRain(Player player) {
-        if (player.isInWaterOrRain()) return true;
+    public boolean isInWaterOrRain(Player player, Operation<Boolean> original) {
+        if (original.call(player)) return true;
         if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT))
             return false;
         if (player != Minecraft.getInstance().player) return false;
@@ -36,16 +38,16 @@ public abstract class TridentItemMixin {
         return player.noxesium$hasTridentCoyoteTime();
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "use",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
-    public boolean canStartChargingTrident(Player player) {
+    public boolean canStartChargingTrident(Player player, Operation<Boolean> original) {
         // If pre-charging is allowed we always allow you to start charging it.
         if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING)) return true;
-        return player.isInWaterOrRain();
+        return original.call(player);
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "releaseUsing",
             at =
                     @At(
@@ -60,15 +62,16 @@ public abstract class TridentItemMixin {
             SoundSource soundSource,
             float volume,
             float pitch,
-            ItemStack itemStack,
-            Level level,
-            LivingEntity livingEntity,
-            int i) {
+            Operation<Void> original,
+            @Local(argsOnly = true) ItemStack itemStack,
+            @Local(argsOnly = true) Level level,
+            @Local(argsOnly = true) LivingEntity livingEntity,
+            @Local(argsOnly = true) int i) {
         var player = Minecraft.getInstance().player;
         if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)
                 || entity != player
                 || player == null) {
-            instance.playSound(ignored, entity, soundEvent, soundSource, volume, pitch);
+            original.call(instance, ignored, entity, soundEvent, soundSource, volume, pitch);
             return;
         }
 

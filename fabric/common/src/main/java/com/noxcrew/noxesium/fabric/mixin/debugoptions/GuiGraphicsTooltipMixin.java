@@ -1,26 +1,27 @@
 package com.noxcrew.noxesium.fabric.mixin.debugoptions;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.client.DebugOption;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GuiGraphics.class)
 public class GuiGraphicsTooltipMixin {
 
-    @Redirect(
+    @WrapOperation(
             method = "renderComponentHoverEffect",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"))
-    private boolean restrictAdvancedItemTooltips(net.minecraft.client.Options options) {
-        var original = options.advancedItemTooltips;
+    private boolean restrictAdvancedItemTooltips(Options instance, Operation<Boolean> original) {
         var restrictedOptions =
                 Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
         if (restrictedOptions != null && restrictedOptions.contains(DebugOption.ADVANCED_TOOLTIPS.getKeyCode())) {
             return false;
         }
-        return original;
+        return original.call(instance);
     }
 }

@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.entity;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
@@ -14,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -53,14 +54,14 @@ public class GuardianBeamColorRendererMixin {
     /**
      * Swap out the type of rendering for a transparent one so we can properly make it transparent.
      */
-    @Redirect(
+    @WrapOperation(
             method = "<clinit>",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/client/renderer/RenderType;entityCutoutNoCull(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
-    private static RenderType determineRenderType(ResourceLocation resourceLocation) {
+    private static RenderType determineRenderType(ResourceLocation resourceLocation, Operation<RenderType> original) {
         return RenderType.entityTranslucent(resourceLocation);
     }
 
@@ -85,14 +86,15 @@ public class GuardianBeamColorRendererMixin {
     /**
      * Override the vertex color used when drawing.
      */
-    @Redirect(
+    @WrapOperation(
             method = "vertex",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(IIII)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
-    private static VertexConsumer overrideColor(VertexConsumer vertexConsumer, int r, int g, int b, int a) {
+    private static VertexConsumer overrideColor(
+            VertexConsumer vertexConsumer, int r, int g, int b, int a, Operation<VertexConsumer> original) {
         if (noxesium$beamColor != null) {
             if (noxesium$beamColorFade != null) {
                 var ind = noxesium$index;
@@ -108,9 +110,9 @@ public class GuardianBeamColorRendererMixin {
             } else {
                 vertexConsumer.setColor(noxesium$beamColor);
             }
+            return vertexConsumer;
         } else {
-            vertexConsumer.setColor(r, g, b, 255);
+            return original.call(vertexConsumer, r, g, b, a);
         }
-        return vertexConsumer;
     }
 }

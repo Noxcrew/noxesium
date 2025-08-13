@@ -18,19 +18,17 @@ public class CommonItemComponentTypes {
      * If set, prevents the item stack from being picked up. Prevents flickering when clicking
      * around in a menu.
      */
-    public static NoxesiumComponentType<Unit> IMMOVABLE = register("immovable", Unit.CODEC); // default: not present
+    public static NoxesiumComponentType<Unit> IMMOVABLE = register("immovable", Unit.CODEC);
 
     /**
      * Defines a sound effect that is played when hovering over an item.
      */
-    public static NoxesiumComponentType<HoverSound> HOVER_SOUND =
-            register("hover_sound", HoverSound.CODEC); // default: not present
+    public static NoxesiumComponentType<HoverSound> HOVER_SOUND = register("hover_sound", HoverSound.CODEC);
 
     /**
      * Customises the slot hover rendering for this item slot.
      */
-    public static NoxesiumComponentType<Hoverable> HOVERABLE =
-            register("hoverable", Hoverable.CODEC); // default: not present
+    public static NoxesiumComponentType<Hoverable> HOVERABLE = register("hoverable", Hoverable.CODEC);
 
     /**
      * Registers a new component type to the registry.

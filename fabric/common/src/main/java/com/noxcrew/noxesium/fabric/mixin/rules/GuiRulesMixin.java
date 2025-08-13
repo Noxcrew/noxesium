@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.fabric.util.InventoryHelper;
 import net.minecraft.client.Minecraft;
@@ -10,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * Raises the height of the held item name in the HUD to avoid
@@ -30,14 +31,14 @@ public abstract class GuiRulesMixin {
                         .noxesium$getComponentOr(CommonGameComponentTypes.HELD_ITEM_NAME_OFFSET, () -> 0);
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "tick()V",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/world/entity/player/Inventory;getSelectedItem()Lnet/minecraft/world/item/ItemStack;"))
-    public ItemStack getSelected(Inventory inventory) {
+    public ItemStack getSelected(Inventory inventory, Operation<ItemStack> original) {
         return InventoryHelper.getRealSelected(inventory);
     }
 }

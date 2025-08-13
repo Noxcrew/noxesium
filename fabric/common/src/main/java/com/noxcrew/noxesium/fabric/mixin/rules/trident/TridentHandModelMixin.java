@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.trident;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
@@ -19,7 +21,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
@@ -41,14 +42,14 @@ public abstract class TridentHandModelMixin {
             MultiBufferSource multiBufferSource,
             int i);
 
-    @Redirect(
+    @WrapOperation(
             method = "tick()V",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/client/player/LocalPlayer;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
-    public ItemStack getSelected(LocalPlayer instance) {
+    public ItemStack getSelected(LocalPlayer instance, Operation<ItemStack> original) {
         return InventoryHelper.getRealSelected(instance.getInventory());
     }
 

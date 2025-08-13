@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -84,14 +83,14 @@ public abstract class CustomDebugHotkeysMixin {
         }
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "handleDebugKeys",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
-    private void modifyAllHelpMessages(KeyboardHandler instance, Component message) {
+    private void modifyAllHelpMessages(KeyboardHandler instance, Component message, Operation<Void> original) {
         var translationKey = noxesium$getTranslationKey(message);
         if (translationKey != null) {
             var debugOption = DebugOption.getByTranslationKey(translationKey);
@@ -106,13 +105,13 @@ public abstract class CustomDebugHotkeysMixin {
                                     .withColor(0xFF9999)
                                     .withHoverEvent(new HoverEvent.ShowText(
                                             Component.translatable("debug.warning.option.disabled_by_server"))));
-                    showDebugChat(modifiedMessage);
+                    original.call(instance, modifiedMessage);
                     return;
                 }
             }
         }
 
-        showDebugChat(message);
+        original.call(instance, message);
     }
 
     @Unique
