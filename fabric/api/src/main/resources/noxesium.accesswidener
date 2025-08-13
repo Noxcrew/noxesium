@@ -21,3 +21,4 @@ accessible field net/minecraft/client/renderer/RenderPipelines TEXT_SNIPPET Lcom
 accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 
 accessible field net/minecraft/core/component/DataComponents ENCODER_CACHE Lnet/minecraft/util/EncoderCache;
+accessible method net/minecraft/world/entity/Entity makeBoundingBox ()Lnet/minecraft/world/phys/AABB;

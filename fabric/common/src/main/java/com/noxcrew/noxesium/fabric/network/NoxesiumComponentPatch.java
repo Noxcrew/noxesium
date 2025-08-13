@@ -182,9 +182,22 @@ public class NoxesiumComponentPatch {
             var key = entry.getKey();
             var value = entry.getValue();
             if (value.isEmpty()) {
-                holder.noxesium$unsetComponent(key);
+                if (key.listener() != null && key.listener().hasListeners()) {
+                    var oldValue = holder.noxesium$getComponent(key);
+                    holder.noxesium$unsetComponent(key);
+                    key.listener().trigger(holder, oldValue, null);
+                } else {
+                    holder.noxesium$unsetComponent(key);
+                }
             } else {
-                holder.noxesium$loadComponent(key, value.get());
+                if (key.listener() != null && key.listener().hasListeners()) {
+                    var oldValue = holder.noxesium$getComponent(key);
+                    var newValue = value.orElse(null);
+                    holder.noxesium$loadComponent(key, newValue);
+                    key.listener().trigger(holder, oldValue, newValue);
+                } else {
+                    holder.noxesium$loadComponent(key, value.get());
+                }
             }
         }
     }

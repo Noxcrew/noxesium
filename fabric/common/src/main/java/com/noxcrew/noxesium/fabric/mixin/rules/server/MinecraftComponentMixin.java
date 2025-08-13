@@ -34,6 +34,10 @@ public class MinecraftComponentMixin implements NoxesiumComponentHolder {
 
     @Override
     public void noxesium$loadComponent(NoxesiumComponentType<?> component, Object value) {
+        if (value == null) {
+            noxesium$unsetComponent(component);
+            return;
+        }
         if (noxesium$components == null) noxesium$components = new ConcurrentHashMap<>();
         noxesium$components.put(component, value);
     }

@@ -21,7 +21,10 @@ import org.jetbrains.annotations.Nullable;
  * Component types are defined in a custom registry similar to vanilla components.
  */
 public record NoxesiumComponentType<T>(
-        ResourceLocation id, Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        ResourceLocation id,
+        Codec<T> codec,
+        @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec,
+        @Nullable NoxesiumComponentListener<T, ?> listener) {
 
     /**
      * Creates a new component type automatically for the given namespace and key with the default encoder cache enabled.
@@ -30,10 +33,12 @@ public record NoxesiumComponentType<T>(
             String namespace,
             String key,
             Codec<T> codec,
-            @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+            @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec,
+            @Nullable NoxesiumComponentListener<T, ?> listener) {
         this(
                 ResourceLocation.fromNamespaceAndPath(namespace, key),
                 DataComponents.ENCODER_CACHE.wrap(codec),
-                streamCodec);
+                streamCodec,
+                listener);
     }
 }

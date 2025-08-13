@@ -17,7 +17,9 @@ public class NoxesiumPacketHandler<T extends CustomPacketPayload>
     @Override
     public void receive(T payload, ClientPlayNetworking.Context context) {
         if (payload instanceof NoxesiumPacket noxesiumPacket) {
-            noxesiumPacket.noxesiumType().handle(new PacketContext(context.client(), context.player()), payload);
+            if (noxesiumPacket.noxesiumType().hasListeners()) {
+                noxesiumPacket.noxesiumType().handle(new PacketContext(context.client(), context.player()), payload);
+            }
             if (NoxesiumNetworking.dumpIncomingPackets) {
                 Minecraft.getInstance()
                         .player

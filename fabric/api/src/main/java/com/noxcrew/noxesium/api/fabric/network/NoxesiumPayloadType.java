@@ -89,6 +89,13 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     }
 
     /**
+     * Returns whether this type has listeners.
+     */
+    public boolean hasListeners() {
+        return !listeners.isEmpty();
+    }
+
+    /**
      * Handles a new packet [payload] of this type being received with
      * [context].
      */

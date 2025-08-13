@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.fabric.network.CommonPackets;
 import com.noxcrew.noxesium.fabric.network.NoxesiumPacketHandling;
+import com.noxcrew.noxesium.fabric.registry.ComponentChangeListeners;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,10 +51,11 @@ public class CommonNoxesiumEntrypoint implements NoxesiumEntrypoint {
         features.add(new SkullFontModule());
         features.add(new NoxesiumSoundModule());
         features.add(new TeamGlowHotkeys());
-        features.add(new NoxesiumPacketHandling());
         features.add(new QibBehaviorModule());
         features.add(new SpatialDebuggingRenderer());
         features.add(new CustomServerCreativeItems());
+        features.add(new NoxesiumPacketHandling());
+        features.add(new ComponentChangeListeners());
         return features;
     }
 
