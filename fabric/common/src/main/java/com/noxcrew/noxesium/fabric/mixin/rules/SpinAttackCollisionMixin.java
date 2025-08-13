@@ -2,9 +2,8 @@ package com.noxcrew.noxesium.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import java.util.List;
-
 import com.noxcrew.noxesium.fabric.registry.CommonGameComponentTypes;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;

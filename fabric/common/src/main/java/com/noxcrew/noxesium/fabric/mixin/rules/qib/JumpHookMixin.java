@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.fabric.mixin.rules.qib;
 
-import com.noxcrew.noxesium.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.fabric.feature.entity.QibBehaviorModule;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +25,7 @@ public abstract class JumpHookMixin {
     public void onJumpFromGround(CallbackInfo ci) {
         var entity = (LivingEntity) ((Object) this);
         if (entity instanceof LocalPlayer localPlayer) {
-            NoxesiumMod.getInstance().getFeature(QibBehaviorModule.class).onPlayerJump(localPlayer);
+            NoxesiumApi.getInstance().getFeature(QibBehaviorModule.class).onPlayerJump(localPlayer);
         }
     }
 }

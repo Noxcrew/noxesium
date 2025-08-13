@@ -2,16 +2,11 @@ package com.noxcrew.noxesium.fabric.network;
 
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundChangeServerRulesPacket;
 import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundResetExtraEntityDataPacket;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundResetPacket;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundResetServerRulesPacket;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundServerInformationPacket;
-import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundSetExtraEntityDataPacket;
+import com.noxcrew.noxesium.fabric.network.clientbound.ClientboundUpdateComponentsPacket;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.fabric.network.serverbound.ServerboundQibTriggeredPacket;
@@ -41,18 +36,8 @@ public class CommonPackets extends PacketCollection {
             client("clientbound_start_sound", ClientboundCustomSoundStartPacket.STREAM_CODEC);
     public final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> CLIENT_CUSTOM_SOUND_STOP =
             client("clientbound_stop_sound", ClientboundCustomSoundStopPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundChangeServerRulesPacket> CLIENT_CHANGE_SERVER_RULES =
-            client("clientbound_change_server_rules", ClientboundChangeServerRulesPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundResetServerRulesPacket> CLIENT_RESET_SERVER_RULES =
-            client("clientbound_reset_server_rules", ClientboundResetServerRulesPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundResetPacket> CLIENT_RESET =
-            client("clientbound_reset", ClientboundResetPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundServerInformationPacket> CLIENT_SERVER_INFO =
-            client("clientbound_server_info", ClientboundServerInformationPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundSetExtraEntityDataPacket> CLIENT_CHANGE_EXTRA_ENTITY_DATA =
-            client("clientbound_change_extra_entity_data", ClientboundSetExtraEntityDataPacket.STREAM_CODEC);
-    public final NoxesiumPayloadType<ClientboundResetExtraEntityDataPacket> CLIENT_RESET_EXTRA_ENTITY_DATA =
-            client("clientbound_reset_extra_entity_data", ClientboundResetExtraEntityDataPacket.STREAM_CODEC);
+    public final NoxesiumPayloadType<ClientboundUpdateComponentsPacket> CLIENT_UPDATE_COMPONENTS =
+            client("clientbound_update_components", ClientboundUpdateComponentsPacket.STREAM_CODEC);
     public final NoxesiumPayloadType<ClientboundOpenLinkPacket> CLIENT_OPEN_LINK =
             client("clientbound_open_link", ClientboundOpenLinkPacket.STREAM_CODEC);
 }

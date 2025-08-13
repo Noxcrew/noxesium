@@ -65,7 +65,8 @@ public abstract class TridentHandModelMixin {
             MultiBufferSource p_109380_,
             int p_109381_,
             CallbackInfo ci) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
+        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT))
+            return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
         // the trident

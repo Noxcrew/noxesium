@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.fabric.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.api.fabric.NoxesiumApi;
 import com.noxcrew.noxesium.fabric.feature.misc.TeamGlowHotkeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -27,7 +27,7 @@ public class GlowingHotkeyOverrideMixin {
                 entity.getTeam() != null
                 &&
                 // Check that the team color is in the glowing teams list
-                NoxesiumMod.getInstance()
+                NoxesiumApi.getInstance()
                         .getFeature(TeamGlowHotkeys.class)
                         .getGlowingTeams()
                         .contains(entity.getTeam().getColor());

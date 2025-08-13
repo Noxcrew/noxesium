@@ -162,6 +162,8 @@ public class NoxesiumInitializer {
      */
     private void handle(ClientboundRegistryIdentifiersPacket packet) {
         // TODO implement
+        // TODO send back which ids were not found on the client so the server
+        // knows to never send those!
     }
 
     /**

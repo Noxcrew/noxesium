@@ -14,6 +14,7 @@ public class ClientNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
         var value = getByKey(key);
         if (value != null) {
             byId.put(id, value);
+            forId.put(value, id);
         }
     }
 }

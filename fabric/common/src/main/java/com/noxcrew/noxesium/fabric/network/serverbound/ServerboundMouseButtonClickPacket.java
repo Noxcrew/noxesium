@@ -14,11 +14,17 @@ public record ServerboundMouseButtonClickPacket(Action action, Button button) im
     public static final StreamCodec<RegistryFriendlyByteBuf, ServerboundMouseButtonClickPacket> STREAM_CODEC =
             CustomPacketPayload.codec(ServerboundMouseButtonClickPacket::write, ServerboundMouseButtonClickPacket::new);
 
+    /**
+     * The different available mouse actions.
+     */
     public enum Action {
         PRESS_DOWN,
         RELEASE,
     }
 
+    /**
+     * The different available mouse buttons.
+     */
     public enum Button {
         LEFT,
         MIDDLE,

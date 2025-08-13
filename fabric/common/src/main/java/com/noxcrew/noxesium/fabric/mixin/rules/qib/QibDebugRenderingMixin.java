@@ -4,10 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.fabric.feature.render.CustomRenderTypes;
+import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import java.awt.Color;
 import java.util.Random;
-
-import com.noxcrew.noxesium.fabric.registry.CommonEntityComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;

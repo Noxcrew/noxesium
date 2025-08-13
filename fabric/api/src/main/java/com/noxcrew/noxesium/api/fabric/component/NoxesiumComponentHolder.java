@@ -57,14 +57,14 @@ public interface NoxesiumComponentHolder {
     /**
      * Loads the data for the given component from the server.
      */
-    public default void noxesium$loadComponent(int index, Object value) {
+    public default void noxesium$loadComponent(NoxesiumComponentType<?> component, Object value) {
         throw new UnsupportedOperationException("Unimplemented");
     }
 
     /**
      * Unsets any loaded data for the given component.
      */
-    public default void noxesium$unsetComponent(int index) {
+    public default void noxesium$unsetComponent(NoxesiumComponentType<?> component) {
         throw new UnsupportedOperationException("Unimplemented");
     }
 }

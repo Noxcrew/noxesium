@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.api.registry;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
@@ -14,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoxesiumRegistry<T> {
     protected final Map<Integer, T> byId = new ConcurrentHashMap<>();
+    protected final Map<T, Integer> forId = new ConcurrentHashMap<>();
     protected final Map<Key, T> byKey = new ConcurrentHashMap<>();
 
     /**
@@ -45,6 +45,13 @@ public class NoxesiumRegistry<T> {
     @Nullable
     public T getById(int id) {
         return byId.get(id);
+    }
+
+    /**
+     * Returns the index associated with the given value.
+     */
+    public int getIdFor(T value) {
+        return forId.get(value);
     }
 
     /**

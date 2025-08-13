@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.fabric.mixin.rules.server;
 
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.fabric.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.Minecraft;
@@ -34,18 +33,14 @@ public class MinecraftComponentMixin implements NoxesiumComponentHolder {
     }
 
     @Override
-    public void noxesium$loadComponent(int index, Object value) {
-        var component = NoxesiumRegistries.GAME_COMPONENTS.getById(index);
-        if (component == null) return;
+    public void noxesium$loadComponent(NoxesiumComponentType<?> component, Object value) {
         if (noxesium$components == null) noxesium$components = new ConcurrentHashMap<>();
         noxesium$components.put(component, value);
     }
 
     @Override
-    public void noxesium$unsetComponent(int index) {
+    public void noxesium$unsetComponent(NoxesiumComponentType<?> component) {
         if (noxesium$components == null) return;
-        var component = NoxesiumRegistries.GAME_COMPONENTS.getById(index);
-        if (component == null) return;
         noxesium$components.remove(component);
         if (noxesium$components.isEmpty()) {
             noxesium$components = null;
