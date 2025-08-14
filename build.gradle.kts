@@ -17,6 +17,9 @@ plugins {
 
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.paperweight) apply false
+    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.run.paper) apply false
 }
 
 val javaVersion: Int = 21
