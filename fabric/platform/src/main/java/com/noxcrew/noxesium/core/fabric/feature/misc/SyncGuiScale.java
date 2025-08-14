@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.misc;
 
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import net.minecraft.client.Minecraft;
@@ -28,7 +28,7 @@ public class SyncGuiScale extends NoxesiumFeature {
         var window = Minecraft.getInstance().getWindow();
         var options = Minecraft.getInstance().options;
 
-        NoxesiumNetworking.send(new ServerboundClientSettingsPacket(new ClientSettings(
+        NoxesiumServerboundNetworking.send(new ServerboundClientSettingsPacket(new ClientSettings(
                 options.guiScale().get(),
                 window.getGuiScale(),
                 window.getGuiScaledWidth(),

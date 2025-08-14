@@ -1,22 +1,22 @@
 package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.api.fabric.FabricNoxesiumEntrypoint;
-import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.nms.network.PacketCollection;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.core.fabric.feature.misc.TeamGlowHotkeys;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.core.fabric.network.CommonComponentChangeListeners;
 import com.noxcrew.noxesium.core.fabric.network.CommonPacketHandling;
-import com.noxcrew.noxesium.core.fabric.network.CommonPackets;
-import com.noxcrew.noxesium.core.fabric.registry.CommonBlockEntityComponentSerializers;
-import com.noxcrew.noxesium.core.fabric.registry.CommonComponentChangeListeners;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentSerializers;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentSerializers;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentSerializers;
-import com.noxcrew.noxesium.core.fabric.registry.FabricGameComponentTypes;
+import com.noxcrew.noxesium.core.nms.network.CommonPackets;
+import com.noxcrew.noxesium.core.nms.registry.CommonBlockEntityComponentSerializers;
+import com.noxcrew.noxesium.core.nms.registry.CommonEntityComponentSerializers;
+import com.noxcrew.noxesium.core.nms.registry.CommonGameComponentSerializers;
+import com.noxcrew.noxesium.core.nms.registry.CommonItemComponentSerializers;
+import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Implements the common Noxesium entrypoint.
  */
-public class CommonNoxesiumEntrypoint implements FabricNoxesiumEntrypoint {
+public class CommonNoxesiumEntrypoint implements NmsNoxesiumEntrypoint {
 
     private final TeamGlowHotkeys teamGlowHotkeys = new TeamGlowHotkeys();
     private final QibBehaviorModule qibBehaviorModule = new QibBehaviorModule();
@@ -87,7 +87,7 @@ public class CommonNoxesiumEntrypoint implements FabricNoxesiumEntrypoint {
                 CommonEntityComponentTypes.INSTANCE,
                 CommonGameComponentTypes.INSTANCE,
                 CommonItemComponentTypes.INSTANCE,
-                FabricGameComponentTypes.INSTANCE);
+                NmsGameComponentTypes.INSTANCE);
     }
 
     @Override

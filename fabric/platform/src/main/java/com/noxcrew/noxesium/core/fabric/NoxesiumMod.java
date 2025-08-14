@@ -1,12 +1,14 @@
 package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.api.fabric.FabricNoxesiumEntrypoint;
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumFabricHandshaker;
+import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
+import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.core.fabric.network.NoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +62,7 @@ public class NoxesiumMod implements ClientModInitializer {
         config = NoxesiumConfig.load();
         skullFontModule = new SkullFontModule();
         customCreativeItems = new CustomServerCreativeItems();
+        NoxesiumServerboundNetworking.setInstance(new FabricNoxesiumServerboundNetworking());
     }
 
     @Override
@@ -68,7 +71,7 @@ public class NoxesiumMod implements ClientModInitializer {
         var logger = NoxesiumApi.getLogger();
         var api = NoxesiumApi.getInstance();
         FabricLoader.getInstance()
-                .getEntrypointContainers("noxesium", FabricNoxesiumEntrypoint.class)
+                .getEntrypointContainers("noxesium", NmsNoxesiumEntrypoint.class)
                 .forEach(entrypoint -> {
                     try {
                         api.registerEndpoint(entrypoint.getEntrypoint());
@@ -83,7 +86,7 @@ public class NoxesiumMod implements ClientModInitializer {
         logger.info("Loaded {} extensions to Noxesium", api.getAllEntrypoints().size());
 
         // Set up the initializer
-        new NoxesiumFabricHandshaker().register();
+        new NoxesiumClientHandshaker().register();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {

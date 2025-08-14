@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.2.0"
     alias(libs.plugins.paperweight)
+    id("noxesium.nms")
 }
 
 val javaVersion: Int = 21

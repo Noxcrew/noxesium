@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
@@ -102,7 +102,7 @@ public class QibBehaviorModule extends NoxesiumFeature {
      * Sends the server that the player triggered the given type of behavior.
      */
     private void sendPacket(String behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
-        NoxesiumNetworking.send(new ServerboundQibTriggeredPacket(behavior, type, entityId));
+        NoxesiumServerboundNetworking.send(new ServerboundQibTriggeredPacket(behavior, type, entityId));
     }
 
     /**

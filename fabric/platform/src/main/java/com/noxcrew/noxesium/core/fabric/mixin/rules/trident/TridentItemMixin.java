@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.trident;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
@@ -83,7 +83,7 @@ public abstract class TridentItemMixin {
         livingEntity.noxesium$resetTridentCoyoteTime();
 
         // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
-        NoxesiumNetworking.send(new ServerboundRiptidePacket(
+        NoxesiumServerboundNetworking.send(new ServerboundRiptidePacket(
                 player.getUsedItemHand() == InteractionHand.MAIN_HAND
                         ? player.getInventory().getSelectedSlot()
                         : Inventory.SLOT_OFFHAND));

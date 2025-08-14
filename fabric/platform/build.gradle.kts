@@ -1,6 +1,7 @@
 plugins {
     id("fabric-loom")
     id("noxesium.fabric")
+    id("noxesium.nms")
 }
 
 loom {

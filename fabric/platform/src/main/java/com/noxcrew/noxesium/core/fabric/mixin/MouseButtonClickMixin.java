@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin;
 
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -31,7 +31,7 @@ public class MouseButtonClickMixin {
         var iterator = noxesium$pressedButtons.iterator();
         while (iterator.hasNext()) {
             var button = iterator.next();
-            NoxesiumNetworking.send(
+            NoxesiumServerboundNetworking.send(
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, button));
             iterator.remove();
         }
@@ -63,12 +63,12 @@ public class MouseButtonClickMixin {
                 if (NoxesiumMod.getInstance().sentButtonClicks.contains(button)) return;
                 NoxesiumMod.getInstance().sentButtonClicks.add(button);
 
-                NoxesiumNetworking.send(new ServerboundMouseButtonClickPacket(
+                NoxesiumServerboundNetworking.send(new ServerboundMouseButtonClickPacket(
                         ServerboundMouseButtonClickPacket.Action.PRESS_DOWN, button));
                 noxesium$pressedButtons.add(button);
             }
         } else if (noxesium$pressedButtons.contains(button)) {
-            NoxesiumNetworking.send(
+            NoxesiumServerboundNetworking.send(
                     new ServerboundMouseButtonClickPacket(ServerboundMouseButtonClickPacket.Action.RELEASE, button));
             noxesium$pressedButtons.remove(button);
         }

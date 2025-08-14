@@ -17,7 +17,8 @@ public interface BlockEntityRendererMixin {
 
     @WrapMethod(method = "shouldRender")
     private boolean render(BlockEntity blockEntity, Vec3 vec3, Operation<Boolean> original) {
-        if (((NoxesiumComponentHolder) blockEntity).noxesium$hasComponent(ExampleBlockEntityComponents.INVISIBLE)) return false;
+        if (((NoxesiumComponentHolder) blockEntity).noxesium$hasComponent(ExampleBlockEntityComponents.INVISIBLE))
+            return false;
         return original.call(blockEntity, vec3);
     }
 }

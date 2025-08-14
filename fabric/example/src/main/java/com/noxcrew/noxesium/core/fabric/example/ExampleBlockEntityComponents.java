@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.example;
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.fabric.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import net.minecraft.util.Unit;
