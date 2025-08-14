@@ -19,10 +19,14 @@ fun includeGroup(
 
 include("api")
 include("nms")
-include("paper")
 
 includeGroup(
     "fabric",
     "platform",
     "example"
+)
+includeGroup(
+    "paper",
+    "platform",
+    "legacy"
 )
