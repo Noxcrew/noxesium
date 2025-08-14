@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.core.fabric.feature.entity.LivingEntityExtension;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

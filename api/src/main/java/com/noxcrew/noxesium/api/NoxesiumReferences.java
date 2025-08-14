@@ -19,4 +19,10 @@ public class NoxesiumReferences {
      * The name space to use for Noxesium.
      */
     public static final String NAMESPACE = "noxesium";
+
+    /**
+     * The namespace under which all packets are registered.
+     * Appended by a global API version equal to the major version of Noxesium.
+     */
+    public static final String PACKET_NAMESPACE = NAMESPACE + "-v3";
 }

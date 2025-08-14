@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.debugoptions;
 
 import com.noxcrew.noxesium.api.client.DebugOption;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import org.spongepowered.asm.mixin.Mixin;

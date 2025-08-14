@@ -1,15 +1,9 @@
-package com.noxcrew.noxesium.api.fabric.registry;
+package com.noxcrew.noxesium.api.registry;
 
-import com.mojang.serialization.Codec;
-import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
-import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
-import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import java.util.List;
 import net.kyori.adventure.key.Key;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Stores the different Noxesium registries.
@@ -42,7 +36,9 @@ public class NoxesiumRegistries {
     public static ClientNoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS =
             new ClientNoxesiumRegistry<>();
 
-    /** All main registries. */
+    /**
+     * All main registries.
+     */
     public static List<ClientNoxesiumRegistry<?>> REGISTRIES =
             List.of(QIB_EFFECTS, GAME_COMPONENTS, ENTITY_COMPONENTS, ITEM_COMPONENTS, BLOCK_ENTITY_COMPONENTS);
 
@@ -50,13 +46,8 @@ public class NoxesiumRegistries {
      * Registers a new component type to the registry.
      */
     public static <C> NoxesiumComponentType<C> register(
-            RegistryCollection<NoxesiumComponentType<?>> collection,
-            String namespace,
-            String key,
-            Codec<C> codec,
-            StreamCodec<? super RegistryFriendlyByteBuf, C> streamCodec,
-            NoxesiumComponentListener<C, ?> listener) {
-        var component = new NoxesiumComponentType<>(namespace, key, codec, streamCodec, listener);
+            RegistryCollection<NoxesiumComponentType<?>> collection, String namespace, String key) {
+        var component = new NoxesiumComponentType<C>(Key.key(namespace, key));
         collection.register(Key.key(namespace, key), component);
         return component;
     }

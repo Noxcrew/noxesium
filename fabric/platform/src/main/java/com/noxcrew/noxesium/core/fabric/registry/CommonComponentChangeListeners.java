@@ -3,9 +3,13 @@ package com.noxcrew.noxesium.core.fabric.registry;
 import com.noxcrew.noxesium.api.component.ComponentChangeContext;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
+import com.noxcrew.noxesium.api.fabric.registry.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.mixin.rules.mouse.MouseHandlerExt;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.BiConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
@@ -13,8 +17,8 @@ import net.minecraft.world.entity.Entity;
 /**
  * Registers listeners for component changes.
  */
-public class ComponentChangeListeners extends NoxesiumFeature {
-    public ComponentChangeListeners() {
+public class CommonComponentChangeListeners extends NoxesiumFeature {
+    public CommonComponentChangeListeners() {
         listenEntity(CommonEntityComponentTypes.HITBOX_OVERRIDE, (ignored, context) -> {
             // Update the bounding box of the entity whenever a new override is received
             var entity = context.receiver();
@@ -53,7 +57,7 @@ public class ComponentChangeListeners extends NoxesiumFeature {
                 Minecraft.getInstance().levelRenderer.allChanged();
             }
         });
-        listenGame(CommonGameComponentTypes.CUSTOM_CREATIVE_ITEMS, (ignored, context) -> {
+        listenGame(FabricGameComponentTypes.CUSTOM_CREATIVE_ITEMS, (ignored, context) -> {
             // Mark that the creative tab has changed so it is updated.
             NoxesiumMod.getInstance().hasCreativeTabChanged = true;
         });
@@ -64,9 +68,10 @@ public class ComponentChangeListeners extends NoxesiumFeature {
      */
     private <T> void listenEntity(
             NoxesiumComponentType<T> type,
-            BiConsumer<ComponentChangeListeners, ComponentChangeContext<T, Entity>> consumer) {
-        if (type.listener() == null) return;
-        ((NoxesiumComponentListener<T, Entity>) type.listener()).addListener(this, (reference, context) -> {
+            BiConsumer<CommonComponentChangeListeners, ComponentChangeContext<T, Entity>> consumer) {
+        var serializer = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.ENTITY_COMPONENTS, type);
+        if (serializer == null || serializer.listener() == null) return;
+        ((NoxesiumComponentListener<T, Entity>) serializer.listener()).addListener(this, (reference, context) -> {
             if (isRegistered()) {
                 consumer.accept(reference, context);
             }
@@ -78,9 +83,10 @@ public class ComponentChangeListeners extends NoxesiumFeature {
      */
     private <T> void listenGame(
             NoxesiumComponentType<T> type,
-            BiConsumer<ComponentChangeListeners, ComponentChangeContext<T, Minecraft>> consumer) {
-        if (type.listener() == null) return;
-        ((NoxesiumComponentListener<T, Minecraft>) type.listener()).addListener(this, (reference, context) -> {
+            BiConsumer<CommonComponentChangeListeners, ComponentChangeContext<T, Minecraft>> consumer) {
+        var serializer = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.GAME_COMPONENTS, type);
+        if (serializer == null || serializer.listener() == null) return;
+        ((NoxesiumComponentListener<T, Minecraft>) serializer.listener()).addListener(this, (reference, context) -> {
             if (isRegistered()) {
                 consumer.accept(reference, context);
             }

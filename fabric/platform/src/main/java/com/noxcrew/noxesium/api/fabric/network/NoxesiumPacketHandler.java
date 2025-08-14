@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.fabric.network;
 
 import com.noxcrew.noxesium.api.fabric.network.payload.NoxesiumPayload;
 import com.noxcrew.noxesium.api.fabric.network.payload.PacketContext;
+import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ public class NoxesiumPacketHandler<T extends CustomPacketPayload>
             if (noxesiumPacket.noxesiumType().hasListeners()) {
                 noxesiumPacket.noxesiumType().handle(new PacketContext(context.client(), context.player()), payload);
             }
-            if (NoxesiumNetworking.dumpIncomingPackets) {
+            if (NoxesiumMod.getInstance().getConfig().dumpIncomingPackets) {
                 Minecraft.getInstance()
                         .player
                         .displayClientMessage(

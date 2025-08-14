@@ -1,10 +1,12 @@
 package com.noxcrew.noxesium.api.fabric.network;
 
 import com.google.common.base.Preconditions;
-import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.network.payload.NoxesiumPayload;
 import com.noxcrew.noxesium.api.fabric.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
+import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import java.util.HashMap;
+import java.util.Map;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
@@ -14,30 +16,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Sets up the Noxesium networking system.
  */
 public class NoxesiumNetworking {
     private static final Map<Class<?>, NoxesiumPayloadType<?>> packetTypes = new HashMap<>();
-
-    /**
-     * The namespace under which all packets are registered.
-     * Appended by a global API version equal to the major version of Noxesium.
-     */
-    public static final String PACKET_NAMESPACE = NoxesiumReferences.NAMESPACE + "-v3";
-
-    /**
-     * Whether to dump all incoming packets.
-     */
-    public static boolean dumpIncomingPackets = false;
-
-    /**
-     * Whether to dump all outgoing packets.
-     */
-    public static boolean dumpOutgoingPackets = false;
 
     /**
      * Registers a new payload type.
@@ -66,7 +49,7 @@ public class NoxesiumNetworking {
         // on the client in the C2S registry!
         return ClientPlayNetworking.canSend(type.id())
                 && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S()).get(type.id())
-                != null;
+                        != null;
     }
 
     /**
@@ -85,7 +68,7 @@ public class NoxesiumNetworking {
     public static <T extends NoxesiumPacket> boolean send(NoxesiumPayloadType<T> type, T payload) {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (NoxesiumNetworking.canSend(type)) {
-            if (NoxesiumNetworking.dumpOutgoingPackets) {
+            if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets) {
                 Minecraft.getInstance()
                         .player
                         .displayClientMessage(

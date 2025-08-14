@@ -1,11 +1,9 @@
-package com.noxcrew.noxesium.core.fabric.network;
+package com.noxcrew.noxesium.api.fabric.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.FabricNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.fabric.NoxesiumFabricApi;
-import com.noxcrew.noxesium.api.fabric.network.HandshakePackets;
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.HandshakeState;
 import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeAcknowledgePacket;
@@ -27,9 +25,9 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 
 /**
- * Manages initialization of the Noxesium protocol.
+ * Manages initialization of the Noxesium handshake protocol.
  */
-public class NoxesiumInitializer {
+public class NoxesiumFabricHandshaker {
     /**
      * The current state of the server connection.
      */

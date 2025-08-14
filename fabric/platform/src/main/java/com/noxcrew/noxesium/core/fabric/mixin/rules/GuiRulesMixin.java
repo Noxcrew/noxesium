@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.core.fabric.util.InventoryHelper;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.player.Inventory;

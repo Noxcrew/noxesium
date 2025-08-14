@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.api.fabric;
 
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import java.util.HashSet;
 import java.util.Set;

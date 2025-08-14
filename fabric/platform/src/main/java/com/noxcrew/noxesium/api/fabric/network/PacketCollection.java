@@ -1,8 +1,7 @@
 package com.noxcrew.noxesium.api.fabric.network;
 
-import static com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking.PACKET_NAMESPACE;
-
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.fabric.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import java.util.HashMap;
@@ -13,7 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * A collector of different packets that can be registered and unregistered
- * as a group.
+ * as a group. Specific to the fabric implementation as it requires pre-registering
+ * packet types before packets can be sent. Packet classes themselves are shared.
  */
 public final class PacketCollection {
     private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
@@ -53,7 +53,7 @@ public final class PacketCollection {
             String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
         Preconditions.checkArgument(!packets.containsKey(id));
         var type = new NoxesiumPayloadType<>(
-                ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id), codec, clientToServer);
+                ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.PACKET_NAMESPACE, id), codec, clientToServer);
         packets.put(id, type);
         return type;
     }

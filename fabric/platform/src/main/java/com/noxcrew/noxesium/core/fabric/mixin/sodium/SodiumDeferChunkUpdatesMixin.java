@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.sodium;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;

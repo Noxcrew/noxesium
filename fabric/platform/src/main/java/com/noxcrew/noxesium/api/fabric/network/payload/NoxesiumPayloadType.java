@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.fabric.network.payload;
 
-import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumPacketHandler;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;

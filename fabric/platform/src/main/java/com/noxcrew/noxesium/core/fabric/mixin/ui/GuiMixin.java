@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin.ui;
 
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.render.CustomMapUiWidget;

@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.api.component;
 
 import net.kyori.adventure.key.Key;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A Noxesium component is a custom version of Mojang's Data Component system which allows
@@ -16,4 +15,4 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Component types are defined in a custom registry similar to vanilla components.
  */
-public record NoxesiumComponentType<T>(Key id, @Nullable NoxesiumComponentListener<T, ?> listener) {}
+public record NoxesiumComponentType<T>(Key id) {}

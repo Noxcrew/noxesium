@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.fabric.registry.FabricGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +20,7 @@ public abstract class HandItemOverrideInventoryMixin {
         if (original.isEmpty()) {
             // Return the original value if it's empty anyway so it matches any == comparisons!
             var result = Minecraft.getInstance()
-                    .noxesium$getComponentOr(CommonGameComponentTypes.HAND_ITEM_OVERRIDE, () -> ItemStack.EMPTY);
+                    .noxesium$getComponentOr(FabricGameComponentTypes.HAND_ITEM_OVERRIDE, () -> ItemStack.EMPTY);
             if (result.isEmpty()) return original;
             return result;
         }

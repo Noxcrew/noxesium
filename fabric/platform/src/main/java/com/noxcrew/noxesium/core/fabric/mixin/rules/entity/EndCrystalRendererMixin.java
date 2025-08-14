@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.core.fabric.feature.entity.EndCrystalRenderHolder;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import java.awt.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EndCrystalRenderer;

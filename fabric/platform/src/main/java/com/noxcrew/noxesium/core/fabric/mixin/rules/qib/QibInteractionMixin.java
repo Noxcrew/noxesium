@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
 import com.noxcrew.noxesium.core.fabric.feature.entity.HitboxHelper;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;

@@ -9,13 +9,18 @@ import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.core.fabric.feature.misc.TeamGlowHotkeys;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.core.fabric.network.CommonPacketHandling;
 import com.noxcrew.noxesium.core.fabric.network.CommonPackets;
-import com.noxcrew.noxesium.core.fabric.network.NoxesiumPacketHandling;
-import com.noxcrew.noxesium.core.fabric.registry.CommonBlockEntityComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.ComponentChangeListeners;
+import com.noxcrew.noxesium.core.fabric.registry.CommonBlockEntityComponentSerializers;
+import com.noxcrew.noxesium.core.fabric.registry.CommonComponentChangeListeners;
+import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentSerializers;
+import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentSerializers;
+import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentSerializers;
+import com.noxcrew.noxesium.core.fabric.registry.FabricGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,8 +35,15 @@ public class CommonNoxesiumEntrypoint implements FabricNoxesiumEntrypoint {
 
     private final TeamGlowHotkeys teamGlowHotkeys = new TeamGlowHotkeys();
     private final QibBehaviorModule qibBehaviorModule = new QibBehaviorModule();
-    private final NoxesiumPacketHandling noxesiumPacketHandling = new NoxesiumPacketHandling();
-    private final ComponentChangeListeners componentChangeListeners = new ComponentChangeListeners();
+    private final CommonPacketHandling commonPacketHandling = new CommonPacketHandling();
+    private final CommonComponentChangeListeners commonComponentChangeListeners = new CommonComponentChangeListeners();
+
+    public CommonNoxesiumEntrypoint() {
+        CommonBlockEntityComponentSerializers.register();
+        CommonEntityComponentSerializers.register();
+        CommonGameComponentSerializers.register();
+        CommonItemComponentSerializers.register();
+    }
 
     @Override
     public String getId() {
@@ -56,8 +68,8 @@ public class CommonNoxesiumEntrypoint implements FabricNoxesiumEntrypoint {
         var features = new ArrayList<NoxesiumFeature>();
         features.add(new SyncGuiScale());
         features.add(new NoxesiumSoundModule());
-        features.add(componentChangeListeners);
-        features.add(noxesiumPacketHandling);
+        features.add(commonComponentChangeListeners);
+        features.add(commonPacketHandling);
         features.add(qibBehaviorModule);
         features.add(teamGlowHotkeys);
         return features;
@@ -74,7 +86,8 @@ public class CommonNoxesiumEntrypoint implements FabricNoxesiumEntrypoint {
                 CommonBlockEntityComponentTypes.INSTANCE,
                 CommonEntityComponentTypes.INSTANCE,
                 CommonGameComponentTypes.INSTANCE,
-                CommonItemComponentTypes.INSTANCE);
+                CommonItemComponentTypes.INSTANCE,
+                FabricGameComponentTypes.INSTANCE);
     }
 
     @Override

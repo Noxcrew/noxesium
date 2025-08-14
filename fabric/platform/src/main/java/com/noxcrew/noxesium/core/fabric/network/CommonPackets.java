@@ -5,8 +5,8 @@ import static com.noxcrew.noxesium.api.fabric.network.PacketCollection.server;
 
 import com.noxcrew.noxesium.api.fabric.network.PacketCollection;
 import com.noxcrew.noxesium.api.fabric.network.payload.NoxesiumPayloadType;
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.fabric.registry.NoxesiumStreamCodecs;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;

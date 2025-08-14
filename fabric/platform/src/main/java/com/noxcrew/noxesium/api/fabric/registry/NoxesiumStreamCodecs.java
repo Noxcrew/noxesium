@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
+import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import io.netty.buffer.ByteBuf;
 import java.awt.Color;
@@ -26,6 +27,8 @@ import net.minecraft.network.codec.StreamCodec;
  * Defines extra stream codecs used by Noxesium.
  */
 public class NoxesiumStreamCodecs {
+
+    public static final StreamCodec<ByteBuf, Unit> UNIT = StreamCodec.unit(Unit.INSTANCE);
 
     public static final StreamCodec<FriendlyByteBuf, Integer> COLOR_INT_ARGB = new StreamCodec<>() {
         public Integer decode(FriendlyByteBuf buffer) {
@@ -109,11 +112,16 @@ public class NoxesiumStreamCodecs {
                             throw new IllegalArgumentException(
                                     "Received invalid component id '" + index + "' not found in registry");
                         }
-                        if (type.streamCodec() == null) {
+                        var serializer = ComponentSerializerRegistry.getSerializers(registry, type);
+                        if (serializer == null) {
+                            throw new IllegalArgumentException(
+                                    "Found no serializer for component type '" + type.id() + "' in registry");
+                        }
+                        if (serializer.streamCodec() == null) {
                             throw new IllegalArgumentException("Received component type '" + type.id()
                                     + "' that does not have a stream codec defined");
                         }
-                        var decoded = type.streamCodec().decode(buffer);
+                        var decoded = serializer.streamCodec().decode(buffer);
                         map.put(type, Optional.of(decoded));
                     }
 
@@ -170,7 +178,12 @@ public class NoxesiumStreamCodecs {
 
             private <T> void encodeComponent(
                     RegistryFriendlyByteBuf buffer, NoxesiumComponentType<T> type, Object raw) {
-                type.streamCodec().cast().encode(buffer, (T) raw);
+                var serializer = ComponentSerializerRegistry.getSerializers(registry, type);
+                if (serializer == null) {
+                    throw new IllegalArgumentException(
+                            "Found no serializer for component type '" + type.id() + "' in registry");
+                }
+                serializer.streamCodec().cast().encode(buffer, (T) raw);
             }
         };
     }

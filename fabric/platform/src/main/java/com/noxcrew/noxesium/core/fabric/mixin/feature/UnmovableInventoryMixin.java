@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

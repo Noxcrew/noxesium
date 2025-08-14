@@ -31,9 +31,9 @@ public class NoxesiumOptions {
             "noxesium.options.dump_incoming_packets.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.dump_incoming_packets.tooltip")),
-            NoxesiumMod.getInstance().getConfig().getDumpIncomingPackets(),
+            NoxesiumMod.getInstance().getConfig().dumpIncomingPackets,
             (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().setDumpIncomingPackets(newValue);
+                NoxesiumMod.getInstance().getConfig().dumpIncomingPackets = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
@@ -41,9 +41,9 @@ public class NoxesiumOptions {
             "noxesium.options.dump_outgoing_packets.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.dump_outgoing_packets.tooltip")),
-            NoxesiumMod.getInstance().getConfig().getDumpOutgoingPackets(),
+            NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets,
             (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().setDumpOutgoingPackets(newValue);
+                NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
             });
 

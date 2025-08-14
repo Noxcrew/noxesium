@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;

@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.core.fabric.mixin;
 
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;

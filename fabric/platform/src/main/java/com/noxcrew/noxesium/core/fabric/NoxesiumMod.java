@@ -2,17 +2,11 @@ package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.fabric.FabricNoxesiumEntrypoint;
-import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
+import com.noxcrew.noxesium.api.fabric.network.NoxesiumFabricHandshaker;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
-import com.noxcrew.noxesium.core.fabric.feature.render.CustomRenderTypes;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
-import com.noxcrew.noxesium.core.fabric.network.NoxesiumInitializer;
-import com.noxcrew.noxesium.core.fabric.registry.CommonBlockEntityComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +29,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
     private final NoxesiumConfig config;
     private final SkullFontModule skullFontModule;
+    private final CustomServerCreativeItems customCreativeItems;
 
     /**
      * If enabled settings are not overridden. This should be true while rendering the settings menu.
@@ -64,13 +59,7 @@ public class NoxesiumMod implements ClientModInitializer {
         instance = this;
         config = NoxesiumConfig.load();
         skullFontModule = new SkullFontModule();
-
-        // Create the custom creative tab at start-up as it uses a registry
-        new CustomServerCreativeItems();
-
-        // Set the packet dumping values which are needed by the API
-        NoxesiumNetworking.dumpIncomingPackets = config.getDumpIncomingPackets();
-        NoxesiumNetworking.dumpOutgoingPackets = config.getDumpOutgoingPackets();
+        customCreativeItems = new CustomServerCreativeItems();
     }
 
     @Override
@@ -94,14 +83,7 @@ public class NoxesiumMod implements ClientModInitializer {
         logger.info("Loaded {} extensions to Noxesium", api.getAllEntrypoints().size());
 
         // Set up the initializer
-        new NoxesiumInitializer().register();
-
-        // Trigger registration of all registries
-        Object ignored = CommonEntityComponentTypes.BEAM_COLOR;
-        ignored = CommonGameComponentTypes.DISABLE_SPIN_ATTACK_COLLISIONS;
-        ignored = CommonItemComponentTypes.HOVER_SOUND;
-        ignored = CommonBlockEntityComponentTypes.BEACON_BEAM_HEIGHT;
-        ignored = CustomRenderTypes.linesNoDepth();
+        new NoxesiumFabricHandshaker().register();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {

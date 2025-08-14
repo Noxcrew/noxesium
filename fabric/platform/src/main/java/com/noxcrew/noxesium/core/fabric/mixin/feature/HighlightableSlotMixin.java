@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.feature;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;

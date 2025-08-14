@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;

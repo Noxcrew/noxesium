@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.debugoptions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.api.client.DebugOption;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;

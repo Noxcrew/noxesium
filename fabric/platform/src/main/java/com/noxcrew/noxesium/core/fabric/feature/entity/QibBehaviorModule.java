@@ -1,11 +1,11 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.fabric.network.NoxesiumNetworking;
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.qib.QibEffect;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

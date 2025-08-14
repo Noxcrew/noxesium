@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
-import com.noxcrew.noxesium.core.fabric.feature.item.HoverSound;
-import com.noxcrew.noxesium.core.fabric.registry.CommonItemComponentTypes;
+import com.noxcrew.noxesium.core.feature.item.HoverSound;
+import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
@@ -10,6 +10,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -68,14 +70,16 @@ public abstract class HoverSoundMixin {
 
     @Unique
     private void noxesium$playSound(HoverSound.Sound sound) {
-        var soundEvent = sound.sound();
+        var soundEvent = BuiltInRegistries.SOUND_EVENT.get(
+                ResourceLocation.parse(sound.sound().asString()));
+        if (soundEvent.isEmpty()) return;
         var pitch = sound.pitchMax() <= sound.pitchMin()
                 ? Math.max(sound.pitchMin(), sound.pitchMax())
                 : noxesium$random.nextFloat(sound.pitchMin(), sound.pitchMax());
 
         Minecraft.getInstance()
                 .getSoundManager()
-                .play(SimpleSoundInstance.forUI(soundEvent.value(), pitch, sound.volume()));
+                .play(SimpleSoundInstance.forUI(soundEvent.orElseThrow().value(), pitch, sound.volume()));
     }
 
     /**

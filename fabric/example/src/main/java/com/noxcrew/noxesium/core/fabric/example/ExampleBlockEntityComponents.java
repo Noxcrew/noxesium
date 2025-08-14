@@ -3,7 +3,8 @@ package com.noxcrew.noxesium.core.fabric.example;
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.fabric.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.fabric.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import net.minecraft.util.Unit;
 
@@ -23,6 +24,9 @@ public class ExampleBlockEntityComponents {
      * Registers a new component type to the registry.
      */
     private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec) {
-        return NoxesiumRegistries.register(INSTANCE, NoxesiumReferences.NAMESPACE, key, codec, null, null);
+        var type = NoxesiumRegistries.<T>register(INSTANCE, NoxesiumReferences.NAMESPACE, key);
+        ComponentSerializerRegistry.registerSerializers(
+                NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type, codec, null, null);
+        return type;
     }
 }

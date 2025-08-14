@@ -1,7 +1,13 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.component.NoxesiumComponentHolder;
+import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
+import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
+import com.noxcrew.noxesium.api.fabric.registry.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
@@ -17,12 +23,12 @@ import net.minecraft.network.chat.CommonComponents;
 /**
  * Registers default listeners for all base packets.
  */
-public class NoxesiumPacketHandling extends NoxesiumFeature {
+public class CommonPacketHandling extends NoxesiumFeature {
 
-    public NoxesiumPacketHandling() {
+    public CommonPacketHandling() {
         CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
-            packet.patch().apply(Minecraft.getInstance());
+            applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, Minecraft.getInstance());
         });
         CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS.addListener(this, (reference, packet, context) -> {
             if (!isRegistered()) return;
@@ -30,7 +36,7 @@ public class NoxesiumPacketHandling extends NoxesiumFeature {
             if (entity == null) {
                 NoxesiumApi.getLogger().warn("Received components for unknown entity {}", packet.entityId());
             } else {
-                packet.patch().apply(entity);
+                applyPatch(packet.patch(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
             }
         });
 
@@ -131,5 +137,41 @@ public class NoxesiumPacketHandling extends NoxesiumFeature {
                 NoxesiumApi.getLogger().warn("Failed to open link {}", packet.url(), e);
             }
         });
+    }
+
+    /**
+     * Applies a Noxesium component patch to the given holder.
+     */
+    private void applyPatch(
+            NoxesiumComponentPatch patch,
+            NoxesiumRegistry<NoxesiumComponentType<?>> registry,
+            NoxesiumComponentHolder holder) {
+        for (var entry : patch.getMap().entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
+            var serializer = ComponentSerializerRegistry.getSerializers(registry, key);
+            if (value.isEmpty()) {
+                if (serializer != null
+                        && serializer.listener() != null
+                        && serializer.listener().hasListeners()) {
+                    var oldValue = holder.noxesium$getComponent(key);
+                    holder.noxesium$unsetComponent(key);
+                    serializer.listener().trigger(holder, oldValue, null);
+                } else {
+                    holder.noxesium$unsetComponent(key);
+                }
+            } else {
+                if (serializer != null
+                        && serializer.listener() != null
+                        && serializer.listener().hasListeners()) {
+                    var oldValue = holder.noxesium$getComponent(key);
+                    var newValue = value.orElse(null);
+                    holder.noxesium$loadComponent(key, newValue);
+                    serializer.listener().trigger(holder, oldValue, newValue);
+                } else {
+                    holder.noxesium$loadComponent(key, value.get());
+                }
+            }
+        }
     }
 }

@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.entity;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.noxcrew.noxesium.core.fabric.registry.CommonEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.level.Level;

@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.core.fabric.registry.CommonBlockEntityComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;

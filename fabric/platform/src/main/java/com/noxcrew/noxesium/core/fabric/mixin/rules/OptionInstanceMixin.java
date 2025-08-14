@@ -4,9 +4,10 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
-import com.noxcrew.noxesium.core.fabric.registry.CommonGameComponentTypes;
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.Consumer;
 import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
@@ -56,8 +57,13 @@ public abstract class OptionInstanceMixin<T> {
         if (((Object) (this)) == options.graphicsMode()) {
             var graphics =
                     Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE);
-            if (graphics != null && (!NoxesiumMod.getInstance().isUsingIris || graphics != GraphicsStatus.FABULOUS)) {
-                return (T) graphics;
+            if (graphics != null && (!NoxesiumMod.getInstance().isUsingIris || graphics != GraphicsMode.FABULOUS)) {
+                return (T)
+                        switch (graphics) {
+                            case FAST -> GraphicsStatus.FAST;
+                            case FANCY -> GraphicsMode.FANCY;
+                            case FABULOUS -> GraphicsMode.FABULOUS;
+                        };
             }
         }
         return original;
