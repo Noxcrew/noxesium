@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.paper.api.network.serverbound
 
-import com.noxcrew.noxesium.api.protocol.ClientSettings
+import com.noxcrew.noxesium.core.client.setting.ClientSettings
 import com.noxcrew.noxesium.paper.api.network.NoxesiumPackets
 import net.minecraft.network.RegistryFriendlyByteBuf
 import org.bukkit.entity.Player

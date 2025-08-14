@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.paper
 
 import com.noxcrew.noxesium.paper.ServerRuleIndices.ENABLE_SMOOTHER_CLIENT_TRIDENT
 
-
 /**
  * A static location to fetch all server rule indices.
  */
@@ -12,7 +11,6 @@ public object ServerRuleIndices {
      */
     public const val DISABLE_SPIN_ATTACK_COLLISIONS: Int = 0
 
-    // Ids 1 and 2 have been removed.
     /**
      * Adds an offset to the action bar text displayed that shows the name
      * of the held item.
@@ -34,7 +32,6 @@ public object ServerRuleIndices {
      */
     public const val DISABLE_BOAT_COLLISIONS: Int = 6
 
-    // Id 7 has been removed.
     /**
      * Configures an item which will be used whenever the properties of
      * the player's hand are resolved. This applies to adventure mode
@@ -42,7 +39,6 @@ public object ServerRuleIndices {
      */
     public const val HAND_ITEM_OVERRIDE: Int = 8
 
-    // Id 9 has been removed.
     /**
      * Moves the handheld map to be shown in the top left/right corner instead of
      * in the regular hand slot.
