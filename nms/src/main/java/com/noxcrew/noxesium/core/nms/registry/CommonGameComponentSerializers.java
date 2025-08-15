@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
@@ -57,11 +58,11 @@ public class CommonGameComponentSerializers {
                 NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.REPORT_MOUSE_CLICKS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
 
-        register(NmsGameComponentTypes.HAND_ITEM_OVERRIDE, ItemStack.CODEC, ItemStack.STREAM_CODEC);
+        register(NmsGameComponentTypes.HAND_ITEM_OVERRIDE, ItemStack.CODEC, NoxesiumNetworking.getInstance().getItemStackStreamCodec());
         register(
                 NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS,
                 Codec.list(ItemStack.OPTIONAL_CODEC),
-                ByteBufCodecs.collection(ArrayList::new, ItemStack.OPTIONAL_STREAM_CODEC));
+                ByteBufCodecs.collection(ArrayList::new, NoxesiumNetworking.getInstance().getItemStackStreamCodec()));
     }
 
     /**

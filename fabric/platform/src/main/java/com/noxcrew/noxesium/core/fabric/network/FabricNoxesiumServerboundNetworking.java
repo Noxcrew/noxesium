@@ -17,6 +17,8 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Sets up networking for fabric in the serverbound direction.
@@ -30,8 +32,13 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
     }
 
     @Override
+    public StreamCodec<RegistryFriendlyByteBuf, ItemStack> getItemStackStreamCodec() {
+        return ItemStack.OPTIONAL_STREAM_CODEC;
+    }
+
+    @Override
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            String namespace, String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+            @NotNull String namespace, @NotNull String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
         return new FabricNoxesiumPayloadType<>(
                 ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clientToServer);
     }

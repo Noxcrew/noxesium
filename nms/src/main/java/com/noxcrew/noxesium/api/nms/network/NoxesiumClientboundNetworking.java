@@ -3,22 +3,19 @@ package com.noxcrew.noxesium.api.nms.network;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
-import java.util.HashMap;
-import java.util.Map;
-import net.kyori.adventure.text.Component;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Sets up the Noxesium networking system in the serverbound direction.
+ * Sets up the Noxesium networking system in the clientbound direction.
  */
-public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
-    private static NoxesiumServerboundNetworking instance;
+public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
+    private static NoxesiumClientboundNetworking instance;
 
     /**
      * Returns the singleton instance of this class.
      */
-    public static NoxesiumServerboundNetworking getInstance() {
+    public static NoxesiumClientboundNetworking getInstance() {
         Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
         return instance;
     }
@@ -26,20 +23,20 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     /**
      * Sets the networking instance.
      */
-    public static void setInstance(NoxesiumServerboundNetworking instance) {
+    public static void setInstance(NoxesiumClientboundNetworking instance) {
         Preconditions.checkState(
-                NoxesiumServerboundNetworking.instance == null, "Cannot set the networking instance twice!");
-        NoxesiumServerboundNetworking.instance = instance;
+                NoxesiumClientboundNetworking.instance == null, "Cannot set the networking instance twice!");
+        NoxesiumClientboundNetworking.instance = instance;
         NoxesiumNetworking.setInstance(instance);
     }
 
     /**
      * Sends the given packet, automatically detects the type of the packet based on the registered packets.
      */
-    public static boolean send(NoxesiumPacket packet) {
+    public static boolean send(@NotNull Player player, @NotNull NoxesiumPacket packet) {
         var type = getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;
-        return type.sendServerboundAny(packet);
+        return type.sendClientboundAny(player, packet);
     }
 
     /**
@@ -48,11 +45,11 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
      * @param type The packet type
      * @return Whether the connected server should be receiving the packet
      */
-    public abstract boolean canSend(NoxesiumPayloadType<?> type);
+    public abstract boolean canSend(@NotNull Player player, @NotNull NoxesiumPayloadType<?> type);
 
     /**
      * Sends this packet to the currently connected server, if possible. Returns whether the packet
      * was successfully sent or not.
      */
-    public abstract <T extends NoxesiumPacket> boolean send(NoxesiumPayloadType<T> type, T payload);
+    public abstract <T extends NoxesiumPacket> boolean send(@NotNull Player player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
 }

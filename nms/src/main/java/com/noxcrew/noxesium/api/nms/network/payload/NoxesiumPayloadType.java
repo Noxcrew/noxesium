@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.nms.network.payload;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import java.lang.ref.WeakReference;
 import java.util.Set;
@@ -9,6 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -128,8 +130,15 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Sends the given [payload] as the type of this payload.
      */
-    public boolean sendAny(Object payload) {
+    public boolean sendServerboundAny(Object payload) {
         return NoxesiumServerboundNetworking.getInstance().send(this, (T) payload);
+    }
+
+    /**
+     * Sends the given [payload] as the type of this payload.
+     */
+    public boolean sendClientboundAny(Player player, Object payload) {
+        return NoxesiumClientboundNetworking.getInstance().send(player, this, (T) payload);
     }
 
     /**

@@ -1,5 +1,12 @@
 package com.noxcrew.noxesium.paper
 
+import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking
+import com.noxcrew.noxesium.core.nms.registry.CommonBlockEntityComponentSerializers
+import com.noxcrew.noxesium.core.nms.registry.CommonEntityComponentSerializers
+import com.noxcrew.noxesium.core.nms.registry.CommonGameComponentSerializers
+import com.noxcrew.noxesium.core.nms.registry.CommonItemComponentSerializers
+import com.noxcrew.noxesium.paper.commands.NoxesiumListCommand
+import com.noxcrew.noxesium.paper.network.FabricPaperClientboundNetworking
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -11,11 +18,17 @@ public class NoxesiumPaper : JavaPlugin() {
     public companion object {
         /** Sets up Noxesium's server-side API. */
         public fun setup() {
+            NoxesiumClientboundNetworking.setInstance(FabricPaperClientboundNetworking())
+
+            CommonBlockEntityComponentSerializers.register()
+            CommonEntityComponentSerializers.register()
+            CommonGameComponentSerializers.register()
+            CommonItemComponentSerializers.register()
         }
     }
 
     override fun onEnable() {
         setup()
-        // TODO getCommand("noxlist")?.setExecutor(NoxesiumListCommand())
+        getCommand("noxlist")?.setExecutor(NoxesiumListCommand())
     }
 }
