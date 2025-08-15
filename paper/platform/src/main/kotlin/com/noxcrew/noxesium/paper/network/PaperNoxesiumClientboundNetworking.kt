@@ -11,11 +11,16 @@ import net.kyori.adventure.text.Component
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
+import net.minecraft.network.protocol.common.custom.DiscardedPayload
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import org.bukkit.craftbukkit.entity.CraftPlayer
 
 /** Implements clientbound networking for Paper. */
-public class FabricPaperClientboundNetworking : NoxesiumClientboundNetworking() {
+public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
     /**
      * The player that the current packet is being serialized for.
      * This has to be set to properly rewrite packets to this player's protocol version.
@@ -108,16 +113,19 @@ public class FabricPaperClientboundNetworking : NoxesiumClientboundNetworking() 
         namespace: String,
         id: String,
         codec: StreamCodec<RegistryFriendlyByteBuf, T>,
+        clazz: Class<T>,
         clientToServer: Boolean,
-    ): NoxesiumPayloadType<T> {
-        TODO("Not yet implemented")
-    }
+    ): NoxesiumPayloadType<T> = PaperNoxesiumPayloadType(ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clazz, clientToServer)
 
     override fun canSend(
         player: Player,
         type: NoxesiumPayloadType<*>,
     ): Boolean {
-        TODO("Not yet implemented")
+        val serverPlayer = player as ServerPlayer
+        if (serverPlayer.connection == null) return false
+
+        // TODO Check if this client has the required entry points!
+        return type.id().toString() in serverPlayer.bukkitEntity.listeningPluginChannels
     }
 
     override fun <T : NoxesiumPacket> send(
@@ -125,6 +133,32 @@ public class FabricPaperClientboundNetworking : NoxesiumClientboundNetworking() 
         type: NoxesiumPayloadType<T>,
         payload: T,
     ): Boolean {
-        TODO("Not yet implemented")
+        // Check if we're allowed to send it!
+        if (!canSend(player, type)) return false
+
+        // Force serialization of the packet to happen right here so we can set the target player
+        // for the stream codecs! Do not defer this to happen later in the netty thread.
+        currentTargetPlayer = player
+        val packet = ClientboundCustomPayloadPacket(
+            DiscardedPayload(
+                type.id(),
+                // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
+                RegistryFriendlyByteBuf(
+                    Unpooled.buffer(),
+                    player.registryAccess(),
+                ).also {
+                    // Use the stream codec of this payload type to encode it into the buffer
+                    type.codec.encode(it, payload)
+                }.let {
+                    // Copy only the used bytes otherwise we send lingering empty data which crashes clients
+                    val out = ByteArray(it.readableBytes())
+                    System.arraycopy(it.array(), 0, out, 0, it.readableBytes())
+                    out
+                },
+            ),
+        )
+        currentTargetPlayer = null
+        (player as? ServerPlayer)?.connection?.send(packet)
+        return true
     }
 }

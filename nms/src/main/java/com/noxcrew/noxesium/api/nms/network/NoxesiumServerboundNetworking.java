@@ -13,24 +13,12 @@ import net.minecraft.network.codec.StreamCodec;
  * Sets up the Noxesium networking system in the serverbound direction.
  */
 public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
-    private static NoxesiumServerboundNetworking instance;
-
     /**
      * Returns the singleton instance of this class.
      */
     public static NoxesiumServerboundNetworking getInstance() {
         Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
-        return instance;
-    }
-
-    /**
-     * Sets the networking instance.
-     */
-    public static void setInstance(NoxesiumServerboundNetworking instance) {
-        Preconditions.checkState(
-                NoxesiumServerboundNetworking.instance == null, "Cannot set the networking instance twice!");
-        NoxesiumServerboundNetworking.instance = instance;
-        NoxesiumNetworking.setInstance(instance);
+        return (NoxesiumServerboundNetworking) instance;
     }
 
     /**

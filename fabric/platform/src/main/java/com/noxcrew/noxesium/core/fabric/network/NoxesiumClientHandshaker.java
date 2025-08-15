@@ -24,6 +24,7 @@ import javax.crypto.spec.SecretKeySpec;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -84,8 +85,12 @@ public class NoxesiumClientHandshaker {
         // Ignore if already initialized
         if (state != HandshakeState.NONE) return;
 
-        // Don't allow if the server doesn't accept any handshakes
-        if (!NoxesiumServerboundNetworking.getInstance().canSend(HandshakePackets.SERVERBOUND_HANDSHAKE)) return;
+        // Don't allow if the server doesn't accept any handshakes, don't use our own method as it checks if it's been registered
+        // yet which it hasn't! We want to hide the plugin channels from the server since some servers (like Zero Minr) kick on detecting
+        // any plugin channels that aren't whitelisted, whereas no client mod will care what a server asks for.
+        // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant for the server to customise
+        // the client.
+        if (!ClientPlayNetworking.canSend(HandshakePackets.SERVERBOUND_HANDSHAKE.id())) return;
 
         // Check if the connection has been established first, just in case
         if (Minecraft.getInstance().getConnection() == null) return;
@@ -94,7 +99,7 @@ public class NoxesiumClientHandshaker {
         HandshakePackets.INSTANCE.register();
 
         // Mark down that we are handshaking the connection
-        state = HandshakeState.INITIAL_SERVER_REQUEST;
+        state = HandshakeState.AWAITING_RESPONSE;
         challenges.clear();
 
         // Determine all entrypoints and their encrypted ids
@@ -118,6 +123,7 @@ public class NoxesiumClientHandshaker {
                         var encryptedId = Base64.getEncoder().encodeToString(cipher.doFinal(id.getBytes()));
                         var encryptedSecret = Base64.getEncoder().encodeToString(cipher.doFinal(secret.getBytes()));
                         ids.put(encryptedId, encryptedSecret);
+                        return;
                     }
                 } catch (Exception x) {
                     NoxesiumApi.getLogger().error("Failed to encrypt entrypoint id {}", id);

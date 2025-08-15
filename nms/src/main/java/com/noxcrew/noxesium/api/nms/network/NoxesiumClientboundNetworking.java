@@ -10,24 +10,12 @@ import org.jetbrains.annotations.NotNull;
  * Sets up the Noxesium networking system in the clientbound direction.
  */
 public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
-    private static NoxesiumClientboundNetworking instance;
-
     /**
      * Returns the singleton instance of this class.
      */
     public static NoxesiumClientboundNetworking getInstance() {
         Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
-        return instance;
-    }
-
-    /**
-     * Sets the networking instance.
-     */
-    public static void setInstance(NoxesiumClientboundNetworking instance) {
-        Preconditions.checkState(
-                NoxesiumClientboundNetworking.instance == null, "Cannot set the networking instance twice!");
-        NoxesiumClientboundNetworking.instance = instance;
-        NoxesiumNetworking.setInstance(instance);
+        return (NoxesiumClientboundNetworking) instance;
     }
 
     /**

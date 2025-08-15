@@ -16,7 +16,7 @@ import java.util.Map;
  * Sets up the Noxesium networking system.
  */
 public abstract class NoxesiumNetworking {
-    private static NoxesiumNetworking instance;
+    protected static NoxesiumNetworking instance;
     private final Map<Class<?>, NoxesiumPayloadType<?>> packetTypes = new HashMap<>();
 
     /**
@@ -30,7 +30,7 @@ public abstract class NoxesiumNetworking {
     /**
      * Sets the networking instance.
      */
-    protected static void setInstance(NoxesiumNetworking instance) {
+    public static void setInstance(NoxesiumNetworking instance) {
         Preconditions.checkState(NoxesiumNetworking.instance == null, "Cannot set the networking instance twice!");
         NoxesiumNetworking.instance = instance;
     }
@@ -46,7 +46,7 @@ public abstract class NoxesiumNetworking {
      * Registers a new payload type.
      */
     public void register(NoxesiumPayloadType<?> payloadType) {
-        var clazz = payloadType.getClass();
+        var clazz = payloadType.typeClass();
         Preconditions.checkState(!packetTypes.containsKey(clazz), "Cannot register payload type '" + clazz + "' twice");
         packetTypes.put(clazz, payloadType);
     }
@@ -55,7 +55,7 @@ public abstract class NoxesiumNetworking {
      * Unregisters a payload type.
      */
     public void unregister(NoxesiumPayloadType<?> payloadType) {
-        packetTypes.remove(payloadType.getClass());
+        packetTypes.remove(payloadType.typeClass());
     }
 
     /**
@@ -72,5 +72,5 @@ public abstract class NoxesiumNetworking {
      * Creates a new payload of the type specific to this platform.
      */
     public abstract <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace, @NotNull String id, @NotNull StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer);
+            @NotNull String namespace, @NotNull String id, @NotNull StreamCodec<RegistryFriendlyByteBuf, T> codec, @NotNull Class<T> clazz, boolean clientToServer);
 }

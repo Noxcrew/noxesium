@@ -1,12 +1,14 @@
 package com.noxcrew.noxesium.paper
 
-import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking
+import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking
 import com.noxcrew.noxesium.core.nms.registry.CommonBlockEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.registry.CommonEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.registry.CommonGameComponentSerializers
 import com.noxcrew.noxesium.core.nms.registry.CommonItemComponentSerializers
 import com.noxcrew.noxesium.paper.commands.NoxesiumListCommand
-import com.noxcrew.noxesium.paper.network.FabricPaperClientboundNetworking
+import com.noxcrew.noxesium.paper.network.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
+import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
@@ -16,19 +18,25 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 public class NoxesiumPaper : JavaPlugin() {
     public companion object {
+        /** The main plugin instance to use. */
+        internal lateinit var plugin: Plugin
+
         /** Sets up Noxesium's server-side API. */
-        public fun setup() {
-            NoxesiumClientboundNetworking.setInstance(FabricPaperClientboundNetworking())
+        public fun setup(plugin: Plugin) {
+            NoxesiumPaper.plugin = plugin
+            NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
 
             CommonBlockEntityComponentSerializers.register()
             CommonEntityComponentSerializers.register()
             CommonGameComponentSerializers.register()
             CommonItemComponentSerializers.register()
+
+            NoxesiumServerHandshaker().register()
         }
     }
 
     override fun onEnable() {
-        setup()
+        setup(this)
         getCommand("noxlist")?.setExecutor(NoxesiumListCommand())
     }
 }

@@ -32,6 +32,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS = server(
             INSTANCE,
             "serverbound_client_settings",
+            ServerboundClientSettingsPacket.class,
             StreamCodec.composite(
                     NoxesiumStreamCodecs.CLIENT_SETTINGS,
                     ServerboundClientSettingsPacket::settings,
@@ -40,6 +41,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ServerboundQibTriggeredPacket> SERVER_QIB_TRIGGERED = server(
             INSTANCE,
             "serverbound_qib_triggered",
+            ServerboundQibTriggeredPacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8,
                     ServerboundQibTriggeredPacket::behavior,
@@ -52,12 +54,14 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ServerboundRiptidePacket> SERVER_RIPTIDE = server(
             INSTANCE,
             "serverbound_riptide",
+            ServerboundRiptidePacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT, ServerboundRiptidePacket::slot, ServerboundRiptidePacket::new));
 
     public static final NoxesiumPayloadType<ServerboundMouseButtonClickPacket> SERVER_MOUSE_BUTTON_CLICK = server(
             INSTANCE,
             "serverbound_mouse_button_click",
+            ServerboundMouseButtonClickPacket.class,
             StreamCodec.composite(
                     NoxesiumStreamCodecs.forEnum(ServerboundMouseButtonClickPacket.Action.class),
                     ServerboundMouseButtonClickPacket::action,
@@ -68,6 +72,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ClientboundCustomSoundModifyPacket> CLIENT_CUSTOM_SOUND_MODIFY = client(
             INSTANCE,
             "clientbound_modify_sound",
+            ClientboundCustomSoundModifyPacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT,
                     ClientboundCustomSoundModifyPacket::id,
@@ -82,6 +87,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ClientboundCustomSoundStartPacket> CLIENT_CUSTOM_SOUND_START = client(
             INSTANCE,
             "clientbound_start_sound",
+            ClientboundCustomSoundStartPacket.class,
             NoxesiumStreamCodecs.composite(
                     ByteBufCodecs.VAR_INT,
                     ClientboundCustomSoundStartPacket::id,
@@ -112,6 +118,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ClientboundCustomSoundStopPacket> CLIENT_CUSTOM_SOUND_STOP = client(
             INSTANCE,
             "clientbound_stop_sound",
+            ClientboundCustomSoundStopPacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.VAR_INT,
                     ClientboundCustomSoundStopPacket::id,
@@ -121,6 +128,7 @@ public class CommonPackets {
             client(
                     INSTANCE,
                     "clientbound_update_entity_components",
+                    ClientboundUpdateEntityComponentsPacket.class,
                     StreamCodec.composite(
                             ByteBufCodecs.VAR_INT,
                             ClientboundUpdateEntityComponentsPacket::entityId,
@@ -134,6 +142,7 @@ public class CommonPackets {
             client(
                     INSTANCE,
                     "clientbound_update_game_components",
+                    ClientboundUpdateGameComponentsPacket.class,
                     StreamCodec.composite(
                             ByteBufCodecs.BOOL,
                             ClientboundUpdateGameComponentsPacket::reset,
@@ -144,6 +153,7 @@ public class CommonPackets {
     public static final NoxesiumPayloadType<ClientboundOpenLinkPacket> CLIENT_OPEN_LINK = client(
             INSTANCE,
             "clientbound_open_link",
+            ClientboundOpenLinkPacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.optional(
                             NoxesiumNetworking.getInstance().getComponentStreamCodec()),

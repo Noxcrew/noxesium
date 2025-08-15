@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.nms.network.payload;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking;
+import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import java.lang.ref.WeakReference;
 import java.util.Set;
@@ -30,6 +31,11 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public final StreamCodec<RegistryFriendlyByteBuf, T> codec;
 
     /**
+     * The class of the packet type.
+     */
+    public final Class<T> clazz;
+
+    /**
      * Whether this payload is sent from client to server.
      */
     public final boolean clientToServer;
@@ -37,7 +43,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * All listeners registered to this payload type.
      */
-    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, PacketContext>>> listeners =
+    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, Player>>> listeners =
             ConcurrentHashMap.newKeySet();
 
     /**
@@ -45,9 +51,10 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * by custom packet handlers.
      */
     public NoxesiumPayloadType(
-            ResourceLocation key, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+            @NotNull ResourceLocation key, @NotNull StreamCodec<RegistryFriendlyByteBuf, T> codec, @NotNull Class<T> clazz, boolean clientToServer) {
         this.type = new CustomPacketPayload.Type<>(key);
         this.codec = codec;
+        this.clazz = clazz;
         this.clientToServer = clientToServer;
     }
 
@@ -56,6 +63,13 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      */
     public ResourceLocation id() {
         return type.id();
+    }
+
+    /**
+     * Returns the class of the packet payload type.
+     */
+    public Class<T> typeClass() {
+        return clazz;
     }
 
     /**
@@ -81,14 +95,14 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * Registers a receiver for this payload type.
      */
     public void register() {
-        NoxesiumServerboundNetworking.getInstance().register(this);
+        NoxesiumNetworking.getInstance().register(this);
     }
 
     /**
      * Unregisters the receiver for this payload type.
      */
     public void unregister() {
-        NoxesiumServerboundNetworking.getInstance().unregister(this);
+        NoxesiumNetworking.getInstance().unregister(this);
     }
 
     /**
@@ -102,7 +116,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * Handles a new packet [payload] of this type being received with
      * [context].
      */
-    public void handle(PacketContext context, Object payload) {
+    public void handle(@NotNull Player context, @NotNull Object payload) {
         var iterator = listeners.iterator();
         while (iterator.hasNext()) {
             var pair = iterator.next();
@@ -122,7 +136,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * the listener from holding its own reference captive. If you do this the listener
      * will never be properly garbage collected.
      */
-    public <R> void addListener(R reference, TriConsumer<R, T, PacketContext> listener) {
+    public <R> void addListener(R reference, @NotNull TriConsumer<R, T, Player> listener) {
         listeners.removeIf((it) -> it.getKey().get() == null);
         listeners.add(Pair.of(new WeakReference<>(reference), listener));
     }
@@ -145,7 +159,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * Casts [reference] to type [R] of [consumer].
      */
     private <R> void acceptAny(
-            TriConsumer<R, T, PacketContext> consumer, Object reference, PacketContext context, Object payload) {
+            TriConsumer<R, T, Player> consumer, Object reference, Player context, Object payload) {
         consumer.accept((R) reference, (T) payload, context);
     }
 }

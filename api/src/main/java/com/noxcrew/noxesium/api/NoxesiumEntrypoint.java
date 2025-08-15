@@ -23,8 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * The handshake process for Noxesium runs for all entrypoints simultaneously, but includes
  * the following steps before it can be completed:
- * 1) The server-side implementation shares with the client that it can receive `noxesium-v3:serverbound_handshake`
- * and `noxesium-v3:serverbound_handshake_ack`.
+ * 1) The server-side implementation shares with the client that it can receive handshake packets.
  * 2) The client-side implementation sends `noxesium-v3:serverbound_handshake` with a series of entrypoint ids
  * encrypted using a shared encryption key of each entrypoint when joining a server or entering the
  * configuration phase.

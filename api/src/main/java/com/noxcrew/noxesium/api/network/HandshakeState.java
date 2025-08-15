@@ -13,7 +13,7 @@ public enum HandshakeState {
      * The server has been asked to verify which entrypoints it
      * understands and can handle.
      */
-    INITIAL_SERVER_REQUEST,
+    AWAITING_RESPONSE,
 
     /**
      * The handshake has been completed.

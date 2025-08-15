@@ -38,9 +38,9 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
 
     @Override
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace, @NotNull String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+            @NotNull String namespace, @NotNull String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, Class<T> clazz, boolean clientToServer) {
         return new FabricNoxesiumPayloadType<>(
-                ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clientToServer);
+                ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clazz, clientToServer);
     }
 
     @Override

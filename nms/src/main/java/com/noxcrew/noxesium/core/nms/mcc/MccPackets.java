@@ -18,6 +18,7 @@ public class MccPackets {
     public static final NoxesiumPayloadType<ClientboundMccGameStatePacket> CLIENTBOUND_MCC_GAME_STATE = client(
             INSTANCE,
             "clientbound_mcc_game_state",
+            ClientboundMccGameStatePacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8,
                     ClientboundMccGameStatePacket::phaseType,
@@ -36,6 +37,7 @@ public class MccPackets {
     public static final NoxesiumPayloadType<ClientboundMccServerPacket> CLIENTBOUND_MCC_SERVER = client(
             INSTANCE,
             "clientbound_mcc_server",
+            ClientboundMccServerPacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8,
                     ClientboundMccServerPacket::serverType,

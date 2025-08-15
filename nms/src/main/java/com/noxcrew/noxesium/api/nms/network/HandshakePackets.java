@@ -22,6 +22,7 @@ public class HandshakePackets {
     public static final NoxesiumPayloadType<ServerboundHandshakePacket> SERVERBOUND_HANDSHAKE = server(
             INSTANCE,
             "serverbound_handshake",
+            ServerboundHandshakePacket.class,
             StreamCodec.composite(
                     ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                     ServerboundHandshakePacket::entrypoints,
@@ -31,6 +32,7 @@ public class HandshakePackets {
             server(
                     INSTANCE,
                     "serverbound_handshake_ack",
+                    ServerboundHandshakeAcknowledgePacket.class,
                     StreamCodec.composite(
                             NoxesiumStreamCodecs.ENTRYPOINT_PROTOCOL.apply(ByteBufCodecs.list()),
                             ServerboundHandshakeAcknowledgePacket::protocols,
@@ -40,6 +42,7 @@ public class HandshakePackets {
             client(
                     INSTANCE,
                     "clientbound_handshake_ack",
+                    ClientboundHandshakeAcknowledgePacket.class,
                     StreamCodec.composite(
                             ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                             ClientboundHandshakeAcknowledgePacket::entrypoints,
@@ -48,6 +51,7 @@ public class HandshakePackets {
     public static final NoxesiumPayloadType<ClientboundRegistryIdentifiersPacket> CLIENTBOUND_REGISTRY_IDS = client(
             INSTANCE,
             "clientbound_registry_ids",
+            ClientboundRegistryIdentifiersPacket.class,
             StreamCodec.composite(
                     NoxesiumStreamCodecs.KEY,
                     ClientboundRegistryIdentifiersPacket::registry,

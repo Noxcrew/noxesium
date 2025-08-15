@@ -25,8 +25,8 @@ public final class PacketCollection {
      * @return The PacketType instance.
      */
     public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(
-            PacketCollection collection, String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
-        return collection.register(id, codec, false);
+            PacketCollection collection, String id, Class<T> clazz, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
+        return collection.register(id, codec, clazz, false);
     }
 
     /**
@@ -37,8 +37,8 @@ public final class PacketCollection {
      * @return The PacketType instance.
      */
     public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> server(
-            PacketCollection collection, String id, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
-        return collection.register(id, codec, true);
+            PacketCollection collection, String id, Class<T> clazz, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
+        return collection.register(id, codec, clazz, true);
     }
 
     /**
@@ -49,10 +49,10 @@ public final class PacketCollection {
      * @return The PacketType instance.
      */
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> register(
-            String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, boolean clientToServer) {
+            String id, StreamCodec<RegistryFriendlyByteBuf, T> codec, Class<T> clazz, boolean clientToServer) {
         Preconditions.checkArgument(!packets.containsKey(id));
-        var type = NoxesiumServerboundNetworking.getInstance()
-                .createPayloadType(NoxesiumReferences.PACKET_NAMESPACE, id, codec, clientToServer);
+        var type = NoxesiumNetworking.getInstance()
+                .createPayloadType(NoxesiumReferences.PACKET_NAMESPACE, id, codec, clazz, clientToServer);
         packets.put(id, type);
         return type;
     }
