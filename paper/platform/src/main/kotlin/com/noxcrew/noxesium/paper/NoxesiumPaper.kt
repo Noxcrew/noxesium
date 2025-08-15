@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.paper
 
-import com.noxcrew.noxesium.api.nms.NoxesiumNmsApi
 import org.bukkit.plugin.java.JavaPlugin
 
 /**

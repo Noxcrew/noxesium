@@ -51,6 +51,7 @@
     "rules.entity.EndCrystalRendererMixin",
     "rules.entity.EntityComponentMixin",
     "rules.entity.EntityHitboxMixin",
+    "rules.entity.EntityHitboxColorMixin",
     "rules.entity.GuardianBeamColorRendererMixin",
     "rules.entity.GuardianBubblesRuleMixin",
     "rules.entity.GuardianStateMixin",

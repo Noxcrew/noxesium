@@ -10,7 +10,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.FontManagerExt;
-import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.MinecraftExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.SkinManagerExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.SkinTextureDownloaderExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.TextureCacheExt;

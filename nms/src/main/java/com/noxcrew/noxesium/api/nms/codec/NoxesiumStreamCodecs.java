@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.nms.codec;
 
 import com.mojang.datafixers.util.Function12;
+import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
@@ -26,6 +27,22 @@ import net.minecraft.network.codec.StreamCodec;
 public class NoxesiumStreamCodecs {
 
     public static final StreamCodec<ByteBuf, Unit> UNIT = StreamCodec.unit(Unit.INSTANCE);
+
+    public static <A, B, T extends ByteBuf> StreamCodec<T, Pair<A, B>> pair(
+            StreamCodec<T, A> codecA, StreamCodec<T, B> codecB) {
+        return new StreamCodec<>() {
+            @Override
+            public Pair<A, B> decode(T buffer) {
+                return new Pair<>(codecA.decode(buffer), codecB.decode(buffer));
+            }
+
+            @Override
+            public void encode(T buffer, Pair<A, B> pair) {
+                codecA.encode(buffer, pair.getFirst());
+                codecB.encode(buffer, pair.getSecond());
+            }
+        };
+    }
 
     public static final StreamCodec<FriendlyByteBuf, Integer> COLOR_INT_ARGB = new StreamCodec<>() {
         public Integer decode(FriendlyByteBuf buffer) {

@@ -49,6 +49,11 @@ public class CommonEntityComponentTypes {
     public static NoxesiumComponentType<Vector3f> HITBOX_OVERRIDE = register("hitbox_override");
 
     /**
+     * Defines a color to use for the hitbox rendering.
+     */
+    public static NoxesiumComponentType<Color> HITBOX_COLOR = register("hitbox_color");
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <T> NoxesiumComponentType<T> register(String key) {
