@@ -1,7 +1,6 @@
 plugins {
     id("fabric-loom")
     id("noxesium.fabric")
-    id("noxesium.nms")
 }
 
 loom {
@@ -27,6 +26,9 @@ dependencies {
     modApi(libs.fabric.loader)
     modApi(libs.fabric.api)
 
+    // Include NMS sources as a mod (remapping it)
+    api(project(path = ":nms", configuration = "namedElements"))
+
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
         modImplementation(libs.sodium)
@@ -38,7 +40,7 @@ dependencies {
     }
 
     // Add DevLogin
-    localRuntime("net.covers1624:DevLogin:0.1.0.5")
+    localRuntime(libs.devlogin)
 
     // Include the base API, PRTree, and Adventure in the jar
     fun includeLibrary(target: Any) {

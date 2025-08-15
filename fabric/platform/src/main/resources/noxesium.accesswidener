@@ -22,3 +22,5 @@ accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lco
 
 accessible field net/minecraft/core/component/DataComponents ENCODER_CACHE Lnet/minecraft/util/EncoderCache;
 accessible method net/minecraft/world/entity/Entity makeBoundingBox ()Lnet/minecraft/world/phys/AABB;
+
+accessible field net/minecraft/client/Minecraft fontManager Lnet/minecraft/client/gui/font/FontManager;

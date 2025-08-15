@@ -30,8 +30,8 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     private final NoxesiumConfig config;
-    private final SkullFontModule skullFontModule;
-    private final CustomServerCreativeItems customCreativeItems;
+    private SkullFontModule skullFontModule;
+    private CustomServerCreativeItems customCreativeItems;
 
     /**
      * If enabled settings are not overridden. This should be true while rendering the settings menu.
@@ -60,13 +60,15 @@ public class NoxesiumMod implements ClientModInitializer {
     public NoxesiumMod() {
         instance = this;
         config = NoxesiumConfig.load();
-        skullFontModule = new SkullFontModule();
-        customCreativeItems = new CustomServerCreativeItems();
         NoxesiumServerboundNetworking.setInstance(new FabricNoxesiumServerboundNetworking());
     }
 
     @Override
     public void onInitializeClient() {
+        // Initialize after the client is ready
+        skullFontModule = new SkullFontModule();
+        customCreativeItems = new CustomServerCreativeItems();
+
         // Go through all entrypoints and register them
         var logger = NoxesiumApi.getLogger();
         var api = NoxesiumApi.getInstance();

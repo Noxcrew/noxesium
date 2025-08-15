@@ -5,7 +5,6 @@ import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
     kotlin("jvm") version "2.2.0"
-    id("noxesium.nms")
     id("io.papermc.paperweight.userdev")
     id("com.gradleup.shadow")
     id("xyz.jpenilla.run-paper")
@@ -26,6 +25,9 @@ dependencies {
 
     // Add the API module as a dependency
     api(project(":api"))
+
+    // Include the nms project as a dependency
+    implementation(project(path = ":nms", configuration = "namedElements"))
 }
 
 java {
@@ -34,10 +36,9 @@ java {
 }
 
 // Configure any existing RunServerTasks
-/*tasks.withType<RunServer> {
-    minecraftVersion("1.21.8")
+tasks.withType<RunServer> {
     jvmArgs("-Dio.papermc.paper.suppress.sout.nags=true")
-}*/
+}
 
 tasks.withType<KotlinCompile> {
     explicitApiMode.set(ExplicitApiMode.Strict)

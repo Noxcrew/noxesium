@@ -211,7 +211,7 @@ public class SkullFontModule {
         if (currentFont != null) return;
         try {
             var instance = Minecraft.getInstance();
-            var fontManager = ((MinecraftExt) instance).getFontManager();
+            var fontManager = instance.fontManager;
             currentFont = new CustomSkullFont(this, instance.getTextureManager(), RESOURCE_LOCATION);
 
             // Reload to stitch in missing and blank glyphs

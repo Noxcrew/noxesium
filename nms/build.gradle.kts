@@ -7,10 +7,3 @@ dependencies {
     mappings(loom.officialMojangMappings())
     compileOnly(project(":api"))
 }
-
-configurations {
-    register("commonJava") {
-        isCanBeResolved = false
-        isCanBeConsumed = true
-    }
-}
