@@ -1,6 +1,7 @@
 plugins {
     id("fabric-loom")
     id("noxesium.fabric")
+    id("noxesium.nms")
 }
 
 loom {
@@ -25,9 +26,6 @@ dependencies {
     mappings(loom.officialMojangMappings())
     modApi(libs.fabric.loader)
     modApi(libs.fabric.api)
-
-    // Include NMS sources
-    api(project(":nms"))
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

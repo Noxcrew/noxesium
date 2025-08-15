@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.api.nms.codec;
 
 import com.mojang.datafixers.util.Function12;
+import com.mojang.datafixers.util.Function13;
+import com.mojang.datafixers.util.Function14;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
@@ -257,6 +259,146 @@ public class NoxesiumStreamCodecs {
                 streamCodec10.encode(object, function10.apply(object2));
                 streamCodec11.encode(object, function11.apply(object2));
                 streamCodec12.encode(object, function12.apply(object2));
+            }
+        };
+    }
+
+    public static <B, C, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> StreamCodec<B, C> composite(
+            final StreamCodec<? super B, T1> streamCodec,
+            final Function<C, T1> function,
+            final StreamCodec<? super B, T2> streamCodec2,
+            final Function<C, T2> function2,
+            final StreamCodec<? super B, T3> streamCodec3,
+            final Function<C, T3> function3,
+            final StreamCodec<? super B, T4> streamCodec4,
+            final Function<C, T4> function4,
+            final StreamCodec<? super B, T5> streamCodec5,
+            final Function<C, T5> function5,
+            final StreamCodec<? super B, T6> streamCodec6,
+            final Function<C, T6> function6,
+            final StreamCodec<? super B, T7> streamCodec7,
+            final Function<C, T7> function7,
+            final StreamCodec<? super B, T8> streamCodec8,
+            final Function<C, T8> function8,
+            final StreamCodec<? super B, T9> streamCodec9,
+            final Function<C, T9> function9,
+            final StreamCodec<? super B, T10> streamCodec10,
+            final Function<C, T10> function10,
+            final StreamCodec<? super B, T11> streamCodec11,
+            final Function<C, T11> function11,
+            final StreamCodec<? super B, T12> streamCodec12,
+            final Function<C, T12> function12,
+            final StreamCodec<? super B, T13> streamCodec13,
+            final Function<C, T13> function13,
+            final Function13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, C> function132) {
+        return new StreamCodec<B, C>() {
+            @Override
+            public C decode(B object) {
+                T1 object2 = (T1) streamCodec.decode(object);
+                T2 object3 = (T2) streamCodec2.decode(object);
+                T3 object4 = (T3) streamCodec3.decode(object);
+                T4 object5 = (T4) streamCodec4.decode(object);
+                T5 object6 = (T5) streamCodec5.decode(object);
+                T6 object7 = (T6) streamCodec6.decode(object);
+                T7 object8 = (T7) streamCodec7.decode(object);
+                T8 object9 = (T8) streamCodec8.decode(object);
+                T9 object10 = (T9) streamCodec9.decode(object);
+                T10 object11 = (T10) streamCodec10.decode(object);
+                T11 object12 = (T11) streamCodec11.decode(object);
+                T12 object13 = (T12) streamCodec12.decode(object);
+                T13 object14 = (T13) streamCodec13.decode(object);
+                return (C) function132.apply(
+                        object2, object3, object4, object5, object6, object7, object8, object9, object10, object11,
+                        object12, object13, object14);
+            }
+
+            @Override
+            public void encode(B object, C object2) {
+                streamCodec.encode(object, function.apply(object2));
+                streamCodec2.encode(object, function2.apply(object2));
+                streamCodec3.encode(object, function3.apply(object2));
+                streamCodec4.encode(object, function4.apply(object2));
+                streamCodec5.encode(object, function5.apply(object2));
+                streamCodec6.encode(object, function6.apply(object2));
+                streamCodec7.encode(object, function7.apply(object2));
+                streamCodec8.encode(object, function8.apply(object2));
+                streamCodec9.encode(object, function9.apply(object2));
+                streamCodec10.encode(object, function10.apply(object2));
+                streamCodec11.encode(object, function11.apply(object2));
+                streamCodec12.encode(object, function12.apply(object2));
+                streamCodec13.encode(object, function13.apply(object2));
+            }
+        };
+    }
+
+    public static <B, C, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> StreamCodec<B, C> composite(
+            final StreamCodec<? super B, T1> streamCodec,
+            final Function<C, T1> function,
+            final StreamCodec<? super B, T2> streamCodec2,
+            final Function<C, T2> function2,
+            final StreamCodec<? super B, T3> streamCodec3,
+            final Function<C, T3> function3,
+            final StreamCodec<? super B, T4> streamCodec4,
+            final Function<C, T4> function4,
+            final StreamCodec<? super B, T5> streamCodec5,
+            final Function<C, T5> function5,
+            final StreamCodec<? super B, T6> streamCodec6,
+            final Function<C, T6> function6,
+            final StreamCodec<? super B, T7> streamCodec7,
+            final Function<C, T7> function7,
+            final StreamCodec<? super B, T8> streamCodec8,
+            final Function<C, T8> function8,
+            final StreamCodec<? super B, T9> streamCodec9,
+            final Function<C, T9> function9,
+            final StreamCodec<? super B, T10> streamCodec10,
+            final Function<C, T10> function10,
+            final StreamCodec<? super B, T11> streamCodec11,
+            final Function<C, T11> function11,
+            final StreamCodec<? super B, T12> streamCodec12,
+            final Function<C, T12> function12,
+            final StreamCodec<? super B, T13> streamCodec13,
+            final Function<C, T13> function13,
+            final StreamCodec<? super B, T14> streamCodec14,
+            final Function<C, T14> function14,
+            final Function14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, C> function142) {
+        return new StreamCodec<B, C>() {
+            @Override
+            public C decode(B object) {
+                T1 object2 = (T1) streamCodec.decode(object);
+                T2 object3 = (T2) streamCodec2.decode(object);
+                T3 object4 = (T3) streamCodec3.decode(object);
+                T4 object5 = (T4) streamCodec4.decode(object);
+                T5 object6 = (T5) streamCodec5.decode(object);
+                T6 object7 = (T6) streamCodec6.decode(object);
+                T7 object8 = (T7) streamCodec7.decode(object);
+                T8 object9 = (T8) streamCodec8.decode(object);
+                T9 object10 = (T9) streamCodec9.decode(object);
+                T10 object11 = (T10) streamCodec10.decode(object);
+                T11 object12 = (T11) streamCodec11.decode(object);
+                T12 object13 = (T12) streamCodec12.decode(object);
+                T13 object14 = (T13) streamCodec13.decode(object);
+                T14 object15 = (T14) streamCodec14.decode(object);
+                return (C) function142.apply(
+                        object2, object3, object4, object5, object6, object7, object8, object9, object10, object11,
+                        object12, object13, object14, object15);
+            }
+
+            @Override
+            public void encode(B object, C object2) {
+                streamCodec.encode(object, function.apply(object2));
+                streamCodec2.encode(object, function2.apply(object2));
+                streamCodec3.encode(object, function3.apply(object2));
+                streamCodec4.encode(object, function4.apply(object2));
+                streamCodec5.encode(object, function5.apply(object2));
+                streamCodec6.encode(object, function6.apply(object2));
+                streamCodec7.encode(object, function7.apply(object2));
+                streamCodec8.encode(object, function8.apply(object2));
+                streamCodec9.encode(object, function9.apply(object2));
+                streamCodec10.encode(object, function10.apply(object2));
+                streamCodec11.encode(object, function11.apply(object2));
+                streamCodec12.encode(object, function12.apply(object2));
+                streamCodec13.encode(object, function13.apply(object2));
+                streamCodec14.encode(object, function14.apply(object2));
             }
         };
     }

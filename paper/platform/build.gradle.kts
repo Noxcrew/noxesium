@@ -8,6 +8,7 @@ plugins {
     id("io.papermc.paperweight.userdev")
     id("com.gradleup.shadow")
     id("xyz.jpenilla.run-paper")
+    id("noxesium.nms")
 }
 
 val javaVersion: Int = 21
@@ -25,9 +26,6 @@ dependencies {
 
     // Add the API module as a dependency
     api(project(":api"))
-
-    // Include the nms project as a dependency
-    api(project(":nms"))
 }
 
 java {

@@ -18,3 +18,14 @@ neoForge {
 dependencies {
     compileOnly(project(":api"))
 }
+
+configurations {
+    register("nmsJava") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+    }
+}
+
+artifacts {
+    add("nmsJava", sourceSets["main"].java.sourceDirectories.singleFile)
+}
