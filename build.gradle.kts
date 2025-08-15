@@ -15,6 +15,7 @@ fun getGitCommit(): String {
 plugins {
     id("noxesium.publishing") apply false
 
+    alias(libs.plugins.moddev) apply false
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.paperweight) apply false

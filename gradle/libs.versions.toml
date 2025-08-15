@@ -3,13 +3,14 @@
 shadow = "9.0.0-beta4"
 spotless = "7.0.0.BETA4"
 loom = "1.11-SNAPSHOT"
+moddev = "2.0.73"
 paperweight = "2.0.0-beta.18"
 run-paper = "2.3.1"
 
 # Tooling
 kotlin-coroutines = "1.10.2"
 kotlin-serialization = "1.9.0"
-guava = "33.4.0-jre"
+guava = "33.3.1-jre"
 slf4j = "2.0.16"
 
 # Various
@@ -19,7 +20,7 @@ prtree = "1.5.0"
 caffeine = "3.1.8"
 adventure = "4.23.0"
 adventure-fabric = "6.6.0"
-apache-commons = "3.18.0"
+apache-commons = "3.17.0"
 joml = "1.10.8"
 
 # Fabric - https://modmuss50.me/fabric.html
@@ -39,6 +40,7 @@ viaversion = "5.4.2"
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 loom = { id = "fabric-loom", version.ref = "loom" }
+moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 

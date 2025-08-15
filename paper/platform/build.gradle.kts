@@ -27,7 +27,7 @@ dependencies {
     api(project(":api"))
 
     // Include the nms project as a dependency
-    implementation(project(path = ":nms", configuration = "namedElements"))
+    api(project(":nms"))
 }
 
 java {

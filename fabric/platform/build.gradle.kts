@@ -26,8 +26,8 @@ dependencies {
     modApi(libs.fabric.loader)
     modApi(libs.fabric.api)
 
-    // Include NMS sources as a mod (remapping it)
-    api(project(path = ":nms", configuration = "namedElements"))
+    // Include NMS sources
+    api(project(":nms"))
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {

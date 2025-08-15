@@ -9,7 +9,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.FontManagerExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.SkinManagerExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.SkinTextureDownloaderExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.component.ext.TextureCacheExt;
@@ -217,8 +216,7 @@ public class SkullFontModule {
             currentFont.reload(Set.of());
 
             // Manually input the font into the font manager's map of sets
-            var current = ((FontManagerExt) fontManager).getFontSets();
-            current.put(RESOURCE_LOCATION, currentFont);
+            fontManager.fontSets.put(RESOURCE_LOCATION, currentFont);
         } catch (Exception x) {
             x.printStackTrace();
         }
