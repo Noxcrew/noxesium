@@ -21,6 +21,11 @@ public class NoxesiumReferences {
     public static final String NAMESPACE = "noxesium";
 
     /**
+     * The custom namespace to use for component metadata.
+     */
+    public static final String COMPONENT_NAMESPACE = "NoxesiumData";
+
+    /**
      * The namespace under which all packets are registered.
      * Appended by a global API version equal to the major version of Noxesium.
      */

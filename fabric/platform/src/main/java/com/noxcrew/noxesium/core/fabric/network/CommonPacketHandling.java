@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.api.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
+import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
@@ -146,7 +146,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
     private void applyPatch(
             NoxesiumComponentPatch patch,
             NoxesiumRegistry<NoxesiumComponentType<?>> registry,
-            NoxesiumComponentHolder holder) {
+            RemoteNoxesiumComponentHolder holder) {
         for (var entry : patch.getMap().entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();

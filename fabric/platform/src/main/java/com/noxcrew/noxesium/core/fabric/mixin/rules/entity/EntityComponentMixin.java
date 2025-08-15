@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.entity;
 
-import com.noxcrew.noxesium.api.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
+import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.world.entity.Entity;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Unique;
  * Implements [NoxesiumComponentHolder] onto the Entity class.
  */
 @Mixin(Entity.class)
-public abstract class EntityComponentMixin implements NoxesiumComponentHolder {
+public abstract class EntityComponentMixin implements RemoteNoxesiumComponentHolder {
 
     @Unique
     private Map<NoxesiumComponentType<?>, Object> noxesium$components = null;

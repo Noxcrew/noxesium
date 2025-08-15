@@ -183,6 +183,6 @@ public class NoxesiumClientHandshaker {
         HandshakePackets.INSTANCE.unregister();
         NoxesiumApi.getInstance().unregisterAll();
         NoxesiumNmsApi.getInstance().unregisterAll();
-        Minecraft.getInstance().noxesium$clearComponents();
+        Minecraft.getInstance().noxesium$reloadComponents();
     }
 }

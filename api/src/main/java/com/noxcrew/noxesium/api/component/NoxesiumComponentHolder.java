@@ -12,13 +12,6 @@ import org.jetbrains.annotations.Nullable;
 public interface NoxesiumComponentHolder {
 
     /**
-     * Clears all custom component data.
-     */
-    public default void noxesium$clearComponents() {
-        throw new UnsupportedOperationException("Unimplemented");
-    }
-
-    /**
      * Returns the given component data on this holder.
      */
     @Nullable
@@ -52,19 +45,5 @@ public interface NoxesiumComponentHolder {
      */
     public default boolean noxesium$hasComponent(NoxesiumComponentType<?> component) {
         return false;
-    }
-
-    /**
-     * Loads the data for the given component from the server.
-     */
-    public default void noxesium$loadComponent(NoxesiumComponentType<?> component, Object value) {
-        throw new UnsupportedOperationException("Unimplemented");
-    }
-
-    /**
-     * Unsets any loaded data for the given component.
-     */
-    public default void noxesium$unsetComponent(NoxesiumComponentType<?> component) {
-        throw new UnsupportedOperationException("Unimplemented");
     }
 }

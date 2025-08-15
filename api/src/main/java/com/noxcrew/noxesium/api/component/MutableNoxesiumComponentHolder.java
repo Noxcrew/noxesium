@@ -12,4 +12,11 @@ public interface MutableNoxesiumComponentHolder extends NoxesiumComponentHolder 
     public default <T> void noxesium$setComponent(NoxesiumComponentType<T> component, T value) {
         throw new UnsupportedOperationException("Unimplemented");
     }
+
+    /**
+     * Clears all components from this holder.
+     */
+    public default void noxesium$clearComponents() {
+        throw new UnsupportedOperationException("Unimplemented");
+    }
 }

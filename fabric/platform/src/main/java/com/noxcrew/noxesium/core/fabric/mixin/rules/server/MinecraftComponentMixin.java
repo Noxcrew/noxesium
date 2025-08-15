@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.server;
 
-import com.noxcrew.noxesium.api.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
+import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.Minecraft;
@@ -10,12 +10,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(Minecraft.class)
-public class MinecraftComponentMixin implements NoxesiumComponentHolder {
+public class MinecraftComponentMixin implements RemoteNoxesiumComponentHolder {
     @Unique
     private Map<NoxesiumComponentType<?>, Object> noxesium$components = null;
 
     @Override
-    public void noxesium$clearComponents() {
+    public void noxesium$reloadComponents() {
         noxesium$components = null;
     }
 
