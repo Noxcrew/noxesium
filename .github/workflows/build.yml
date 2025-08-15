@@ -46,7 +46,7 @@ jobs:
                   fi
 
             - name: Publish Snapshot
-              if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}"
+              if: "${{ env.STATUS != 'release' && github.event_name == 'push' }}"
               run: ./gradlew publish
               env:
                   NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
