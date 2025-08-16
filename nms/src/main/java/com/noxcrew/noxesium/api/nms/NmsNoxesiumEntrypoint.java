@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * Extends the {@link NoxesiumEntrypoint} with support for packet collections.
- * Can be defined in `fabric.mod.json` under `noxesium`.
  */
 public interface NmsNoxesiumEntrypoint extends NoxesiumEntrypoint {
     /**

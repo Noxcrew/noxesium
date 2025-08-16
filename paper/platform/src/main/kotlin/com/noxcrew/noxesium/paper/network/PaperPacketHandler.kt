@@ -24,7 +24,7 @@ public data class PaperPacketHandler<T : NoxesiumPacket>(private val payloadType
             val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(message), craftPlayer.handle.registryAccess())
             payloadType.handle(craftPlayer.handle, payloadType.codec.decode(buffer))
         } catch (x: Exception) {
-            NoxesiumPaper.plugin.logger.log(Level.WARNING, "Failed to decode plugin message on channel '${channel}' for ${player.name}", x)
+            NoxesiumPaper.plugin.logger.log(Level.WARNING, "Failed to decode plugin message on channel '$channel' for ${player.name}", x)
         }
     }
 }

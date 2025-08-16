@@ -17,9 +17,9 @@ public class FabricPacketHandler<T extends CustomPacketPayload> implements Clien
 
     @Override
     public void receive(T payload, ClientPlayNetworking.Context context) {
-        if (payload instanceof NoxesiumPayload<?> noxesiumPacket) {
-            if (noxesiumPacket.noxesiumType().hasListeners()) {
-                noxesiumPacket.noxesiumType().handle(context.player(), payload);
+        if (payload instanceof NoxesiumPayload<?> noxesiumPayload) {
+            if (noxesiumPayload.noxesiumType().hasListeners()) {
+                noxesiumPayload.noxesiumType().handle(context.player(), noxesiumPayload.value());
             }
             if (NoxesiumMod.getInstance().getConfig().dumpIncomingPackets) {
                 Minecraft.getInstance()
@@ -34,7 +34,8 @@ public class FabricPacketHandler<T extends CustomPacketPayload> implements Clien
                                                 .withStyle(Style.EMPTY
                                                         .withBold(true)
                                                         .withColor(ChatFormatting.YELLOW)))
-                                        .append(Component.literal(payload.toString())
+                                        .append(Component.literal(
+                                                        noxesiumPayload.value().toString())
                                                 .withStyle(Style.EMPTY
                                                         .withBold(false)
                                                         .withColor(ChatFormatting.WHITE))),

@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.core.fabric.feature.sounds.EntityNoxesiumSoundInstan
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.core.nms.network.CommonPackets;
+import java.util.List;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
@@ -19,8 +20,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.network.chat.CommonComponents;
-
-import java.util.List;
 
 /**
  * Registers default listeners for all base packets.
@@ -30,7 +29,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
     public CommonPacketHandling() {
         CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS.addListener(this, (reference, packet, player) -> {
             if (!isRegistered()) return;
-            applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, Minecraft.getInstance());
+            reference.applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, Minecraft.getInstance());
         });
         CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS.addListener(this, (reference, packet, player) -> {
             if (!isRegistered()) return;
@@ -38,7 +37,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
             if (entity == null) {
                 NoxesiumApi.getLogger().warn("Received components for unknown entity {}", packet.entityId());
             } else {
-                applyPatch(packet.patch(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
+                reference.applyPatch(packet.patch(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
             }
         });
 
@@ -60,7 +59,8 @@ public class CommonPacketHandling extends NoxesiumFeature {
                         packet.attenuation(),
                         packet.determineOffset());
             } else if (packet.entityId().isPresent()) {
-                var entity = Minecraft.getInstance().player
+                var entity = Minecraft.getInstance()
+                        .player
                         .connection
                         .getLevel()
                         .getEntity(packet.entityId().get());

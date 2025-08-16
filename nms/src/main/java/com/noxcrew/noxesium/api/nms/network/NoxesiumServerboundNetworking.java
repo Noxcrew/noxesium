@@ -3,11 +3,6 @@ package com.noxcrew.noxesium.api.nms.network;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
-import java.util.HashMap;
-import java.util.Map;
-import net.kyori.adventure.text.Component;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Sets up the Noxesium networking system in the serverbound direction.

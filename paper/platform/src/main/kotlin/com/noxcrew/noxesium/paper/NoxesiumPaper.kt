@@ -1,13 +1,15 @@
 package com.noxcrew.noxesium.paper
 
+import com.noxcrew.noxesium.api.NoxesiumApi
+import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking
-import com.noxcrew.noxesium.core.nms.registry.CommonBlockEntityComponentSerializers
-import com.noxcrew.noxesium.core.nms.registry.CommonEntityComponentSerializers
-import com.noxcrew.noxesium.core.nms.registry.CommonGameComponentSerializers
-import com.noxcrew.noxesium.core.nms.registry.CommonItemComponentSerializers
 import com.noxcrew.noxesium.paper.commands.NoxesiumListCommand
+import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.NoxesiumServerHandshaker
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
+import net.minecraft.server.level.ServerPlayer
+import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -22,15 +24,19 @@ public class NoxesiumPaper : JavaPlugin() {
         internal lateinit var plugin: Plugin
 
         /** Sets up Noxesium's server-side API. */
-        public fun setup(plugin: Plugin) {
+        public fun setup(plugin: Plugin, extraEntrypoints: List<NmsNoxesiumEntrypoint> = emptyList()) {
+            // Set important instances
             NoxesiumPaper.plugin = plugin
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
 
-            CommonBlockEntityComponentSerializers.register()
-            CommonEntityComponentSerializers.register()
-            CommonGameComponentSerializers.register()
-            CommonItemComponentSerializers.register()
+            // Process all entry points
+            val logger = NoxesiumApi.getLogger()
+            val api = NoxesiumApi.getInstance()
+            api.registerEndpoint(CommonPaperNoxesiumEntrypoint())
+            extraEntrypoints.forEach { api.registerEndpoint(it) }
+            logger.info("Loaded ${api.allEntrypoints.size} Noxesium entrypoints")
 
+            // Register the handshaking manager
             NoxesiumServerHandshaker().register()
         }
     }
@@ -40,3 +46,7 @@ public class NoxesiumPaper : JavaPlugin() {
         getCommand("noxlist")?.setExecutor(NoxesiumListCommand())
     }
 }
+
+/** Returns the NMS player instance from a Bukkit player. */
+internal val Player.nms: ServerPlayer
+    get() = (this as CraftPlayer).handle

@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.network.PacketCollection;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
@@ -26,20 +26,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Implements the common Noxesium entrypoint.
+ * Implements the common Noxesium entrypoint on Fabric.
  */
-public class CommonNoxesiumEntrypoint implements NmsNoxesiumEntrypoint {
+public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint {
 
     private final TeamGlowHotkeys teamGlowHotkeys = new TeamGlowHotkeys();
     private final QibBehaviorModule qibBehaviorModule = new QibBehaviorModule();
     private final CommonPacketHandling commonPacketHandling = new CommonPacketHandling();
     private final CommonComponentChangeListeners commonComponentChangeListeners = new CommonComponentChangeListeners();
 
-    public CommonNoxesiumEntrypoint() {
+    public CommonFabricNoxesiumEntrypoint() {
         CommonBlockEntityComponentSerializers.register();
         CommonEntityComponentSerializers.register();
         CommonGameComponentSerializers.register();
@@ -94,6 +93,6 @@ public class CommonNoxesiumEntrypoint implements NmsNoxesiumEntrypoint {
     @Override
     @Nullable
     public URL getEncryptionKey() {
-        return CommonNoxesiumEntrypoint.class.getClassLoader().getResource("common-encryption-key.aes");
+        return CommonFabricNoxesiumEntrypoint.class.getClassLoader().getResource("common-encryption-key.aes");
     }
 }

@@ -15,7 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 public class FabricNoxesiumPayloadType<T extends NoxesiumPacket> extends NoxesiumPayloadType<T> {
 
     public FabricNoxesiumPayloadType(
-            ResourceLocation key, StreamCodec<RegistryFriendlyByteBuf, T> codec, Class<T> clazz, boolean clientToServer) {
+            ResourceLocation key,
+            StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            Class<T> clazz,
+            boolean clientToServer) {
         super(key, codec, clazz, clientToServer);
     }
 

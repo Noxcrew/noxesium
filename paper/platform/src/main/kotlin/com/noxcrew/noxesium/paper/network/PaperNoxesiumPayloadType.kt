@@ -17,7 +17,6 @@ public class PaperNoxesiumPayloadType<T : NoxesiumPacket>(
     clazz: Class<T>,
     clientToServer: Boolean,
 ) : NoxesiumPayloadType<T>(key, codec, clazz, clientToServer) {
-
     private val listener = PaperPacketHandler(this)
 
     override fun register() {

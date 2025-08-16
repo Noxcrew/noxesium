@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
@@ -74,19 +73,11 @@ public class NoxesiumMod implements ClientModInitializer {
         var logger = NoxesiumApi.getLogger();
         var api = NoxesiumApi.getInstance();
         FabricLoader.getInstance()
-                .getEntrypointContainers("noxesium", NmsNoxesiumEntrypoint.class)
-                .forEach(entrypoint -> {
-                    try {
-                        api.registerEndpoint(entrypoint.getEntrypoint());
-                    } catch (Exception e) {
-                        logger.error(
-                                "Failed to initialize Noxesium entrypoint from mod {}",
-                                entrypoint.getProvider().getMetadata().getId());
-                    }
-                });
+                .getEntrypointContainers("noxesium", ClientNoxesiumEntrypoint.class)
+                .forEach(entrypoint -> api.registerEndpoint(entrypoint.getEntrypoint()));
 
         // Log how many entrypoints were successfully loaded
-        logger.info("Loaded {} extensions to Noxesium", api.getAllEntrypoints().size());
+        logger.info("Loaded {} Noxesium entrypoints", api.getAllEntrypoints().size());
 
         // Set up the initializer
         new NoxesiumClientHandshaker().register();

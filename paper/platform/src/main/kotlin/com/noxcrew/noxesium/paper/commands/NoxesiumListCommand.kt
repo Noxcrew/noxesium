@@ -21,30 +21,31 @@ public class NoxesiumListCommand : CommandExecutor {
             Bukkit.getOnlinePlayers().groupBy {
                 val protocol = 0 // noxesiumManager.getProtocolVersion(it)
                 val exact =
-                    /*noxesiumManager.getExactVersion(it) ?:*/ when (protocol) {
-                    // These are only used for old clients but we add all versions here
-                    // to keep a proper record of when protocol versions were raised.
-                    0 -> "v0.1.0"
-                    1 -> "v0.1.0"
-                    2 -> "v0.1.6"
-                    3 -> "v1.0.0"
-                    4 -> "v1.1.1"
-                    5 -> "v1.2.1"
-                    6 -> "v2.0.0"
-                    7 -> "v2.1.0"
-                    8 -> "v2.1.2"
-                    9 -> "v2.2.0"
-                    10 -> "v2.3.0"
-                    11 -> "v2.3.2"
-                    12 -> "v2.4.0"
-                    13 -> "v2.6.0"
-                    14 -> "v2.6.1"
-                    15 -> "v2.6.2"
-                    16 -> "v2.7.3"
-                    17 -> "v2.7.4"
-                    18 -> "v2.7.5"
-                    else -> "None"
-                }
+                    // noxesiumManager.getExactVersion(it) ?:
+                    when (protocol) {
+                        // These are only used for old clients but we add all versions here
+                        // to keep a proper record of when protocol versions were raised.
+                        0 -> "v0.1.0"
+                        1 -> "v0.1.0"
+                        2 -> "v0.1.6"
+                        3 -> "v1.0.0"
+                        4 -> "v1.1.1"
+                        5 -> "v1.2.1"
+                        6 -> "v2.0.0"
+                        7 -> "v2.1.0"
+                        8 -> "v2.1.2"
+                        9 -> "v2.2.0"
+                        10 -> "v2.3.0"
+                        11 -> "v2.3.2"
+                        12 -> "v2.4.0"
+                        13 -> "v2.6.0"
+                        14 -> "v2.6.1"
+                        15 -> "v2.6.2"
+                        16 -> "v2.7.3"
+                        17 -> "v2.7.4"
+                        18 -> "v2.7.5"
+                        else -> "None"
+                    }
                 val display = if (protocol != null) text("$exact ($protocol)", NamedTextColor.GOLD) else text("None", NamedTextColor.YELLOW)
                 (protocol ?: 0) to display
             }
@@ -94,12 +95,7 @@ public class NoxesiumListCommand : CommandExecutor {
         }
     }
 
-    override fun onCommand(
-        sender: CommandSender,
-        command: Command,
-        text: String,
-        args: Array<out String>,
-    ): Boolean {
+    override fun onCommand(sender: CommandSender, command: Command, text: String, args: Array<out String>,): Boolean {
         execute(sender)
         return true
     }

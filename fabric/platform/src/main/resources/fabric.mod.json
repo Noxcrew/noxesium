@@ -20,7 +20,7 @@
       "com.noxcrew.noxesium.core.fabric.NoxesiumMod"
     ],
     "noxesium": [
-      "com.noxcrew.noxesium.core.fabric.CommonNoxesiumEntrypoint",
+      "com.noxcrew.noxesium.core.fabric.CommonFabricNoxesiumEntrypoint",
       "com.noxcrew.noxesium.core.fabric.mcc.MccNoxesiumEntrypoint"
     ],
     "modmenu": [

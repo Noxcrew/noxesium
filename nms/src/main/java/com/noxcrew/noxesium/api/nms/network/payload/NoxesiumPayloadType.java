@@ -43,15 +43,17 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * All listeners registered to this payload type.
      */
-    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, Player>>> listeners =
-            ConcurrentHashMap.newKeySet();
+    private final Set<Pair<WeakReference<?>, TriConsumer<?, T, Player>>> listeners = ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a new Noxesium payload type which can be listened to
      * by custom packet handlers.
      */
     public NoxesiumPayloadType(
-            @NotNull ResourceLocation key, @NotNull StreamCodec<RegistryFriendlyByteBuf, T> codec, @NotNull Class<T> clazz, boolean clientToServer) {
+            @NotNull ResourceLocation key,
+            @NotNull StreamCodec<RegistryFriendlyByteBuf, T> codec,
+            @NotNull Class<T> clazz,
+            boolean clientToServer) {
         this.type = new CustomPacketPayload.Type<>(key);
         this.codec = codec;
         this.clazz = clazz;
@@ -158,8 +160,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Casts [reference] to type [R] of [consumer].
      */
-    private <R> void acceptAny(
-            TriConsumer<R, T, Player> consumer, Object reference, Player context, Object payload) {
+    private <R> void acceptAny(TriConsumer<R, T, Player> consumer, Object reference, Player context, Object payload) {
         consumer.accept((R) reference, (T) payload, context);
     }
 }

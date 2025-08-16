@@ -42,18 +42,6 @@ public interface NoxesiumEntrypoint {
     String getId();
 
     /**
-     * Returns the protocol version of this entrypoint.
-     */
-    int getProtocolVersion();
-
-    /**
-     * Returns the version of this entrypoint.
-     */
-    default String getRawVersion() {
-        return Integer.toString(getProtocolVersion());
-    }
-
-    /**
      * Returns instances for all features of this entrypoint. These can be re-created on
      * every initialization or re-used between re-initializations.
      */

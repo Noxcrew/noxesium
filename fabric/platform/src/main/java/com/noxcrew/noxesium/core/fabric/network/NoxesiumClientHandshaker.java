@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeAcknowle
 import com.noxcrew.noxesium.api.network.clientbound.ClientboundRegistryIdentifiersPacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakePacket;
-import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.NoxesiumNmsApi;
 import com.noxcrew.noxesium.api.nms.network.HandshakePackets;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import kotlin.text.Charsets;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -68,13 +70,13 @@ public class NoxesiumClientHandshaker {
         });
 
         // Listen to the server response to the handshake
-        HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (ignored, packet, ignored3) -> {
-            handle(packet);
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (reference, packet, ignored3) -> {
+            reference.handle(packet);
         });
 
         // Whenever we receive registry packets we update the registries
-        HandshakePackets.CLIENTBOUND_REGISTRY_IDS.addListener(this, (ignored, packet, ignored3) -> {
-            handle(packet);
+        HandshakePackets.CLIENTBOUND_REGISTRY_IDS.addListener(this, (reference, packet, ignored3) -> {
+            reference.handle(packet);
         });
     }
 
@@ -85,11 +87,12 @@ public class NoxesiumClientHandshaker {
         // Ignore if already initialized
         if (state != HandshakeState.NONE) return;
 
-        // Don't allow if the server doesn't accept any handshakes, don't use our own method as it checks if it's been registered
-        // yet which it hasn't! We want to hide the plugin channels from the server since some servers (like Zero Minr) kick on detecting
-        // any plugin channels that aren't whitelisted, whereas no client mod will care what a server asks for.
-        // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant for the server to customise
-        // the client.
+        // Don't allow if the server doesn't accept any handshakes, don't use our own method as it checks if it's been
+        // registered yet which it hasn't! We want to hide the plugin channels from the server since some servers
+        // (like Zero Minr) kick on detecting any plugin channels that aren't whitelisted, whereas no client mod will
+        // care what a server asks for.
+        // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant for the
+        // server to customise the client.
         if (!ClientPlayNetworking.canSend(HandshakePackets.SERVERBOUND_HANDSHAKE.id())) return;
 
         // Check if the connection has been established first, just in case
@@ -118,10 +121,14 @@ public class NoxesiumClientHandshaker {
                     try (var stream = encryptionKeyFile.openStream()) {
                         byte[] keyBytes = Base64.getDecoder().decode(stream.readAllBytes());
                         var keySpec = new SecretKeySpec(keyBytes, "AES");
+                        var iv = new IvParameterSpec(
+                                new byte[] {-76, 14, 22, -123, 63, 60, -50, 23, -118, 10, 105, -127, 85, 41, -97, 37});
                         var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-                        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-                        var encryptedId = Base64.getEncoder().encodeToString(cipher.doFinal(id.getBytes()));
-                        var encryptedSecret = Base64.getEncoder().encodeToString(cipher.doFinal(secret.getBytes()));
+                        cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
+                        var encryptedId =
+                                Base64.getEncoder().encodeToString(cipher.doFinal(id.getBytes(Charsets.UTF_8)));
+                        var encryptedSecret =
+                                Base64.getEncoder().encodeToString(cipher.doFinal(secret.getBytes(Charsets.UTF_8)));
                         ids.put(encryptedId, encryptedSecret);
                         return;
                     }
@@ -143,6 +150,7 @@ public class NoxesiumClientHandshaker {
      * Handles the server acknowledging the handshake packet.
      */
     private void handle(ClientboundHandshakeAcknowledgePacket packet) {
+        System.out.println("Received " + packet.entrypoints());
         var api = NoxesiumApi.getInstance();
         var fabricApi = NoxesiumNmsApi.getInstance();
         var entrypoints = new ArrayList<EntrypointProtocol>();
@@ -154,21 +162,29 @@ public class NoxesiumClientHandshaker {
             var entrypoint = api.getEntrypoint(id);
             if (entrypoint == null) continue;
 
-            // If the challenge result is invalid ignore this!
-            if (!Objects.equals(challenges.get(entrypoint), challengeResult)) continue;
+            // If the challenge result is invalid, log an error!
+            if (!Objects.equals(challenges.get(entrypoint), challengeResult)) {
+                NoxesiumApi.getLogger().error("Server responded with invalid decryption for entrypoint id {}", id);
+                continue;
+            }
 
             // Initialize this entrypoint and add it to the list
-            entrypoints.add(new EntrypointProtocol(
-                    entrypoint.getId(), entrypoint.getProtocolVersion(), entrypoint.getRawVersion()));
-            entrypoint.getAllFeatures().forEach(api::registerFeature);
-            entrypoint.getRegistryCollections().forEach(RegistryCollection::register);
-            if (entrypoint instanceof NmsNoxesiumEntrypoint fabricEntrypoint) {
-                fabricEntrypoint.getPacketCollections().forEach(fabricApi::registerPackets);
+            if (entrypoint instanceof ClientNoxesiumEntrypoint clientEntrypoint) {
+                entrypoints.add(new EntrypointProtocol(
+                        entrypoint.getId(), clientEntrypoint.getProtocolVersion(), clientEntrypoint.getRawVersion()));
+                entrypoint.getAllFeatures().forEach(api::registerFeature);
+                entrypoint.getRegistryCollections().forEach(RegistryCollection::register);
+                clientEntrypoint.getPacketCollections().forEach(fabricApi::registerPackets);
             }
         }
 
         // Inform the server about the handshake success
         NoxesiumServerboundNetworking.send(new ServerboundHandshakeAcknowledgePacket(entrypoints));
+        NoxesiumApi.getLogger()
+                .info(
+                        "Successfully authenticated {} out of {} entrypoints with joined server",
+                        entrypoints.size(),
+                        NoxesiumApi.getInstance().getAllEntrypoints().size());
     }
 
     /**
@@ -186,6 +202,7 @@ public class NoxesiumClientHandshaker {
     public void uninitialize() {
         if (state == HandshakeState.NONE) return;
         state = HandshakeState.NONE;
+        challenges.clear();
         HandshakePackets.INSTANCE.unregister();
         NoxesiumApi.getInstance().unregisterAll();
         NoxesiumNmsApi.getInstance().unregisterAll();

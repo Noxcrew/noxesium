@@ -28,16 +28,17 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     }
 
     /**
-     * Checks if the connected server should be receiving packets of the given type.
+     * Checks if the connected player can receive packets of the given type.
      *
      * @param type The packet type
-     * @return Whether the connected server should be receiving the packet
+     * @return Whether the connected player can receive the packet
      */
-    public abstract boolean canSend(@NotNull Player player, @NotNull NoxesiumPayloadType<?> type);
+    public abstract boolean canReceive(@NotNull Player player, @NotNull NoxesiumPayloadType<?> type);
 
     /**
      * Sends this packet to the currently connected server, if possible. Returns whether the packet
      * was successfully sent or not.
      */
-    public abstract <T extends NoxesiumPacket> boolean send(@NotNull Player player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
+    public abstract <T extends NoxesiumPacket> boolean send(
+            @NotNull Player player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
 }

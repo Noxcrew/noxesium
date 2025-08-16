@@ -10,7 +10,7 @@ public enum HandshakeState {
     NONE,
 
     /**
-     * The server has been asked to verify which entrypoints it
+     * The other side has been asked to verify which entrypoints it
      * understands and can handle.
      */
     AWAITING_RESPONSE,

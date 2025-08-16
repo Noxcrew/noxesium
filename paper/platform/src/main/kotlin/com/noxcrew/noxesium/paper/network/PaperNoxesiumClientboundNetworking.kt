@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import org.bukkit.craftbukkit.entity.CraftPlayer
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
@@ -49,7 +48,8 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
 
                     // Parse the text to the intended destination format
                     val connection = Via.getAPI().getConnection(target.uuid)
-                    Via.getManager()
+                    Via
+                        .getManager()
                         .protocolManager
                         .getProtocolPath(
                             Via.getAPI().getPlayerProtocolVersion(target.uuid),
@@ -69,8 +69,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
 
     override fun getItemStackStreamCodec(): StreamCodec<RegistryFriendlyByteBuf, ItemStack> =
         object : StreamCodec<RegistryFriendlyByteBuf, ItemStack> {
-            override fun decode(buffer: RegistryFriendlyByteBuf): ItemStack =
-                ItemStack.STREAM_CODEC.decode(buffer)
+            override fun decode(buffer: RegistryFriendlyByteBuf): ItemStack = ItemStack.STREAM_CODEC.decode(buffer)
 
             override fun encode(buffer: RegistryFriendlyByteBuf, itemStack: ItemStack) {
                 val target = currentTargetPlayer
@@ -89,7 +88,8 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
 
                     // Parse the item to the intended destination format
                     val connection = Via.getAPI().getConnection(target.uuid)
-                    Via.getManager()
+                    Via
+                        .getManager()
                         .protocolManager
                         .getProtocolPath(
                             Via.getAPI().getPlayerProtocolVersion(target.uuid),
@@ -117,10 +117,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         clientToServer: Boolean,
     ): NoxesiumPayloadType<T> = PaperNoxesiumPayloadType(ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clazz, clientToServer)
 
-    override fun canSend(
-        player: Player,
-        type: NoxesiumPayloadType<*>,
-    ): Boolean {
+    override fun canReceive(player: Player, type: NoxesiumPayloadType<*>,): Boolean {
         val serverPlayer = player as ServerPlayer
         if (serverPlayer.connection == null) return false
 
@@ -128,35 +125,32 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         return type.id().toString() in serverPlayer.bukkitEntity.listeningPluginChannels
     }
 
-    override fun <T : NoxesiumPacket> send(
-        player: Player,
-        type: NoxesiumPayloadType<T>,
-        payload: T,
-    ): Boolean {
+    override fun <T : NoxesiumPacket> send(player: Player, type: NoxesiumPayloadType<T>, payload: T,): Boolean {
         // Check if we're allowed to send it!
-        if (!canSend(player, type)) return false
+        if (!canReceive(player, type)) return false
 
         // Force serialization of the packet to happen right here so we can set the target player
         // for the stream codecs! Do not defer this to happen later in the netty thread.
         currentTargetPlayer = player
-        val packet = ClientboundCustomPayloadPacket(
-            DiscardedPayload(
-                type.id(),
-                // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-                RegistryFriendlyByteBuf(
-                    Unpooled.buffer(),
-                    player.registryAccess(),
-                ).also {
-                    // Use the stream codec of this payload type to encode it into the buffer
-                    type.codec.encode(it, payload)
-                }.let {
-                    // Copy only the used bytes otherwise we send lingering empty data which crashes clients
-                    val out = ByteArray(it.readableBytes())
-                    System.arraycopy(it.array(), 0, out, 0, it.readableBytes())
-                    out
-                },
-            ),
-        )
+        val packet =
+            ClientboundCustomPayloadPacket(
+                DiscardedPayload(
+                    type.id(),
+                    // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
+                    RegistryFriendlyByteBuf(
+                        Unpooled.buffer(),
+                        player.registryAccess(),
+                    ).also {
+                        // Use the stream codec of this payload type to encode it into the buffer
+                        type.codec.encode(it, payload)
+                    }.let {
+                        // Copy only the used bytes otherwise we send lingering empty data which crashes clients
+                        val out = ByteArray(it.readableBytes())
+                        System.arraycopy(it.array(), 0, out, 0, it.readableBytes())
+                        out
+                    },
+                ),
+            )
         currentTargetPlayer = null
         (player as? ServerPlayer)?.connection?.send(packet)
         return true

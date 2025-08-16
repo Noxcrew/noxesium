@@ -58,11 +58,15 @@ public class CommonGameComponentSerializers {
                 NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.REPORT_MOUSE_CLICKS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
 
-        register(NmsGameComponentTypes.HAND_ITEM_OVERRIDE, ItemStack.CODEC, NoxesiumNetworking.getInstance().getItemStackStreamCodec());
+        register(
+                NmsGameComponentTypes.HAND_ITEM_OVERRIDE,
+                ItemStack.CODEC,
+                NoxesiumNetworking.getInstance().getItemStackStreamCodec());
         register(
                 NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS,
                 Codec.list(ItemStack.OPTIONAL_CODEC),
-                ByteBufCodecs.collection(ArrayList::new, NoxesiumNetworking.getInstance().getItemStackStreamCodec()));
+                ByteBufCodecs.collection(
+                        ArrayList::new, NoxesiumNetworking.getInstance().getItemStackStreamCodec()));
     }
 
     /**

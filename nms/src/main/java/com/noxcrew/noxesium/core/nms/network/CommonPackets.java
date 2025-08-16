@@ -5,7 +5,6 @@ import static com.noxcrew.noxesium.api.nms.network.PacketCollection.server;
 
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.nms.network.PacketCollection;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
@@ -155,8 +154,7 @@ public class CommonPackets {
             "clientbound_open_link",
             ClientboundOpenLinkPacket.class,
             StreamCodec.composite(
-                    ByteBufCodecs.optional(
-                            NoxesiumNetworking.getInstance().getComponentStreamCodec()),
+                    ByteBufCodecs.optional(NoxesiumNetworking.getInstance().getComponentStreamCodec()),
                     ClientboundOpenLinkPacket::text,
                     ByteBufCodecs.STRING_UTF8,
                     ClientboundOpenLinkPacket::url,
