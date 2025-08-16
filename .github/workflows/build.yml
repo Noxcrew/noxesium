@@ -31,12 +31,6 @@ jobs:
             - name: Gradle Build
               run: ./gradlew build
 
-            - name: Clean Up NeoForge Artifacts
-              run: rm neoforge/build/libs/*-sources.jar
-
-            - name: Clean Up Fabric Artifacts
-              run: rm fabric/build/libs/*-sources.jar
-
             - name: Upload Artifacts
               uses: actions/upload-artifact@v4
               with:
@@ -52,7 +46,7 @@ jobs:
                   fi
 
             - name: Publish Snapshot
-              if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}"
+              if: "${{ env.STATUS != 'release' && github.event_name == 'push' }}"
               run: ./gradlew publish
               env:
                   NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
