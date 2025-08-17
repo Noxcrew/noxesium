@@ -14,11 +14,6 @@ import com.noxcrew.noxesium.api.network.serverbound.ServerboundRegistryUpdateRes
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.ServerNoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.EncryptionUtil;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import org.apache.commons.lang3.mutable.MutableInt;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Performs handshaking with the client-side to be run from the server-side.
@@ -81,9 +79,9 @@ public abstract class NoxesiumServerHandshaker {
     private void handleHandshake(@NotNull Player player, @NotNull ServerboundHandshakePacket packet) {
         if (handshakeStates.containsKey(player.getUUID())) {
             NoxesiumApi.getLogger()
-                .error(
-                    "Received registry contents while in '{}' state, destroying connection!",
-                    handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
+                    .error(
+                            "Received registry contents while in '{}' state, destroying connection!",
+                            handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
             destroy(player);
             return;
         }
@@ -95,9 +93,9 @@ public abstract class NoxesiumServerHandshaker {
         var encryptedIds = new HashMap<String, NoxesiumEntrypoint>();
         for (var entrypoint : NoxesiumApi.getInstance().getActiveEntrypoints()) {
             encryptedIds.put(
-                EncryptionUtil.encrypt(entrypoint.getEncryptionKey(), List.of(entrypoint.getId()))
-                    .getFirst(),
-                entrypoint);
+                    EncryptionUtil.encrypt(entrypoint.getEncryptionKey(), List.of(entrypoint.getId()))
+                            .getFirst(),
+                    entrypoint);
         }
 
         // Determine which entrypoints the server is aware of
@@ -106,7 +104,7 @@ public abstract class NoxesiumServerHandshaker {
             var entrypoint = encryptedIds.get(entry.getKey());
             if (entrypoint == null) continue;
             entrypoints.put(
-                entrypoint.getId(), EncryptionUtil.decrypt(entrypoint.getEncryptionKey(), entry.getValue()));
+                    entrypoint.getId(), EncryptionUtil.decrypt(entrypoint.getEncryptionKey(), entry.getValue()));
         }
 
         // If no entrypoints are supported by the server then we silently ignore this player. They may just not
@@ -119,7 +117,7 @@ public abstract class NoxesiumServerHandshaker {
         // Determine the response based on the current state
         var acknowledgePacket = new ClientboundHandshakeAcknowledgePacket(entrypoints);
         if (NoxesiumClientboundNetworking.getInstance()
-            .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE)) {
+                .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             NoxesiumClientboundNetworking.send(player, acknowledgePacket);
@@ -136,12 +134,12 @@ public abstract class NoxesiumServerHandshaker {
      * Handle a successful handshake acknowledgement, register all packets, and call events.
      */
     private void handleHandshakeAcknowledge(
-        @NotNull ServerPlayer player, @NotNull ServerboundHandshakeAcknowledgePacket packet) {
+            @NotNull ServerPlayer player, @NotNull ServerboundHandshakeAcknowledgePacket packet) {
         if (!Objects.equals(handshakeStates.get(player.getUUID()), HandshakeState.AWAITING_RESPONSE)) {
             NoxesiumApi.getLogger()
-                .error(
-                    "Received registry contents while in '{}' state, destroying connection!",
-                    handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
+                    .error(
+                            "Received registry contents while in '{}' state, destroying connection!",
+                            handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
             destroy(player);
             return;
         }
@@ -161,11 +159,10 @@ public abstract class NoxesiumServerHandshaker {
             if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
                 var id = registryUpdateIdentifier.getAndIncrement();
                 noxesiumPlayer.awaitRegistrySync(id);
-                NoxesiumClientboundNetworking.send(player, new ClientboundRegistryUpdatePacket(
-                    id,
-                    serverRegistry.id(),
-                    serverRegistry.determineSyncableContents(entrypoints)
-                ));
+                NoxesiumClientboundNetworking.send(
+                        player,
+                        new ClientboundRegistryUpdatePacket(
+                                id, serverRegistry.id(), serverRegistry.determineSyncableContents(entrypoints)));
             }
         }
 
@@ -181,9 +178,9 @@ public abstract class NoxesiumServerHandshaker {
     private void onRegistryUpdateResult(@NotNull Player player, @NotNull ServerboundRegistryUpdateResultPacket packet) {
         if (!Objects.equals(handshakeStates.get(player.getUUID()), HandshakeState.AWAITING_REGISTRIES)) {
             NoxesiumApi.getLogger()
-                .error(
-                    "Received registry update result while in '{}' state, destroying connection!",
-                    handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
+                    .error(
+                            "Received registry update result while in '{}' state, destroying connection!",
+                            handshakeStates.getOrDefault(player.getUUID(), HandshakeState.NONE));
             destroy(player);
             return;
         }
@@ -191,7 +188,7 @@ public abstract class NoxesiumServerHandshaker {
         var noxesiumPlayer = NoxesiumPlayerManager.getInstance().getPlayer(player.getUUID());
         if (noxesiumPlayer == null) {
             NoxesiumApi.getLogger()
-                .error("No player registered when receiving registry update result, destroying connection!");
+                    .error("No player registered when receiving registry update result, destroying connection!");
             destroy(player);
             return;
         }
@@ -203,9 +200,7 @@ public abstract class NoxesiumServerHandshaker {
             }
         } else {
             NoxesiumApi.getLogger()
-                .error(
-                    "Received invalid registry result update for id {}, destroying connection!",
-                    packet.id());
+                    .error("Received invalid registry result update for id {}, destroying connection!", packet.id());
             destroy(player);
         }
     }
@@ -224,9 +219,9 @@ public abstract class NoxesiumServerHandshaker {
     protected boolean completeHandshake(@NotNull NoxesiumServerPlayer noxesiumPlayer) {
         if (!Objects.equals(handshakeStates.get(noxesiumPlayer.getUniqueId()), HandshakeState.AWAITING_REGISTRIES)) {
             NoxesiumApi.getLogger()
-                .error(
-                    "Tried to complete handshake while in '{}' state, destroying connection!",
-                    handshakeStates.getOrDefault(noxesiumPlayer.getUniqueId(), HandshakeState.NONE));
+                    .error(
+                            "Tried to complete handshake while in '{}' state, destroying connection!",
+                            handshakeStates.getOrDefault(noxesiumPlayer.getUniqueId(), HandshakeState.NONE));
             destroy(noxesiumPlayer.getNmsPlayer());
             return false;
         }
@@ -234,7 +229,11 @@ public abstract class NoxesiumServerHandshaker {
         // Move to the last handshake state and send the client a completion message
         handshakeStates.put(noxesiumPlayer.getUniqueId(), HandshakeState.COMPLETE);
         NoxesiumClientboundNetworking.send(noxesiumPlayer.getNmsPlayer(), new ClientboundHandshakeCompletePacket());
-        NoxesiumApi.getLogger().info("Completed Noxesium handshake for player '{}' with {} entrypoints", noxesiumPlayer.getNmsPlayer().getGameProfile().getName(), noxesiumPlayer.getSupportedEntrypoints().size());
+        NoxesiumApi.getLogger()
+                .info(
+                        "Completed Noxesium handshake for player '{}' with {} entrypoints",
+                        noxesiumPlayer.getNmsPlayer().getGameProfile().getName(),
+                        noxesiumPlayer.getSupportedEntrypoints().size());
         return true;
     }
 
@@ -254,7 +253,7 @@ public abstract class NoxesiumServerHandshaker {
      */
     public void onChannelRegistered(@NotNull ServerPlayer player, @NotNull String channel) {
         if (channel.equals(
-            HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.id().toString())) {
+                HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.id().toString())) {
             // Delay by a tick so the other handshake channels are also registered!
             runDelayed(() -> {
                 if (player.hasDisconnected()) return;

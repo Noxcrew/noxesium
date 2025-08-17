@@ -28,7 +28,8 @@ public class NoxesiumRegistries {
     /**
      * Defines custom entity components that can be read from any entity's NBT data.
      */
-    public static NoxesiumRegistry<NoxesiumComponentType<?>> ENTITY_COMPONENTS = createRegistry("entity_components", true);
+    public static NoxesiumRegistry<NoxesiumComponentType<?>> ENTITY_COMPONENTS =
+            createRegistry("entity_components", true);
 
     /**
      * Defines custom item components that can be read from any item's NBT data.

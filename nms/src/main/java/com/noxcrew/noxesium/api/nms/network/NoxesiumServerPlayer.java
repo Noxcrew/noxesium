@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

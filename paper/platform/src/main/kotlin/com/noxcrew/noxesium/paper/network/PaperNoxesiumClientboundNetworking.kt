@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import kotlin.jvm.optionals.getOrNull
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
@@ -132,7 +131,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         // This avoids situations where the client somehow has the correct channel without authenticating
         // properly with that endpoint.
         // If there is no entrypoint (or null which is for handshake packets) we always allow it!
-        val entrypoint = entrypoints[type]?.getOrNull() ?: return true
+        val entrypoint = entrypoints[type] ?: return true
         val playerData = NoxesiumPlayerManager.getInstance().getPlayer(player.uuid) ?: return false
         return entrypoint.id in playerData.supportedEntrypointIds
     }
