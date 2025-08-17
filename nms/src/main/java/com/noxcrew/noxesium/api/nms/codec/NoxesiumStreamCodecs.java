@@ -7,7 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
-import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;

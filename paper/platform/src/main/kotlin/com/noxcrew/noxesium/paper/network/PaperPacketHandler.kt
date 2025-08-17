@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium.paper.network
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
-import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType
+import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import io.netty.buffer.Unpooled
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -22,7 +23,8 @@ public data class PaperPacketHandler<T : NoxesiumPacket>(private val payloadType
             // Decode the message and let handlers handle it
             val craftPlayer = player as CraftPlayer
             val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(message), craftPlayer.handle.registryAccess())
-            payloadType.handle(craftPlayer.handle, payloadType.codec.decode(buffer))
+            val codec = PacketSerializerRegistry.getSerializers(payloadType) ?: return
+            payloadType.handle(player.uniqueId, codec.decode(buffer))
         } catch (x: Exception) {
             NoxesiumPaper.plugin.logger.log(Level.WARNING, "Failed to decode plugin message on channel '$channel' for ${player.name}", x)
         }

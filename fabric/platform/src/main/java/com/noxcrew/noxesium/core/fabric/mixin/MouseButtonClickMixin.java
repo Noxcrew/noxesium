@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin;
 
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;

@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.paper.api.event
 
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerPlayer
+import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.player.PlayerEvent

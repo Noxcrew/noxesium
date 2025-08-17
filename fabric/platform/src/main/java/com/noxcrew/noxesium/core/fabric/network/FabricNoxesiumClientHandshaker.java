@@ -1,12 +1,13 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
-import com.noxcrew.noxesium.api.nms.network.HandshakePackets;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumClientHandshaker;
+import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
+import com.noxcrew.noxesium.api.network.handshake.NoxesiumClientHandshaker;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Manages initialization of the Noxesium handshake protocol.
@@ -53,7 +54,8 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         // care what a server asks for.
         // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant for the
         // server to customise the client.
-        if (!ClientPlayNetworking.canSend(HandshakePackets.SERVERBOUND_HANDSHAKE.id())) return;
+        if (!ClientPlayNetworking.canSend(ResourceLocation.parse(
+                HandshakePackets.SERVERBOUND_HANDSHAKE.id().asString()))) return;
 
         super.initialize();
     }

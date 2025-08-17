@@ -1,11 +1,10 @@
 package com.noxcrew.noxesium.api.component;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-
-import com.noxcrew.noxesium.api.NoxesiumApi;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**

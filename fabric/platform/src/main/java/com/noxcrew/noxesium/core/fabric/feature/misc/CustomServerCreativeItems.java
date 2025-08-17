@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.feature.misc;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.registry.GameComponents;
-import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
+import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes;
 import java.util.List;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;

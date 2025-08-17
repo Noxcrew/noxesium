@@ -1,17 +1,17 @@
 package com.noxcrew.noxesium.paper
 
 import com.noxcrew.noxesium.api.NoxesiumApi
-import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint
-import com.noxcrew.noxesium.api.nms.NoxesiumNmsApi
-import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking
-import com.noxcrew.noxesium.api.nms.network.NoxesiumPlayerManager
-import com.noxcrew.noxesium.paper.commands.NoxesiumListCommand
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint
+import com.noxcrew.noxesium.api.network.NoxesiumNetworking
+import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
+import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
+import com.noxcrew.noxesium.core.util.NoxesiumListCommand
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
-import net.minecraft.server.level.ServerPlayer
-import org.bukkit.craftbukkit.entity.CraftPlayer
-import org.bukkit.entity.Player
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -29,11 +29,12 @@ public class NoxesiumPaper : JavaPlugin() {
         public fun setup(
             plugin: Plugin,
             playerManager: NoxesiumPlayerManager = NoxesiumPlayerManager(),
-            extraEntrypoints: List<NmsNoxesiumEntrypoint> = emptyList(),
+            extraEntrypoints: List<NoxesiumEntrypoint> = emptyList(),
         ) {
             // Set important instances
             NoxesiumPaper.plugin = plugin
             NoxesiumPlayerManager.setInstance(playerManager)
+            NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
 
             // Process all entry points
@@ -41,16 +42,6 @@ public class NoxesiumPaper : JavaPlugin() {
             val api = NoxesiumApi.getInstance()
             api.registerAndActivateEntrypoint(CommonPaperNoxesiumEntrypoint())
             extraEntrypoints.forEach { api.registerAndActivateEntrypoint(it) }
-
-            // Register all packet collections, implementations can do their own packet handling
-            // injection or forking of the server-side code to hide packets from entrypoints not
-            // known to a player from them.
-            val nmsApi = NoxesiumNmsApi.getInstance()
-            api.activeEntrypoints
-                .filterIsInstance<NmsNoxesiumEntrypoint>()
-                .forEach { entrypoint ->
-                    entrypoint.packetCollections.forEach { collection -> nmsApi.registerPackets(entrypoint, collection) }
-                }
             logger.info("Loaded ${api.activeEntrypoints.size} Noxesium entrypoints")
 
             // Register the handshaking manager
@@ -60,10 +51,24 @@ public class NoxesiumPaper : JavaPlugin() {
 
     override fun onEnable() {
         setup(this)
-        getCommand("noxlist")?.setExecutor(NoxesiumListCommand())
+
+        // Register /noxlist to show a list of all versions used by Noxesium users, add an extra
+        // line at the bottom showing all online players which are not included in the Noxesium
+        // list so you can easily see who is not using it.
+        getCommand("noxlist")?.setExecutor { sender, command, label, args ->
+            val listedPlayers = NoxesiumListCommand.sendUserList(sender)
+            val unlistedPlayers = Bukkit.getOnlinePlayers().filter { it.uniqueId !in listedPlayers }
+            if (unlistedPlayers.isNotEmpty()) {
+                sender.sendMessage(
+                    NoxesiumListCommand.formatLine(
+                        text("None", NamedTextColor.YELLOW),
+                        unlistedPlayers.map {
+                            NoxesiumListCommand.PlayerInfo(it.uniqueId, it.displayName(), null, emptyList())
+                        },
+                    ),
+                )
+            }
+            true
+        }
     }
 }
-
-/** Returns the NMS player instance from a Bukkit player. */
-internal val Player.nms: ServerPlayer
-    get() = (this as CraftPlayer).handle

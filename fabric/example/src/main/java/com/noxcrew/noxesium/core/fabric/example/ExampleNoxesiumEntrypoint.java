@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.example;
 
-import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import java.net.URL;
 import java.util.Collection;

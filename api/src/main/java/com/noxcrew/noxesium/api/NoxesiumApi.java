@@ -3,14 +3,17 @@ package com.noxcrew.noxesium.api;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
+import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,6 +28,7 @@ public class NoxesiumApi {
 
     private final Map<Class<? extends NoxesiumFeature>, NoxesiumFeature> features = new HashMap<>();
     private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
+    private final Set<PacketCollection> packets = new HashSet<>();
     private final List<NoxesiumEntrypoint> activeEntrypoints = new ArrayList<>();
     private NoxesiumSide side = NoxesiumSide.SERVER;
 
@@ -63,6 +67,7 @@ public class NoxesiumApi {
         var entrypoint = entrypoints.get(protocol.id());
         if (entrypoint == null) return;
         entrypoint.getRegistryCollections().forEach(it -> it.register(entrypoint));
+        entrypoint.getPacketCollections().forEach(it -> registerPackets(entrypoint, it));
         activeEntrypoints.add(entrypoint);
     }
 
@@ -80,6 +85,7 @@ public class NoxesiumApi {
     public void registerAndActivateEntrypoint(NoxesiumEntrypoint entrypoint) {
         registerEntrypoint(entrypoint);
         entrypoint.getRegistryCollections().forEach(it -> it.register(entrypoint));
+        entrypoint.getPacketCollections().forEach(it -> registerPackets(entrypoint, it));
         entrypoint.getAllFeatures().forEach(this::registerFeature);
         activeEntrypoints.add(entrypoint);
     }
@@ -97,12 +103,23 @@ public class NoxesiumApi {
     }
 
     /**
+     * Registers a new collection of packets.
+     * Usually called by the initializer.
+     */
+    public void registerPackets(NoxesiumEntrypoint entrypoint, PacketCollection collection) {
+        packets.add(collection);
+        collection.register(entrypoint);
+    }
+
+    /**
      * Unregisters all features collections.
      */
     public void unregisterAll() {
         activeEntrypoints.clear();
         features.values().forEach(NoxesiumFeature::unregister);
         features.clear();
+        packets.forEach(PacketCollection::unregister);
+        packets.clear();
         NoxesiumRegistries.REGISTRIES.forEach(NoxesiumRegistry::reset);
     }
 

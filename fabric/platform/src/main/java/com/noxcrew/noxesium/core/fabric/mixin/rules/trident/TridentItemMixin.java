@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.trident;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;

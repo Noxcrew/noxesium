@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.paper.api
 
-import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.core.client.setting.ClientSettings
 import com.noxcrew.noxesium.paper.NoxesiumFeature
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
@@ -157,7 +156,7 @@ public open class NoxesiumManager(
         saveProtocol(player, version, protocolVersion)
 
         // Inform the player about which version is being used
-        sendPacket(player, ClientboundServerInformationPacket(NoxesiumReferences.VERSION))
+        sendPacket(player, ClientboundServerInformationPacket(18))
 
         // Trigger a hook to use for implementations, this may be used
         // to set default values for the rules

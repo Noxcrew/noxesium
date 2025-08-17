@@ -1,0 +1,27 @@
+package com.noxcrew.noxesium.api.network.handshake;
+
+/**
+ * The different states of handshaking.
+ */
+public enum HandshakeState {
+    /**
+     * No handshake has occurred.
+     */
+    NONE,
+
+    /**
+     * The other side has been asked to verify which entrypoints it
+     * understands and can handle.
+     */
+    AWAITING_RESPONSE,
+
+    /**
+     * The client is waiting to receive all registries.
+     */
+    AWAITING_REGISTRIES,
+
+    /**
+     * The handshake has been completed.
+     */
+    COMPLETE,
+}

@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.api.registry.GameComponents;
-import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
+import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

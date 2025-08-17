@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.misc;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import net.minecraft.client.Minecraft;

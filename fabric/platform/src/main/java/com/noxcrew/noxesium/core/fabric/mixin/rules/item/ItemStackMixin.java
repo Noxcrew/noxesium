@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.item;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.component.CachedComponentData;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.qib.QibEffect;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;

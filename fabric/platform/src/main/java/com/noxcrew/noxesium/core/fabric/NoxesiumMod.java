@@ -1,9 +1,10 @@
 package com.noxcrew.noxesium.core.fabric;
 
+import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumSide;
-import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
+import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
@@ -62,6 +63,7 @@ public class NoxesiumMod implements ClientModInitializer {
         instance = this;
         config = NoxesiumConfig.load();
         NoxesiumApi.getInstance().setSide(NoxesiumSide.CLIENT);
+        NoxesiumPlatform.setInstance(new FabricPlatform());
         NoxesiumNetworking.setInstance(new FabricNoxesiumServerboundNetworking());
     }
 

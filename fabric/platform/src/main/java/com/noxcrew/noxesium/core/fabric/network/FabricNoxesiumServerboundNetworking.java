@@ -1,23 +1,19 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
-import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayload;
-import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
-import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
+import net.kyori.adventure.key.Key;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,34 +21,19 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetworking {
     @Override
-    public StreamCodec<RegistryFriendlyByteBuf, net.kyori.adventure.text.Component> getComponentStreamCodec() {
-        return ComponentSerialization.STREAM_CODEC.map(
-                NonWrappingComponentSerializer.INSTANCE::deserialize,
-                NonWrappingComponentSerializer.INSTANCE::serialize);
-    }
-
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, ItemStack> getItemStackStreamCodec() {
-        return ItemStack.OPTIONAL_STREAM_CODEC;
-    }
-
-    @Override
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace,
-            @NotNull String id,
-            StreamCodec<RegistryFriendlyByteBuf, T> codec,
-            Class<T> clazz,
-            boolean clientToServer) {
-        return new FabricNoxesiumPayloadType<>(
-                ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clazz, clientToServer);
+            @NotNull String namespace, @NotNull String id, Class<T> clazz, boolean clientToServer) {
+        return new FabricPayloadType<>(Key.key(namespace, id), clazz, clientToServer);
     }
 
     @Override
     public boolean canSend(NoxesiumPayloadType<?> type) {
         // Check if the server is willing to receive this packet and if we have registered this packet
         // on the client in the C2S registry! (the entrypoint is active)
-        return ClientPlayNetworking.canSend(type.id())
-                && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S()).get(type.id())
+        var resourceLocation = ResourceLocation.parse(type.id().asString());
+        return ClientPlayNetworking.canSend(resourceLocation)
+                && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
+                                .get(resourceLocation)
                         != null;
     }
 
@@ -79,7 +60,12 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
                                                         .withColor(ChatFormatting.WHITE))),
                                 false);
             }
-            ClientPlayNetworking.send(new NoxesiumPayload<>(type, payload));
+            if (type instanceof FabricPayloadType) {
+                ClientPlayNetworking.send(new NoxesiumPayload<>((FabricPayloadType<? super T>) type, payload));
+            } else {
+                throw new UnsupportedOperationException("Attempted to send payload of type '" + type.getClass()
+                        + "' with Noxesium, which requires FabricPayloadType objects!");
+            }
             return true;
         }
         return false;
