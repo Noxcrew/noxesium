@@ -6,7 +6,9 @@ import com.noxcrew.noxesium.core.util.SkullStringFormatter
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.JoinConfiguration
+import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -60,23 +62,52 @@ public class NoxesiumListCommand : CommandExecutor {
                             val info = playerInfos[index]
                             val last = index == playerInfos.size - 1
 
-                            add(
-                                Component.translatable(
-                                    SkullStringFormatter.write(
-                                        SkullStringFormatter.SkullInfo(
-                                            false,
-                                            info.player.uniqueId.toString(),
-                                            false,
-                                            0,
-                                            0,
-                                            1f,
+                            // Show other entrypoints in the hover tooltip
+                            val hoverText =
+                                if (info.otherEntrypoints.isEmpty()) {
+                                    null
+                                } else {
+                                    HoverEvent.showText(
+                                        Component.join(
+                                            JoinConfiguration.newlines(),
+                                            buildList {
+                                                add(text("Other entrypoints:", NamedTextColor.GOLD).decorate(TextDecoration.BOLD))
+                                                addAll(
+                                                    info.otherEntrypoints.map { protocol ->
+                                                        text(
+                                                            " - ${protocol.id}: ${protocol.rawVersion} (${protocol.protocolVersion})",
+                                                            NamedTextColor.GRAY,
+                                                        )
+                                                    },
+                                                )
+                                            },
                                         ),
-                                    ),
-                                    // Show as empty for non-Noxesium clients
-                                    "",
-                                ),
+                                    )
+                                }
+
+                            add(
+                                Component
+                                    .translatable(
+                                        SkullStringFormatter.write(
+                                            SkullStringFormatter.SkullInfo(
+                                                false,
+                                                info.player.uniqueId.toString(),
+                                                false,
+                                                0,
+                                                0,
+                                                1f,
+                                            ),
+                                        ),
+                                        // Show as empty for non-Noxesium clients
+                                        "",
+                                    ).hoverEvent(hoverText),
                             )
-                            add(info.player.displayName().color(NamedTextColor.AQUA))
+                            add(
+                                info.player
+                                    .displayName()
+                                    .color(NamedTextColor.AQUA)
+                                    .hoverEvent(hoverText)
+                            )
                             if (!last) {
                                 add(text(", ", NamedTextColor.AQUA))
                             }

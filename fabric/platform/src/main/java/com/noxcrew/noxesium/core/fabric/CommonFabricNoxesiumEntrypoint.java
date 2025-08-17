@@ -52,7 +52,7 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
     @Override
     public int getProtocolVersion() {
-        return 100;
+        return 19;
     }
 
     @Override
