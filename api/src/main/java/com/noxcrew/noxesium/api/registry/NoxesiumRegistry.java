@@ -39,6 +39,13 @@ public class NoxesiumRegistry<T> {
     }
 
     /**
+     * Returns the size of this registry.
+     */
+    public int size() {
+        return byKey.size();
+    }
+
+    /**
      * Returns whether the registry is empty.
      */
     public boolean isEmpty() {

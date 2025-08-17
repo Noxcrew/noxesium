@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
 import com.noxcrew.noxesium.core.client.setting.MapLocation;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -10,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
 
 /**
  * Stores Noxesium's configured values.
@@ -37,7 +37,7 @@ public class NoxesiumConfig {
      * Returns whether to render maps in the UI.
      */
     public boolean shouldRenderMapsInUi() {
-        var showMapUi = Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.SHOW_MAP_IN_UI);
+        var showMapUi = GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.SHOW_MAP_IN_UI);
         if (Objects.equals(showMapUi, false)) {
             // If the server has disabled the map, never show it!
             return false;

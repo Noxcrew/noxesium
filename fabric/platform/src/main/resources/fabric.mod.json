@@ -30,9 +30,6 @@
   "accessWidener": "noxesium.accesswidener",
   "custom": {
     "loom:injected_interfaces": {
-      "net/minecraft/client/Minecraft": [
-        "com/noxcrew/noxesium/api/component/RemoteNoxesiumComponentHolder"
-      ],
       "net/minecraft/world/entity/Entity": [
         "com/noxcrew/noxesium/api/component/RemoteNoxesiumComponentHolder"
       ],

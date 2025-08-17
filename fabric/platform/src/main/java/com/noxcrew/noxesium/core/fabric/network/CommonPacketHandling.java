@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.EntityNoxesiumSoundInstance;
@@ -29,7 +30,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
     public CommonPacketHandling() {
         CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS.addListener(this, (reference, packet, player) -> {
             if (!isRegistered()) return;
-            reference.applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, Minecraft.getInstance());
+            reference.applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, GameComponents.getInstance());
         });
         CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS.addListener(this, (reference, packet, player) -> {
             if (!isRegistered()) return;

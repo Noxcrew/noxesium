@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.paper.network
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType
+import com.noxcrew.noxesium.core.nms.network.NoxesiumPlayerManager
 import com.viaversion.viaversion.api.Via
 import com.viaversion.viaversion.api.type.Types
 import io.netty.buffer.Unpooled
@@ -17,6 +18,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
@@ -117,20 +119,30 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         clientToServer: Boolean,
     ): NoxesiumPayloadType<T> = PaperNoxesiumPayloadType(ResourceLocation.fromNamespaceAndPath(namespace, id), codec, clazz, clientToServer)
 
-    override fun canReceive(player: Player, type: NoxesiumPayloadType<*>,): Boolean {
+    override fun canReceive(player: Player, type: NoxesiumPayloadType<*>): Boolean {
         val serverPlayer = player as ServerPlayer
         if (serverPlayer.connection == null) return false
 
-        // TODO Check if this client has the required entry points!
-        return type.id().toString() in serverPlayer.bukkitEntity.listeningPluginChannels
+        // Prevent sending if the client does not know of this channel!
+        if (type.id().toString() !in serverPlayer.bukkitEntity.listeningPluginChannels) return false
+
+        // Prevent sending if the entrypoint that registered this packet is not known to this player!
+        // This avoids situations where the client somehow has the correct channel without authenticating
+        // properly with that endpoint.
+        // If there is no entrypoint (or null which is for handshake packets) we always allow it!
+        val entrypoint = entrypoints[type]?.getOrNull() ?: return true
+        val playerData = NoxesiumPlayerManager.getInstance().getPlayer(player.uuid) ?: return false
+        return entrypoint.id in playerData.supportedEntrypointIds
     }
 
-    override fun <T : NoxesiumPacket> send(player: Player, type: NoxesiumPayloadType<T>, payload: T,): Boolean {
+    override fun <T : NoxesiumPacket> send(player: Player, type: NoxesiumPayloadType<T>, payload: T): Boolean {
         // Check if we're allowed to send it!
         if (!canReceive(player, type)) return false
 
         // Force serialization of the packet to happen right here so we can set the target player
-        // for the stream codecs! Do not defer this to happen later in the netty thread.
+        // for the stream codecs! Do not defer this to happen later in the netty thread. We do this just so
+        // we can apply the ViaVersion codecs defined above, serializing on a separate thread is fine
+        // for any other implementations that do not need such a technique.
         currentTargetPlayer = player
         val packet =
             ClientboundCustomPayloadPacket(

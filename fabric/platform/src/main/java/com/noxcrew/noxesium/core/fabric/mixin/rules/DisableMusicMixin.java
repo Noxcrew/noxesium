@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.MusicManager;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ public abstract class DisableMusicMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(CallbackInfo ci) {
         // Prevent vanilla music from ticking and starting to play whenever custom music is running
-        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_VANILLA_MUSIC)) {
+        if (GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_VANILLA_MUSIC)) {
             ci.cancel();
 
             // Disable any currently playing music if the setting just got enabled!

@@ -7,11 +7,11 @@ import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -81,6 +81,6 @@ public class CommonGameComponentSerializers {
                 component,
                 codec,
                 streamCodec,
-                new NoxesiumComponentListener<T, Minecraft>());
+                new NoxesiumComponentListener<T, GameComponents>());
     }
 }

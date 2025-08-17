@@ -2,9 +2,9 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.util.InventoryHelper;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public abstract class GuiRulesMixin {
             constant = @Constant(intValue = 59))
     public int raiseHeldItemHeight(int constant) {
         return constant
-                + Minecraft.getInstance()
+                + GameComponents.getInstance()
                         .noxesium$getComponentOr(CommonGameComponentTypes.HELD_ITEM_NAME_OFFSET, () -> 0);
     }
 

@@ -1,22 +1,23 @@
 package com.noxcrew.noxesium.api.nms.network;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sets up the Noxesium networking system.
  */
 public abstract class NoxesiumNetworking {
     protected static NoxesiumNetworking instance;
-    private final Map<Class<?>, NoxesiumPayloadType<?>> packetTypes = new HashMap<>();
 
     /**
      * Returns the singleton instance of this class.
@@ -34,6 +35,8 @@ public abstract class NoxesiumNetworking {
         NoxesiumNetworking.instance = instance;
     }
 
+    private final Map<Class<?>, NoxesiumPayloadType<?>> packetTypes = new ConcurrentHashMap<>();
+
     /**
      * Returns all packet types.
      */
@@ -44,7 +47,7 @@ public abstract class NoxesiumNetworking {
     /**
      * Registers a new payload type.
      */
-    public void register(NoxesiumPayloadType<?> payloadType) {
+    public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
         var clazz = payloadType.typeClass();
         Preconditions.checkState(!packetTypes.containsKey(clazz), "Cannot register payload type '" + clazz + "' twice");
         packetTypes.put(clazz, payloadType);

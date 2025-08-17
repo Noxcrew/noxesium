@@ -1,18 +1,25 @@
-package com.noxcrew.noxesium.core.fabric.mixin.rules.server;
+package com.noxcrew.noxesium.api.registry;
 
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(Minecraft.class)
-public class MinecraftComponentMixin implements RemoteNoxesiumComponentHolder {
-    @Unique
+/**
+ * Holds the general game component receiver for clients.
+ * Placed on a shared object so it does not cause compilation issues on the server side.
+ */
+public class GameComponents implements RemoteNoxesiumComponentHolder {
+    private static final GameComponents INSTANCE = new GameComponents();
     private Map<NoxesiumComponentType<?>, Object> noxesium$components = null;
+
+    /**
+     * Returns the main instance of this object.
+     */
+    public static GameComponents getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public void noxesium$reloadComponents() {

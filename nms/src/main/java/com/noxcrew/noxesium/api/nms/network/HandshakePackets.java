@@ -4,8 +4,11 @@ import static com.noxcrew.noxesium.api.nms.network.PacketCollection.client;
 import static com.noxcrew.noxesium.api.nms.network.PacketCollection.server;
 
 import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeCancelPacket;
+import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeCompletePacket;
 import com.noxcrew.noxesium.api.network.clientbound.ClientboundRegistryIdentifiersPacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakePacket;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
@@ -38,6 +41,12 @@ public class HandshakePackets {
                             ServerboundHandshakeAcknowledgePacket::protocols,
                             ServerboundHandshakeAcknowledgePacket::new));
 
+    public static final NoxesiumPayloadType<ServerboundHandshakeCancelPacket> SERVERBOUND_HANDSHAKE_CANCEL = client(
+            INSTANCE,
+            "serverbound_handshake_cancel",
+            ServerboundHandshakeCancelPacket.class,
+            StreamCodec.unit(new ServerboundHandshakeCancelPacket()));
+
     public static final NoxesiumPayloadType<ClientboundHandshakeAcknowledgePacket> CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE =
             client(
                     INSTANCE,
@@ -58,4 +67,16 @@ public class HandshakePackets {
                     ByteBufCodecs.map(HashMap::new, ByteBufCodecs.VAR_INT, NoxesiumStreamCodecs.KEY),
                     ClientboundRegistryIdentifiersPacket::ids,
                     ClientboundRegistryIdentifiersPacket::new));
+
+    public static final NoxesiumPayloadType<ClientboundHandshakeCompletePacket> CLIENTBOUND_HANDSHAKE_COMPLETE = client(
+            INSTANCE,
+            "clientbound_handshake_complete",
+            ClientboundHandshakeCompletePacket.class,
+            StreamCodec.unit(new ClientboundHandshakeCompletePacket()));
+
+    public static final NoxesiumPayloadType<ClientboundHandshakeCancelPacket> CLIENTBOUND_HANDSHAKE_CANCEL = client(
+            INSTANCE,
+            "clientbound_handshake_cancel",
+            ClientboundHandshakeCancelPacket.class,
+            StreamCodec.unit(new ClientboundHandshakeCancelPacket()));
 }

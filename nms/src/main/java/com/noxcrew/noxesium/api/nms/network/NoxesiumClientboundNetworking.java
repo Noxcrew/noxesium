@@ -1,10 +1,15 @@
 package com.noxcrew.noxesium.api.nms.network;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sets up the Noxesium networking system in the clientbound direction.
@@ -25,6 +30,16 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
         var type = getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;
         return type.sendClientboundAny(player, packet);
+    }
+
+    protected final Map<NoxesiumPayloadType<?>, Optional<NoxesiumEntrypoint>> entrypoints = new ConcurrentHashMap<>();
+
+    @Override
+    public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
+        super.register(payloadType, entrypoint);
+        Preconditions.checkState(
+                !entrypoints.containsKey(payloadType), "Cannot register payload type '" + payloadType + "' twice");
+        entrypoints.put(payloadType, Optional.ofNullable(entrypoint));
     }
 
     /**

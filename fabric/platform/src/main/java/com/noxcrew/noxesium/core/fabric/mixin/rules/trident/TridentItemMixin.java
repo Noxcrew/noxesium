@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
@@ -31,8 +32,8 @@ public abstract class TridentItemMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean isInWaterOrRain(Player player, Operation<Boolean> original) {
         if (original.call(player)) return true;
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT))
-            return false;
+        if (!GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return false;
         if (player != Minecraft.getInstance().player) return false;
 
         // Only for the local player do we check if they have coyote time currently!
@@ -44,7 +45,8 @@ public abstract class TridentItemMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean canStartChargingTrident(Player player, Operation<Boolean> original) {
         // If pre-charging is allowed we always allow you to start charging it.
-        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING)) return true;
+        if (GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING))
+            return true;
         return original.call(player);
     }
 
@@ -69,7 +71,7 @@ public abstract class TridentItemMixin {
             @Local(argsOnly = true) LivingEntity livingEntity,
             @Local(argsOnly = true) int i) {
         var player = Minecraft.getInstance().player;
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)
                 || entity != player
                 || player == null) {
             original.call(instance, ignored, entity, soundEvent, soundSource, volume, pitch);

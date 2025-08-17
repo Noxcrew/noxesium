@@ -1,8 +1,7 @@
 package com.noxcrew.noxesium.api.nms;
 
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.network.PacketCollection;
-import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
-import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,9 +27,9 @@ public class NoxesiumNmsApi {
      * Registers a new collection of packets.
      * Usually called by the initializer.
      */
-    public void registerPackets(PacketCollection collection) {
+    public void registerPackets(NoxesiumEntrypoint entrypoint, PacketCollection collection) {
         packets.add(collection);
-        collection.register();
+        collection.register(entrypoint);
     }
 
     /**
@@ -39,6 +38,5 @@ public class NoxesiumNmsApi {
     public void unregisterAll() {
         packets.forEach(PacketCollection::unregister);
         packets.clear();
-        NoxesiumRegistries.REGISTRIES.forEach(NoxesiumRegistry::reset);
     }
 }

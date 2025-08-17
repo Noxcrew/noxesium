@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.api.client.DebugOption;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumSettingsScreen;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.ChatFormatting;
@@ -70,7 +71,7 @@ public abstract class CustomDebugHotkeysMixin {
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
     private void interceptDebugKey(int keyCode, CallbackInfoReturnable<Boolean> cir) {
         var restrictedOptions =
-                Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+                GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
         if (restrictedOptions != null && restrictedOptions.contains(keyCode)) {
             if (minecraft != null) {
                 minecraft
@@ -95,8 +96,8 @@ public abstract class CustomDebugHotkeysMixin {
         if (translationKey != null) {
             var debugOption = DebugOption.getByTranslationKey(translationKey);
             if (debugOption != null) {
-                var restrictedOptions =
-                        Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+                var restrictedOptions = GameComponents.getInstance()
+                        .noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
                 var keyCode = debugOption.getKeyCode();
 
                 if (restrictedOptions != null && restrictedOptions.contains(keyCode)) {

@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin;
 
 import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -27,7 +28,7 @@ public class MouseButtonClickMixin {
                             value = "INVOKE",
                             target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
     private void onReleaseMouse(CallbackInfo ci) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
         var iterator = noxesium$pressedButtons.iterator();
         while (iterator.hasNext()) {
             var button = iterator.next();
@@ -42,7 +43,7 @@ public class MouseButtonClickMixin {
         var client = Minecraft.getInstance();
         var player = client.player;
         if (player == null) return;
-        if (!client.noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.REPORT_MOUSE_CLICKS)) return;
 
         // Check that the action and button is valid
         if (action != 0 && action != 1) return;

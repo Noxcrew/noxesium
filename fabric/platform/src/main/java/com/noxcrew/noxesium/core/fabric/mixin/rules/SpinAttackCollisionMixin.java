@@ -2,9 +2,9 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -29,7 +29,8 @@ public abstract class SpinAttackCollisionMixin {
             Level instance, Entity entity, AABB aabb, Operation<List<Entity>> original) {
         // If the spin attack is disabled we return no targets which makes the client
         // think there is nothing to collide with.
-        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_SPIN_ATTACK_COLLISIONS)) {
+        if (GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_SPIN_ATTACK_COLLISIONS)) {
             return List.of();
         }
         return original.call(instance, entity, aabb);

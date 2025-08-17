@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.paper.network
 
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType
 import com.noxcrew.noxesium.paper.NoxesiumPaper
@@ -19,8 +20,8 @@ public class PaperNoxesiumPayloadType<T : NoxesiumPacket>(
 ) : NoxesiumPayloadType<T>(key, codec, clazz, clientToServer) {
     private val listener = PaperPacketHandler(this)
 
-    override fun register() {
-        super.register()
+    override fun register(entrypoint: NoxesiumEntrypoint?) {
+        super.register(entrypoint)
 
         if (clientToServer) {
             Bukkit.getMessenger().registerIncomingPluginChannel(NoxesiumPaper.plugin, id().toString(), listener)

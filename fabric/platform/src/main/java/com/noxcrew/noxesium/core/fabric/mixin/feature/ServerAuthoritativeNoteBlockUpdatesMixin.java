@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -23,8 +23,8 @@ public class ServerAuthoritativeNoteBlockUpdatesMixin {
 
     @Inject(method = "getStateForPlacement", at = @At("HEAD"), cancellable = true)
     public void onGetStateForPlacement(BlockPlaceContext context, CallbackInfoReturnable<BlockState> cir) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES))
-            return;
+        if (!GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES)) return;
         cir.setReturnValue(((NoteBlock) (Object) this).defaultBlockState());
     }
 
@@ -39,8 +39,8 @@ public class ServerAuthoritativeNoteBlockUpdatesMixin {
             BlockState p_57647_,
             RandomSource p_374065_,
             CallbackInfoReturnable<BlockState> cir) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES))
-            return;
+        if (!GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES)) return;
         cir.setReturnValue(p_57645_);
     }
 }

@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.registry.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.mixin.rules.mouse.MouseHandlerExt;
@@ -84,13 +85,14 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
      */
     private <T> void listenGame(
             NoxesiumComponentType<T> type,
-            BiConsumer<CommonComponentChangeListeners, ComponentChangeContext<T, Minecraft>> consumer) {
+            BiConsumer<CommonComponentChangeListeners, ComponentChangeContext<T, GameComponents>> consumer) {
         var serializer = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.GAME_COMPONENTS, type);
         if (serializer == null || serializer.listener() == null) return;
-        ((NoxesiumComponentListener<T, Minecraft>) serializer.listener()).addListener(this, (reference, context) -> {
-            if (isRegistered()) {
-                consumer.accept(reference, context);
-            }
-        });
+        ((NoxesiumComponentListener<T, GameComponents>) serializer.listener())
+                .addListener(this, (reference, context) -> {
+                    if (isRegistered()) {
+                        consumer.accept(reference, context);
+                    }
+                });
     }
 }

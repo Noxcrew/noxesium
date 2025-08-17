@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
@@ -8,6 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Extends the Noxesium payload type with fabric specific networking code.
@@ -23,8 +25,8 @@ public class FabricNoxesiumPayloadType<T extends NoxesiumPacket> extends Noxesiu
     }
 
     @Override
-    public void register() {
-        super.register();
+    public void register(@Nullable NoxesiumEntrypoint entrypoint) {
+        super.register(entrypoint);
 
         // Create a custom payload that uses the payload object as a wrapper so we can
         // provide a custom stream codec to use for this packet.

@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
@@ -50,13 +51,13 @@ public abstract class OptionInstanceMixin<T> {
         if (NoxesiumMod.getInstance().disableSettingOverrides) return original;
 
         if (((Object) (this)) == options.prioritizeChunkUpdates()
-                && Minecraft.getInstance()
+                && GameComponents.getInstance()
                         .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {
             return (T) PrioritizeChunkUpdates.NEARBY;
         }
         if (((Object) (this)) == options.graphicsMode()) {
             var graphics =
-                    Minecraft.getInstance().noxesium$getComponent(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE);
+                    GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE);
             if (graphics != null && (!NoxesiumMod.getInstance().isUsingIris || graphics != GraphicsMode.FABULOUS)) {
                 return (T)
                         switch (graphics) {

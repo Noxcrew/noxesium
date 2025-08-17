@@ -50,7 +50,7 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
     @Override
     public boolean canSend(NoxesiumPayloadType<?> type) {
         // Check if the server is willing to receive this packet and if we have registered this packet
-        // on the client in the C2S registry!
+        // on the client in the C2S registry! (the entrypoint is active)
         return ClientPlayNetworking.canSend(type.id())
                 && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S()).get(type.id())
                         != null;

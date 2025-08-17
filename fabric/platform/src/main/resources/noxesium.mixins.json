@@ -66,7 +66,6 @@
     "rules.qib.QibPacketHooksMixin",
     "rules.qib.SpatialEntityAdditionMixin",
     "rules.qib.SpatialEntityMixin",
-    "rules.server.MinecraftComponentMixin",
     "rules.trident.TridentHandModelMixin",
     "rules.trident.TridentItemMixin",
     "settings.BetterTeamException",

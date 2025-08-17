@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.feature.entity.LivingEntityExtension;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
@@ -165,8 +166,8 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
      */
     @Inject(method = "isAutoSpinAttack", at = @At(value = "HEAD"), cancellable = true)
     private void isAutoSpinAttack(CallbackInfoReturnable<Boolean> cir) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT))
-            return;
+        if (!GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
         if (((Object) this) != Minecraft.getInstance().player) return;
         cir.setReturnValue(this.autoSpinAttackTicks > 0);
     }
@@ -176,8 +177,8 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
      */
     @Inject(method = "baseTick", at = @At(value = "TAIL"))
     private void onTick(CallbackInfo ci) {
-        if (!Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT))
-            return;
+        if (!GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
 
         var entity = (LivingEntity) ((Object) this);
         if (entity instanceof Player player) {
@@ -185,7 +186,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
             // Update coyote time
             if (player.isInWaterOrRain()) {
-                noxesium$coyoteTime = Minecraft.getInstance()
+                noxesium$coyoteTime = GameComponents.getInstance()
                         .noxesium$getComponentOr(CommonGameComponentTypes.RIPTIDE_COYOTE_TIME, () -> 5);
             } else if (noxesium$coyoteTime > 0) {
                 noxesium$coyoteTime--;

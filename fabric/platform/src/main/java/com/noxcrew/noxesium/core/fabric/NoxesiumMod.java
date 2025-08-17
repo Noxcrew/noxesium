@@ -7,8 +7,8 @@ import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
+import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
-import com.noxcrew.noxesium.core.fabric.network.NoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.HashSet;
 import java.util.Set;
@@ -74,13 +74,13 @@ public class NoxesiumMod implements ClientModInitializer {
         var api = NoxesiumApi.getInstance();
         FabricLoader.getInstance()
                 .getEntrypointContainers("noxesium", ClientNoxesiumEntrypoint.class)
-                .forEach(entrypoint -> api.registerEndpoint(entrypoint.getEntrypoint()));
+                .forEach(entrypoint -> api.registerEntrypoint(entrypoint.getEntrypoint()));
 
         // Log how many entrypoints were successfully loaded
         logger.info("Loaded {} Noxesium entrypoints", api.getAllEntrypoints().size());
 
         // Set up the initializer
-        new NoxesiumClientHandshaker().register();
+        new FabricNoxesiumClientHandshaker().register();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {

@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.api.nms.network.payload;
 
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A type of custom payload used by Noxesium for its packets.
@@ -96,8 +98,8 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Registers a receiver for this payload type.
      */
-    public void register() {
-        NoxesiumNetworking.getInstance().register(this);
+    public void register(@Nullable NoxesiumEntrypoint entrypoint) {
+        NoxesiumNetworking.getInstance().register(this, entrypoint);
     }
 
     /**

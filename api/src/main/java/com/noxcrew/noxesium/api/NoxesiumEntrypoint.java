@@ -8,8 +8,9 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * An entrypoint for Noxesium which allows additional features to be registered to Noxesium's
- * dynamic registries.
+ * An entrypoint for Noxesium which allows a mod or plugin to take control and register its features,
+ * registry contents, packets, and more. Each set of features implemented against Noxesium's APIs
+ * must be defined in an entrypoint.
  * <p>
  * All Noxesium entrypoints may provide both a private and public key. This system is used
  * by the common module to serve as an implementation example. Of course this means that the
@@ -24,15 +25,18 @@ import org.jetbrains.annotations.Nullable;
  * The handshake process for Noxesium runs for all entrypoints simultaneously, but includes
  * the following steps before it can be completed:
  * 1) The server-side implementation shares with the client that it can receive handshake packets.
- * 2) The client-side implementation sends `noxesium-v3:serverbound_handshake` with a series of entrypoint ids
+ * 2) The client-side implementation sends a handshake initiation with a series of entrypoint ids
  * encrypted using a shared encryption key of each entrypoint when joining a server or entering the
  * configuration phase.
- * 3) The server-side implementation responds with `noxesium-v3:clientbound_handshake_ack` with a list of entry
+ * 3) The server-side implementation responds with an acknowledgement containing a list of entry
  * point ids it could decrypt in plain text.
- * 4) The client-side implementation responds with `noxesium-v3:serverbound_handshake_ack` with a list of the
+ * 4) The client-side implementation responds with an acknowledgement containing a list of the
  * validated entrypoints and their protocol details. It registers all packet handlers for this entrypoint.
  * 5) The server-side implementation receives the answer, registers all plugin channels defined and
  * performs relevant initialization steps.
+ * 6) The server-side sends all registry contents to the client. Receiving back an acknowledgement of
+ * the registry entries which existed on the client and which ones did not.
+ * 7) The server-side sends a handshake completion packet when it is fully done.
  */
 public interface NoxesiumEntrypoint {
     /**

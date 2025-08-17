@@ -16,6 +16,11 @@ public enum HandshakeState {
     AWAITING_RESPONSE,
 
     /**
+     * The client is waiting to receive all registries.
+     */
+    AWAITING_REGISTRIES,
+
+    /**
      * The handshake has been completed.
      */
     COMPLETE,

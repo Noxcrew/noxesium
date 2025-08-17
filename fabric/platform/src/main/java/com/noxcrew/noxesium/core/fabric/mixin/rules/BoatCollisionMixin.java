@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.vehicle.AbstractBoat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,7 @@ public abstract class BoatCollisionMixin {
 
     @ModifyReturnValue(method = "canCollideWith", at = @At("RETURN"))
     public boolean checkServerForBoatCollisions(boolean original) {
-        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_BOAT_COLLISIONS))
+        if (GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_BOAT_COLLISIONS))
             return false;
         return original;
     }

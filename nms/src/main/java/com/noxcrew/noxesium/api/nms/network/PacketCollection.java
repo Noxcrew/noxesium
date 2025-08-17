@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.nms.network;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A collector of different packets that can be registered and unregistered
@@ -60,9 +62,9 @@ public final class PacketCollection {
     /**
      * Registers all packets.
      */
-    public void register() {
+    public void register(@Nullable NoxesiumEntrypoint entrypoint) {
         for (var type : packets.values()) {
-            type.register();
+            type.register(entrypoint);
         }
     }
 

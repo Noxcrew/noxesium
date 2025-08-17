@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.mixin.sodium;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
-import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +17,8 @@ public class SodiumDeferChunkUpdatesMixin {
 
     @ModifyReturnValue(method = "allowImportantRebuilds", at = @At("RETURN"))
     private static boolean overrideDeferChunkUpdates(boolean original) {
-        if (Minecraft.getInstance().noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {
+        if (GameComponents.getInstance()
+                .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {
             return true;
         }
         return original;
