@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
-import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,21 +20,19 @@ import org.slf4j.LoggerFactory;
  * Provides shared API for Noxesium's various available APIs.
  */
 public class NoxesiumApi {
-    private static NoxesiumApi instance;
+    private static final NoxesiumApi INSTANCE = new NoxesiumApi();
     private static final Logger logger = LoggerFactory.getLogger("Noxesium");
 
     private final Map<Class<? extends NoxesiumFeature>, NoxesiumFeature> features = new HashMap<>();
     private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
     private final List<NoxesiumEntrypoint> activeEntrypoints = new ArrayList<>();
+    private NoxesiumSide side = NoxesiumSide.SERVER;
 
     /**
      * Returns the singleton instance of the Noxesium API.
      */
     public static NoxesiumApi getInstance() {
-        if (instance == null) {
-            instance = new NoxesiumApi();
-        }
-        return instance;
+        return INSTANCE;
     }
 
     /**
@@ -46,12 +43,26 @@ public class NoxesiumApi {
     }
 
     /**
+     * Returns which side Noxesium is running on.
+     */
+    public NoxesiumSide getSide() {
+        return side;
+    }
+
+    /**
+     * Sets which side Noxesium is running on.
+     */
+    public void setSide(NoxesiumSide side) {
+        this.side = side;
+    }
+
+    /**
      * Activates the entrypoint with the given protocol.
      */
     public void activateEntrypoint(EntrypointProtocol protocol) {
         var entrypoint = entrypoints.get(protocol.id());
         if (entrypoint == null) return;
-        entrypoint.getRegistryCollections().forEach(RegistryCollection::register);
+        entrypoint.getRegistryCollections().forEach(it -> it.register(entrypoint));
         activeEntrypoints.add(entrypoint);
     }
 
@@ -68,7 +79,7 @@ public class NoxesiumApi {
      */
     public void registerAndActivateEntrypoint(NoxesiumEntrypoint entrypoint) {
         registerEntrypoint(entrypoint);
-        entrypoint.getRegistryCollections().forEach(RegistryCollection::register);
+        entrypoint.getRegistryCollections().forEach(it -> it.register(entrypoint));
         entrypoint.getAllFeatures().forEach(this::registerFeature);
         activeEntrypoints.add(entrypoint);
     }

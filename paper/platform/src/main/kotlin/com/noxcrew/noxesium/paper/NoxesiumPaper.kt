@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint
 import com.noxcrew.noxesium.api.nms.NoxesiumNmsApi
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking
-import com.noxcrew.noxesium.core.nms.network.NoxesiumPlayerManager
+import com.noxcrew.noxesium.api.nms.network.NoxesiumPlayerManager
 import com.noxcrew.noxesium.paper.commands.NoxesiumListCommand
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking

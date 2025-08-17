@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.commands
 
 import com.noxcrew.noxesium.api.network.EntrypointProtocol
-import com.noxcrew.noxesium.core.nms.network.NoxesiumPlayerManager
+import com.noxcrew.noxesium.api.nms.network.NoxesiumPlayerManager
 import com.noxcrew.noxesium.core.util.SkullStringFormatter
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text

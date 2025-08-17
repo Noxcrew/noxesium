@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.api.registry;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,9 +15,20 @@ import org.jetbrains.annotations.Nullable;
  * maps to a generic typed value.
  */
 public class NoxesiumRegistry<T> {
-    protected final Map<Integer, T> byId = new ConcurrentHashMap<>();
-    protected final Map<T, Integer> forId = new ConcurrentHashMap<>();
+    private final Key id;
+    protected final BiMap<Integer, T> byId = HashBiMap.create();
     protected final Map<Key, T> byKey = new ConcurrentHashMap<>();
+
+    public NoxesiumRegistry(Key id) {
+        this.id = id;
+    }
+
+    /**
+     * Returns the id of this registry.
+     */
+    public Key id() {
+        return id;
+    }
 
     /**
      * Fully clears and resets this registry.
@@ -55,7 +69,14 @@ public class NoxesiumRegistry<T> {
     /**
      * Registers a new entry into this registry.
      */
-    public <V extends T> V register(Key key, V value) {
+    public final <V extends T> V register(Key key, V value) {
+        return register(key, value, null);
+    }
+
+    /**
+     * Registers a new entry into this registry.
+     */
+    public <V extends T> V register(Key key, V value, @Nullable NoxesiumEntrypoint entrypoint) {
         byKey.put(key, value);
         return value;
     }
@@ -72,7 +93,7 @@ public class NoxesiumRegistry<T> {
      * Returns the index associated with the given value.
      */
     public int getIdFor(T value) {
-        return forId.get(value);
+        return byId.inverse().get(value);
     }
 
     /**

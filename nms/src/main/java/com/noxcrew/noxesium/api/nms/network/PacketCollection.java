@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -57,6 +58,13 @@ public final class PacketCollection {
                 .createPayloadType(NoxesiumReferences.PACKET_NAMESPACE, id, codec, clazz, clientToServer);
         packets.put(id, type);
         return type;
+    }
+
+    /**
+     * Returns the packet types in this collection.
+     */
+    public Collection<NoxesiumPayloadType<?>> getPackets() {
+        return packets.values();
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.noxcrew.noxesium.paper.network
 
-import com.noxcrew.noxesium.core.nms.network.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.nms.network.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.nms
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -30,5 +32,13 @@ public class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listene
 
     override fun runDelayed(runnable: Runnable) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(NoxesiumPaper.plugin, runnable)
+    }
+
+    override fun completeHandshake(noxesiumPlayer: NoxesiumServerPlayer): Boolean = if (super.completeHandshake(noxesiumPlayer)) {
+        // Emit an event for other systems to hook into
+        Bukkit.getPluginManager().callEvent(NoxesiumPlayerRegisteredEvent(noxesiumPlayer.nmsPlayer.bukkitEntity, noxesiumPlayer))
+        true
+    } else {
+        false
     }
 }

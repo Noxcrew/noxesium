@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.fabric;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.NoxesiumSide;
 import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
@@ -60,6 +61,7 @@ public class NoxesiumMod implements ClientModInitializer {
     public NoxesiumMod() {
         instance = this;
         config = NoxesiumConfig.load();
+        NoxesiumApi.getInstance().setSide(NoxesiumSide.CLIENT);
         NoxesiumNetworking.setInstance(new FabricNoxesiumServerboundNetworking());
     }
 

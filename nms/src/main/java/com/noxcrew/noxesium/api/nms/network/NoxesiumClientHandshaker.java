@@ -1,19 +1,18 @@
-package com.noxcrew.noxesium.core.nms.network;
+package com.noxcrew.noxesium.api.nms.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.HandshakeState;
 import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeAcknowledgePacket;
-import com.noxcrew.noxesium.api.network.clientbound.ClientboundHandshakeCompletePacket;
-import com.noxcrew.noxesium.api.network.clientbound.ClientboundRegistryIdentifiersPacket;
+import com.noxcrew.noxesium.api.network.clientbound.ClientboundRegistryUpdatePacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.serverbound.ServerboundHandshakePacket;
+import com.noxcrew.noxesium.api.network.serverbound.ServerboundRegistryUpdateResultPacket;
 import com.noxcrew.noxesium.api.nms.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.nms.NoxesiumNmsApi;
-import com.noxcrew.noxesium.api.nms.network.HandshakePackets;
-import com.noxcrew.noxesium.api.nms.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
@@ -45,17 +44,17 @@ public abstract class NoxesiumClientHandshaker {
     public void register() {
         // Listen to the server response to the handshake
         HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handle(packet);
+            reference.handleHandshakeAcknowledge(packet);
         });
 
         // Whenever we receive registry packets we update the registries
-        HandshakePackets.CLIENTBOUND_REGISTRY_IDS.addListener(this, (reference, packet, ignored3) -> {
-            reference.handle(packet);
+        HandshakePackets.CLIENTBOUND_REGISTRY_UPDATE.addListener(this, (reference, packet, ignored3) -> {
+            reference.handleRegistryUpdate(packet);
         });
 
         // Whenever the handshake is completed we listen.
         HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handle(packet);
+            reference.handleComplete();
         });
 
         // Whenever the handshake is interrupted.
@@ -100,10 +99,10 @@ public abstract class NoxesiumClientHandshaker {
     /**
      * Handles the server acknowledging the handshake packet.
      */
-    protected void handle(ClientboundHandshakeAcknowledgePacket packet) {
+    protected void handleHandshakeAcknowledge(ClientboundHandshakeAcknowledgePacket packet) {
         if (state != HandshakeState.AWAITING_RESPONSE) {
             NoxesiumApi.getLogger()
-                    .error("Received Noxesium handshake response while in '{}' state, destroying connection!", state);
+                    .error("Received handshake response while in '{}' state, destroying connection!", state);
             uninitialize();
             return;
         }
@@ -151,25 +150,42 @@ public abstract class NoxesiumClientHandshaker {
     /**
      * Handles the server sending across registry contents.
      */
-    protected void handle(ClientboundRegistryIdentifiersPacket packet) {
+    protected void handleRegistryUpdate(ClientboundRegistryUpdatePacket packet) {
         if (state != HandshakeState.AWAITING_REGISTRIES) {
             NoxesiumApi.getLogger()
-                    .error("Received Noxesium registry contents while in '{}' state, destroying connection!", state);
+                    .error("Received registry contents while in '{}' state, destroying connection!", state);
             uninitialize();
             return;
         }
 
-        // TODO send back which ids were not found on the client so the server
-        // knows to never send those!
+        // Process all contents of the packet
+        var unknownKeys = new ArrayList<Integer>();
+        var registry = (ClientNoxesiumRegistry<?>) NoxesiumRegistries.REGISTRIES_BY_ID.get(packet.registry());
+        if (registry == null) {
+            NoxesiumApi.getLogger()
+                    .error(
+                            "Received registry contents for registry '{}' which does not exist",
+                            packet.registry().asString());
+            uninitialize();
+            return;
+        }
+        for (var entry : packet.ids().entrySet()) {
+            if (!registry.registerMapping(entry.getKey(), entry.getValue())) {
+                unknownKeys.add(entry.getKey());
+            }
+        }
+
+        // Inform the server which keys were not known to the client
+        NoxesiumServerboundNetworking.send(new ServerboundRegistryUpdateResultPacket(packet.id(), unknownKeys));
     }
 
     /**
      * Handle the server completing the handshake process.
      */
-    protected void handle(ClientboundHandshakeCompletePacket packet) {
+    protected void handleComplete() {
         if (state != HandshakeState.AWAITING_REGISTRIES) {
             NoxesiumApi.getLogger()
-                    .error("Received Noxesium handshake completion while in '{}' state, destroying connection!", state);
+                    .error("Received handshake completion while in '{}' state, destroying connection!", state);
             uninitialize();
             return;
         }

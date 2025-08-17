@@ -4,9 +4,11 @@ import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,15 +34,28 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
         return type.sendClientboundAny(player, packet);
     }
 
-    protected final Map<NoxesiumPayloadType<?>, Optional<NoxesiumEntrypoint>> entrypoints = new ConcurrentHashMap<>();
+    protected final Map<NoxesiumPayloadType<?>, NoxesiumEntrypoint> entrypoints = new ConcurrentHashMap<>();
 
     @Override
     public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
         super.register(payloadType, entrypoint);
         Preconditions.checkState(
                 !entrypoints.containsKey(payloadType), "Cannot register payload type '" + payloadType + "' twice");
-        entrypoints.put(payloadType, Optional.ofNullable(entrypoint));
+        entrypoints.put(payloadType, entrypoint);
     }
+
+    /**
+     * Returns the entrypoint that registered the given payload type.
+     */
+    @Nullable
+    public NoxesiumEntrypoint getPacketEntrypoint(@NotNull NoxesiumPayloadType<?> type) {
+        return entrypoints.get(type);
+    }
+
+    /**
+     * Returns the collection of channels registered for the given player.
+     */
+    public abstract Collection<String> getRegisteredChannels(@NotNull ServerPlayer player);
 
     /**
      * Checks if the connected player can receive packets of the given type.

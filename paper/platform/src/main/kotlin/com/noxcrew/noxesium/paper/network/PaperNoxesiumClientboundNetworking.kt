@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.paper.network
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking
+import com.noxcrew.noxesium.api.nms.network.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType
-import com.noxcrew.noxesium.core.nms.network.NoxesiumPlayerManager
 import com.viaversion.viaversion.api.Via
 import com.viaversion.viaversion.api.type.Types
 import io.netty.buffer.Unpooled
@@ -110,6 +110,8 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
                 }
             }
         }
+
+    override fun getRegisteredChannels(player: ServerPlayer): Collection<String> = player.bukkitEntity.listeningPluginChannels
 
     override fun <T : NoxesiumPacket> createPayloadType(
         namespace: String,
