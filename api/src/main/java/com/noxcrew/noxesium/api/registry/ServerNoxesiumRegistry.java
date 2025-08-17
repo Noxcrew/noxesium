@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ServerNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
     private final AtomicInteger lastId = new AtomicInteger();
-    private final Map<Key, String> entrypoints = new ConcurrentHashMap<>();
+    private final Map<Key, String> entrypoints = new HashMap<>();
 
     public ServerNoxesiumRegistry(Key id) {
         super(id);

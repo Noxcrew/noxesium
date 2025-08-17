@@ -43,16 +43,16 @@ public class HandshakePackets {
                             ServerboundHandshakeAcknowledgePacket::protocols,
                             ServerboundHandshakeAcknowledgePacket::new));
 
-    public static final NoxesiumPayloadType<ServerboundHandshakeCancelPacket> SERVERBOUND_HANDSHAKE_CANCEL = client(
+    public static final NoxesiumPayloadType<ServerboundHandshakeCancelPacket> SERVERBOUND_HANDSHAKE_CANCEL = server(
             INSTANCE,
             "serverbound_handshake_cancel",
             ServerboundHandshakeCancelPacket.class,
             StreamCodec.unit(new ServerboundHandshakeCancelPacket()));
 
     public static final NoxesiumPayloadType<ServerboundRegistryUpdateResultPacket> SERVERBOUND_REGISTRY_UPDATE_RESULT =
-            client(
+            server(
                     INSTANCE,
-                    "serverbound_registry_result",
+                    "serverbound_registry_update_result",
                     ServerboundRegistryUpdateResultPacket.class,
                     StreamCodec.composite(
                             ByteBufCodecs.VAR_INT,

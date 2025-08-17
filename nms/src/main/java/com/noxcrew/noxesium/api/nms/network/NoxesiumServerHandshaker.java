@@ -157,12 +157,16 @@ public abstract class NoxesiumServerHandshaker {
             // We only have to synchronize server registries as only sided registries
             // use indices which have to be synchronized.
             if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
+                // Ignore empty registries!
+                var syncContents = serverRegistry.determineSyncableContents(entrypoints);
+                if (syncContents.isEmpty()) continue;
+
                 var id = registryUpdateIdentifier.getAndIncrement();
                 noxesiumPlayer.awaitRegistrySync(id);
                 NoxesiumClientboundNetworking.send(
                         player,
                         new ClientboundRegistryUpdatePacket(
-                                id, serverRegistry.id(), serverRegistry.determineSyncableContents(entrypoints)));
+                                id, serverRegistry.id(), syncContents));
             }
         }
 
@@ -231,8 +235,9 @@ public abstract class NoxesiumServerHandshaker {
         NoxesiumClientboundNetworking.send(noxesiumPlayer.getNmsPlayer(), new ClientboundHandshakeCompletePacket());
         NoxesiumApi.getLogger()
                 .info(
-                        "Completed Noxesium handshake for player '{}' with {} entrypoints",
+                        "Authenticated {} on Noxesium {} with {} entrypoints",
                         noxesiumPlayer.getNmsPlayer().getGameProfile().getName(),
+                        noxesiumPlayer.getBaseVersion(),
                         noxesiumPlayer.getSupportedEntrypoints().size());
         return true;
     }

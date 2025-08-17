@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.payload.NoxesiumPayloadType;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,7 +34,7 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
         return type.sendClientboundAny(player, packet);
     }
 
-    protected final Map<NoxesiumPayloadType<?>, NoxesiumEntrypoint> entrypoints = new ConcurrentHashMap<>();
+    protected final Map<NoxesiumPayloadType<?>, NoxesiumEntrypoint> entrypoints = new HashMap<>();
 
     @Override
     public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {

@@ -4,12 +4,13 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.nms.NmsNoxesiumEntrypoint;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Stores information on a player connected to a server running Noxesium's
@@ -32,11 +33,11 @@ public class NoxesiumServerPlayer {
     private ClientSettings settings;
 
     public NoxesiumServerPlayer(
-            @NotNull final ServerPlayer player, @NotNull final List<EntrypointProtocol> entrypoints) {
+        @NotNull final ServerPlayer player, @NotNull final List<EntrypointProtocol> entrypoints) {
         this.player = player;
         this.entrypoints = entrypoints;
         this.supportedEntrypointIds =
-                entrypoints.stream().map(EntrypointProtocol::id).toList();
+            entrypoints.stream().map(EntrypointProtocol::id).toList();
     }
 
     /**
@@ -45,6 +46,13 @@ public class NoxesiumServerPlayer {
     @NotNull
     public UUID getUniqueId() {
         return player.getUUID();
+    }
+
+    /**
+     * Returns the base version of the mod.
+     */
+    public String getBaseVersion() {
+        return entrypoints.stream().filter(it -> it.id().equals("noxesium-common")).map(EntrypointProtocol::rawVersion).findAny().orElse("unknown");
     }
 
     /**
@@ -92,7 +100,7 @@ public class NoxesiumServerPlayer {
      */
     public boolean acknowledgeRegistrySync(int id) {
         if (pendingRegistrySyncs.contains(id)) {
-            pendingRegistrySyncs.remove(id);
+            pendingRegistrySyncs.remove((Object) id);
             return true;
         }
         return false;
@@ -126,8 +134,8 @@ public class NoxesiumServerPlayer {
             // we still need to wait!
             if (entrypoint instanceof NmsNoxesiumEntrypoint nmsEntrypoint) {
                 var channels = nmsEntrypoint.getPacketCollections().stream()
-                        .flatMap(it -> it.getPackets().stream())
-                        .map(it -> it.id().toString());
+                    .flatMap(it -> it.getPackets().stream())
+                    .map(it -> it.id().toString());
                 if (channels.noneMatch(registeredChannels::contains)) return false;
             }
         }

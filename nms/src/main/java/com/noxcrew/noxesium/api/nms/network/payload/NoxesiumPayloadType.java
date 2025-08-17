@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.api.nms.network.payload;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.nms.network.NoxesiumClientboundNetworking;
@@ -121,15 +122,19 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * [context].
      */
     public void handle(@NotNull Player context, @NotNull Object payload) {
-        var iterator = listeners.iterator();
-        while (iterator.hasNext()) {
-            var pair = iterator.next();
-            var obj = pair.getKey().get();
-            if (obj == null) {
-                iterator.remove();
-                continue;
+        try {
+            var iterator = listeners.iterator();
+            while (iterator.hasNext()) {
+                var pair = iterator.next();
+                var obj = pair.getKey().get();
+                if (obj == null) {
+                    iterator.remove();
+                    continue;
+                }
+                acceptAny(pair.getValue(), obj, context, payload);
             }
-            acceptAny(pair.getValue(), obj, context, payload);
+        } catch (Throwable x) {
+            NoxesiumApi.getLogger().error("Caught exception while handling packet", x);
         }
     }
 

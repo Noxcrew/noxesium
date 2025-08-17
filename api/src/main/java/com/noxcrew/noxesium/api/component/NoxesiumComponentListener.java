@@ -4,6 +4,8 @@ import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -40,16 +42,20 @@ public class NoxesiumComponentListener<T, R> {
      * Triggers this listener with the given receiver and values.
      */
     public void trigger(Object receiver, Object oldValue, Object newValue) {
-        var iterator = listeners.iterator();
-        var context = new ComponentChangeContext<T, R>((T) oldValue, (T) newValue, (R) receiver);
-        while (iterator.hasNext()) {
-            var pair = iterator.next();
-            var obj = pair.getKey().get();
-            if (obj == null) {
-                iterator.remove();
-                continue;
+        try {
+            var iterator = listeners.iterator();
+            var context = new ComponentChangeContext<T, R>((T) oldValue, (T) newValue, (R) receiver);
+            while (iterator.hasNext()) {
+                var pair = iterator.next();
+                var obj = pair.getKey().get();
+                if (obj == null) {
+                    iterator.remove();
+                    continue;
+                }
+                acceptAny(pair.getValue(), obj, context);
             }
-            acceptAny(pair.getValue(), obj, context);
+        } catch (Throwable x) {
+            NoxesiumApi.getLogger().info("Caught exception while emitting component change event", x);
         }
     }
 
