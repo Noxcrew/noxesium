@@ -19,7 +19,7 @@ import org.lwjgl.openal.AL11;
  */
 public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
 
-    private final int startOffset;
+    private final float startOffset;
     private VolumeInterpolation volumeInterpolation;
 
     public NoxesiumSoundInstance(
@@ -28,9 +28,9 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
             Vector3f initialPosition,
             float volume,
             float pitch,
+            float offset,
             boolean looping,
-            boolean attenuation,
-            int startOffset) {
+            boolean attenuation) {
         super(
                 SoundEvent.createVariableRangeEvent(ResourceLocation.parse(sound.asString())),
                 GameEnums.SOUND_SOURCE.toMinecraft(soundSource),
@@ -41,7 +41,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
         this.volume = volume;
         this.pitch = pitch;
         this.looping = looping;
-        this.startOffset = startOffset;
+        this.startOffset = offset;
 
         if (attenuation) {
             this.attenuation = Attenuation.LINEAR;
@@ -53,7 +53,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     /**
      * Returns the offset at which this sound should start.
      */
-    public int getStartOffset() {
+    public float getStartOffset() {
         return startOffset;
     }
 

@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
 
     private final Entity entity;
+    private final boolean local;
 
     public EntityNoxesiumSoundInstance(
             Key sound,
@@ -18,19 +19,22 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
             Entity entity,
             float volume,
             float pitch,
+            float offset,
             boolean looping,
             boolean attenuation,
-            int startOffset) {
+            boolean local
+            ) {
         super(
                 sound,
                 soundSource,
                 new Vector3f((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()),
                 volume,
                 pitch,
+                offset,
                 looping,
-                attenuation,
-                startOffset);
+                attenuation);
         this.entity = entity;
+        this.local = local;
     }
 
     /**
@@ -47,7 +51,7 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
      */
     @Override
     public void tick() {
-        if (this.entity.isRemoved()) {
+        if (!local && this.entity.isRemoved()) {
             this.stop();
         } else {
             this.x = (float) this.entity.getX();

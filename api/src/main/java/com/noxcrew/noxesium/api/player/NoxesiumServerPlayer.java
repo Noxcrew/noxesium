@@ -6,14 +6,20 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
+import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 /**
  * Stores information on a player connected to a server running Noxesium's
@@ -43,6 +49,8 @@ public class NoxesiumServerPlayer {
 
     @Nullable
     private ClientSettings settings;
+
+    private int lastSoundId;
 
     public NoxesiumServerPlayer(
             @NotNull final UUID uniqueId, @NotNull final String username, @NotNull final Component displayName) {
@@ -188,5 +196,128 @@ public class NoxesiumServerPlayer {
             }
         }
         return true;
+    }
+
+    /**
+     * Plays a customisable sound effect to this player.
+     * @see playSound
+     */
+    public NoxesiumSound playSound(@NotNull Key sound, @NotNull Sound.Source source) {
+        return playSound(sound, source, 1f, 1f, 0f, false, true);
+    }
+
+    /**
+     * Plays a customisable sound effect to this player.
+     *
+     * @param sound       The id of the sound to play.
+     * @param source      The sound source to play.
+     * @param volume      The volume to play at.
+     * @param pitch       The pitch to play at.
+     * @param offset      An offset in seconds to offset the sound by.
+     * @param looping     Whether the sound should continuously loop.
+     * @param attenuation Whether the sound should attenuate. If `false` the sound is played at the same volume regardless of distance.
+     */
+    public NoxesiumSound playSound(
+            @NotNull Key sound,
+            @NotNull Sound.Source source,
+            float volume,
+            float pitch,
+            float offset,
+            boolean looping,
+            boolean attenuation) {
+        var id = lastSoundId++;
+        NoxesiumClientboundNetworking.send(
+                this,
+                new ClientboundCustomSoundStartPacket(
+                        id,
+                        sound,
+                        source,
+                        volume,
+                        pitch,
+                        offset,
+                        looping,
+                        attenuation,
+                        false,
+                        Optional.empty(),
+                        Optional.empty()));
+        return new NoxesiumSound(this, id);
+    }
+
+    /**
+     * Plays a customisable sound effect to this player at the given location.
+     * @see playSound
+     */
+    public NoxesiumSound playSound(@NotNull Vector3f position, @NotNull Key sound, @NotNull Sound.Source source) {
+        return playSound(position, sound, source, 1f, 1f, 0f, false, true);
+    }
+
+    /**
+     * Plays a customisable sound effect to this player at the given location.
+     * @see playSound
+     */
+    public NoxesiumSound playSound(
+            @NotNull Vector3f position,
+            @NotNull Key sound,
+            @NotNull Sound.Source source,
+            float volume,
+            float pitch,
+            float offset,
+            boolean looping,
+            boolean attenuation) {
+        var id = lastSoundId++;
+        NoxesiumClientboundNetworking.send(
+                this,
+                new ClientboundCustomSoundStartPacket(
+                        id,
+                        sound,
+                        source,
+                        volume,
+                        pitch,
+                        offset,
+                        looping,
+                        true,
+                        attenuation,
+                        Optional.of(position),
+                        Optional.empty()));
+        return new NoxesiumSound(this, id);
+    }
+
+    /**
+     * Plays a customisable sound effect to this player bound to the given entity.
+     * @see playSound
+     */
+    public NoxesiumSound playSound(int entityId, @NotNull Key sound, @NotNull Sound.Source source) {
+        return playSound(entityId, sound, source, 1f, 1f, 0f, false, true);
+    }
+
+    /**
+     * Plays a customisable sound effect to this player bound to the given entity.
+     * @see playSound
+     */
+    public NoxesiumSound playSound(
+            int entityId,
+            @NotNull Key sound,
+            @NotNull Sound.Source source,
+            float volume,
+            float pitch,
+            float offset,
+            boolean looping,
+            boolean attenuation) {
+        var id = lastSoundId++;
+        NoxesiumClientboundNetworking.send(
+                this,
+                new ClientboundCustomSoundStartPacket(
+                        id,
+                        sound,
+                        source,
+                        volume,
+                        pitch,
+                        offset,
+                        looping,
+                        attenuation,
+                        false,
+                        Optional.empty(),
+                        Optional.of(entityId)));
+        return new NoxesiumSound(this, id);
     }
 }

@@ -5,13 +5,9 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
-import com.noxcrew.noxesium.core.util.NoxesiumListCommand
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -51,24 +47,5 @@ public class NoxesiumPaper : JavaPlugin() {
 
     override fun onEnable() {
         setup(this)
-
-        // Register /noxlist to show a list of all versions used by Noxesium users, add an extra
-        // line at the bottom showing all online players which are not included in the Noxesium
-        // list so you can easily see who is not using it.
-        getCommand("noxlist")?.setExecutor { sender, command, label, args ->
-            val listedPlayers = NoxesiumListCommand.sendUserList(sender)
-            val unlistedPlayers = Bukkit.getOnlinePlayers().filter { it.uniqueId !in listedPlayers }
-            if (unlistedPlayers.isNotEmpty()) {
-                sender.sendMessage(
-                    NoxesiumListCommand.formatLine(
-                        text("None", NamedTextColor.YELLOW),
-                        unlistedPlayers.map {
-                            NoxesiumListCommand.PlayerInfo(it.uniqueId, it.displayName(), null, emptyList())
-                        },
-                    ),
-                )
-            }
-            true
-        }
     }
 }

@@ -21,11 +21,10 @@ import org.bukkit.event.player.PlayerRiptideEvent
 public class SmoothTrident : ListeningNoxesiumFeature() {
     private var ignoreCancellation = false
 
-    override fun onRegister() {
-        super.onRegister()
-
+    init {
         // Listen to the client performing a riptide
         CommonPackets.SERVER_RIPTIDE.addListener(this) { _, packet, playerId ->
+            if (!isRegistered) return@addListener
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
             val bukkitStack = player.inventory.getItem(packet.slot) ?: return@addListener
             val nmsStack = CraftItemStack.asNMSCopy(bukkitStack) ?: return@addListener

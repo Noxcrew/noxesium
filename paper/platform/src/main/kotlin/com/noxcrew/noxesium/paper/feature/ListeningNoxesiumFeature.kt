@@ -8,7 +8,6 @@ import org.bukkit.event.Listener
 
 /** A Noxesium feature that is also a Bukkit listener. */
 public open class ListeningNoxesiumFeature : NoxesiumFeature(), Listener {
-
     override fun onRegister() {
         super.onRegister()
         Bukkit.getPluginManager().registerEvents(this, NoxesiumPaper.plugin)

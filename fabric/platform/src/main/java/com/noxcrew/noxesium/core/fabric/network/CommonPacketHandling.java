@@ -56,9 +56,9 @@ public class CommonPacketHandling extends NoxesiumFeature {
                         packet.position().get(),
                         packet.volume(),
                         packet.pitch(),
+                        packet.offset(),
                         packet.looping(),
-                        packet.attenuation(),
-                        packet.determineOffset());
+                        packet.attenuation());
             } else if (packet.entityId().isPresent()) {
                 var entity = Minecraft.getInstance()
                         .player
@@ -72,9 +72,10 @@ public class CommonPacketHandling extends NoxesiumFeature {
                             entity,
                             packet.volume(),
                             packet.pitch(),
+                            packet.offset(),
                             packet.looping(),
                             packet.attenuation(),
-                            packet.determineOffset());
+                            false);
                 }
             }
             if (sound == null) {
@@ -84,9 +85,10 @@ public class CommonPacketHandling extends NoxesiumFeature {
                         Minecraft.getInstance().player,
                         packet.volume(),
                         packet.pitch(),
+                        packet.offset(),
                         packet.looping(),
                         packet.attenuation(),
-                        packet.determineOffset());
+                        true);
             }
             manager.play(packet.id(), sound, packet.ignoreIfPlaying());
         });

@@ -70,31 +70,29 @@ public class CommonPacketSerializers {
                         ClientboundCustomSoundModifyPacket::new));
         registerSerializer(
                 CommonPackets.CLIENT_CUSTOM_SOUND_START,
-                NoxesiumStreamCodecs.composite(
+                StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundCustomSoundStartPacket::id,
                         NoxesiumStreamCodecs.KEY,
                         ClientboundCustomSoundStartPacket::sound,
                         NoxesiumStreamCodecs.forEnum(Sound.Source.class),
                         ClientboundCustomSoundStartPacket::source,
+                        ByteBufCodecs.FLOAT,
+                        ClientboundCustomSoundStartPacket::volume,
+                        ByteBufCodecs.FLOAT,
+                        ClientboundCustomSoundStartPacket::pitch,
+                        ByteBufCodecs.FLOAT,
+                        ClientboundCustomSoundStartPacket::offset,
                         ByteBufCodecs.BOOL,
                         ClientboundCustomSoundStartPacket::looping,
                         ByteBufCodecs.BOOL,
                         ClientboundCustomSoundStartPacket::attenuation,
                         ByteBufCodecs.BOOL,
                         ClientboundCustomSoundStartPacket::ignoreIfPlaying,
-                        ByteBufCodecs.FLOAT,
-                        ClientboundCustomSoundStartPacket::volume,
-                        ByteBufCodecs.FLOAT,
-                        ClientboundCustomSoundStartPacket::pitch,
                         ByteBufCodecs.optional(ByteBufCodecs.VECTOR3F),
                         ClientboundCustomSoundStartPacket::position,
                         ByteBufCodecs.optional(ByteBufCodecs.VAR_INT),
                         ClientboundCustomSoundStartPacket::entityId,
-                        ByteBufCodecs.optional(ByteBufCodecs.LONG),
-                        ClientboundCustomSoundStartPacket::unix,
-                        ByteBufCodecs.optional(ByteBufCodecs.VAR_INT),
-                        ClientboundCustomSoundStartPacket::offset,
                         ClientboundCustomSoundStartPacket::new));
         registerSerializer(
                 CommonPackets.CLIENT_CUSTOM_SOUND_STOP,

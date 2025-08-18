@@ -21,22 +21,12 @@ public record ClientboundCustomSoundStartPacket(
         int id,
         Key sound,
         Sound.Source source,
+        float volume,
+        float pitch,
+        float offset,
         boolean looping,
         boolean attenuation,
         boolean ignoreIfPlaying,
-        float volume,
-        float pitch,
         Optional<Vector3f> position,
-        Optional<Integer> entityId,
-        Optional<Long> unix,
-        Optional<Integer> offset)
-        implements NoxesiumPacket {
-    /**
-     * Determines the offset to start the sound at. This can be defined through either a unix
-     * timestamp or an offset value.
-     */
-    public int determineOffset() {
-        return unix.map(aLong -> (int) (Math.max(0, System.currentTimeMillis() - aLong) / 1000))
-                .orElseGet(() -> offset.orElse(0));
-    }
-}
+        Optional<Integer> entityId)
+        implements NoxesiumPacket {}
