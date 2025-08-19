@@ -22,8 +22,7 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
             float offset,
             boolean looping,
             boolean attenuation,
-            boolean local
-            ) {
+            boolean local) {
         super(
                 sound,
                 soundSource,

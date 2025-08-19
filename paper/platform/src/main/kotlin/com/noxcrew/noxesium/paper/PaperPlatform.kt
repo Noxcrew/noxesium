@@ -11,6 +11,7 @@ import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import org.bukkit.Bukkit
 
 /** Implements platform specific methods. */
 public class PaperPlatform : NoxesiumPlatform() {
@@ -27,7 +28,7 @@ public class PaperPlatform : NoxesiumPlatform() {
 
             override fun encode(buffer: RegistryFriendlyByteBuf, component: Component) {
                 val target = currentTargetPlayer
-                if (target == null) {
+                if (target == null || !Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
                     ComponentSerialization.STREAM_CODEC.encode(buffer, PaperAdventure.WRAPPER_AWARE_SERIALIZER.serialize(component))
                 } else {
                     // Write the ItemStack to a temporary buffer
@@ -67,7 +68,7 @@ public class PaperPlatform : NoxesiumPlatform() {
 
             override fun encode(buffer: RegistryFriendlyByteBuf, itemStack: ItemStack) {
                 val target = currentTargetPlayer
-                if (target == null) {
+                if (target == null || !Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
                     ItemStack.STREAM_CODEC.encode(buffer, itemStack)
                 } else {
                     // Write the ItemStack to a temporary buffer

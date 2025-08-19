@@ -5,10 +5,11 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
+import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -199,7 +200,30 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Sends the given packet, automatically detects the type of the packet based on the registered packets.
+     */
+    public boolean sendPacket(@NotNull NoxesiumPacket packet) {
+        return NoxesiumClientboundNetworking.send(this, packet);
+    }
+
+    /**
+     * Opens up a link dialog for this client pointing to the given URL.
+     */
+    public void openLink(String url) {
+        openLink(url, null);
+    }
+
+    /**
+     * Opens up a link dialog for this client pointing to the given URL while showing
+     * the given text message.
+     */
+    public void openLink(String url, @Nullable Component text) {
+        sendPacket(new ClientboundOpenLinkPacket(Optional.ofNullable(text), url));
+    }
+
+    /**
      * Plays a customisable sound effect to this player.
+     *
      * @see playSound
      */
     public NoxesiumSound playSound(@NotNull Key sound, @NotNull Sound.Source source) {
@@ -225,26 +249,15 @@ public class NoxesiumServerPlayer {
             float offset,
             boolean looping,
             boolean attenuation) {
-        var id = lastSoundId++;
-        NoxesiumClientboundNetworking.send(
-                this,
-                new ClientboundCustomSoundStartPacket(
-                        id,
-                        sound,
-                        source,
-                        volume,
-                        pitch,
-                        offset,
-                        looping,
-                        attenuation,
-                        false,
-                        Optional.empty(),
-                        Optional.empty()));
-        return new NoxesiumSound(this, id);
+        var noxesiumSound = new NoxesiumSound(
+                this, lastSoundId++, sound, source, volume, pitch, offset, looping, attenuation, null, null);
+        noxesiumSound.play(true);
+        return noxesiumSound;
     }
 
     /**
      * Plays a customisable sound effect to this player at the given location.
+     *
      * @see playSound
      */
     public NoxesiumSound playSound(@NotNull Vector3f position, @NotNull Key sound, @NotNull Sound.Source source) {
@@ -253,6 +266,7 @@ public class NoxesiumServerPlayer {
 
     /**
      * Plays a customisable sound effect to this player at the given location.
+     *
      * @see playSound
      */
     public NoxesiumSound playSound(
@@ -264,26 +278,15 @@ public class NoxesiumServerPlayer {
             float offset,
             boolean looping,
             boolean attenuation) {
-        var id = lastSoundId++;
-        NoxesiumClientboundNetworking.send(
-                this,
-                new ClientboundCustomSoundStartPacket(
-                        id,
-                        sound,
-                        source,
-                        volume,
-                        pitch,
-                        offset,
-                        looping,
-                        true,
-                        attenuation,
-                        Optional.of(position),
-                        Optional.empty()));
-        return new NoxesiumSound(this, id);
+        var noxesiumSound = new NoxesiumSound(
+                this, lastSoundId++, sound, source, volume, pitch, offset, looping, attenuation, position, null);
+        noxesiumSound.play(true);
+        return noxesiumSound;
     }
 
     /**
      * Plays a customisable sound effect to this player bound to the given entity.
+     *
      * @see playSound
      */
     public NoxesiumSound playSound(int entityId, @NotNull Key sound, @NotNull Sound.Source source) {
@@ -292,6 +295,7 @@ public class NoxesiumServerPlayer {
 
     /**
      * Plays a customisable sound effect to this player bound to the given entity.
+     *
      * @see playSound
      */
     public NoxesiumSound playSound(
@@ -303,21 +307,9 @@ public class NoxesiumServerPlayer {
             float offset,
             boolean looping,
             boolean attenuation) {
-        var id = lastSoundId++;
-        NoxesiumClientboundNetworking.send(
-                this,
-                new ClientboundCustomSoundStartPacket(
-                        id,
-                        sound,
-                        source,
-                        volume,
-                        pitch,
-                        offset,
-                        looping,
-                        attenuation,
-                        false,
-                        Optional.empty(),
-                        Optional.of(entityId)));
-        return new NoxesiumSound(this, id);
+        var noxesiumSound = new NoxesiumSound(
+                this, lastSoundId++, sound, source, volume, pitch, offset, looping, attenuation, null, entityId);
+        noxesiumSound.play(true);
+        return noxesiumSound;
     }
 }

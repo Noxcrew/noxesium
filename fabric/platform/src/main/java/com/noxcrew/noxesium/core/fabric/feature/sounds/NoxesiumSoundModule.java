@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.feature.sounds;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoxesiumSoundModule extends NoxesiumFeature {
 
-    private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
+    private final Map<Integer, NoxesiumSoundInstance> sounds = new WeakHashMap<>();
 
     /**
      * Plays a given sound instance and stores it by its id so it

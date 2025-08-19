@@ -106,7 +106,7 @@ public abstract class NoxesiumServerHandshaker {
                 .canReceive(player, ClientboundHandshakeAcknowledgePacket.class)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
-            NoxesiumClientboundNetworking.send(player, acknowledgePacket);
+            player.sendPacket(acknowledgePacket);
             player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
         } else {
             // The client hasn't sent that it can receive the acknowledgment packet yet, so
@@ -154,8 +154,7 @@ public abstract class NoxesiumServerHandshaker {
 
                 var id = registryUpdateIdentifier.getAndIncrement();
                 player.awaitRegistrySync(id);
-                NoxesiumClientboundNetworking.send(
-                        player, new ClientboundRegistryUpdatePacket(id, serverRegistry.id(), syncContents));
+                player.sendPacket(new ClientboundRegistryUpdatePacket(id, serverRegistry.id(), syncContents));
             }
         }
 
@@ -221,7 +220,7 @@ public abstract class NoxesiumServerHandshaker {
 
         // Move to the last handshake state and send the client a completion message
         player.setHandshakeState(HandshakeState.COMPLETE);
-        NoxesiumClientboundNetworking.send(player, new ClientboundHandshakeCompletePacket());
+        player.sendPacket(new ClientboundHandshakeCompletePacket());
         NoxesiumApi.getLogger()
                 .info(
                         "Authenticated {} on Noxesium {} with {} entrypoints",
@@ -257,7 +256,7 @@ public abstract class NoxesiumServerHandshaker {
                 // definitely can!
                 var packet = pendingPackets.remove(player.getUniqueId());
                 if (packet == null) return;
-                NoxesiumClientboundNetworking.send(player, packet);
+                player.sendPacket(packet);
                 player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
             });
         } else {

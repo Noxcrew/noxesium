@@ -10,7 +10,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 
 /** Creates the `list` subcommand. */
-public fun listCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands.literal("list")
+public fun listCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
+    .literal("list")
     .executes { ctx ->
         val sender = ctx.source.sender
         val listedPlayers = NoxesiumListCommand.sendUserList(sender)
