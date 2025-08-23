@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper.feature
 
 import com.noxcrew.noxesium.core.network.CommonPackets
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -10,6 +11,7 @@ import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.event.CraftEventFactory
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.player.PlayerRiptideEvent
@@ -37,8 +39,7 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
 
             // Call the spin attack event, ignore if cancelled!
             ignoreCancellation = true
-            CraftEventFactory.callPlayerRiptideEvent(serverPlayer, nmsStack, 0f, 0f, 0f)
-            // TODO Return if cancelled
+            if (!CraftEventFactory.callPlayerRiptideEvent(serverPlayer, nmsStack, 0f, 0f, 0f)) return@addListener
             ignoreCancellation = false
 
             // Perform the spin attack itself
@@ -56,14 +57,30 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
         }
     }
 
-    /** Cancel any regular riptide usages. */
+    /**
+     * Cancel any regular riptide usages so we can trigger it custom with the listener above.
+     * This is better as vanilla does the same logic for detecting when a riptide triggers on
+     * both client and server which uses the time the item is held and can easily de-sync causing
+     * a riptide to only happen on one side. To fix this, we send a packet whenever a riptide
+     * occurs and trigger it only based on that.
+     *
+     * This is also necessary to allow the custom coyote time as otherwise there would be a major
+     * de-sync of when the riptide occurs.
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public fun onRiptideEvent(e: PlayerRiptideEvent) {
         if (ignoreCancellation) return
-        // TODO check if the player has client riptide set
-
-        // TODO e.isCancelled = true
+        if (e.player.hasNoxesiumComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) {
+            e.isCancelled = true
+        }
     }
 
-    // TODO Listen to collisions while spin attacking
+    /** Prevent any collisions for clients with collisions disabled. */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public fun onAttemptSpinAttack(e: EntityAttemptSpinAttackEvent) {
+        val player = e.entity as? Player ?: return
+        if (player.hasNoxesiumComponent(CommonGameComponentTypes.DISABLE_SPIN_ATTACK_COLLISIONS)) {
+            e.isCancelled = true
+        }
+    }
 }

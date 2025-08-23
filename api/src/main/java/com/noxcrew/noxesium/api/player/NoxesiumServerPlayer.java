@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.player;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
+import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
@@ -204,6 +205,13 @@ public class NoxesiumServerPlayer {
      */
     public boolean sendPacket(@NotNull NoxesiumPacket packet) {
         return NoxesiumClientboundNetworking.send(this, packet);
+    }
+
+    /**
+     * Returns the holder of game components for this player.
+     */
+    public MutableNoxesiumComponentHolder getGameComponents() {
+
     }
 
     /**

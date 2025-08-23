@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.api.component;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * A NoxesiumComponentHolder that can also have its components mutated. Should be implemented
  * instead of just being a holder on the server-side.
@@ -7,9 +9,9 @@ package com.noxcrew.noxesium.api.component;
 public interface MutableNoxesiumComponentHolder extends NoxesiumComponentHolder {
 
     /**
-     * Returns the given component data on this holder.
+     * Sets the given component on this holder.
      */
-    public default <T> void noxesium$setComponent(NoxesiumComponentType<T> component, T value) {
+    public default <T> void noxesium$setComponent(NoxesiumComponentType<T> component, @Nullable T value) {
         throw new UnsupportedOperationException("Unimplemented");
     }
 
