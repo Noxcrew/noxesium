@@ -2,8 +2,10 @@ package com.noxcrew.noxesium.paper
 
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
+import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
+import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.paper.commands.componentCommands
 import com.noxcrew.noxesium.paper.commands.listCommand
@@ -40,6 +42,7 @@ public class NoxesiumPaper : JavaPlugin() {
             NoxesiumPlayerManager.setInstance(playerManager)
             NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
+            NoxesiumEntityManager.setInstance(PaperEntityManager())
 
             // Process all entry points
             val logger = NoxesiumApi.getLogger()

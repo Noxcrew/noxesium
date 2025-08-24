@@ -35,10 +35,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint {
 
-    private final TeamGlowHotkeys teamGlowHotkeys = new TeamGlowHotkeys();
-    private final QibBehaviorModule qibBehaviorModule = new QibBehaviorModule();
-    private final CommonPacketHandling commonPacketHandling = new CommonPacketHandling();
-    private final CommonComponentChangeListeners commonComponentChangeListeners = new CommonComponentChangeListeners();
+    private final TeamGlowHotkeys teamGlowHotkeys;
+    private final QibBehaviorModule qibBehaviorModule;
+    private final CommonPacketHandling commonPacketHandling;
+    private final CommonComponentChangeListeners commonComponentChangeListeners;
 
     public CommonFabricNoxesiumEntrypoint() {
         CommonBlockEntityComponentSerializers.register();
@@ -48,6 +48,11 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
         HandshakePacketSerializers.register();
         CommonPacketSerializers.register();
+
+        teamGlowHotkeys = new TeamGlowHotkeys();
+        qibBehaviorModule = new QibBehaviorModule();
+        commonPacketHandling = new CommonPacketHandling();
+        commonComponentChangeListeners = new CommonComponentChangeListeners();
     }
 
     @Override

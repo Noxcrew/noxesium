@@ -30,7 +30,8 @@ public class CommonPacketHandling extends NoxesiumFeature {
     public CommonPacketHandling() {
         CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
             if (!isRegistered()) return;
-            reference.applyPatch(packet.patch(), NoxesiumRegistries.GAME_COMPONENTS, GameComponents.getInstance());
+            reference.applyPatch(
+                    packet.patch(), packet.reset(), NoxesiumRegistries.GAME_COMPONENTS, GameComponents.getInstance());
         });
         CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
             if (!isRegistered()) return;
@@ -38,7 +39,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
             if (entity == null) {
                 NoxesiumApi.getLogger().warn("Received components for unknown entity {}", packet.entityId());
             } else {
-                reference.applyPatch(packet.patch(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
+                reference.applyPatch(packet.patch(), packet.reset(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
             }
         });
 
@@ -149,8 +150,15 @@ public class CommonPacketHandling extends NoxesiumFeature {
      */
     private void applyPatch(
             NoxesiumComponentPatch patch,
+            boolean reset,
             NoxesiumRegistry<NoxesiumComponentType<?>> registry,
             RemoteNoxesiumComponentHolder holder) {
+        // Clear the values if a reset was requested
+        if (reset) {
+            holder.noxesium$reloadComponents();
+        }
+
+        // Apply the patch itself
         for (var entry : patch.getMap().entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();

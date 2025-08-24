@@ -12,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -43,10 +44,10 @@ public abstract class CustomDebugHotkeysMixin {
     @WrapOperation(
             method = "handleDebugKeys",
             at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+            @At(
+                    value = "INVOKE",
+                    target =
+                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     public void extendHelpMessage(KeyboardHandler instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
@@ -85,12 +86,35 @@ public abstract class CustomDebugHotkeysMixin {
     }
 
     @WrapOperation(
+            method = "keyPress",
+            at =
+            @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/Options;hideGui:Z",
+                    ordinal = 1))
+    public void preventHidingGui(Options instance, boolean value, Operation<Void> original) {
+        var restrictedOptions =
+                GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
+        if (restrictedOptions != null && restrictedOptions.contains(DebugOption.HIDE_UI.getKeyCode())) {
+            if (minecraft != null) {
+                minecraft
+                        .gui
+                        .getChat()
+                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                                .withStyle(ChatFormatting.RED));
+            }
+            return;
+        }
+        original.call(instance, value);
+    }
+
+    @WrapOperation(
             method = "handleDebugKeys",
             at =
-                    @At(
-                            value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+            @At(
+                    value = "INVOKE",
+                    target =
+                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     private void modifyAllHelpMessages(KeyboardHandler instance, Component message, Operation<Void> original) {
         var translationKey = noxesium$getTranslationKey(message);
         if (translationKey != null) {

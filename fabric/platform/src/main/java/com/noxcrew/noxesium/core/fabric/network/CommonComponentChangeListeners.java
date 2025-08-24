@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.client.DebugOption;
 import com.noxcrew.noxesium.api.component.ComponentChangeContext;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
@@ -57,6 +58,11 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             // We need to call this when hitboxes & chunk boundaries are updated.
             if (Minecraft.getInstance().levelRenderer != null) {
                 Minecraft.getInstance().levelRenderer.allChanged();
+            }
+
+            // Turn off GUI hiding if it's disabled
+            if (context.newValue() != null && context.newValue().contains(DebugOption.HIDE_UI.getKeyCode())) {
+                Minecraft.getInstance().options.hideGui = false;
             }
         });
         listenGame(NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS, (ignored, context) -> {

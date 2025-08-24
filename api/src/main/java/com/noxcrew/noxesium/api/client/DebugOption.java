@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.api.client;
 import net.kyori.adventure.util.Index;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 /**
  * Provides an enum storing all available debug options to the client.
  * Each debug option has an associated keycode and translation key.
@@ -29,13 +31,14 @@ public enum DebugOption {
     VERSION_INFO(KeyConstants.KEY_V, "debug.version.help"),
     NOXESIUM_SETTINGS(KeyConstants.KEY_W, "debug.noxesium_settings.help"),
     ESCAPE(KeyConstants.KEY_ESCAPE, "debug.pause.help"),
+    HIDE_UI(KeyConstants.KEY_F1, null),
     GAME_MODE_SWITCHER(KeyConstants.KEY_F4, "debug.gamemodes.help");
 
     /**
      * An index of all debug options by their translation keys.
      */
     public static final Index<String, DebugOption> TRANSLATION_KEY_INDEX =
-            Index.create(DebugOption::getTranslationKey, DebugOption.values());
+            Index.create(DebugOption::getTranslationKey, Arrays.stream(DebugOption.values()).filter(it -> it.translationKey != null).toList());
 
     /**
      * An index of all debug options by their key codes.

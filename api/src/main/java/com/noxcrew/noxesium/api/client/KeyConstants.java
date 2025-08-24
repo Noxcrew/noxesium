@@ -40,6 +40,7 @@ public class KeyConstants {
     public static final int KEY_X = 88;
     public static final int KEY_Y = 89;
     public static final int KEY_Z = 90;
+    public static final int KEY_F1 = 290;
     public static final int KEY_F4 = 293;
     public static final int KEY_ESCAPE = 256;
 }

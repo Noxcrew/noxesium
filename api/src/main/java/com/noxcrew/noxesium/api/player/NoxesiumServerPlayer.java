@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -209,6 +210,16 @@ public class NoxesiumServerPlayer {
      */
     public boolean sendPacket(@NotNull NoxesiumPacket packet) {
         return NoxesiumClientboundNetworking.send(this, packet);
+    }
+
+    /**
+     * Ticks this player, sending out any pending update packets to the clients in
+     * batches.
+     */
+    public void tick() {
+        if (components.hasModified()) {
+            sendPacket(new ClientboundUpdateGameComponentsPacket(false, components.collectModified()));
+        }
     }
 
     /**

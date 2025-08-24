@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
 import com.noxcrew.noxesium.api.util.GraphicsMode
 import com.noxcrew.noxesium.api.util.Unit
+import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
 import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import com.noxcrew.noxesium.paper.feature.setNoxesiumComponent
@@ -19,6 +20,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
@@ -54,7 +56,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                     .configureComponentCommand(
                         NoxesiumRegistries.GAME_COMPONENTS,
                         object : ComponentConfigurer {
-                            override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>,): Int {
+                            override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>): Int {
                                 val player =
                                     ctx
                                         .getArgument("targets", PlayerSelectorArgumentResolver::class.java)
@@ -115,13 +117,17 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                             ctx.source.sender.sendMessage(
                                                 Component.text(
                                                     if (value == null) {
-                                                        "Cleared ${componentType.id.asString()} for ${it.firstOrNull {
-                                                            it != null
-                                                        }?.username}"
+                                                        "Cleared ${componentType.id.asString()} for ${
+                                                            it.firstOrNull {
+                                                                it != null
+                                                            }?.username
+                                                        }"
                                                     } else {
-                                                        "Set ${componentType.id.asString()} to $value for ${it.firstOrNull {
-                                                            it != null
-                                                        }?.username}"
+                                                        "Set ${componentType.id.asString()} to $value for ${
+                                                            it.firstOrNull {
+                                                                it != null
+                                                            }?.username
+                                                        }"
                                                     },
                                                     NamedTextColor.WHITE,
                                                 ),
@@ -152,7 +158,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
             .configureComponentCommand(
                 NoxesiumRegistries.ITEM_COMPONENTS,
                 object : ComponentConfigurer {
-                    override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>,): Int {
+                    override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>): Int {
                         val executor = ctx.source.executor
                         if (executor !is Player) {
                             ctx.source.sender.sendMessage(
@@ -247,7 +253,101 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
         Commands
             .literal("entity")
             .then(
-                Commands.argument("targets", ArgumentTypes.entities()),
+                Commands.argument("targets", ArgumentTypes.entities())
+                    .configureComponentCommand(
+                        NoxesiumRegistries.ENTITY_COMPONENTS,
+                        object : ComponentConfigurer {
+                            override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>): Int {
+                                val entity =
+                                    ctx
+                                        .getArgument("targets", EntitySelectorArgumentResolver::class.java)
+                                        .resolve(ctx.source)
+                                        .firstOrNull()
+
+                                return if (entity == null) {
+                                    ctx.source.sender.sendMessage(
+                                        Component.text(
+                                            "Entity not found",
+                                            NamedTextColor.RED,
+                                        ),
+                                    )
+                                    0
+                                } else {
+                                    val rawValue = entity.getNoxesiumComponent(componentType)
+                                    val value =
+                                        if (rawValue == null) {
+                                            "nothing"
+                                        } else {
+                                            Objects.toString(rawValue)
+                                        }
+                                    ctx.source.sender.sendMessage(
+                                        Component.text(
+                                            "${entity.name()} has ${componentType.id.asString()} set to $value",
+                                            NamedTextColor.RED,
+                                        ),
+                                    )
+                                    1
+                                }
+                            }
+
+                            override fun <T> set(
+                                ctx: CommandContext<CommandSourceStack>,
+                                componentType: NoxesiumComponentType<T>,
+                                value: T?,
+                            ): Int = ctx
+                                .getArgument("targets", EntitySelectorArgumentResolver::class.java)
+                                .resolve(ctx.source)
+                                .onEach {
+                                    it.setNoxesiumComponent(componentType, value)
+                                }
+                                .let {
+                                    val notNull = it.count { it != null }
+                                    when (notNull) {
+                                        0 -> {
+                                            ctx.source.sender.sendMessage(
+                                                Component.text(
+                                                    "No entities selected",
+                                                    NamedTextColor.RED,
+                                                ),
+                                            )
+                                        }
+
+                                        1 -> {
+                                            ctx.source.sender.sendMessage(
+                                                Component.join(
+                                                    JoinConfiguration.noSeparators(),
+                                                    listOf(
+                                                        Component.text(
+                                                            if (value == null) {
+                                                                "Cleared ${componentType.id.asString()} for "
+                                                            } else {
+                                                                "Set ${componentType.id.asString()} to $value for "
+                                                            },
+                                                            NamedTextColor.WHITE,
+                                                        ),
+                                                        it.first().name(),
+                                                    ),
+                                                ),
+                                            )
+                                        }
+
+                                        else -> {
+                                            ctx.source.sender.sendMessage(
+                                                Component.text(
+                                                    if (value == null) {
+                                                        "Cleared ${componentType.id.asString()} for $notNull entities"
+                                                    } else {
+                                                        "Set ${componentType.id.asString()} to $value for $notNull entities"
+                                                    },
+                                                    NamedTextColor.WHITE,
+                                                ),
+                                            )
+                                        }
+                                    }
+                                    notNull
+                                }
+                        },
+                    ),
             ),
     ).then(
         Commands
@@ -258,7 +358,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                     .configureComponentCommand(
                         NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS,
                         object : ComponentConfigurer {
-                            override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>,): Int {
+                            override fun <T> get(ctx: CommandContext<CommandSourceStack>, componentType: NoxesiumComponentType<T>): Int {
                                 val resolver = ctx.getArgument("target", BlockPositionResolver::class.java)
                                 val blockPosition = resolver.resolve(ctx.source)
                                 val block =
@@ -369,6 +469,19 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
 
                 val argumentBuilder =
                     when {
+                        // Hard-code the restrict debug options which is an integer list, we cannot
+                        // otherwise properly support lists of options.
+                        type == CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS ->
+                            Commands
+                                .argument("value", StringArgumentType.string())
+                                .executes { ctx ->
+                                    configurer.set(
+                                        ctx,
+                                        type as NoxesiumComponentType<List<Int>>,
+                                        ctx.getArgument("value", String::class.java).split(",").mapNotNull { it.toIntOrNull() },
+                                    )
+                                }
+
                         String::class.java.isAssignableFrom(type.clazz) ->
                             Commands
                                 .argument("value", StringArgumentType.string())
