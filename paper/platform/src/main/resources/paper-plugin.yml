@@ -2,4 +2,3 @@ name: NoxesiumApi
 version: 1.0.0
 main: com.noxcrew.noxesium.paper.NoxesiumPaper
 api-version: '1.21.8'
-bootstrapper: com.noxcrew.noxesium.paper.NoxesiumBoostrapper

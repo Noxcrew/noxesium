@@ -5,9 +5,15 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
+import com.noxcrew.noxesium.paper.commands.componentCommands
+import com.noxcrew.noxesium.paper.commands.listCommand
+import com.noxcrew.noxesium.paper.commands.openLinkCommand
+import com.noxcrew.noxesium.paper.commands.playSoundCommand
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
+import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -15,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin
  * Sets up Noxesium for usage on Paper. Noxesium can be either compiled into your jar or it can
  * be put in the plugins folder as separate plugin. Make sure to initialize this file and run
  * setup() if you compile it into your plugin.
+ *
+ * Your plugin is required to a Paper plugin if you are embedding it!
  */
 public class NoxesiumPaper : JavaPlugin() {
     public companion object {
@@ -42,6 +50,21 @@ public class NoxesiumPaper : JavaPlugin() {
 
             // Register the handshaking manager
             PaperNoxesiumServerHandshaker().register()
+
+            // Register the commands, the plugin must be a paper plugin!
+            plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commands ->
+                commands.registrar().register(
+                    Commands
+                        .literal("noxesium")
+                        .requires { sender -> sender.sender.hasPermission("noxesium.command") }
+                        .then(listCommand())
+                        .then(openLinkCommand())
+                        .then(playSoundCommand())
+                        .then(componentCommands())
+                        .build(),
+                    "Provides commands for interacting with Noxesium",
+                )
+            }
         }
     }
 

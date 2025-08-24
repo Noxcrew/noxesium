@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.paper.entrypoint
 
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.NoxesiumReferences
+import com.noxcrew.noxesium.api.feature.NoxesiumFeature
 import com.noxcrew.noxesium.api.network.PacketCollection
 import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers
 import com.noxcrew.noxesium.api.registry.RegistryCollection
@@ -44,6 +45,10 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
         CommonGameComponentTypes.INSTANCE,
         CommonItemComponentTypes.INSTANCE,
         NmsGameComponentTypes.INSTANCE,
+    )
+
+    override fun getAllFeatures(): Collection<NoxesiumFeature> = listOf(
+        // SmoothTrident()
     )
 
     override fun getEncryptionKey(): URL? =

@@ -18,13 +18,13 @@ public class ExampleBlockEntityComponents {
     /**
      * Makes a block entity invisible.
      */
-    public static NoxesiumComponentType<Unit> INVISIBLE = register("invisible", Unit.CODEC);
+    public static NoxesiumComponentType<Unit> INVISIBLE = register("invisible", Unit.CODEC, Unit.class);
 
     /**
      * Registers a new component type to the registry.
      */
-    private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec) {
-        var type = NoxesiumRegistries.<T>register(INSTANCE, NoxesiumReferences.NAMESPACE, key);
+    private static <T> NoxesiumComponentType<T> register(String key, Codec<T> codec, Class<T> clazz) {
+        var type = NoxesiumRegistries.<T>register(INSTANCE, NoxesiumReferences.NAMESPACE, key, clazz);
         ComponentSerializerRegistry.registerSerializers(
                 NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type, codec, null, null);
         return type;

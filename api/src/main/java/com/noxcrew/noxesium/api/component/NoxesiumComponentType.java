@@ -15,4 +15,4 @@ import net.kyori.adventure.key.Key;
  * <p>
  * Component types are defined in a custom registry similar to vanilla components.
  */
-public record NoxesiumComponentType<T>(Key id) {}
+public record NoxesiumComponentType<T>(Key id, Class<T> clazz) {}

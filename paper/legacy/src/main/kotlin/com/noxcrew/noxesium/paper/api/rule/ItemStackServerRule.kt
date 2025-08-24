@@ -21,7 +21,7 @@ public class ItemStackServerRule(
             if (item.isEmpty) {
                 buffer.writeVarInt(0)
             } else {
-                val nms = CraftItemStack.asNMSCopy(item)
+                val nms = CraftItemStack.unwrap(item)
                 buffer.writeVarInt(item.amount)
                 buffer.writeUtf(
                     nms.itemHolder

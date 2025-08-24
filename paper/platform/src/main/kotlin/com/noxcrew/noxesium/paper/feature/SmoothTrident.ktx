@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.paper.feature
 
 import com.noxcrew.noxesium.core.network.CommonPackets
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
+import io.papermc.paper.event.entity.EntityAttemptSpinAttackEvent
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -29,7 +30,7 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
             if (!isRegistered) return@addListener
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
             val bukkitStack = player.inventory.getItem(packet.slot) ?: return@addListener
-            val nmsStack = CraftItemStack.asNMSCopy(bukkitStack) ?: return@addListener
+            val nmsStack = CraftItemStack.unwrap(bukkitStack) ?: return@addListener
             val serverPlayer = (player as? CraftPlayer)?.handle ?: return@addListener
 
             val holder =

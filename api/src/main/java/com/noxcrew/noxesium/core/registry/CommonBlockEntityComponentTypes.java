@@ -15,12 +15,12 @@ public class CommonBlockEntityComponentTypes {
     /**
      * Sets the default height of a beacon beam.
      */
-    public static NoxesiumComponentType<Integer> BEACON_BEAM_HEIGHT = register("beacon_beam_height");
+    public static NoxesiumComponentType<Integer> BEACON_BEAM_HEIGHT = register("beacon_beam_height", Integer.class);
 
     /**
      * Registers a new component type to the registry.
      */
-    private static <T> NoxesiumComponentType<T> register(String key) {
-        return NoxesiumRegistries.register(INSTANCE, NoxesiumReferences.NAMESPACE, key);
+    private static <T> NoxesiumComponentType<T> register(String key, Class<T> clazz) {
+        return NoxesiumRegistries.register(INSTANCE, NoxesiumReferences.NAMESPACE, key, clazz);
     }
 }

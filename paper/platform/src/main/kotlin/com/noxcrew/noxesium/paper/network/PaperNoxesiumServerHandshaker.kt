@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
+import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.event.EventHandler
@@ -45,7 +46,7 @@ public class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listene
 
     @EventHandler
     public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
-        onChannelRegistered(NoxesiumPlayerManager.getInstance().getPlayer(event.player.uniqueId), event.channel)
+        onChannelRegistered(event.player.noxesiumPlayer, event.channel)
     }
 
     override fun isConnected(player: NoxesiumServerPlayer): Boolean =

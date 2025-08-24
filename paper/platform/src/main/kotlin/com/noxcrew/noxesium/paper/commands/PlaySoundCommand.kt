@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
+import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -212,7 +213,7 @@ private fun playSound(
         .getArgument("targets", PlayerSelectorArgumentResolver::class.java)
         .resolve(ctx.source)
         .map {
-            NoxesiumPlayerManager.getInstance().getPlayer(it.uniqueId)?.also { player ->
+            it.noxesiumPlayer?.also { player ->
                 if (entity != null) {
                     player.playSound(
                         entity.entityId,

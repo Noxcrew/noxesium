@@ -75,9 +75,9 @@ public class NoxesiumRegistries {
     /**
      * Registers a new component type to the registry.
      */
-    public static <C> NoxesiumComponentType<C> register(
-            RegistryCollection<NoxesiumComponentType<?>> collection, String namespace, String key) {
-        var component = new NoxesiumComponentType<C>(Key.key(namespace, key));
+    public static <T> NoxesiumComponentType<T> register(
+            RegistryCollection<NoxesiumComponentType<?>> collection, String namespace, String key, Class<T> clazz) {
+        var component = new NoxesiumComponentType<T>(Key.key(namespace, key), clazz);
         collection.register(Key.key(namespace, key), component);
         return component;
     }

@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.paper.commands
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
+import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
@@ -29,14 +29,14 @@ public fun openLinkCommand(): LiteralArgumentBuilder<CommandSourceStack> = Comma
             ),
     )
 
-/** Plays a sound based on the given context. */
+/** Open the given link as a pop-up with extra text. */
 private fun openLink(ctx: CommandContext<CommandSourceStack>, text: Component? = null,): Int {
     val url = ctx.getArgument("url", String::class.java)
     return ctx
         .getArgument("targets", PlayerSelectorArgumentResolver::class.java)
         .resolve(ctx.source)
         .map {
-            NoxesiumPlayerManager.getInstance().getPlayer(it.uniqueId)?.also { player ->
+            it.noxesiumPlayer?.also { player ->
                 player.openLink(url, text)
             }
         }.let {

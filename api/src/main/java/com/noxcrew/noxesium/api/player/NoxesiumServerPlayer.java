@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder;
+import com.noxcrew.noxesium.api.component.SimpleMutableNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
@@ -51,6 +52,9 @@ public class NoxesiumServerPlayer {
 
     @Nullable
     private ClientSettings settings;
+
+    @NotNull
+    private SimpleMutableNoxesiumComponentHolder components = new SimpleMutableNoxesiumComponentHolder();
 
     private int lastSoundId;
 
@@ -211,7 +215,7 @@ public class NoxesiumServerPlayer {
      * Returns the holder of game components for this player.
      */
     public MutableNoxesiumComponentHolder getGameComponents() {
-
+        return components;
     }
 
     /**
