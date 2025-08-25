@@ -4,34 +4,24 @@ package com.noxcrew.noxesium.api;
  * Stores various constant values for Noxesium.
  */
 public class NoxesiumReferences {
-
-    /**
-     * The current protocol version of the mod. Servers can use this version to determine which functionality
-     * of Noxesium is available on the client. The protocol version will increment every full release, as such
-     * ít is recommended to work with >= comparisons.
-     * <p>
-     * Add the versions when this value changes to [NoxesiumListCommand] to serve as a proper record
-     * of when it was raised. Protocol version should only raise once per release.
-     */
-    public static final int VERSION = 19;
-
     /**
      * The name space to use for Noxesium.
      */
     public static final String NAMESPACE = "noxesium";
 
     /**
-     * The name of the custom NBT component used by Bukkit for custom values.
+     * The custom namespace to use for component metadata.
      */
-    public static final String BUKKIT_COMPOUND_ID = "PublicBukkitValues";
+    public static final String COMPONENT_NAMESPACE = "NoxesiumData";
 
     /**
-     * The NBT tag used for an immovable item.
+     * The namespace under which all packets are registered.
+     * Appended by a global API version equal to the major version of Noxesium.
      */
-    public static final String IMMOVABLE_TAG = NoxesiumReferences.NAMESPACE + ":immovable";
+    public static final String PACKET_NAMESPACE = NAMESPACE + "-v3";
 
     /**
-     * The NBT tag used for adding hover sound data to item stack
+     * The identifier used by the common entrypoint.
      */
-    public static final String HOVER_SOUND_TAG = NoxesiumReferences.NAMESPACE + ":hover_sound";
+    public static final String COMMON_ENTRYPOINT = "noxesium-common";
 }

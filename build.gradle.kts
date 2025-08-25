@@ -1,4 +1,5 @@
 import java.io.ByteArrayOutputStream
+import org.gradle.jvm.tasks.Jar
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
 
@@ -14,9 +15,12 @@ fun getGitCommit(): String {
 plugins {
     id("noxesium.publishing") apply false
 
-    alias(libs.plugins.loom) apply false
     alias(libs.plugins.moddev) apply false
+    alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless) apply false
+    alias(libs.plugins.paperweight) apply false
+    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.run.paper) apply false
 }
 
 val javaVersion: Int = 21
@@ -29,8 +33,10 @@ allprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
-        maven("https://maven.neoforged.net/releases/")
         maven("https://maven.terraformersmc.com/")
+        maven("https://maven.shedaniel.me/")
+        maven("https://maven.covers1624.net/")
+        maven("https://repo.viaversion.com")
         mavenCentral()
         maven {
             setUrl("https://api.modrinth.com/maven")
@@ -46,10 +52,23 @@ subprojects {
     apply<Noxesium_publishingPlugin>()
     apply<SpotlessPlugin>()
 
-    tasks.withType<JavaCompile> {
-        options.release.set(javaVersion)
-        sourceCompatibility = javaVersion.toString()
-        targetCompatibility = javaVersion.toString()
+    tasks {
+        withType<Jar> {
+            from("LICENSE") {
+                rename { return@rename "${it}_${rootProject.name}" }
+            }
+        }
+
+        withType<JavaCompile> {
+            options.release.set(javaVersion)
+            options.encoding = Charsets.UTF_8.name()
+            sourceCompatibility = javaVersion.toString()
+            targetCompatibility = javaVersion.toString()
+        }
+
+        withType<AbstractArchiveTask> {
+            archiveBaseName.set("noxesium-${project.name}")
+        }
     }
 
     extensions.configure<SpotlessExtension> {
@@ -74,6 +93,7 @@ subprojects {
     }
 
     extensions.configure<JavaPluginExtension> {
+        withSourcesJar()
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
