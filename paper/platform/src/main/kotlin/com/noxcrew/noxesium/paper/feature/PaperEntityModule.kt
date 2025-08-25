@@ -32,7 +32,7 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                 if (!isRegistered) return@scheduleSyncRepeatingTask
                 for (entity in NoxesiumEntityManager.getInstance<Entity, EntityComponentHolder>().allEntities) {
                     if (entity.hasModified()) {
-                        val packet = ClientboundUpdateGameComponentsPacket(false, entity.collectModified())
+                        val packet = ClientboundUpdateEntityComponentsPacket(entity.entity.id, false, entity.collectModified())
 
                         // Only if the entity is dirty do we determine which players are able to see it.
                         // We have to calculate a bit here as we don't store the final references to

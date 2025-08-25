@@ -2,6 +2,8 @@ package com.noxcrew.noxesium.api.component;
 
 import net.kyori.adventure.key.Key;
 
+import java.util.Objects;
+
 /**
  * A Noxesium component is a custom version of Mojang's Data Component system which allows
  * any arbitrary data to be added to an entity, item, block entity, or to the entire game.
@@ -15,4 +17,16 @@ import net.kyori.adventure.key.Key;
  * <p>
  * Component types are defined in a custom registry similar to vanilla components.
  */
-public record NoxesiumComponentType<T>(Key id, Class<T> clazz) {}
+public record NoxesiumComponentType<T>(Key id, Class<T> clazz) {
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof NoxesiumComponentType<?> that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+}

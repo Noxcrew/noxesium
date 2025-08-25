@@ -19,6 +19,11 @@ public abstract class EntityComponentMixin implements RemoteNoxesiumComponentHol
     private Map<NoxesiumComponentType<?>, Object> noxesium$components = null;
 
     @Override
+    public void noxesium$reloadComponents() {
+        noxesium$components = null;
+    }
+
+    @Override
     public <T> @Nullable T noxesium$getComponent(NoxesiumComponentType<T> component) {
         if (noxesium$components != null) {
             return (T) noxesium$components.get(component);

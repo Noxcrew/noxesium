@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.component;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -25,5 +26,10 @@ public class NoxesiumComponentPatch {
      */
     public Map<NoxesiumComponentType<?>, Optional<?>> getMap() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toString(data);
     }
 }
