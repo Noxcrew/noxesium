@@ -253,7 +253,8 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
         Commands
             .literal("entity")
             .then(
-                Commands.argument("targets", ArgumentTypes.entities())
+                Commands
+                    .argument("targets", ArgumentTypes.entities())
                     .configureComponentCommand(
                         NoxesiumRegistries.ENTITY_COMPONENTS,
                         object : ComponentConfigurer {
@@ -281,9 +282,15 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                             Objects.toString(rawValue)
                                         }
                                     ctx.source.sender.sendMessage(
-                                        Component.text(
-                                            "${entity.name()} has ${componentType.id.asString()} set to $value",
-                                            NamedTextColor.RED,
+                                        Component.join(
+                                            JoinConfiguration.noSeparators(),
+                                            listOf(
+                                                entity.name(),
+                                                Component.text(
+                                                    " has ${componentType.id.asString()} set to $value",
+                                                    NamedTextColor.RED,
+                                                ),
+                                            ),
                                         ),
                                     )
                                     1
@@ -299,8 +306,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                 .resolve(ctx.source)
                                 .onEach {
                                     it.setNoxesiumComponent(componentType, value)
-                                }
-                                .let {
+                                }.let {
                                     val notNull = it.count { it != null }
                                     when (notNull) {
                                         0 -> {

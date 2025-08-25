@@ -18,29 +18,27 @@ import kotlin.jvm.optionals.getOrNull
  * Manages entities on NMS platforms, storing their data into NBT using Bukkit's public values.
  */
 public class PaperEntityManager public constructor() : NoxesiumEntityManager<Entity, MutableNoxesiumComponentHolder>() {
-    override fun hasComponents(entity: Entity): Boolean =
-        entity.bukkitEntity.persistentDataContainer.hasAnyNoxesiumComponent()
+    override fun hasComponents(entity: Entity): Boolean = entity.bukkitEntity.persistentDataContainer.hasAnyNoxesiumComponent()
 
-    override fun loadComponentHolder(entity: Entity): MutableNoxesiumComponentHolder =
-        EntityComponentHolder(entity).apply {
-            fun <T> setAny(componentType: NoxesiumComponentType<T>, value: Any?) {
-                `noxesium$setComponent`(componentType, value as T?)
-            }
-
-            // Go through the data stored in the Bukkit data container and load it onto the holder
-            val craft = entity.bukkitEntity.persistentDataContainer as CraftPersistentDataContainer
-            val tag = craft.getTag(NoxesiumReferences.COMPONENT_NAMESPACE) as? CompoundTag ?: return@apply
-            tag.entrySet().forEach { (id, value) ->
-                val component = NoxesiumRegistries.ENTITY_COMPONENTS.getByKey(Key.key(id)) ?: return@forEach
-                val codec = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.ENTITY_COMPONENTS, component) ?: return@forEach
-                val result = codec.codec.decode(NbtOps.INSTANCE, value)
-                if (result.hasResultOrPartial()) {
-                    val raw = result.resultOrPartial()?.getOrNull()?.first ?: return@forEach
-                    setAny(component, raw)
-                }
-            }
-
-            // Ensure no modifications are sent in the first tick!
-            clearModifications()
+    override fun loadComponentHolder(entity: Entity): MutableNoxesiumComponentHolder = EntityComponentHolder(entity).apply {
+        fun <T> setAny(componentType: NoxesiumComponentType<T>, value: Any?) {
+            `noxesium$setComponent`(componentType, value as T?)
         }
+
+        // Go through the data stored in the Bukkit data container and load it onto the holder
+        val craft = entity.bukkitEntity.persistentDataContainer as CraftPersistentDataContainer
+        val tag = craft.getTag(NoxesiumReferences.COMPONENT_NAMESPACE) as? CompoundTag ?: return@apply
+        tag.entrySet().forEach { (id, value) ->
+            val component = NoxesiumRegistries.ENTITY_COMPONENTS.getByKey(Key.key(id)) ?: return@forEach
+            val codec = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.ENTITY_COMPONENTS, component) ?: return@forEach
+            val result = codec.codec.decode(NbtOps.INSTANCE, value)
+            if (result.hasResultOrPartial()) {
+                val raw = result.resultOrPartial()?.getOrNull()?.first ?: return@forEach
+                setAny(component, raw)
+            }
+        }
+
+        // Ensure no modifications are sent in the first tick!
+        clearModifications()
+    }
 }

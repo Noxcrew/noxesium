@@ -44,10 +44,10 @@ public abstract class CustomDebugHotkeysMixin {
     @WrapOperation(
             method = "handleDebugKeys",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     public void extendHelpMessage(KeyboardHandler instance, Component component, Operation<Void> original) {
         if (component.getContents() instanceof TranslatableContents translatableContents) {
             if (translatableContents.getKey().equals("debug.pause.help")) {
@@ -87,11 +87,7 @@ public abstract class CustomDebugHotkeysMixin {
 
     @WrapOperation(
             method = "keyPress",
-            at =
-            @At(
-                    value = "FIELD",
-                    target = "Lnet/minecraft/client/Options;hideGui:Z",
-                    ordinal = 1))
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;hideGui:Z", ordinal = 1))
     public void preventHidingGui(Options instance, boolean value, Operation<Void> original) {
         var restrictedOptions =
                 GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS);
@@ -111,10 +107,10 @@ public abstract class CustomDebugHotkeysMixin {
     @WrapOperation(
             method = "handleDebugKeys",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/KeyboardHandler;showDebugChat(Lnet/minecraft/network/chat/Component;)V"))
     private void modifyAllHelpMessages(KeyboardHandler instance, Component message, Operation<Void> original) {
         var translationKey = noxesium$getTranslationKey(message);
         if (translationKey != null) {

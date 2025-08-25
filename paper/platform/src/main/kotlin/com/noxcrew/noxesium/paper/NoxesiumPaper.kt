@@ -5,12 +5,12 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
-import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.paper.commands.componentCommands
 import com.noxcrew.noxesium.paper.commands.listCommand
 import com.noxcrew.noxesium.paper.commands.openLinkCommand
 import com.noxcrew.noxesium.paper.commands.playSoundCommand
+import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker

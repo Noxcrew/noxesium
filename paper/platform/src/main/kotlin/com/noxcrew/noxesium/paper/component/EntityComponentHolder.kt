@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.paper.component
 import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType
 import com.noxcrew.noxesium.api.component.SimpleMutableNoxesiumComponentHolder
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.paper.feature.setNoxesiumComponent
 import net.minecraft.world.entity.Entity
 
@@ -15,11 +16,12 @@ public class EntityComponentHolder(
     // data when we recreate the entity component holder in the future.
     override fun <T : Any?> `noxesium$setComponent`(component: NoxesiumComponentType<T>, value: T?) {
         super.`noxesium$setComponent`(component, value)
-        entity.bukkitEntity.persistentDataContainer.setNoxesiumComponent(component, value)
+        entity.bukkitEntity.persistentDataContainer.setNoxesiumComponent(NoxesiumRegistries.ENTITY_COMPONENTS, component, value)
     }
 
     override fun `noxesium$clearComponents`() {
         super.`noxesium$clearComponents`()
-        entity.bukkitEntity.persistentDataContainer.raw.remove(NoxesiumReferences.COMPONENT_NAMESPACE)
+        entity.bukkitEntity.persistentDataContainer.raw
+            .remove(NoxesiumReferences.COMPONENT_NAMESPACE)
     }
 }
