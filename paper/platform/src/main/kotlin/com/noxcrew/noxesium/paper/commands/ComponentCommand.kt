@@ -83,7 +83,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                     ctx.source.sender.sendMessage(
                                         Component.text(
                                             "${player.username} has ${componentType.id.asString()} set to $value",
-                                            NamedTextColor.RED,
+                                            NamedTextColor.WHITE,
                                         ),
                                     )
                                     1
@@ -288,7 +288,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                                 entity.name(),
                                                 Component.text(
                                                     " has ${componentType.id.asString()} set to $value",
-                                                    NamedTextColor.RED,
+                                                    NamedTextColor.WHITE,
                                                 ),
                                             ),
                                         ),

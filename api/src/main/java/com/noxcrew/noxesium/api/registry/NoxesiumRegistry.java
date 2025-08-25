@@ -4,8 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class NoxesiumRegistry<T> {
     private final Key id;
     protected final BiMap<Integer, T> byId = HashBiMap.create();
-    protected final Map<Key, T> byKey = new ConcurrentHashMap<>();
+    protected final BiMap<Key, T> byKey = HashBiMap.create();
 
     public NoxesiumRegistry(Key id) {
         this.id = id;
@@ -82,6 +80,13 @@ public class NoxesiumRegistry<T> {
     }
 
     /**
+     * Removes the given key from the registry.
+     */
+    public void remove(Key key) {
+        byKey.remove(key);
+    }
+
+    /**
      * Returns the value in this registry for the given id.
      */
     @Nullable
@@ -94,6 +99,13 @@ public class NoxesiumRegistry<T> {
      */
     public int getIdFor(T value) {
         return byId.inverse().get(value);
+    }
+
+    /**
+     * Returns the key associated with the given value.
+     */
+    public Key getKeyFor(T value) {
+        return byKey.inverse().get(value);
     }
 
     /**

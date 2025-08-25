@@ -31,7 +31,7 @@ public class PaperEntityManager public constructor() : NoxesiumEntityManager<Ent
         tag.entrySet().forEach { (id, value) ->
             val component = NoxesiumRegistries.ENTITY_COMPONENTS.getByKey(Key.key(id)) ?: return@forEach
             val codec = ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.ENTITY_COMPONENTS, component) ?: return@forEach
-            val result = codec.codec.decode(NbtOps.INSTANCE, value)
+            val result = codec.serializers().codec.decode(NbtOps.INSTANCE, value)
             if (result.hasResultOrPartial()) {
                 val raw = result.resultOrPartial()?.getOrNull()?.first ?: return@forEach
                 setAny(component, raw)

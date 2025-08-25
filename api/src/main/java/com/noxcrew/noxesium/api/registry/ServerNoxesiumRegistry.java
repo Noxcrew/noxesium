@@ -46,9 +46,23 @@ public class ServerNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
     public <V extends T> V register(Key key, V value, @Nullable NoxesiumEntrypoint entrypoint) {
         super.register(key, value, entrypoint);
 
+        // Don't re-register if the value is already included!
+        if (byId.containsValue(value)) return value;
+
         var id = lastId.getAndIncrement();
         byId.put(id, value);
         entrypoints.put(key, entrypoint == null ? null : entrypoint.getId());
         return value;
+    }
+
+    @Override
+    public void remove(Key key) {
+        var value = byKey.get(key);
+        if (value == null) return;
+        super.remove(key);
+        entrypoints.remove(key);
+
+        var id = byId.inverse().get(value);
+        byId.remove(id);
     }
 }

@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.feature.item.HoverSound;
@@ -59,6 +60,10 @@ public class NoxesiumCodecs {
                             .forGetter(HoverSound::onlyPlayInNonPlayerInventories))
             .apply(instance, HoverSound::new));
 
+    public static final Codec<QibDefinition> QIB_DEFINITION = Codec.STRING.comapFlatMap(
+            string -> DataResult.success(QibDefinition.QIB_GSON.fromJson(string, QibDefinition.class)),
+            QibDefinition.QIB_GSON::toJson);
+
     public static <E extends Enum<?>> Codec<E> forEnum(Class<E> clazz) {
         return new PrimitiveCodec<>() {
             @Override
@@ -96,7 +101,7 @@ public class NoxesiumCodecs {
                     var serializer = ComponentSerializerRegistry.getSerializers(registry, type);
                     Preconditions.checkNotNull(
                             serializer, "Could not find serializer for component with type: '" + type.id() + "'");
-                    return serializer.codec();
+                    return serializer.serializers().codec();
                 })
                 .xmap(
                         map -> {

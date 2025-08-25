@@ -3,7 +3,9 @@ package com.noxcrew.noxesium.core.nms.serialization;
 import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
+import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
+import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.CommonPackets;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
@@ -28,6 +30,9 @@ public class CommonPacketSerializers {
      * Registers all serializers.
      */
     public static void register() {
+        SerializableRegistries.registerSerializers(
+                NoxesiumRegistries.QIB_EFFECTS, NoxesiumCodecs.QIB_DEFINITION, NoxesiumStreamCodecs.QIB_DEFINITION);
+
         registerSerializer(
                 CommonPackets.SERVER_CLIENT_SETTINGS,
                 StreamCodec.composite(

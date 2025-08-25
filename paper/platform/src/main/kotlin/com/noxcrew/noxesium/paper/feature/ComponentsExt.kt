@@ -149,7 +149,7 @@ internal fun <T> PersistentDataContainer.getNoxesiumComponent(
     val craft = this as CraftPersistentDataContainer
     val tag = craft.getTag(NoxesiumReferences.COMPONENT_NAMESPACE) as? CompoundTag ?: return null
     val value = tag.get(type.id.asString()) ?: return null
-    val result = codec.codec.decode(NbtOps.INSTANCE, value)
+    val result = codec.serializers.codec.decode(NbtOps.INSTANCE, value)
     if (result.hasResultOrPartial()) {
         return result.resultOrPartial()?.getOrNull()?.first
     }
@@ -182,7 +182,7 @@ internal fun <T> PersistentDataContainer.setNoxesiumComponent(
         return true
     }
 
-    val result = codec.codec.encodeStart(NbtOps.INSTANCE, value)
+    val result = codec.serializers.codec.encodeStart(NbtOps.INSTANCE, value)
     if (result.hasResultOrPartial()) {
         val encoded = result.resultOrPartial()?.getOrNull() ?: return false
         val tag = (craft.getTag(NoxesiumReferences.COMPONENT_NAMESPACE) as? CompoundTag) ?: CompoundTag()

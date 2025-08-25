@@ -7,8 +7,9 @@ import org.bukkit.Bukkit
 
 /** Ticks all players every tick. */
 public class PaperPlayerModule : NoxesiumFeature() {
-    override fun onRegister() {
+    init {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(NoxesiumPaper.plugin, {
+            if (!isRegistered) return@scheduleSyncRepeatingTask
             for (player in NoxesiumPlayerManager.getInstance().allPlayers) {
                 player.tick()
             }

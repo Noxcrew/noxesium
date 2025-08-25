@@ -38,7 +38,7 @@ public class NoxesiumComponentHelper {
         if (noxesiumData.isEmpty()) return null;
         var value = noxesiumData.get().get(type.id().asString());
         if (value == null) return null;
-        var result = codec.codec().decode(NbtOps.INSTANCE, value);
+        var result = codec.serializers().codec().decode(NbtOps.INSTANCE, value);
         if (result.hasResultOrPartial()) {
             var partial = result.resultOrPartial();
             if (partial.isPresent()) {
@@ -94,7 +94,7 @@ public class NoxesiumComponentHelper {
             return;
         }
 
-        var result = codec.codec().encodeStart(NbtOps.INSTANCE, value);
+        var result = codec.serializers().codec().encodeStart(NbtOps.INSTANCE, value);
         if (result.hasResultOrPartial()) {
             var encoded = result.resultOrPartial().orElse(null);
             if (encoded == null) return;

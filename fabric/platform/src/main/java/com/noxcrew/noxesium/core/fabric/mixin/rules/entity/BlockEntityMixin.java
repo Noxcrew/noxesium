@@ -61,7 +61,10 @@ public class BlockEntityMixin implements NoxesiumComponentHolder {
 
                 // Store that we know about this data
                 if (noxesium$componentCache == null) noxesium$componentCache = new HashMap<>();
-                noxesium$componentCache.put(type, new CachedComponentData<>(value, serializer.codec()));
+                noxesium$componentCache.put(
+                        type,
+                        new CachedComponentData<>(
+                                value, serializer.serializers().codec()));
             }
         }
     }

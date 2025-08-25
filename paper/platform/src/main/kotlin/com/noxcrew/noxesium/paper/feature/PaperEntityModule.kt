@@ -25,12 +25,11 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
     /** A complete cache of all entities seen by all players. */
     private val seenEntities = HashMultimap.create<UUID, Int>()
 
-    override fun onRegister() {
-        super.onRegister()
-
+    init {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
             NoxesiumPaper.plugin,
             {
+                if (!isRegistered) return@scheduleSyncRepeatingTask
                 for (entity in NoxesiumEntityManager.getInstance<Entity, EntityComponentHolder>().allEntities) {
                     if (entity.hasModified()) {
                         val packet = ClientboundUpdateGameComponentsPacket(false, entity.collectModified())
