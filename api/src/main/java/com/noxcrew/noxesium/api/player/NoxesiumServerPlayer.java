@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
+import com.noxcrew.noxesium.core.network.sync.clientbound.ClientboundRequestSyncEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -334,5 +335,14 @@ public class NoxesiumServerPlayer {
                 this, lastSoundId++, sound, source, volume, pitch, offset, looping, attenuation, null, entityId);
         noxesiumSound.play(true);
         return noxesiumSound;
+    }
+
+    /**
+     * Starts the folder syncing protocol with this player over the given
+     * folder id. This will cause the client to receive a pop-up asking
+     * them to confirm this sync and to pick a target directory.
+     */
+    public void startFolderSync(String folderId) {
+        sendPacket(new ClientboundRequestSyncEvent(folderId));
     }
 }

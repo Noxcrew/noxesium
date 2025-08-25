@@ -10,15 +10,18 @@ import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.core.fabric.feature.misc.TeamGlowHotkeys;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.core.fabric.feature.sync.FolderSyncSystem;
 import com.noxcrew.noxesium.core.fabric.network.CommonComponentChangeListeners;
 import com.noxcrew.noxesium.core.fabric.network.CommonPacketHandling;
 import com.noxcrew.noxesium.core.network.CommonPackets;
+import com.noxcrew.noxesium.core.network.sync.SyncPackets;
 import com.noxcrew.noxesium.core.nms.serialization.CommonBlockEntityComponentSerializers;
 import com.noxcrew.noxesium.core.nms.serialization.CommonEntityComponentSerializers;
 import com.noxcrew.noxesium.core.nms.serialization.CommonGameComponentSerializers;
 import com.noxcrew.noxesium.core.nms.serialization.CommonItemComponentSerializers;
 import com.noxcrew.noxesium.core.nms.serialization.CommonPacketSerializers;
 import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes;
+import com.noxcrew.noxesium.core.nms.serialization.SyncPacketSerializers;
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -39,6 +42,7 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
     private final QibBehaviorModule qibBehaviorModule;
     private final CommonPacketHandling commonPacketHandling;
     private final CommonComponentChangeListeners commonComponentChangeListeners;
+    private final FolderSyncSystem folderSyncSystem;
 
     public CommonFabricNoxesiumEntrypoint() {
         CommonBlockEntityComponentSerializers.register();
@@ -48,11 +52,13 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
         HandshakePacketSerializers.register();
         CommonPacketSerializers.register();
+        SyncPacketSerializers.register();
 
         teamGlowHotkeys = new TeamGlowHotkeys();
         qibBehaviorModule = new QibBehaviorModule();
         commonPacketHandling = new CommonPacketHandling();
         commonComponentChangeListeners = new CommonComponentChangeListeners();
+        folderSyncSystem = new FolderSyncSystem();
     }
 
     @Override
@@ -82,12 +88,13 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
         features.add(commonPacketHandling);
         features.add(qibBehaviorModule);
         features.add(teamGlowHotkeys);
+        features.add(folderSyncSystem);
         return features;
     }
 
     @Override
     public Collection<PacketCollection> getPacketCollections() {
-        return List.of(CommonPackets.INSTANCE);
+        return List.of(CommonPackets.INSTANCE, SyncPackets.INSTANCE);
     }
 
     @Override

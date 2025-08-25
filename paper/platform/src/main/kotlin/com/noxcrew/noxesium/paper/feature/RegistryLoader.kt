@@ -46,10 +46,11 @@ public class RegistryLoader : NoxesiumFeature() {
             }
 
             // Start watching for changes
-            watchKeys[entry] = folder.register(
-                watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
-                StandardWatchEventKinds.ENTRY_DELETE,
-            )
+            watchKeys[entry] =
+                folder.register(
+                    watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY,
+                    StandardWatchEventKinds.ENTRY_DELETE,
+                )
         }
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(

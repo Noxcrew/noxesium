@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.component.EntityComponentHolder
@@ -90,16 +89,26 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
         // Track all entities seen by this player, even if they have not finished the handshake with Noxesium yet!
         seenEntities.put(e.player.uniqueId, e.entity.entityId)
 
-        val noxesiumPlayer = e.player.noxesiumPlayer ?: return
-        val holder =
-            NoxesiumEntityManager.getInstance<Entity, EntityComponentHolder>().getComponentHolderIfPresent((e.entity as CraftEntity).handle)
-                ?: return
-        noxesiumPlayer.sendPacket(
-            ClientboundUpdateEntityComponentsPacket(
-                e.entity.entityId,
-                true,
-                holder.collectAll().takeUnless { it.isEmpty } ?: return,
-            ),
+        // Delay this by one task as the entity has not yet been sent, we need to send this packet
+        // after the entity is known to the client!
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+            NoxesiumPaper.plugin,
+            {
+                val noxesiumPlayer = e.player.noxesiumPlayer ?: return@scheduleSyncDelayedTask
+                val holder =
+                    NoxesiumEntityManager
+                        .getInstance<Entity, EntityComponentHolder>()
+                        .getComponentHolderIfPresent((e.entity as CraftEntity).handle)
+                        ?: return@scheduleSyncDelayedTask
+                noxesiumPlayer.sendPacket(
+                    ClientboundUpdateEntityComponentsPacket(
+                        e.entity.entityId,
+                        true,
+                        holder.collectAll().takeUnless { it.isEmpty } ?: return@scheduleSyncDelayedTask,
+                    ),
+                )
+            },
+            1,
         )
     }
 

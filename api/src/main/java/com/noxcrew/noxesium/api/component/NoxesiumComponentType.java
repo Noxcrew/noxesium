@@ -1,8 +1,7 @@
 package com.noxcrew.noxesium.api.component;
 
-import net.kyori.adventure.key.Key;
-
 import java.util.Objects;
+import net.kyori.adventure.key.Key;
 
 /**
  * A Noxesium component is a custom version of Mojang's Data Component system which allows

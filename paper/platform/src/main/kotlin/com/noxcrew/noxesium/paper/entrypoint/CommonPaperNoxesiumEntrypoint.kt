@@ -7,16 +7,19 @@ import com.noxcrew.noxesium.api.network.PacketCollection
 import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers
 import com.noxcrew.noxesium.api.registry.RegistryCollection
 import com.noxcrew.noxesium.core.network.CommonPackets
+import com.noxcrew.noxesium.core.network.sync.SyncPackets
 import com.noxcrew.noxesium.core.nms.serialization.CommonBlockEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonGameComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonItemComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonPacketSerializers
 import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes
+import com.noxcrew.noxesium.core.nms.serialization.SyncPacketSerializers
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes
+import com.noxcrew.noxesium.paper.feature.FolderSyncModule
 import com.noxcrew.noxesium.paper.feature.PaperEntityModule
 import com.noxcrew.noxesium.paper.feature.PaperPlayerModule
 import com.noxcrew.noxesium.paper.feature.RegistryLoader
@@ -34,12 +37,14 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
 
         HandshakePacketSerializers.register()
         CommonPacketSerializers.register()
+        SyncPacketSerializers.register()
     }
 
     override fun getId(): String = NoxesiumReferences.COMMON_ENTRYPOINT
 
     override fun getPacketCollections(): Collection<PacketCollection> = listOf(
         CommonPackets.INSTANCE,
+        SyncPackets.INSTANCE,
     )
 
     override fun getRegistryCollections(): Collection<RegistryCollection<*>> = listOf(
@@ -54,6 +59,7 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
         PaperPlayerModule(),
         PaperEntityModule(),
         RegistryLoader(),
+        FolderSyncModule(),
         // SmoothTrident()
     )
 

@@ -1,15 +1,14 @@
 package com.noxcrew.noxesium.paper.api.event
 
-import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.HandlerList
 import org.bukkit.event.player.PlayerEvent
 
-/** Emitted by Noxesium when it finishes a handshake with a new player. */
-public class NoxesiumPlayerRegisteredEvent(
+/** Emitted by Noxesium after it has received a newly updated sync folder from the given client. */
+public class NoxesiumSyncCompletedEvent(
     player: Player,
-    /** The Noxesium player which stores information provided by this client. */
-    public val noxesiumPlayer: NoxesiumServerPlayer,
+    /** The id of the sync folder that was updated. */
+    public val id: String,
 ) : PlayerEvent(player) {
     public companion object {
         @JvmStatic
