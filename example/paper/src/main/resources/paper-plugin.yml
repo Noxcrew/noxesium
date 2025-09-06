@@ -1,0 +1,8 @@
+name: NoxesiumExtensionExample
+version: 1.0.0
+main: com.noxcrew.noxesium.example.ExampleExtension
+api-version: '1.21.8'
+dependencies:
+    NoxesiumApi:
+        load: BEFORE
+        required: true

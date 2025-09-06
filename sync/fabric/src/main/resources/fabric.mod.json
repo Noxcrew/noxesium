@@ -18,6 +18,9 @@
       "com.noxcrew.noxesium.sync.NoxesiumSyncFabricEntrypoint"
     ]
   },
+  "mixins": [
+    "noxesium-sync.mixins.json"
+  ],
   "depends": {
     "fabric": "*",
     "noxesium": ">=${version}"

@@ -1,8 +1,8 @@
-package com.noxcrew.noxesium.paper.commands
+package com.noxcrew.noxesium.sync
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.noxcrew.noxesium.api.NoxesiumApi
-import com.noxcrew.noxesium.paper.feature.FolderSyncModule
+import com.noxcrew.noxesium.paper.commands.noxesiumPlayer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.Component
