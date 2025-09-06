@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     id("noxesium.sync")
+    id("xyz.jpenilla.run-paper")
     id("io.papermc.paperweight.userdev")
 }
 

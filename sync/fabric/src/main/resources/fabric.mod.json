@@ -22,7 +22,6 @@
     "noxesium-sync.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
-    "noxesium": ">=${version}"
+    "fabric": "*"
   }
 }

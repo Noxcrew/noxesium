@@ -33,62 +33,69 @@ public class NoxesiumPaper : JavaPlugin() {
         /** The main plugin instance to use. */
         public lateinit var plugin: Plugin
 
-        /** Sets up Noxesium's server-side API. */
-        public fun setup(
-            plugin: Plugin,
-            playerManager: NoxesiumPlayerManager = NoxesiumPlayerManager(),
-            entrypoints: Collection<NoxesiumEntrypoint> = emptyList(),
-            commands: Collection<LiteralArgumentBuilder<CommandSourceStack>.() -> Unit> = emptyList(),
-        ) {
-            // Configure important instances
+        /** Prepares Noxesium's server-side API. */
+        public fun prepare(plugin: Plugin, playerManager: NoxesiumPlayerManager = NoxesiumPlayerManager(),) {
             NoxesiumPaper.plugin = plugin
             NoxesiumPlayerManager.setInstance(playerManager)
             NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
             NoxesiumEntityManager.setInstance(PaperEntityManager())
+        }
 
+        /** Enables Noxesium's server-side API. */
+        public fun enable(
+            entrypoints: Collection<() -> NoxesiumEntrypoint> = emptyList(),
+            commands: Collection<() -> LiteralArgumentBuilder<CommandSourceStack>> = emptyList(),
+        ) {
             // Process all entry points
             val logger = NoxesiumApi.getLogger()
             val api = NoxesiumApi.getInstance()
-            entrypoints.forEach { api.registerAndActivateEntrypoint(it) }
+            entrypoints.forEach { api.registerAndActivateEntrypoint(it()) }
             logger.info("Loaded ${api.activeEntrypoints.size} Noxesium entrypoints")
+
+            if (commands.isNotEmpty()) {
+                // Register the commands, the plugin must be a paper plugin!
+                plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commandsLifecycle ->
+                    commandsLifecycle.registrar().register(
+                        Commands
+                            .literal("noxesium")
+                            .requires { sender -> sender.sender.hasPermission("noxesium.command") }
+                            .apply { commands.forEach { then(it()) } }
+                            .build(),
+                        "Provides commands for interacting with Noxesium",
+                    )
+                }
+            }
 
             // Register the handshaking manager
             PaperNoxesiumServerHandshaker().register()
-
-            // Register the commands, the plugin must be a paper plugin!
-            plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { commandsLifecycle ->
-                commandsLifecycle.registrar().register(
-                    Commands
-                        .literal("noxesium")
-                        .requires { sender -> sender.sender.hasPermission("noxesium.command") }
-                        .then(listCommand())
-                        .then(openLinkCommand())
-                        .then(playSoundCommand())
-                        .then(componentCommands())
-                        .apply {
-                            commands.forEach { it() }
-                        }.build(),
-                    "Provides commands for interacting with Noxesium",
-                )
-            }
         }
     }
 
-    private val entrypoints = mutableSetOf<NoxesiumEntrypoint>(CommonPaperNoxesiumEntrypoint())
-    private val commands = mutableSetOf<LiteralArgumentBuilder<CommandSourceStack>.() -> Unit>()
+    private val entrypoints = mutableSetOf<() -> NoxesiumEntrypoint>()
+    private val commands = mutableSetOf<() -> LiteralArgumentBuilder<CommandSourceStack>>()
 
-    override fun onEnable() {
-        setup(this, entrypoints = entrypoints, commands = commands)
+    override fun onLoad() {
+        prepare(this)
+
+        registerEntrypoint { CommonPaperNoxesiumEntrypoint() }
+        registerNoxesiumCommand { listCommand() }
+        registerNoxesiumCommand { openLinkCommand() }
+        registerNoxesiumCommand { playSoundCommand() }
+        registerNoxesiumCommand { componentCommands() }
     }
 
-    /** Registers a new entrypoint. */
-    public fun registerEntrypoint(entrypoint: NoxesiumEntrypoint) {
+    override fun onEnable() {
+        enable(entrypoints, commands)
+    }
+
+    /** Registers a new entrypoint, expects a delayed supplier to avoid constructing the instance early. */
+    public fun registerEntrypoint(entrypoint: () -> NoxesiumEntrypoint) {
         entrypoints += entrypoint
     }
 
-    /** Registers a new Noxesium command. */
-    public fun registerNoxesiumCommand(command: LiteralArgumentBuilder<CommandSourceStack>.() -> Unit) {
+    /** Registers a new Noxesium command, expects a delayed value so it can reference registered features. */
+    public fun registerNoxesiumCommand(command: () -> LiteralArgumentBuilder<CommandSourceStack>) {
         commands += command
     }
 }

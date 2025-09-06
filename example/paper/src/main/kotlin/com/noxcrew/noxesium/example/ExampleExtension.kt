@@ -9,6 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin
 public class ExampleExtension : JavaPlugin() {
     override fun onLoad() {
         val noxesiumPaper = getPlugin(NoxesiumPaper::class.java)
-        noxesiumPaper.registerEntrypoint(ExamplePaperEntrypoint())
+        noxesiumPaper.registerEntrypoint { ExamplePaperEntrypoint() }
     }
 }

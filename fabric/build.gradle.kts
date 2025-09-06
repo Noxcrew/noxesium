@@ -7,10 +7,6 @@ plugins {
 loom {
     accessWidenerPath.set(file("src/main/resources/noxesium.accesswidener"))
 
-    mixin {
-        defaultRefmapName.set("noxesium.refmap.json")
-    }
-
     runs {
         create("clientAuth") {
             client()

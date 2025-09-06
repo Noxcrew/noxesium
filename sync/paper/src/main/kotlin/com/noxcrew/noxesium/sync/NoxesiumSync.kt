@@ -9,9 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin
 public class NoxesiumSync : JavaPlugin() {
     override fun onLoad() {
         val noxesiumPaper = getPlugin(NoxesiumPaper::class.java)
-        noxesiumPaper.registerEntrypoint(NoxesiumSyncPaperEntrypoint())
-        noxesiumPaper.registerNoxesiumCommand {
-            syncCommand()
-        }
+        noxesiumPaper.registerEntrypoint { NoxesiumSyncPaperEntrypoint() }
+        noxesiumPaper.registerNoxesiumCommand { syncCommand() }
     }
 }
