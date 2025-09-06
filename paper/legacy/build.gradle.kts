@@ -10,7 +10,7 @@ plugins {
 val javaVersion: Int = 21
 
 dependencies {
-    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("${property("paper_version")}")
     compileOnlyApi(libs.guava)
 
     api(libs.kotlin.coroutines)

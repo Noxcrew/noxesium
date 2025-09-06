@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm")
     id("io.papermc.paperweight.userdev")
     id("com.gradleup.shadow")
     id("xyz.jpenilla.run-paper")
@@ -14,7 +14,7 @@ plugins {
 val javaVersion: Int = 21
 
 dependencies {
-    paperweight.paperDevBundle("1.21.8-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("${property("paper_version")}")
     compileOnlyApi(libs.guava)
 
     api(libs.kotlin.coroutines)

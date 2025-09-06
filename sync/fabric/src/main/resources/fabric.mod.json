@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "noxesium_sync",
+  "version": "${version}",
+  "name": "Noxesium Sync",
+  "description": "Adds the ability to synchronize folders between a client and server to Noxesium.",
+  "authors": [
+    "Noxcrew"
+  ],
+  "license": "LGPL-3.0-only",
+  "contact": {
+    "homepage": "https://noxcrew.com/"
+  },
+  "icon": "assets/noxesium_sync/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "noxesium": [
+      "com.noxcrew.noxesium.sync.NoxesiumSyncFabricEntrypoint"
+    ]
+  },
+  "depends": {
+    "fabric": "*",
+    "noxesium": ">=${version}"
+  }
+}

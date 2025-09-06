@@ -15,4 +15,6 @@ public class MccPackets {
             client(INSTANCE, "clientbound_mcc_game_state", ClientboundMccGameStatePacket.class);
     public static final NoxesiumPayloadType<ClientboundMccServerPacket> CLIENTBOUND_MCC_SERVER =
             client(INSTANCE, "clientbound_mcc_server", ClientboundMccServerPacket.class);
+    public static final NoxesiumPayloadType<ClientboundMccStatisticPacket> CLIENTBOUND_MCC_STATISTIC =
+            client(INSTANCE, "clientbound_mcc_statistic", ClientboundMccStatisticPacket.class);
 }

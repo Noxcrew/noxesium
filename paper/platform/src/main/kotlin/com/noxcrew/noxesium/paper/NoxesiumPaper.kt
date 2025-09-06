@@ -30,7 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin
 public class NoxesiumPaper : JavaPlugin() {
     public companion object {
         /** The main plugin instance to use. */
-        internal lateinit var plugin: Plugin
+        public lateinit var plugin: Plugin
 
         /** Sets up Noxesium's server-side API. */
         public fun setup(

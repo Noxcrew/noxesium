@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "noxesium-extension-example",
+  "version": "1.0.0",
+  "name": "Noxesium Extension Example",
+  "description": "Adds critically important improvements that Noxcrew is scared to add to Noxesium.",
+  "authors": [
+    "Noxcrew"
+  ],
+  "icon": "assets/noxesium-extension-example/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "noxesium": [
+      "com.noxcrew.noxesium.example.ExampleFabricEntrypoint"
+    ]
+  },
+  "mixins": [
+    "noxesium-example.mixins.json"
+  ]
+}

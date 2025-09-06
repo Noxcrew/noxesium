@@ -1,0 +1,66 @@
+{
+  "debug.noxesium_settings.help": "F3 + W = Open Noxesium settings menu",
+  "debug.warning.option.disabled": "This debug option is disabled.",
+  "debug.warning.option.disabled_by_server": "The server you are playing on has disabled this debug option.",
+
+
+  "debug.fps_overlay": "%s fps",
+  "debug.game_time_overlay": "%s st, %s gt",
+
+  "noxesium.options.game_time_overlay.name": "Game Time Overlay",
+  "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
+  "noxesium.options.pages.noxesium": "Noxesium",
+  "noxesium.options.screen.noxesium": "Noxesium Settings",
+  "noxesium.options.fps_overlay.name": "FPS Overlay",
+  "noxesium.options.fps_overlay.tooltip": "Adds a small overlay that shows the current fps in the top left corner of your screen.",
+  "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
+  "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
+  "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
+  "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.\n\nIf set to \"Ask server\" the server you are playing on is able to enable or disable this feature.",
+  "noxesium.options.ui_map_size.name": "Map UI Size",
+  "noxesium.options.ui_map_size.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
+  "noxesium.options.ui_map_location.name": "Map UI Location",
+  "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting.",
+
+  "noxesium.options.dump_incoming_packets.name": "Dump Incoming Packets",
+  "noxesium.options.dump_incoming_packets.tooltip": "Enables logging of Noxesium packets that are handled by the client.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.dump_outgoing_packets.name": "Dump Outgoing Packets",
+  "noxesium.options.dump_outgoing_packets.tooltip": "Enables logging of Noxesium packets sent to the server.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.qib_debug_visuals.name": "Debug Qib System",
+  "noxesium.options.qib_debug_visuals.tooltip": "Enables debug visuals for the qib system.\n\n§cIntended for server developers working on Noxesium integrations.",
+  "noxesium.options.extended_packet_logging.name": "Extended Error Logging",
+  "noxesium.options.extended_packet_logging.tooltip": "Adds additional error logs to various types of invalid packet exceptions.\n\n§cIntended for server developers.",
+  "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
+  "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
+  "noxesium.options.debug_scoreboard_teams.name": "Debug Scoreboard Teams",
+  "noxesium.options.debug_scoreboard_teams.tooltip": "Prints additional debugging information to the client logs concerning scoreboard teams. This can help servers debug protocol errors.\n\n§cIntended for helping server developers debug errors.",
+  "noxesium.options.show_culling_boxes.name": "Show Entity Culling Hitboxes",
+  "noxesium.options.show_culling_boxes.tooltip": "Replaces hitboxes shown with F3+B with the culling hitbox which is what controls whether the entity should stay rendered. This shows the configured width and height of display entities.\n\n§cIntended for server developers debugging entity culling.",
+
+  "noxesium.options.enum.default": "Ask server",
+  "noxesium.options.enum.true": "Always",
+  "noxesium.options.enum.false": "Never",
+
+  "noxesium.options.enum.top": "Top Corner",
+  "noxesium.options.enum.bottom": "Bottom Corner",
+  "noxesium.options.enum.top_flipped": "Opposite Top Corner",
+  "noxesium.options.enum.bottom_flipped": "Opposite Bottom Corner",
+
+  "itemGroup.noxesium.server_items": "Custom Blocks",
+
+  "category.noxesium": "Noxesium",
+
+  "key.noxesium.glow.red": "Toggle Red Highlighting (Spectators)",
+  "key.noxesium.glow.orange": "Toggle Orange Highlighting (Spectators)",
+  "key.noxesium.glow.yellow": "Toggle Yellow Highlighting (Spectators)",
+  "key.noxesium.glow.lime": "Toggle Lime Highlighting (Spectators)",
+  "key.noxesium.glow.green": "Toggle Green Highlighting (Spectators)",
+  "key.noxesium.glow.cyan": "Toggle Cyan Highlighting (Spectators)",
+  "key.noxesium.glow.aqua": "Toggle Aqua Highlighting (Spectators)",
+  "key.noxesium.glow.blue": "Toggle Blue Highlighting (Spectators)",
+  "key.noxesium.glow.purple": "Toggle Purple Highlighting (Spectators)",
+  "key.noxesium.glow.pink": "Toggle Pink Highlighting (Spectators)",
+
+  "key.noxesium.glow.all": "Enable All Highlights (Spectators)",
+  "key.noxesium.glow.none": "Disable All Highlights (Spectators)"
+}

@@ -2,6 +2,9 @@ import java.io.ByteArrayOutputStream
 import org.gradle.jvm.tasks.Jar
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun getGitCommit(): String {
     val stdout = ByteArrayOutputStream()
@@ -15,6 +18,7 @@ fun getGitCommit(): String {
 plugins {
     id("noxesium.publishing") apply false
 
+    kotlin("jvm") version "2.2.0" apply false
     alias(libs.plugins.moddev) apply false
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless) apply false
@@ -68,6 +72,14 @@ subprojects {
 
         withType<AbstractArchiveTask> {
             archiveBaseName.set("noxesium-${project.name}")
+        }
+
+        withType<KotlinCompile> {
+            explicitApiMode.set(ExplicitApiMode.Strict)
+
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+            }
         }
     }
 

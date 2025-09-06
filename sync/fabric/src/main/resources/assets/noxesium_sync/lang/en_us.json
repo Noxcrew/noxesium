@@ -1,0 +1,9 @@
+{
+  "noxesium.screen.sync.request.header": "The server you are connected to has requested to synchronize a folder of files with id \"%s\". If you accept this request the server will be able to read and write files to and from your PC within the indicated folder. Only accept this if you fully trust the server you are connected to.",
+  "noxesium.screen.sync.request.previous": "This folder was previously synced into \"%s\", however as this folder no longer exists you have to re-confirm the synchronization for safety.",
+  "noxesium.screen.sync.request.footer": "Do you want to accept?",
+  "noxesium.screen.sync.request.accept": "Accept",
+  "noxesium.screen.sync.request.deny": "Deny",
+
+  "noxesium.screen.sync.select.header": "Select Target Folder"
+}

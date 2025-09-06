@@ -4,7 +4,9 @@ import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistr
 
 import com.noxcrew.noxesium.core.mcc.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.core.mcc.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.core.mcc.ClientboundMccStatisticPacket;
 import com.noxcrew.noxesium.core.mcc.MccPackets;
+import java.util.ArrayList;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
@@ -19,6 +21,10 @@ public class MccPacketSerializers {
         registerSerializer(
                 MccPackets.CLIENTBOUND_MCC_GAME_STATE,
                 StreamCodec.composite(
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundMccGameStatePacket::game,
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundMccGameStatePacket::queueType,
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundMccGameStatePacket::phaseType,
                         ByteBufCodecs.STRING_UTF8,
@@ -36,11 +42,19 @@ public class MccPacketSerializers {
                 MccPackets.CLIENTBOUND_MCC_SERVER,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
-                        ClientboundMccServerPacket::serverType,
-                        ByteBufCodecs.STRING_UTF8,
-                        ClientboundMccServerPacket::subType,
-                        ByteBufCodecs.STRING_UTF8,
-                        ClientboundMccServerPacket::associatedGame,
+                        ClientboundMccServerPacket::server,
+                        ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),
+                        ClientboundMccServerPacket::types,
                         ClientboundMccServerPacket::new));
+        registerSerializer(
+                MccPackets.CLIENTBOUND_MCC_STATISTIC,
+                StreamCodec.composite(
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundMccStatisticPacket::statistic,
+                        ByteBufCodecs.BOOL,
+                        ClientboundMccStatisticPacket::record,
+                        ByteBufCodecs.VAR_INT,
+                        ClientboundMccStatisticPacket::value,
+                        ClientboundMccStatisticPacket::new));
     }
 }

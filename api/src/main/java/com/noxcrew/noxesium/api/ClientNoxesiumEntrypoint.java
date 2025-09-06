@@ -16,4 +16,16 @@ public interface ClientNoxesiumEntrypoint extends NoxesiumEntrypoint {
     default String getRawVersion() {
         return Integer.toString(getProtocolVersion());
     }
+
+    /**
+     * Allows implementations to run pre-initialization steps such as registering
+     * serializers. This is guaranteed to run on all entrypoints before any are initialized.
+     */
+    default void preInitialize() {}
+
+    /**
+     * Allows implementations to run initialization steps like constructing feature classes.
+     * This is guaranteed to run on all entrypoints before any are registered.
+     */
+    default void initialize() {}
 }
