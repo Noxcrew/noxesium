@@ -9,8 +9,6 @@ import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -34,7 +32,6 @@ public class NoxesiumConfig {
     public boolean showCullingBoxes = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
-    public Map<String, Map<String, String>> syncableFolders = new HashMap<>();
 
     /**
      * Returns whether to render maps in the UI.

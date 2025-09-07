@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.sync;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
 import java.nio.file.Files;
@@ -49,7 +48,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
         if (connection == null) return null;
         var serverData = connection.getServerData();
         if (serverData == null) return null;
-        var config = NoxesiumMod.getInstance().getConfig();
+        var config = NoxesiumSyncConfig.load();
         var storedFolders = config.syncableFolders.computeIfAbsent(serverData.ip, (it) -> new HashMap<>());
         var nioPath = Path.of(path);
 
@@ -62,6 +61,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
         }
 
         storedFolders.put(folderId, path);
+        config.save();
         return nioPath;
     }
 
@@ -80,7 +80,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
         if (connection == null) return;
         var serverData = connection.getServerData();
         if (serverData == null) return;
-        var config = NoxesiumMod.getInstance().getConfig();
+        var config = NoxesiumSyncConfig.load();
         var hadPreviousAttempt = false;
         var storedFolders = config.syncableFolders.computeIfAbsent(serverData.ip, (it) -> new HashMap<>());
         if (storedFolders.containsKey(folderId)) {

@@ -10,6 +10,6 @@
 
   "noxesium.screen.sync.select.header": "Select Target Folder",
 
-  "noxesium.options.sync.folders": "Synchronized Folders",
+  "noxesium.options.sync.folders": "Synchronized Folders...",
   "noxesium.options.screen.sync": "Synchronized Folders"
 }
