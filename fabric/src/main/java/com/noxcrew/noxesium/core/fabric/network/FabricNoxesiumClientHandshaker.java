@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumClientHandshaker;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
@@ -14,31 +14,44 @@ import net.minecraft.resources.ResourceLocation;
  */
 public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
     /**
+     * The channel used by the handshake packet.
+     */
+    private static final ResourceLocation HANDSHAKE_CHANNEL =
+            ResourceLocation.parse(HandshakePackets.SERVERBOUND_HANDSHAKE.id().asString());
+
+    /**
      * Registers the initializer.
      */
     public void register() {
         super.register();
 
-        // Every time the client joins a server we send over information on the version being used,
-        // we initialize when both packets are known and we are in the PLAY phase, whenever both have
-        // happened.
+        // We initialize and uninitialize the handshake whenever the handshake channel is registered or unregistered by
+        // the server, we use this to detect when it starts and stops being available. This should work regardless of
+        // how
+        // the server has its proxy configured.
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            initialize();
+            if (channels.contains(HANDSHAKE_CHANNEL)) {
+                initialize();
+            }
         });
+        C2SPlayChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
+            if (channels.contains(HANDSHAKE_CHANNEL)) {
+                uninitialize();
+            }
+        });
+
+        // Start initialization as well if we enter the PLAY phase whenever the channel is registered.
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             initialize();
         });
 
-        // Call disconnection hooks
-        ClientPlayConnectionEvents.DISCONNECT.register((ignored1, ignored2) -> {
-            uninitialize();
-        });
+        // We listen in ConnectionTerminationMixin to any instance of leaving the PLAY phase and uninitialize from
+        // there.
 
-        ClientConfigurationConnectionEvents.START.register((ignored1, ignored2) -> {
-            // Re-initialize when moving in/out of the config phase, we assume any server
-            // running a proxy that doesn't use the configuration phase between servers
-            // has their stuff set up well enough to remember the client's information.
-            uninitialize();
+        // Attempt to re-run handshaking 10s after a previous handshake went wrong, this waits
+        // out any possible server switches that may have occurred mid-handshake.
+        ClientTickEvents.END_CLIENT_TICK.register((ignored1) -> {
+            tick();
         });
     }
 

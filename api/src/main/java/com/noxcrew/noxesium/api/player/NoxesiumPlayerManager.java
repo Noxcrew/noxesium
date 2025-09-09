@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.api.player;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +53,11 @@ public class NoxesiumPlayerManager {
      * Removes data stored for the given player.
      */
     public void unregisterPlayer(UUID uniqueId) {
-        players.remove(uniqueId);
+        // If the client was mid-handshake ensure it knows about the handshake being cancelled!
+        var player = players.remove(uniqueId);
+        if (player != null && player.getHandshakeState() != HandshakeState.COMPLETE) {
+            player.sendPacket(new ClientboundHandshakeCancelPacket());
+        }
     }
 
     /**

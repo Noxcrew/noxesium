@@ -17,6 +17,7 @@ import java.util.Set;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The base for the fabric mod which loads in all entrypoints and manages registries.
@@ -57,6 +58,12 @@ public class NoxesiumMod implements ClientModInitializer {
     public Set<ServerboundMouseButtonClickPacket.Button> sentButtonClicks = new HashSet<>();
 
     /**
+     * The handler of the client-side handshake process.
+     */
+    @Nullable
+    private FabricNoxesiumClientHandshaker handshaker;
+
+    /**
      * Creates a new NoxesiumMod instance.
      */
     public NoxesiumMod() {
@@ -86,7 +93,8 @@ public class NoxesiumMod implements ClientModInitializer {
         logger.info("Loaded {} Noxesium entrypoints", api.getAllEntrypoints().size());
 
         // Set up the initializer
-        new FabricNoxesiumClientHandshaker().register();
+        handshaker = new FabricNoxesiumClientHandshaker();
+        handshaker.register();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {
@@ -123,6 +131,14 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public NoxesiumConfig getConfig() {
         return config;
+    }
+
+    /**
+     * Returns the module in charge of handshaking with the server.
+     */
+    @Nullable
+    public FabricNoxesiumClientHandshaker getHandshaker() {
+        return handshaker;
     }
 
     /**

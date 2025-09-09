@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.core.fabric.NoxesiumMixinPlugin",
   "client": [
+    "ConnectionTerminationMixin",
     "GlowingHotkeyOverrideMixin",
     "MouseButtonClickMixin",
     "PayloadTypeRegistryExt",

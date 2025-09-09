@@ -30,6 +30,7 @@ public abstract class NoxesiumFeature {
     public final void unregister() {
         if (!registered) return;
         registered = false;
+        onTransfer();
         onUnregister();
     }
 
@@ -37,6 +38,12 @@ public abstract class NoxesiumFeature {
      * Called when this feature is registered.
      */
     public void onRegister() {}
+
+    /**
+     * Called when the client transfers to a different server.
+     * Also called on unregistration.
+     */
+    public void onTransfer() {}
 
     /**
      * Called when this feature is unregistered.

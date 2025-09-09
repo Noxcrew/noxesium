@@ -46,10 +46,10 @@ public class NoxesiumServerPlayer {
     private HandshakeState handshakeState = HandshakeState.NONE;
 
     @NotNull
-    private final List<EntrypointProtocol> supportedEntrypoints = new ArrayList<>();
+    private List<EntrypointProtocol> supportedEntrypoints = new ArrayList<>();
 
     @NotNull
-    private final List<String> supportedEntrypointIds = new ArrayList<>();
+    private List<String> supportedEntrypointIds = new ArrayList<>();
 
     @NotNull
     private final List<Integer> pendingRegistrySyncs = new ArrayList<>();
@@ -58,18 +58,40 @@ public class NoxesiumServerPlayer {
     private ClientSettings settings;
 
     @NotNull
-    private SimpleMutableNoxesiumComponentHolder components = new SimpleMutableNoxesiumComponentHolder();
+    private final SimpleMutableNoxesiumComponentHolder components = new SimpleMutableNoxesiumComponentHolder();
 
     @NotNull
     private Set<NoxesiumPacket> pendingPackets = ConcurrentHashMap.newKeySet();
 
-    private int lastSoundId;
+    private int lastSoundId = 0;
+    private boolean dirty = false;
 
     public NoxesiumServerPlayer(
-            @NotNull final UUID uniqueId, @NotNull final String username, @NotNull final Component displayName) {
+            @NotNull final UUID uniqueId,
+            @NotNull final String username,
+            @NotNull final Component displayName,
+            @Nullable final SerializedNoxesiumServerPlayer serializedPlayer) {
         this.uniqueId = uniqueId;
         this.username = username;
         this.displayName = displayName;
+
+        if (serializedPlayer != null) {
+            // If serialized data is present, the handshake is complete by definition!
+            this.handshakeState = HandshakeState.COMPLETE;
+            this.supportedEntrypoints = serializedPlayer.supportedEntrypoints();
+            this.supportedEntrypointIds = this.supportedEntrypoints.stream()
+                    .map(EntrypointProtocol::id)
+                    .toList();
+            this.settings = serializedPlayer.settings();
+        }
+    }
+
+    /**
+     * Returns a serialized representation of this player's data.
+     */
+    @NotNull
+    public SerializedNoxesiumServerPlayer serialize() {
+        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings);
     }
 
     /**
@@ -97,6 +119,20 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Returns whether the serializable data of this player has recently changed.
+     */
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    /**
+     * Removes the dirty marking of this player.
+     */
+    public void unmarkDirty() {
+        dirty = false;
+    }
+
+    /**
      * Returns the current handshake state.
      */
     @NotNull
@@ -119,6 +155,7 @@ public class NoxesiumServerPlayer {
             supportedEntrypoints.add(entrypoint);
             supportedEntrypointIds.add(entrypoint.id());
         }
+        this.dirty = true;
     }
 
     /**
@@ -163,6 +200,7 @@ public class NoxesiumServerPlayer {
      */
     public void updateClientSettings(@NotNull ClientSettings settings) {
         this.settings = settings;
+        this.dirty = true;
     }
 
     /**

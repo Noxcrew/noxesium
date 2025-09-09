@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
@@ -34,6 +35,8 @@ public class HandshakePackets {
             client(INSTANCE, "clientbound_handshake_ack", ClientboundHandshakeAcknowledgePacket.class);
     public static final NoxesiumPayloadType<ClientboundHandshakeCompletePacket> CLIENTBOUND_HANDSHAKE_COMPLETE =
             client(INSTANCE, "clientbound_handshake_complete", ClientboundHandshakeCompletePacket.class);
+    public static final NoxesiumPayloadType<ClientboundHandshakeTransferredPacket> CLIENTBOUND_HANDSHAKE_TRANSFERRED =
+            client(INSTANCE, "clientbound_handshake_transferred", ClientboundHandshakeTransferredPacket.class);
     public static final NoxesiumPayloadType<ClientboundHandshakeCancelPacket> CLIENTBOUND_HANDSHAKE_CANCEL =
             client(INSTANCE, "clientbound_handshake_cancel", ClientboundHandshakeCancelPacket.class);
     public static final NoxesiumPayloadType<ClientboundRegistryIdsUpdatePacket> CLIENTBOUND_REGISTRY_IDS_UPDATE =

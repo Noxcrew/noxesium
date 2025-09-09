@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
@@ -59,6 +60,9 @@ public class HandshakePacketSerializers {
         registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE,
                 StreamCodec.unit(new ClientboundHandshakeCompletePacket()));
+        registerSerializer(
+                HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED,
+                StreamCodec.unit(new ClientboundHandshakeTransferredPacket()));
         registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL,
                 StreamCodec.unit(new ClientboundHandshakeCancelPacket()));

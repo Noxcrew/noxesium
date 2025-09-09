@@ -27,8 +27,8 @@ public class FolderSyncSystem extends NoxesiumFeature {
     }
 
     @Override
-    public void onUnregister() {
-        super.onUnregister();
+    public void onTransfer() {
+        super.onTransfer();
         activeFolders.clear();
     }
 

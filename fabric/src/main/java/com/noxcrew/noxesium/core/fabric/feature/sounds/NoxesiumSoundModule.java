@@ -38,7 +38,9 @@ public class NoxesiumSoundModule extends NoxesiumFeature {
     }
 
     @Override
-    public void onUnregister() {
+    public void onTransfer() {
+        super.onTransfer();
+
         // Clear all information about pending sounds on quit
         var soundManager = Minecraft.getInstance().getSoundManager();
         sounds.values().forEach(soundManager::stop);

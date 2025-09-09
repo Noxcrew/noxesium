@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.network.handshake;
 import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
@@ -34,6 +35,11 @@ public abstract class NoxesiumClientHandshaker {
     protected HandshakeState state = HandshakeState.NONE;
 
     /**
+     * An amount of ticks before the client should re-attempt to start a handshake.
+     */
+    protected int handshakeCooldown = -1;
+
+    /**
      * All encryption challenges sent to the server awaiting an answer.
      */
     protected final Map<NoxesiumEntrypoint, String> challenges = new HashMap<>();
@@ -55,6 +61,11 @@ public abstract class NoxesiumClientHandshaker {
             reference.handleRegistryUpdate(packet);
         });
 
+        // Whenever the server indicates a transfer we update the state
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED.addListener(this, (reference, packet, ignored3) -> {
+            reference.handleTransfer();
+        });
+
         // Whenever the handshake is completed we listen.
         HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE.addListener(this, (reference, packet, ignored3) -> {
             reference.handleComplete();
@@ -65,6 +76,16 @@ public abstract class NoxesiumClientHandshaker {
             // End the handshake without sending a packet about it!
             reference.uninitialize(true);
         });
+    }
+
+    /**
+     * Ticks the client, attempting to start a new handshake when relevant.
+     */
+    public void tick() {
+        if (handshakeCooldown < 0) return;
+        if (handshakeCooldown-- <= 0) {
+            initialize();
+        }
     }
 
     /**
@@ -257,6 +278,32 @@ public abstract class NoxesiumClientHandshaker {
     }
 
     /**
+     * Handles the server informing the client about a transfer.
+     */
+    protected void handleTransfer() {
+        if (state != HandshakeState.COMPLETE) {
+            // Whenever we got transferred while not completely done handshaking we
+            // trigger an immediate handshake failure and re-attempt handshaking soon.
+            uninitialize(true);
+            return;
+        }
+
+        // Clear out any data that the previous server set which the
+        // new server does not know about.
+        resetLocalCaches();
+    }
+
+    /**
+     * Resets any data on the client set based on server information that isn't
+     * tied to the current world or entities.
+     */
+    protected void resetLocalCaches() {
+        challenges.clear();
+        NoxesiumApi.getInstance().getAllFeatures().forEach(NoxesiumFeature::onTransfer);
+        GameComponents.getInstance().noxesium$reloadComponents();
+    }
+
+    /**
      * Un-initializes the connection with the server.
      */
     public void uninitialize() {
@@ -267,10 +314,19 @@ public abstract class NoxesiumClientHandshaker {
      * Un-initializes the connection with the server.
      */
     public void uninitialize(boolean recursive) {
+        // Stop any handshake attempts from any non-recursive cancellation
+        if (!recursive) handshakeCooldown = -1;
+
+        // Don't proceed unless there is a handshake to cancel
         if (state == HandshakeState.NONE) return;
 
         // Start by sending a packet to inform the server the handshake was cancelled!
-        if (!recursive) NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket());
+        if (!recursive) {
+            NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket());
+        } else {
+            // Attempt another handshake in 10 seconds!
+            handshakeCooldown = 200;
+        }
 
         state = HandshakeState.NONE;
         challenges.clear();
