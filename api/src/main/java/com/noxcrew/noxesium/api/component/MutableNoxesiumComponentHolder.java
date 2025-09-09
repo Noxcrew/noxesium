@@ -16,6 +16,13 @@ public interface MutableNoxesiumComponentHolder extends NoxesiumComponentHolder 
     }
 
     /**
+     * Resets the given component on this holder.
+     */
+    public default <T> void noxesium$resetComponent(NoxesiumComponentType<T> component) {
+        noxesium$setComponent(component, null);
+    }
+
+    /**
      * Clears all components from this holder.
      */
     public default void noxesium$clearComponents() {

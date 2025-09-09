@@ -26,7 +26,11 @@ public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComp
 
     @Override
     public <T> void noxesium$setComponent(NoxesiumComponentType<T> component, @Nullable T value) {
-        values.put(component, value);
+        if (value == null) {
+            values.remove(component);
+        } else {
+            values.put(component, value);
+        }
         modified.add(component);
     }
 
