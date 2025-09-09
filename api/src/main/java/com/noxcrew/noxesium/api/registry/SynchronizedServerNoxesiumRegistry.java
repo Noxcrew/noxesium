@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +19,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
     /**
      * All fields which have to be synchronized with all clients.
      */
-    private Set<Key> pendingUpdates;
+    private final Set<Key> pendingUpdates = ConcurrentHashMap.newKeySet();
 
     public SynchronizedServerNoxesiumRegistry(Key id) {
         super(id);

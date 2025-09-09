@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.nms.serialization;
 
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
+import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.SynchronizedServerNoxesiumRegistry;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class SerializableRegistries {
             NoxesiumRegistry<T> registry,
             Codec<T> codec,
             @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        Preconditions.checkState(registry instanceof SynchronizedServerNoxesiumRegistry);
+        Preconditions.checkState(registry instanceof SynchronizedServerNoxesiumRegistry || registry instanceof ClientNoxesiumRegistry<T>);
         serializers.put(registry, new SerializerPair<>(codec, streamCodec));
     }
 }

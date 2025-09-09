@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.api.component.SimpleMutableNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
+import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
@@ -233,7 +234,7 @@ public class NoxesiumServerPlayer {
         if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, type)) return false;
 
         // If this packet updates some registry we halt it until we're done updating registries!
-        if (isAwaitingRegistries()) {
+        if (isAwaitingRegistries() && packet instanceof NoxesiumRegistryDependentPacket) {
             pendingPackets.add(packet);
             return true;
         }
