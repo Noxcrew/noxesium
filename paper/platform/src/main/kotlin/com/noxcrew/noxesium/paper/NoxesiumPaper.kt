@@ -27,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin
  * be put in the plugins folder as separate plugin. Make sure to initialize this file and run
  * setup() if you compile it into your plugin.
  *
- * Your plugin is required to a Paper plugin if you are embedding it!
+ * Your plugin is required to be a Paper plugin if you are embedding it!
  */
 public class NoxesiumPaper : JavaPlugin() {
     public companion object {
