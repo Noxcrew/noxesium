@@ -251,7 +251,6 @@ public open class NoxesiumManager(
         return version >= feature.minProtocolVersion
     }
 
-
     public open fun getClientSettings(player: Player): ClientSettings? = getClientSettings(player.uniqueId)
 
     public open fun getClientSettings(playerId: UUID): ClientSettings? = settings[playerId]

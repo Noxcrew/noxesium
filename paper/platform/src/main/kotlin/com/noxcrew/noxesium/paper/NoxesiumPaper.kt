@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
+import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.paper.commands.componentCommands
@@ -35,9 +36,9 @@ public class NoxesiumPaper : JavaPlugin() {
         public lateinit var plugin: Plugin
 
         /** Prepares Noxesium's server-side API. */
-        public fun prepare(plugin: Plugin, playerManager: NoxesiumPlayerManager = NoxesiumPlayerManager(),) {
+        public fun prepare(plugin: Plugin) {
             NoxesiumPaper.plugin = plugin
-            NoxesiumPlayerManager.setInstance(playerManager)
+            NoxesiumPlayerManager.setInstance(NoxesiumPlayerManager())
             NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
             NoxesiumEntityManager.setInstance(PaperEntityManager())
@@ -47,6 +48,7 @@ public class NoxesiumPaper : JavaPlugin() {
         public fun enable(
             entrypoints: Collection<() -> NoxesiumEntrypoint> = emptyList(),
             commands: Collection<() -> LiteralArgumentBuilder<CommandSourceStack>> = emptyList(),
+            handshaker: () -> NoxesiumServerHandshaker = { PaperNoxesiumServerHandshaker() }
         ) {
             // Process all entry points
             val logger = NoxesiumApi.getLogger()
@@ -69,7 +71,7 @@ public class NoxesiumPaper : JavaPlugin() {
             }
 
             // Register the handshaking manager
-            PaperNoxesiumServerHandshaker().also {
+            handshaker().also {
                 it.register()
 
                 // Start a ticking loop to check for registry synchronization
