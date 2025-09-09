@@ -6,7 +6,8 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
-import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryUpdatePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
@@ -47,7 +48,10 @@ public abstract class NoxesiumClientHandshaker {
         });
 
         // Whenever we receive registry packets we update the registries
-        HandshakePackets.CLIENTBOUND_REGISTRY_UPDATE.addListener(this, (reference, packet, ignored3) -> {
+        HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE.addListener(this, (reference, packet, ignored3) -> {
+            reference.handleRegistryUpdate(packet);
+        });
+        HandshakePackets.CLIENTBOUND_REGISTRY_CONTENT_UPDATE.addListener(this, (reference, packet, ignored3) -> {
             reference.handleRegistryUpdate(packet);
         });
 
@@ -145,12 +149,11 @@ public abstract class NoxesiumClientHandshaker {
     }
 
     /**
-     * Handles the server sending across registry contents.
+     * Handles the server sending across registry ids.
      */
-    protected void handleRegistryUpdate(ClientboundRegistryUpdatePacket packet) {
+    protected void handleRegistryUpdate(ClientboundRegistryIdsUpdatePacket packet) {
         if (state != HandshakeState.AWAITING_REGISTRIES) {
-            NoxesiumApi.getLogger()
-                    .error("Received registry contents while in '{}' state, destroying connection!", state);
+            NoxesiumApi.getLogger().error("Received registry ids while in '{}' state, destroying connection!", state);
             uninitialize();
             return;
         }
@@ -161,19 +164,58 @@ public abstract class NoxesiumClientHandshaker {
         if (registry == null) {
             NoxesiumApi.getLogger()
                     .error(
-                            "Received registry contents for registry '{}' which does not exist",
+                            "Received registry ids for registry '{}' which does not exist",
                             packet.registry().asString());
             uninitialize();
             return;
         }
         for (var entry : packet.ids().entrySet()) {
             if (!registry.registerMapping(entry.getKey(), entry.getValue())) {
-                unknownKeys.add(entry.getKey());
+                unknownKeys.add(entry.getValue());
             }
         }
 
         // Inform the server which keys were not known to the client
         NoxesiumServerboundNetworking.send(new ServerboundRegistryUpdateResultPacket(packet.id(), unknownKeys));
+    }
+
+    /**
+     * Handles the server sending across registry contents.
+     */
+    protected void handleRegistryUpdate(ClientboundRegistryContentUpdatePacket packet) {
+        // We are allowed to receive registry content changes even when we're done handshaking!
+        if (state != HandshakeState.AWAITING_REGISTRIES && state != HandshakeState.COMPLETE) {
+            NoxesiumApi.getLogger()
+                    .error("Received registry contents while in '{}' state, destroying connection!", state);
+            uninitialize();
+            return;
+        }
+
+        // Process all contents of the packet
+        var patch = packet.patch();
+        var registry = (ClientNoxesiumRegistry<?>) NoxesiumRegistries.REGISTRIES_BY_ID.get(patch.getRegistry());
+        if (registry == null) {
+            NoxesiumApi.getLogger()
+                    .error(
+                            "Received registry contents for registry '{}' which does not exist",
+                            patch.getRegistry().asString());
+            uninitialize();
+            return;
+        }
+        for (var entry : patch.getMap().entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
+
+            if (value.isEmpty()) {
+                registry.remove(key);
+            } else {
+                var id = patch.getKeys().get(key);
+                registry.registerAny(key, id, value);
+            }
+        }
+
+        // Inform the server that the registry was received
+        NoxesiumServerboundNetworking.send(new ServerboundRegistryUpdateResultPacket(packet.id(), List.of()));
     }
 
     /**

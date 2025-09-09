@@ -18,6 +18,7 @@ import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -68,7 +69,14 @@ public class NoxesiumPaper : JavaPlugin() {
             }
 
             // Register the handshaking manager
-            PaperNoxesiumServerHandshaker().register()
+            PaperNoxesiumServerHandshaker().also {
+                it.register()
+
+                // Start a ticking loop to check for registry synchronization
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, {
+                    it.tick()
+                }, 5, 5)
+            }
         }
     }
 

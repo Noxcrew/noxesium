@@ -15,7 +15,5 @@ public class NoxesiumSyncSettingsScreen extends OptionsSubScreen {
     }
 
     @Override
-    protected void addOptions() {
-
-    }
+    protected void addOptions() {}
 }

@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -56,6 +58,9 @@ public class NoxesiumServerPlayer {
 
     @NotNull
     private SimpleMutableNoxesiumComponentHolder components = new SimpleMutableNoxesiumComponentHolder();
+
+    @NotNull
+    private Set<NoxesiumPacket> pendingPackets = ConcurrentHashMap.newKeySet();
 
     private int lastSoundId;
 
@@ -167,6 +172,13 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Returns whether one or more registries are currently being synchronized.
+     */
+    public boolean isAwaitingRegistries() {
+        return !pendingRegistrySyncs.isEmpty();
+    }
+
+    /**
      * Handles acknowledgement of a registry synchronization.
      */
     public boolean acknowledgeRegistrySync(int id) {
@@ -182,6 +194,9 @@ public class NoxesiumServerPlayer {
      * the client if it is.
      */
     public boolean isHandshakeCompleted() {
+        // We can only complete the handshake if we are awaiting registries!
+        if (handshakeState != HandshakeState.AWAITING_REGISTRIES) return false;
+
         // If we are waiting some registry sync to complete we cannot complete the handshake
         if (!pendingRegistrySyncs.isEmpty()) return false;
 
@@ -209,7 +224,20 @@ public class NoxesiumServerPlayer {
      * Sends the given packet, automatically detects the type of the packet based on the registered packets.
      */
     public boolean sendPacket(@NotNull NoxesiumPacket packet) {
-        return NoxesiumClientboundNetworking.send(this, packet);
+        // Check if they can receive this packet
+        var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
+        if (type == null) return false;
+
+        // Check if the client can receive this type before we queue the packet, this ensures
+        // that queuing packets doesn't change the return value of this method
+        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, type)) return false;
+
+        // If this packet updates some registry we halt it until we're done updating registries!
+        if (isAwaitingRegistries()) {
+            pendingPackets.add(packet);
+            return true;
+        }
+        return type.sendClientboundAny(this, packet);
     }
 
     /**
@@ -217,6 +245,11 @@ public class NoxesiumServerPlayer {
      * batches.
      */
     public void tick() {
+        if (isAwaitingRegistries()) return;
+
+        var pending = pendingPackets;
+        pendingPackets = ConcurrentHashMap.newKeySet();
+        pending.forEach(this::sendPacket);
         if (components.hasModified()) {
             sendPacket(new ClientboundUpdateGameComponentsPacket(false, components.collectModified()));
         }

@@ -8,8 +8,12 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
+import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
+import com.noxcrew.noxesium.api.nms.serialization.SerializerPair;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistryPatch;
 import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import io.netty.buffer.ByteBuf;
@@ -215,6 +219,93 @@ public class NoxesiumStreamCodecs {
                             "Found no serializer for component type '" + type.id() + "' in registry");
                 }
                 serializer.serializers().streamCodec().cast().encode(buffer, (T) raw);
+            }
+        };
+    }
+
+    public static StreamCodec<RegistryFriendlyByteBuf, NoxesiumRegistryPatch> noxesiumRegistryPatch() {
+        return new StreamCodec<>() {
+            @Override
+            public NoxesiumRegistryPatch decode(RegistryFriendlyByteBuf buffer) {
+                var key = Key.key(buffer.readUtf());
+
+                // Determine the serializer to use for this registry
+                var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(key);
+                var serializer = SerializableRegistries.getSerializers(registry);
+
+                var updated = buffer.readVarInt();
+                var removed = buffer.readVarInt();
+
+                if (updated == 0 && removed == 0) {
+                    return new NoxesiumRegistryPatch(key, new HashMap<>(), new HashMap<>());
+                } else {
+                    var total = updated + removed;
+                    var map = new ConcurrentHashMap<Key, Optional<?>>(total);
+                    var ids = new ConcurrentHashMap<Key, Integer>(updated);
+
+                    for (int i = 0; i < updated; i++) {
+                        var name = Key.key(buffer.readUtf());
+                        var index = buffer.readVarInt();
+                        var decoded = serializer.streamCodec().decode(buffer);
+                        map.put(name, Optional.of(decoded));
+                        ids.put(name, index);
+                    }
+
+                    for (int i = 0; i < removed; i++) {
+                        var name = Key.key(buffer.readUtf());
+                        map.put(name, Optional.empty());
+                    }
+
+                    return new NoxesiumRegistryPatch(key, map, ids);
+                }
+            }
+
+            @Override
+            public void encode(RegistryFriendlyByteBuf buffer, NoxesiumRegistryPatch patch) {
+                // Start with the id of the registry
+                buffer.writeUtf(patch.getRegistry().asString());
+
+                if (patch.isEmpty()) {
+                    buffer.writeVarInt(0);
+                    buffer.writeVarInt(0);
+                } else {
+                    // Determine the serializer to use for this registry
+                    var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(patch.getRegistry());
+                    var serializer = SerializableRegistries.getSerializers(registry);
+
+                    // Then write how many of each type there are
+                    var updated = 0;
+                    var removed = 0;
+
+                    for (var entry : patch.getMap().entrySet()) {
+                        if (entry.getValue().isPresent()) {
+                            updated++;
+                        } else {
+                            removed++;
+                        }
+                    }
+
+                    buffer.writeVarInt(updated);
+                    buffer.writeVarInt(removed);
+
+                    // Write the values themselves
+                    for (var entry : patch.getMap().entrySet()) {
+                        if (entry.getValue().isPresent()) {
+                            buffer.writeUtf(entry.getKey().asString());
+                            buffer.writeVarInt(patch.getKeys().get(entry.getKey()));
+                            encodeComponent(buffer, serializer, entry.getValue().get());
+                        }
+                    }
+                    for (var entry : patch.getMap().entrySet()) {
+                        if (entry.getValue().isEmpty()) {
+                            buffer.writeUtf(entry.getKey().asString());
+                        }
+                    }
+                }
+            }
+
+            private <T> void encodeComponent(RegistryFriendlyByteBuf buffer, SerializerPair<T> serializer, Object raw) {
+                serializer.streamCodec().cast().encode(buffer, (T) raw);
             }
         };
     }

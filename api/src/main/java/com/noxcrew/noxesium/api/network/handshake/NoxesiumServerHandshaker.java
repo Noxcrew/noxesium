@@ -7,7 +7,8 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
-import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryUpdatePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
@@ -15,6 +16,7 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager;
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.ServerNoxesiumRegistry;
+import com.noxcrew.noxesium.api.registry.SynchronizedServerNoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.EncryptionUtil;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,6 +65,45 @@ public abstract class NoxesiumServerHandshaker {
         HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT.addListener(this, (reference, packet, playerId) -> {
             reference.onRegistryUpdateResult(playerId, packet);
         });
+    }
+
+    /**
+     * Ticks this handshaker, prompting it to check if any registries need to be synchronized
+     * with online clients.
+     */
+    public void tick() {
+        // Determine if some registry is dirty.
+        var dirtyRegistries = new HashSet<SynchronizedServerNoxesiumRegistry<?>>();
+        NoxesiumRegistries.REGISTRIES.forEach(registry -> {
+            if (registry instanceof SynchronizedServerNoxesiumRegistry<?> synchronizedServerNoxesiumRegistry) {
+                if (synchronizedServerNoxesiumRegistry.isDirty()) {
+                    dirtyRegistries.add(synchronizedServerNoxesiumRegistry);
+                }
+            }
+        });
+        if (dirtyRegistries.isEmpty()) return;
+
+        // Go through all players and see if we can send them updates.
+        for (var player : NoxesiumPlayerManager.getInstance().getAllPlayers()) {
+            // Ignore players that have not started receiving registries yet
+            if (player.getHandshakeState() != HandshakeState.AWAITING_REGISTRIES
+                    && player.getHandshakeState() != HandshakeState.COMPLETE) continue;
+
+            // Send these players the additional registry data
+            var entrypoints = player.getSupportedEntrypointIds();
+            for (var registry : dirtyRegistries) {
+                // Ignore empty registries!
+                var syncContents = registry.determineAllSyncableContent(entrypoints);
+                if (syncContents.isEmpty()) continue;
+
+                var id = registryUpdateIdentifier.getAndIncrement();
+                player.awaitRegistrySync(id);
+                player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents));
+            }
+        }
+
+        // Mark all registries as non-dirty
+        dirtyRegistries.forEach(SynchronizedServerNoxesiumRegistry::clearPendingUpdates);
     }
 
     /**
@@ -136,25 +177,33 @@ public abstract class NoxesiumServerHandshaker {
             return;
         }
 
-        // Mark that we are now waiting to sync registries
-        player.setHandshakeState(HandshakeState.AWAITING_REGISTRIES);
-
         // Store the acknowledged entrypoints on this player's data
         player.addEntrypoints(packet.protocols());
+
+        // Mark that we are now waiting to sync registries
+        player.setHandshakeState(HandshakeState.AWAITING_REGISTRIES);
 
         // Start tasks for sending registries and receiving registration of plugin channels
         var entrypoints = player.getSupportedEntrypointIds();
         for (var registry : NoxesiumRegistries.REGISTRIES) {
             // We only have to synchronize server registries as only sided registries
             // use indices which have to be synchronized.
-            if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
+            if (registry instanceof SynchronizedServerNoxesiumRegistry<?> synchronizedRegistry) {
                 // Ignore empty registries!
-                var syncContents = serverRegistry.determineSyncableContents(entrypoints);
+                var syncContents = synchronizedRegistry.determineAllSyncableContent(entrypoints);
                 if (syncContents.isEmpty()) continue;
 
                 var id = registryUpdateIdentifier.getAndIncrement();
                 player.awaitRegistrySync(id);
-                player.sendPacket(new ClientboundRegistryUpdatePacket(id, serverRegistry.id(), syncContents));
+                player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents));
+            } else if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
+                // Ignore empty registries!
+                var syncContents = serverRegistry.determineAllSyncableIds(entrypoints);
+                if (syncContents.isEmpty()) continue;
+
+                var id = registryUpdateIdentifier.getAndIncrement();
+                player.awaitRegistrySync(id);
+                player.sendPacket(new ClientboundRegistryIdsUpdatePacket(id, serverRegistry.id(), syncContents));
             }
         }
 
@@ -175,7 +224,10 @@ public abstract class NoxesiumServerHandshaker {
             destroy(uniqueId);
             return;
         }
-        if (!player.getHandshakeState().equals(HandshakeState.AWAITING_REGISTRIES)) {
+
+        // Allow receiving registry updates when complete!
+        if (!player.getHandshakeState().equals(HandshakeState.AWAITING_REGISTRIES)
+                && !player.getHandshakeState().equals(HandshakeState.COMPLETE)) {
             NoxesiumApi.getLogger()
                     .error(
                             "Received registry update result while in '{}' state, destroying connection!",
@@ -185,7 +237,7 @@ public abstract class NoxesiumServerHandshaker {
         }
 
         if (player.acknowledgeRegistrySync(packet.id())) {
-            // Try to complete the handshaking
+            // Try to complete the handshaking, if applicable.
             if (player.isHandshakeCompleted()) {
                 completeHandshake(player);
             }

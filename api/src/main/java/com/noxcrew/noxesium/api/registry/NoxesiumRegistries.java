@@ -17,30 +17,32 @@ public class NoxesiumRegistries {
     /**
      * Stores all different effects qibs can have.
      */
-    public static NoxesiumRegistry<QibDefinition> QIB_EFFECTS = createRegistry("qib_effects", true);
+    public static NoxesiumRegistry<QibDefinition> QIB_EFFECTS = createRegistry("qib_effects", true, true);
 
     /**
      * Defines all components that can be applied to the entire game, allowing them to control
      * or modify game behavior.
      */
-    public static NoxesiumRegistry<NoxesiumComponentType<?>> GAME_COMPONENTS = createRegistry("game_components", true);
+    public static NoxesiumRegistry<NoxesiumComponentType<?>> GAME_COMPONENTS =
+            createRegistry("game_components", true, false);
 
     /**
      * Defines custom entity components that can be read from any entity's NBT data.
      */
     public static NoxesiumRegistry<NoxesiumComponentType<?>> ENTITY_COMPONENTS =
-            createRegistry("entity_components", true);
+            createRegistry("entity_components", true, false);
 
     /**
      * Defines custom item components that can be read from any item's NBT data.
      */
-    public static NoxesiumRegistry<NoxesiumComponentType<?>> ITEM_COMPONENTS = createRegistry("item_components", false);
+    public static NoxesiumRegistry<NoxesiumComponentType<?>> ITEM_COMPONENTS =
+            createRegistry("item_components", false, false);
 
     /**
      * Defines custom block entity components that can be read from any block entity's NBT data.
      */
     public static NoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS =
-            createRegistry("block_entity_components", false);
+            createRegistry("block_entity_components", true, false);
 
     /**
      * All main registries.
@@ -61,14 +63,23 @@ public class NoxesiumRegistries {
 
     /**
      * Creates a new registry based on the side this code is running on.
+     *
+     * @param network     A network registry is a registry whose contents need to be sent to
+     *                    a client in their own packets. The client has to populate the registry
+     *                    itself, only the identifiers are synced.
+     * @param synchronize A synchronized registry is a registry that is fully synchronized to
+     *                    clients, including the definitions of the values themselves.
      */
-    public static <T> NoxesiumRegistry<T> createRegistry(String key, boolean synchronize) {
-        if (!synchronize) {
-            return new NoxesiumRegistry<>(Key.key(NoxesiumReferences.NAMESPACE, key));
+    public static <T> NoxesiumRegistry<T> createRegistry(String key, boolean network, boolean synchronize) {
+        var id = Key.key(NoxesiumReferences.NAMESPACE, key);
+        if (network && synchronize && NoxesiumApi.getInstance().getSide() == NoxesiumSide.SERVER) {
+            return new SynchronizedServerNoxesiumRegistry<>(id);
+        } else if (!network) {
+            return new NoxesiumRegistry<>(id);
         } else if (NoxesiumApi.getInstance().getSide() == NoxesiumSide.CLIENT) {
-            return new ClientNoxesiumRegistry<>(Key.key(NoxesiumReferences.NAMESPACE, key));
+            return new ClientNoxesiumRegistry<>(id);
         } else {
-            return new ServerNoxesiumRegistry<>(Key.key(NoxesiumReferences.NAMESPACE, key));
+            return new ServerNoxesiumRegistry<>(id);
         }
     }
 
