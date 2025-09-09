@@ -39,7 +39,8 @@ public class SerializableRegistries {
             NoxesiumRegistry<T> registry,
             Codec<T> codec,
             @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        Preconditions.checkState(registry instanceof SynchronizedServerNoxesiumRegistry || registry instanceof ClientNoxesiumRegistry<T>);
+        Preconditions.checkState(registry instanceof SynchronizedServerNoxesiumRegistry
+                || registry instanceof ClientNoxesiumRegistry<T>);
         serializers.put(registry, new SerializerPair<>(codec, streamCodec));
     }
 }

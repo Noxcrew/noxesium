@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.core.network.clientbound;
 
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
-import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 
 /**

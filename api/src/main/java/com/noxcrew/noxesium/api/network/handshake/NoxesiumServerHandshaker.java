@@ -148,7 +148,8 @@ public abstract class NoxesiumServerHandshaker {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             if (!player.sendPacket(acknowledgePacket)) {
-                NoxesiumApi.getLogger().error("Failed to send handshake acknowledgement packet, destroying connection!");
+                NoxesiumApi.getLogger()
+                        .error("Failed to send handshake acknowledgement packet, destroying connection!");
                 destroy(player.getUniqueId());
                 return;
             }
@@ -200,7 +201,8 @@ public abstract class NoxesiumServerHandshaker {
                 var id = registryUpdateIdentifier.getAndIncrement();
                 player.awaitRegistrySync(id);
                 if (!player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents))) {
-                    NoxesiumApi.getLogger().error("Failed to send registry contents update packet, destroying connection!");
+                    NoxesiumApi.getLogger()
+                            .error("Failed to send registry contents update packet, destroying connection!");
                     destroy(uniqueId);
                     return;
                 }
