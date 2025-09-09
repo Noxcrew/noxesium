@@ -22,6 +22,11 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         return this.list;
     }
 
+    /**
+     * Hook for adding extra options to this screen through a mixin.
+     */
+    public void addExtraOptions() {}
+
     @Override
     protected void addOptions() {
         this.list.addSmall(
@@ -35,5 +40,6 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
                 NoxesiumOptions.debugScoreboardTeams(),
                 NoxesiumOptions.extendedPacketLogging(),
                 NoxesiumOptions.showCullingBoxes());
+        addExtraOptions();
     }
 }

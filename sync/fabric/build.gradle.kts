@@ -1,5 +1,6 @@
 plugins {
     id("fabric-loom")
+    id("noxesium.fabric")
     id("noxesium.sync")
 }
 

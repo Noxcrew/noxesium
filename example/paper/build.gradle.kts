@@ -9,13 +9,7 @@ plugins {
 
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
-    compileOnlyApi(libs.guava)
 
-    // Replace these with a dependency on the Noxesium repository's paper platform
+    // Replace this with a dependency on the Noxesium repository's paper platform
     api(project(":paper:paper-platform"))
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }

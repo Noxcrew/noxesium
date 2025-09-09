@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = NoxesiumSettingsScreen.class, remap = false)
 public class NoxesiumSettingsScreenMixin {
-    @Inject(method = "addOptions", at = @At("RETURN"))
-    private void addOptions(CallbackInfo ci) {
+    @Inject(method = "addExtraOptions", at = @At("RETURN"))
+    private void addExtraOptions(CallbackInfo ci) {
         // Try to add the sync settings sub-screen
         var folderSyncSystem = NoxesiumApi.getInstance().getFeatureOrNull(FolderSyncSystem.class);
         if (folderSyncSystem == null) return;
