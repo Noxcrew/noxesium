@@ -20,6 +20,7 @@ import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes
 import com.noxcrew.noxesium.paper.feature.PaperEntityModule
 import com.noxcrew.noxesium.paper.feature.PaperPlayerModule
 import com.noxcrew.noxesium.paper.feature.RegistryLoader
+import com.noxcrew.noxesium.paper.feature.SmoothTrident
 import java.net.URL
 
 /**
@@ -54,7 +55,7 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
         PaperPlayerModule(),
         PaperEntityModule(),
         RegistryLoader(),
-        // SmoothTrident()
+        SmoothTrident()
     )
 
     override fun getEncryptionKey(): URL? =
