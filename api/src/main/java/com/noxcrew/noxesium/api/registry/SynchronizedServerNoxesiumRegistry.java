@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.registry;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,8 +97,11 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
 
     @Override
     public <V extends T> V register(Key key, V value, @Nullable NoxesiumEntrypoint entrypoint) {
+        var oldValue = getByKey(key);
         var result = super.register(key, value, entrypoint);
-        pendingUpdates.add(key);
+        if (!Objects.equals(oldValue, value)) {
+            pendingUpdates.add(key);
+        }
         return result;
     }
 

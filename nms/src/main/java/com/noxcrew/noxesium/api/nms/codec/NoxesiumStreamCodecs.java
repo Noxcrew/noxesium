@@ -123,18 +123,28 @@ public class NoxesiumStreamCodecs {
         };
     }
 
-    public static <T> StreamCodec<RegistryFriendlyByteBuf, String> registryKey(NoxesiumRegistry<T> registry) {
+    public static <T> StreamCodec<RegistryFriendlyByteBuf, Key> registryKey(NoxesiumRegistry<T> registry) {
         return new StreamCodec<>() {
             @Override
-            public String decode(RegistryFriendlyByteBuf buffer) {
+            public Key decode(RegistryFriendlyByteBuf buffer) {
+                // If the id is not found, the result is null!
                 var id = buffer.readVarInt();
+                if (id == -1) return null;
+
                 var value = registry.getById(id);
-                return registry.getKeyFor(value).asString();
+                return registry.getKeyFor(value);
             }
 
             @Override
-            public void encode(RegistryFriendlyByteBuf buffer, String string) {
-                buffer.writeVarInt(registry.getIdFor(registry.getByKey(Key.key(string))));
+            public void encode(RegistryFriendlyByteBuf buffer, Key key) {
+                var value = -1;
+                if (key != null) {
+                    var content = registry.getByKey(key);
+                    if (content != null) {
+                        value = registry.getIdFor(content);
+                    }
+                }
+                buffer.writeVarInt(value);
             }
         };
     }
@@ -170,7 +180,7 @@ public class NoxesiumStreamCodecs {
                                     + "' that does not have a stream codec defined");
                         }
                         var decoded = serializer.serializers().streamCodec().decode(buffer);
-                        map.put(type, Optional.of(decoded));
+                        map.put(type, Optional.ofNullable(decoded));
                     }
 
                     for (int i = 0; i < removed; i++) {
@@ -260,7 +270,7 @@ public class NoxesiumStreamCodecs {
                         var name = Key.key(buffer.readUtf());
                         var index = buffer.readVarInt();
                         var decoded = serializer.streamCodec().decode(buffer);
-                        map.put(name, Optional.of(decoded));
+                        map.put(name, Optional.ofNullable(decoded));
                         ids.put(name, index);
                     }
 

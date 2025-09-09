@@ -35,7 +35,7 @@ import org.apache.commons.lang3.tuple.Triple;
 public class QibBehaviorModule extends NoxesiumFeature {
 
     private AABB lastBoundingBox;
-    private final Map<String, AtomicInteger> collidingWithTypes = new HashMap<>();
+    private final Map<Key, AtomicInteger> collidingWithTypes = new HashMap<>();
     private final Map<Entity, AtomicInteger> collidingWithEntities = new HashMap<>();
     private final Set<Entity> triggeredJump = new HashSet<>();
     private final List<Pair<AtomicInteger, Triple<LocalPlayer, Entity, QibEffect>>> pending = new ArrayList<>();
@@ -101,7 +101,7 @@ public class QibBehaviorModule extends NoxesiumFeature {
     /**
      * Sends the server that the player triggered the given type of behavior.
      */
-    private void sendPacket(String behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
+    private void sendPacket(Key behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {
         NoxesiumServerboundNetworking.send(new ServerboundQibTriggeredPacket(behavior, type, entityId));
     }
 
@@ -120,11 +120,8 @@ public class QibBehaviorModule extends NoxesiumFeature {
             var behavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
             if (behavior == null) continue;
 
-            var key = Key.key(behavior);
-            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
-
             // Try to trigger the jump behavior
-            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
             if (definition == null) continue;
             if (definition.onJump() != null) {
                 sendPacket(behavior, ServerboundQibTriggeredPacket.Type.JUMP, entity.getId());
@@ -167,16 +164,14 @@ public class QibBehaviorModule extends NoxesiumFeature {
          */
         // Determine all current collisions
         var player = Minecraft.getInstance().player;
-        var collidingTypes = new ArrayList<String>();
+        var collidingTypes = new ArrayList<Key>();
         for (var entity : entities) {
             // Stop colliding with this entity
             var behavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
             if (behavior == null) continue;
 
             // Determine this entity's behavior
-            var key = Key.key(behavior);
-            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
-            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
             if (definition == null) continue;
 
             // Try to trigger the entry
@@ -218,9 +213,7 @@ public class QibBehaviorModule extends NoxesiumFeature {
             if (behavior == null) continue;
 
             // Determine this entity's behavior
-            var key = Key.key(behavior);
-            if (!NoxesiumRegistries.QIB_EFFECTS.contains(key)) continue;
-            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(key);
+            var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
             if (definition == null) continue;
 
             // Execute the behavior if we always do or if you've left this type

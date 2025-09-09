@@ -37,6 +37,13 @@ public class NoxesiumRegistry<T> {
     }
 
     /**
+     * Returns the keys of this registry.
+     */
+    public Collection<Key> getKeys() {
+        return byKey.keySet();
+    }
+
+    /**
      * Returns all contents of this registry.
      */
     public Collection<T> getContents() {

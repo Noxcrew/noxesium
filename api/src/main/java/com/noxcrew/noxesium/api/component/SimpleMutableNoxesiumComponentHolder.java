@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.component;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +27,15 @@ public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComp
 
     @Override
     public <T> void noxesium$setComponent(NoxesiumComponentType<T> component, @Nullable T value) {
+        var oldValue = values.get(component);
         if (value == null) {
             values.remove(component);
         } else {
             values.put(component, value);
         }
-        modified.add(component);
+        if (!Objects.equals(oldValue, value)) {
+            modified.add(component);
+        }
     }
 
     @Override

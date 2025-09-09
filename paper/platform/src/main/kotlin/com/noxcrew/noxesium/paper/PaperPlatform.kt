@@ -28,79 +28,93 @@ public class PaperPlatform : NoxesiumPlatform() {
 
             override fun encode(buffer: RegistryFriendlyByteBuf, component: Component) {
                 val target = currentTargetPlayer
-                if (target == null || !Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-                    ComponentSerialization.STREAM_CODEC.encode(buffer, PaperAdventure.WRAPPER_AWARE_SERIALIZER.serialize(component))
-                } else {
-                    // Write the ItemStack to a temporary buffer
-                    val tempBuffer = Unpooled.buffer()
-                    ComponentSerialization.STREAM_CODEC.encode(
-                        RegistryFriendlyByteBuf(tempBuffer, buffer.registryAccess()),
-                        PaperAdventure.WRAPPER_AWARE_SERIALIZER.serialize(component),
-                    )
+                if (target != null && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+                    // Determine the translation steps
+                    val steps =
+                        Via
+                            .getManager()
+                            .protocolManager
+                            .getProtocolPath(
+                                Via.getAPI().getPlayerProtocolVersion(target.uuid),
+                                Via
+                                    .getManager()
+                                    .protocolManager.serverProtocolVersion
+                                    .highestSupportedProtocolVersion(),
+                            )
 
-                    // Process the temporary buffer using ViaVersion
-                    val text = Types.COMPONENT.read(tempBuffer)
+                    if (steps?.isNotEmpty() == true) {
+                        // Write the ItemStack to a temporary buffer
+                        val tempBuffer = Unpooled.buffer()
+                        ComponentSerialization.STREAM_CODEC.encode(
+                            RegistryFriendlyByteBuf(tempBuffer, buffer.registryAccess()),
+                            PaperAdventure.WRAPPER_AWARE_SERIALIZER.serialize(component),
+                        )
 
-                    // Parse the text to the intended destination format
-                    val connection = Via.getAPI().getConnection(target.uuid)
-                    Via
-                        .getManager()
-                        .protocolManager
-                        .getProtocolPath(
-                            Via.getAPI().getPlayerProtocolVersion(target.uuid),
-                            Via
-                                .getManager()
-                                .protocolManager.serverProtocolVersion
-                                .highestSupportedProtocolVersion(),
-                        )?.forEach { protocol ->
+                        // Process the temporary buffer using ViaVersion
+                        val text = Types.COMPONENT.read(tempBuffer)
+
+                        // Parse the text to the intended destination format
+                        val connection = Via.getAPI().getConnection(target.uuid)
+                        steps.forEach { protocol ->
                             protocol.protocol().componentRewriter?.processText(connection, text)
                         }
 
-                    // Write the destination item to the buffer
-                    Types.COMPONENT.write(buffer, text)
+                        // Write the destination item to the buffer
+                        Types.COMPONENT.write(buffer, text)
+                    }
+                    return
                 }
+
+                ComponentSerialization.STREAM_CODEC.encode(buffer, PaperAdventure.WRAPPER_AWARE_SERIALIZER.serialize(component))
             }
         }
 
     override fun getItemStackStreamCodec(): StreamCodec<RegistryFriendlyByteBuf, ItemStack> =
         object : StreamCodec<RegistryFriendlyByteBuf, ItemStack> {
-            override fun decode(buffer: RegistryFriendlyByteBuf): ItemStack = ItemStack.STREAM_CODEC.decode(buffer)
+            override fun decode(buffer: RegistryFriendlyByteBuf): ItemStack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer)
 
             override fun encode(buffer: RegistryFriendlyByteBuf, itemStack: ItemStack) {
                 val target = currentTargetPlayer
-                if (target == null || !Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-                    ItemStack.STREAM_CODEC.encode(buffer, itemStack)
-                } else {
-                    // Write the ItemStack to a temporary buffer
-                    val tempBuffer = Unpooled.buffer()
-                    ItemStack.STREAM_CODEC.encode(
-                        RegistryFriendlyByteBuf(tempBuffer, buffer.registryAccess()),
-                        itemStack,
-                    )
+                if (target != null && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+                    // Determine the translation steps
+                    val steps =
+                        Via
+                            .getManager()
+                            .protocolManager
+                            .getProtocolPath(
+                                Via.getAPI().getPlayerProtocolVersion(target.uuid),
+                                Via
+                                    .getManager()
+                                    .protocolManager.serverProtocolVersion
+                                    .highestSupportedProtocolVersion(),
+                            )
 
-                    // Process the temporary buffer using ViaVersion
-                    var item = Types.ITEM1_20_2.read(tempBuffer)
+                    if (steps?.isNotEmpty() == true) {
+                        // Write the ItemStack to a temporary buffer
+                        val tempBuffer = Unpooled.buffer()
+                        ItemStack.OPTIONAL_STREAM_CODEC.encode(
+                            RegistryFriendlyByteBuf(tempBuffer, buffer.registryAccess()),
+                            itemStack,
+                        )
 
-                    // Parse the item to the intended destination format
-                    val connection = Via.getAPI().getConnection(target.uuid)
-                    Via
-                        .getManager()
-                        .protocolManager
-                        .getProtocolPath(
-                            Via.getAPI().getPlayerProtocolVersion(target.uuid),
-                            Via
-                                .getManager()
-                                .protocolManager.serverProtocolVersion
-                                .highestSupportedProtocolVersion(),
-                        )?.forEach { protocol ->
+                        // Process the temporary buffer using ViaVersion
+                        var item = Types.ITEM1_20_2.read(tempBuffer)
+
+                        // Parse the item to the intended destination format
+                        val connection = Via.getAPI().getConnection(target.uuid)
+                        steps.forEach { protocol ->
                             protocol.protocol().itemRewriter?.handleItemToClient(connection, item)?.let {
                                 item = it
                             }
                         }
 
-                    // Write the destination item to the buffer
-                    Types.ITEM1_20_2.write(buffer, item)
+                        // Write the destination item to the buffer
+                        Types.ITEM1_20_2.write(buffer, item)
+                        return
+                    }
                 }
+
+                ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, itemStack)
             }
         }
 }

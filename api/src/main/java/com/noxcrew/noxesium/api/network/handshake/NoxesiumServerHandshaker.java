@@ -93,7 +93,7 @@ public abstract class NoxesiumServerHandshaker {
             var entrypoints = player.getSupportedEntrypointIds();
             for (var registry : dirtyRegistries) {
                 // Ignore empty registries!
-                var syncContents = registry.determineAllSyncableContent(entrypoints);
+                var syncContents = registry.determineAllChangedContent(entrypoints);
                 if (syncContents.isEmpty()) continue;
 
                 var id = registryUpdateIdentifier.getAndIncrement();

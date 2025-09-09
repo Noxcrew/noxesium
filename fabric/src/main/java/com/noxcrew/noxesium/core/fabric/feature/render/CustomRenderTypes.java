@@ -7,7 +7,10 @@ import static net.minecraft.client.renderer.RenderStateShard.NO_TEXTURE;
 import static net.minecraft.client.renderer.RenderStateShard.VIEW_OFFSET_Z_LAYERING;
 import static net.minecraft.client.renderer.RenderType.create;
 
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+
+import java.util.OptionalDouble;
 
 /**
  * Defines custom render types.
@@ -39,7 +42,7 @@ public class CustomRenderTypes {
             false,
             CustomRenderPipelines.LINES_NO_DEPTH,
             RenderType.CompositeState.builder()
-                    .setLineState(DEFAULT_LINE)
+                    .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
                     .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                     .setOutputState(ITEM_ENTITY_TARGET)
                     .createCompositeState(false));

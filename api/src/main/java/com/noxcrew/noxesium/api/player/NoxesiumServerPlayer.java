@@ -252,8 +252,11 @@ public class NoxesiumServerPlayer {
             if (entrypoint instanceof NoxesiumEntrypoint nmsEntrypoint) {
                 var channels = nmsEntrypoint.getPacketCollections().stream()
                         .flatMap(it -> it.getPackets().stream())
-                        .map(it -> it.id().toString());
-                if (channels.noneMatch(registeredChannels::contains)) return false;
+                        .map(it -> it.id().toString())
+                        .toList();
+                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) {
+                    return false;
+                }
             }
         }
         return true;

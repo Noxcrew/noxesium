@@ -28,7 +28,7 @@ public class CommonEntityComponentSerializers {
                 CommonEntityComponentTypes.BEAM_COLOR_FADE, NoxesiumCodecs.COLOR_ARGB, NoxesiumStreamCodecs.COLOR_ARGB);
         register(
                 CommonEntityComponentTypes.QIB_BEHAVIOR,
-                Codec.STRING,
+                NoxesiumCodecs.KEY,
                 NoxesiumStreamCodecs.registryKey(NoxesiumRegistries.QIB_EFFECTS));
         register(CommonEntityComponentTypes.GLOW_COLOR, NoxesiumCodecs.COLOR_ARGB, NoxesiumStreamCodecs.COLOR_ARGB);
         register(CommonEntityComponentTypes.HITBOX_OVERRIDE, ExtraCodecs.VECTOR3F, ByteBufCodecs.VECTOR3F);

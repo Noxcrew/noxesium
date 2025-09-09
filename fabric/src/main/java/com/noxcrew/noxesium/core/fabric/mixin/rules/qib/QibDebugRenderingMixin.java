@@ -56,11 +56,11 @@ public class QibDebugRenderingMixin {
             poseStack.translate(d, e, f);
 
             // Draw a custom hitbox with the color of the associated qib behavior if it has loaded
-            var noDepthBuffer = multiBufferSource.getBuffer(CustomRenderTypes.linesNoDepth());
             var qibBehavior = entity.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
             if (qibBehavior != null) {
                 var seededRandom = new Random(qibBehavior.hashCode());
                 var color = new Color(seededRandom.nextInt());
+                var noDepthBuffer = multiBufferSource.getBuffer(CustomRenderTypes.linesNoDepth());
                 ShapeRenderer.renderLineBox(
                         poseStack,
                         noDepthBuffer,
@@ -69,10 +69,10 @@ public class QibDebugRenderingMixin {
                         color.getGreen() / 255f,
                         color.getBlue() / 255f,
                         0.5F);
-                var buffer = multiBufferSource.getBuffer(RenderType.lines());
+                var regularBuffer = multiBufferSource.getBuffer(RenderType.lines());
                 ShapeRenderer.renderLineBox(
                         poseStack,
-                        buffer,
+                        regularBuffer,
                         aabb,
                         color.getRed() / 255f,
                         color.getGreen() / 255f,

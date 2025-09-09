@@ -43,7 +43,7 @@ public class CommonPacketSerializers {
         registerSerializer(
                 CommonPackets.SERVER_QIB_TRIGGERED,
                 StreamCodec.composite(
-                        ByteBufCodecs.STRING_UTF8,
+                        NoxesiumStreamCodecs.KEY,
                         ServerboundQibTriggeredPacket::behavior,
                         NoxesiumStreamCodecs.forEnum(ServerboundQibTriggeredPacket.Type.class),
                         ServerboundQibTriggeredPacket::qibType,
@@ -123,7 +123,7 @@ public class CommonPacketSerializers {
                         ClientboundUpdateBlockEntityComponentsPacket::blockPos,
                         ByteBufCodecs.BOOL,
                         ClientboundUpdateBlockEntityComponentsPacket::reset,
-                        NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.ENTITY_COMPONENTS),
+                        NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS),
                         ClientboundUpdateBlockEntityComponentsPacket::patch,
                         ClientboundUpdateBlockEntityComponentsPacket::new));
         registerSerializer(

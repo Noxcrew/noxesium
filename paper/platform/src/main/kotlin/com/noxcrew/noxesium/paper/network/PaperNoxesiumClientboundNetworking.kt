@@ -16,6 +16,16 @@ import net.minecraft.resources.ResourceLocation
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
+    public var capturedPacket: ClientboundCustomPayloadPacket? = null
+
+    /**
+     * Enables packet capture which will set [capturedPacket] to the next
+     * packet instead of sending it to the client. This may come in useful if you are
+     * doing some extremely cursed bundling of packets on entity initialization.
+     * Not saying I am doing exactly that and thus need this feature.
+     */
+    public var capturePackets: Boolean = false
+
     override fun getRegisteredChannels(player: NoxesiumServerPlayer): Collection<String> =
         (player as PaperServerPlayer).player.bukkitEntity.listeningPluginChannels
 
@@ -66,7 +76,12 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
                 ),
             )
         (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = null
-        serverPlayer.connection.send(packet)
+        if (capturePackets) {
+            capturedPacket = packet
+            capturePackets = false
+        } else {
+            serverPlayer.connection.send(packet)
+        }
         return true
     }
 }

@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.awt.Color;
+import net.kyori.adventure.key.Key;
 import org.joml.Vector3f;
 
 /**
@@ -36,7 +37,7 @@ public class CommonEntityComponentTypes {
      * about the qib system in the qib package. This has to be an identifier present in the
      * qib behavior registry!
      */
-    public static NoxesiumComponentType<String> QIB_BEHAVIOR = register("qib_behavior", String.class);
+    public static NoxesiumComponentType<Key> QIB_BEHAVIOR = register("qib_behavior", Key.class);
 
     /**
      * Defines a color to use for the glowing outline of this entity.
