@@ -1,16 +1,14 @@
 package com.noxcrew.noxesium.core.fabric.feature.render;
 
-import static net.minecraft.client.renderer.RenderStateShard.DEFAULT_LINE;
 import static net.minecraft.client.renderer.RenderStateShard.ITEM_ENTITY_TARGET;
 import static net.minecraft.client.renderer.RenderStateShard.LIGHTMAP;
 import static net.minecraft.client.renderer.RenderStateShard.NO_TEXTURE;
 import static net.minecraft.client.renderer.RenderStateShard.VIEW_OFFSET_Z_LAYERING;
 import static net.minecraft.client.renderer.RenderType.create;
 
+import java.util.OptionalDouble;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
-
-import java.util.OptionalDouble;
 
 /**
  * Defines custom render types.
