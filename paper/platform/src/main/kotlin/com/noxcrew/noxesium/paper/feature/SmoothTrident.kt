@@ -29,6 +29,10 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
         CommonPackets.SERVER_RIPTIDE.addListener(this) { _, packet, playerId ->
             if (!isRegistered) return@addListener
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
+
+            // Ignore non-smooth client tridents from lying about the tridents!
+            if (!player.hasNoxesiumComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return@addListener
+
             val bukkitStack = player.inventory.getItem(packet.slot) ?: return@addListener
             val nmsStack = CraftItemStack.unwrap(bukkitStack) ?: return@addListener
             val serverPlayer = (player as? CraftPlayer)?.handle ?: return@addListener

@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.util;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -9,7 +10,6 @@ import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import kotlin.text.Charsets;
 
 /**
  * Assists in symmetric encryption and decryption of strings with AES keys.
@@ -35,7 +35,8 @@ public class EncryptionUtil {
                     cipher.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(IV_PARAMETERS));
                     var values = new ArrayList<String>();
                     for (var value : input) {
-                        values.add(Base64.getEncoder().encodeToString(cipher.doFinal(value.getBytes(Charsets.UTF_8))));
+                        values.add(Base64.getEncoder()
+                                .encodeToString(cipher.doFinal(value.getBytes(StandardCharsets.UTF_8))));
                     }
                     return values;
                 }
@@ -58,7 +59,7 @@ public class EncryptionUtil {
                     var keySpec = new SecretKeySpec(keyBytes, "AES");
                     var cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
                     cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(IV_PARAMETERS));
-                    return new String(cipher.doFinal(Base64.getDecoder().decode(input)), Charsets.UTF_8);
+                    return new String(cipher.doFinal(Base64.getDecoder().decode(input)), StandardCharsets.UTF_8);
                 }
             } catch (Exception x) {
                 NoxesiumApi.getLogger().error("Failed to decrypt '{}'", input);
