@@ -27,6 +27,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import org.joml.Vector3i;
 
 /**
  * Defines extra stream codecs used by Noxesium.
@@ -58,6 +59,18 @@ public class NoxesiumStreamCodecs {
 
         public void encode(FriendlyByteBuf buffer, Integer value) {
             buffer.writeVarInt(value);
+        }
+    };
+
+    public static final StreamCodec<FriendlyByteBuf, Vector3i> VECTOR_3I = new StreamCodec<>() {
+        public Vector3i decode(FriendlyByteBuf buffer) {
+            return new Vector3i(buffer.readVarInt(), buffer.readVarInt(), buffer.readVarInt());
+        }
+
+        public void encode(FriendlyByteBuf buffer, Vector3i value) {
+            buffer.writeVarInt(value.x);
+            buffer.writeVarInt(value.y);
+            buffer.writeVarInt(value.z);
         }
     };
 

@@ -37,7 +37,7 @@
         "com/noxcrew/noxesium/api/component/NoxesiumComponentHolder"
       ],
       "net/minecraft/world/level/block/entity/BlockEntity": [
-        "com/noxcrew/noxesium/api/component/NoxesiumComponentHolder"
+        "com/noxcrew/noxesium/api/component/RemoteNoxesiumComponentHolder"
       ],
       "net/minecraft/world/entity/LivingEntity": [
         "com/noxcrew/noxesium/core/fabric/feature/entity/LivingEntityExtension"
