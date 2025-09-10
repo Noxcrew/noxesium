@@ -7,7 +7,6 @@ plugins {
 
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
-    compileOnlyApi(libs.guava)
     api(project(":paper:paper-platform"))
 }
 
