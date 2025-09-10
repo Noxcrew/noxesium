@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.sync
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature
 import com.noxcrew.noxesium.api.network.PacketCollection
-import com.noxcrew.noxesium.sync.FolderSyncModule
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncModule
 import com.noxcrew.noxesium.sync.network.SyncPacketSerializers
 import com.noxcrew.noxesium.sync.network.SyncPackets
 

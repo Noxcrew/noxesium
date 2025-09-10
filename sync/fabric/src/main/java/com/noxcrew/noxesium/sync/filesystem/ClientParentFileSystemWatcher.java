@@ -1,11 +1,12 @@
 package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.sync.network.SyncedPart;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket;
-import org.jetbrains.annotations.NotNull;
-
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
 import java.nio.file.Path;
 import java.util.HashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Extends the file system watcher with client-exclusive behavior.
@@ -19,6 +20,7 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
 
     @NotNull
     private final String folderId;
+
     private final int syncId;
 
     public ClientParentFileSystemWatcher(@NotNull Path folder, @NotNull String folderId) {
@@ -48,5 +50,20 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
         // Send the full description to the server with a request to start receiving
         // information on any changes made to this folder.
         NoxesiumServerboundNetworking.send(new ServerboundRequestSyncPacket(folderId, syncId, result));
+    }
+
+    @Override
+    protected void updateForAll(String path) {
+        var parts = collectParts(path);
+        for (var part : parts) {
+            NoxesiumServerboundNetworking.send(new ServerboundSyncFilePacket(syncId, part));
+        }
+    }
+
+    @Override
+    public void handleRemoval(String path) {
+        super.handleRemoval(path);
+        NoxesiumServerboundNetworking.send(
+                new ServerboundSyncFilePacket(syncId, new SyncedPart(path, 0, 0, new byte[0])));
     }
 }

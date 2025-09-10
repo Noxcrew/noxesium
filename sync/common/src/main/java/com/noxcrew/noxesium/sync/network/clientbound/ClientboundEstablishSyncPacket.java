@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.sync.network.clientbound;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-
 import java.util.Collection;
 
 /**

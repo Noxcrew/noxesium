@@ -8,7 +8,4 @@ package com.noxcrew.noxesium.sync.network;
  * @param total   The total amount of parts.
  * @param content The content of this part.
  */
-public record SyncedPart(
-        String path, int part, int total, byte[] content
-) {
-}
+public record SyncedPart(String path, int part, int total, byte[] content) {}

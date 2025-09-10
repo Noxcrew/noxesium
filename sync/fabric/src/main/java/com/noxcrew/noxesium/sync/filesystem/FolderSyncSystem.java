@@ -2,23 +2,20 @@ package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
-import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
-import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Adds the folder syncing system.
@@ -158,10 +155,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
         var sync = watchersById.get(packet.syncId());
         if (sync == null) return;
         for (var file : packet.requestedFiles()) {
-            var parts = sync.collectParts(file);
-            for (var part : parts) {
-                NoxesiumServerboundNetworking.send(new ServerboundSyncFilePacket(packet.syncId(), part));
-            }
+            sync.updateForAll(file);
         }
     }
 
@@ -169,6 +163,8 @@ public class FolderSyncSystem extends NoxesiumFeature {
      * Handles part of a file being received.
      */
     private void acceptFile(ClientboundSyncFilePacket packet) {
-        System.out.println("received " + packet);
+        var sync = watchersById.get(packet.syncId());
+        if (sync == null) return;
+        sync.acceptFile(packet.syncId(), packet.part());
     }
 }

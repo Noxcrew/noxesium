@@ -1,17 +1,16 @@
 package com.noxcrew.noxesium.sync.network;
 
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
+
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-
 import java.util.HashMap;
 import java.util.HashSet;
-
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Defines all common Noxesium sync serializers.
@@ -30,13 +29,14 @@ public class SyncPacketSerializers {
                 SyncedPart::total,
                 ByteBufCodecs.BYTE_ARRAY,
                 SyncedPart::content,
-                SyncedPart::new
-        );
+                SyncedPart::new);
 
         registerSerializer(
                 SyncPackets.CLIENTBOUND_REQUEST_SYNC,
                 StreamCodec.composite(
-                        ByteBufCodecs.STRING_UTF8, ClientboundRequestSyncPacket::id, ClientboundRequestSyncPacket::new));
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundRequestSyncPacket::id,
+                        ClientboundRequestSyncPacket::new));
         registerSerializer(
                 SyncPackets.CLIENTBOUND_ESTABLISH_SYNC,
                 StreamCodec.composite(

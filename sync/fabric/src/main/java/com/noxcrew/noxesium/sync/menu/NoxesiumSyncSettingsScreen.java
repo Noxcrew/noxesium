@@ -1,8 +1,10 @@
 package com.noxcrew.noxesium.sync.menu;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.sync.filesystem.FolderSyncSystem;
 import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncSystem;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineEditBox;
@@ -13,9 +15,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A screen for configuring which folders should be used for synchronization.
@@ -68,8 +67,7 @@ public class NoxesiumSyncSettingsScreen extends Screen {
     protected void addEntry(String folderId) {
         var header = new StringWidget(Component.literal(folderId), Minecraft.getInstance().font);
         var editBox = editBoxes.computeIfAbsent(folderId, (ignored) -> {
-            var box = MultiLineEditBox.builder()
-                    .build(Minecraft.getInstance().font, 300, 17, CommonComponents.EMPTY);
+            var box = MultiLineEditBox.builder().build(Minecraft.getInstance().font, 300, 17, CommonComponents.EMPTY);
             box.setValue(config.syncableFolders.get(serverId).get(folderId));
             return box;
         });

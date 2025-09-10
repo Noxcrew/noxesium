@@ -1,8 +1,6 @@
 package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Watches the contents of a given folder and handles changes.
@@ -57,21 +56,32 @@ public class FileSystemWatcher implements Closeable {
                     parent.getWatchService(),
                     StandardWatchEventKinds.ENTRY_CREATE,
                     StandardWatchEventKinds.ENTRY_MODIFY,
-                    StandardWatchEventKinds.ENTRY_DELETE
-            );
+                    StandardWatchEventKinds.ENTRY_DELETE);
 
             // Read the gitignore file to find anything that should not be synced.
             gitIgnored.add(".git");
-            // TODO implement fully!
+            // TODO implement .gitignore support!
 
-            // Create new sub-watchers for all folders
-            Files.list(folder)
-                    .filter(Files::isDirectory)
-                    .forEach(directory -> {
-                        var fileName = directory.getFileName().toString();
-                        if (gitIgnored.contains(fileName)) return;
-                        directories.put(fileName, new FileSystemWatcher(directory, path + UNIVERSAL_SEPARTOR_CHAR + directory.getFileSystem(), parent));
-                    });
+            Files.list(folder).forEach(file -> {
+                var fileName = file.getFileName().toString();
+
+                // Create new sub-watchers for all folders
+                if (Files.isDirectory(file)) {
+                    if (gitIgnored.contains(fileName)) return;
+                    directories.put(fileName, new FileSystemWatcher(file, getRelative(fileName), parent));
+                } else {
+                    // Mark down for all regular files when they were last edited so we can
+                    // ignore any modifications that do not exceed that time.
+                    try {
+                        parent.markPresent(
+                                getRelative(file.getFileName().toString()),
+                                Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
+                                        .toMillis());
+                    } catch (Exception x) {
+                        NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", file, x);
+                    }
+                }
+            });
         } catch (Exception x) {
             throw new RuntimeException("Failed to set up file system watcher", x);
         }
@@ -93,11 +103,14 @@ public class FileSystemWatcher implements Closeable {
             Files.list(folder)
                     .filter(it -> !Files.isDirectory(it))
                     .filter(it -> getSize(it) <= MAX_FILE_SIZE)
-                    .forEach(directory -> {
+                    .forEach(file -> {
                         try {
-                            result.put(path + UNIVERSAL_SEPARTOR_CHAR + directory.getFileName().toString(), Files.getLastModifiedTime(directory, LinkOption.NOFOLLOW_LINKS).toMillis());
+                            result.put(
+                                    getRelative(file.getFileName().toString()),
+                                    Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
+                                            .toMillis());
                         } catch (Exception x) {
-                            NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", directory, x);
+                            NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", file, x);
                         }
                     });
         } catch (Exception x) {
@@ -117,7 +130,7 @@ public class FileSystemWatcher implements Closeable {
                 for (var event : events) {
                     var file = ((Path) watchKey.watchable()).resolve((Path) event.context());
                     var fileName = file.getFileName().toString();
-                    var filePath = path + UNIVERSAL_SEPARTOR_CHAR + fileName;
+                    var filePath = getRelative(fileName);
                     var isDirectory = Files.isDirectory(file);
 
                     // Ignore any files being changed that exceed the size limit!
@@ -132,12 +145,11 @@ public class FileSystemWatcher implements Closeable {
                                 oldWatcher.close();
                             }
                         } else {
-                            parent.handleAddition(filePath, Files.readAllBytes(file));
+                            parent.handleModify(filePath);
                         }
                     } else if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_MODIFY)) {
                         if (!isDirectory) {
-                            // TODO Check if last modified changed, only then we trigger a change!
-                            parent.handleChange(filePath, Files.readAllBytes(file));
+                            parent.handleModify(filePath);
                         }
                     } else if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_DELETE)) {
                         if (isDirectory) {
@@ -166,7 +178,8 @@ public class FileSystemWatcher implements Closeable {
                     .filter(it -> getSize(it) <= MAX_FILE_SIZE)
                     .forEach(directory -> {
                         try {
-                            parent.handleRemoval(path + UNIVERSAL_SEPARTOR_CHAR + directory.getFileName().toString());
+                            parent.handleRemoval(
+                                    getRelative(directory.getFileName().toString()));
                         } catch (Exception x) {
                             NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", directory, x);
                         }
@@ -187,6 +200,17 @@ public class FileSystemWatcher implements Closeable {
             return Files.size(file);
         } catch (IOException e) {
             return MAX_FILE_SIZE + 1;
+        }
+    }
+
+    /**
+     * Returns the given file name as relative to this path.
+     */
+    private String getRelative(String fileName) {
+        if (path.isBlank()) {
+            return fileName;
+        } else {
+            return path + UNIVERSAL_SEPARTOR_CHAR + fileName;
         }
     }
 }

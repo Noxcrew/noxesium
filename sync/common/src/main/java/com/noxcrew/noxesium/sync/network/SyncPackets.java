@@ -1,5 +1,8 @@
 package com.noxcrew.noxesium.sync.network;
 
+import static com.noxcrew.noxesium.api.network.PacketCollection.client;
+import static com.noxcrew.noxesium.api.network.PacketCollection.server;
+
 import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
@@ -7,9 +10,6 @@ import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacke
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
-
-import static com.noxcrew.noxesium.api.network.PacketCollection.client;
-import static com.noxcrew.noxesium.api.network.PacketCollection.server;
 
 /**
  * Defines the folder syncing protocol packets.

@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.paper.commands.noxesiumPlayer
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncModule
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.Component

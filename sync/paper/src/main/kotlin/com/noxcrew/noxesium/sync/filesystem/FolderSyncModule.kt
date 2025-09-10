@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.sync
+package com.noxcrew.noxesium.sync.filesystem
 
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
@@ -49,7 +49,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
     init {
         // If the sync example folder exists we register it so the user can test out the system!
         val syncExample =
-            NoxesiumPaper.Companion.plugin.dataFolder
+            NoxesiumPaper.plugin.dataFolder
                 .toPath()
                 .resolve("sync_example")
         if (syncExample.exists()) {
@@ -97,7 +97,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
     private fun acceptFile(playerId: UUID, packet: ServerboundSyncFilePacket) {
         val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) ?: return
         val watcher = watchersById[player]?.get(packet.syncId()) ?: return
-        watcher.acceptFile(packet)
+        watcher.acceptFile(packet.syncId, packet.part)
     }
 
     /** Registers a new folder to be syncable. */
