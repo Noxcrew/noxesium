@@ -293,10 +293,11 @@ public abstract class NoxesiumServerHandshaker {
         }
         NoxesiumApi.getLogger()
                 .info(
-                        "Authenticated {} on Noxesium {} with {} entrypoints",
+                        "Authenticated {} on Noxesium {} with {} entrypoints: {}",
                         player.getUsername(),
                         player.getBaseVersion(),
-                        player.getSupportedEntrypoints().size());
+                        player.getSupportedEntrypoints().size(),
+                        player.getSupportedEntrypointIds());
         return true;
     }
 
