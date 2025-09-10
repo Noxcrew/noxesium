@@ -262,6 +262,9 @@ public class NoxesiumServerPlayer {
             if (sent != null) {
                 var registry = sent.registry();
                 var known = knownIndices.getOrDefault(registry, new HashSet<>());
+                if (sent.reset()) {
+                    known.clear();
+                }
                 for (var added : sent.added()) {
                     if (missingIds.contains(added)) continue;
                     known.add(added);

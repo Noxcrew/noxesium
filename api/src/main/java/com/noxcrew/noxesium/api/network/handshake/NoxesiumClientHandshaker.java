@@ -190,6 +190,9 @@ public abstract class NoxesiumClientHandshaker {
             uninitialize();
             return;
         }
+        if (packet.reset()) {
+            registry.resetMappings();
+        }
         for (var entry : packet.ids().entrySet()) {
             if (!registry.registerMapping(entry.getKey(), entry.getValue())) {
                 unknownKeys.add(entry.getValue());
@@ -223,6 +226,12 @@ public abstract class NoxesiumClientHandshaker {
             uninitialize();
             return;
         }
+
+        // Reset the entire registry first if requested
+        if (packet.reset()) {
+            registry.reset();
+        }
+
         for (var entry : patch.getMap().entrySet()) {
             var key = entry.getKey();
             var value = entry.getValue();

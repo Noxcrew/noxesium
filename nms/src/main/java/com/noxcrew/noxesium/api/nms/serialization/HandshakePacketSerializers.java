@@ -71,6 +71,8 @@ public class HandshakePacketSerializers {
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundRegistryIdsUpdatePacket::id,
+                        ByteBufCodecs.BOOL,
+                        ClientboundRegistryIdsUpdatePacket::reset,
                         NoxesiumStreamCodecs.KEY,
                         ClientboundRegistryIdsUpdatePacket::registry,
                         ByteBufCodecs.map(HashMap::new, NoxesiumStreamCodecs.KEY, ByteBufCodecs.VAR_INT),
@@ -81,6 +83,8 @@ public class HandshakePacketSerializers {
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundRegistryContentUpdatePacket::id,
+                        ByteBufCodecs.BOOL,
+                        ClientboundRegistryContentUpdatePacket::reset,
                         NoxesiumStreamCodecs.noxesiumRegistryPatch(),
                         ClientboundRegistryContentUpdatePacket::patch,
                         ClientboundRegistryContentUpdatePacket::new));

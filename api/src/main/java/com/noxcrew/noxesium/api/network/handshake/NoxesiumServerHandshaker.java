@@ -109,8 +109,8 @@ public abstract class NoxesiumServerHandshaker {
                         added.add(keyId);
                     }
                 }
-                player.awaitRegistrySync(id, new IdChangeSet(registry, added, removed));
-                player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents));
+                player.awaitRegistrySync(id, new IdChangeSet(registry, false, added, removed));
+                player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, false, syncContents));
             }
         }
 
@@ -175,6 +175,66 @@ public abstract class NoxesiumServerHandshaker {
     }
 
     /**
+     * Resynchronizes contents of synchronizable registries with a player.
+     */
+    protected void synchronizeRegistries(@NotNull UUID uniqueId) {
+        var player = NoxesiumPlayerManager.getInstance().getPlayer(uniqueId);
+        if (player == null) {
+            NoxesiumApi.getLogger().error("Asked to synchronize registries with unknown player!");
+            destroy(uniqueId);
+            return;
+        }
+
+        if (!player.getHandshakeState().equals(HandshakeState.AWAITING_REGISTRIES)
+                && !player.getHandshakeState().equals(HandshakeState.COMPLETE)) {
+            NoxesiumApi.getLogger()
+                    .error(
+                            "Asked to re-synchronize registries while in '{}' state, destroying connection!",
+                            player.getHandshakeState());
+            destroy(uniqueId);
+            return;
+        }
+
+        var entrypoints = player.getSupportedEntrypointIds();
+        for (var registry : NoxesiumRegistries.REGISTRIES) {
+            // We only have to synchronize server registries as only sided registries
+            // use indices which have to be synchronized.
+            if (registry instanceof SynchronizedServerNoxesiumRegistry<?> synchronizedRegistry) {
+                // Ignore empty registries!
+                var syncContents = synchronizedRegistry.determineAllSyncableContent(entrypoints);
+                if (syncContents.isEmpty()) continue;
+
+                var id = registryUpdateIdentifier.getAndIncrement();
+                player.awaitRegistrySync(id, new IdChangeSet(registry, true, syncContents.getIds(), Set.of()));
+                if (!player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, true, syncContents))) {
+                    NoxesiumApi.getLogger()
+                            .error("Failed to send registry contents update packet, destroying connection!");
+                    destroy(uniqueId);
+                    return;
+                }
+            } else if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
+                // Ignore empty registries!
+                var syncContents = serverRegistry.determineAllSyncableIds(entrypoints);
+                if (syncContents.isEmpty()) continue;
+
+                var id = registryUpdateIdentifier.getAndIncrement();
+                player.awaitRegistrySync(id, new IdChangeSet(registry, true, syncContents.values(), Set.of()));
+                if (!player.sendPacket(
+                        new ClientboundRegistryIdsUpdatePacket(id, true, serverRegistry.id(), syncContents))) {
+                    NoxesiumApi.getLogger().error("Failed to send registry id update packet, destroying connection!");
+                    destroy(uniqueId);
+                    return;
+                }
+            }
+        }
+
+        // Test if all tasks are already complete
+        if (player.isHandshakeCompleted()) {
+            completeHandshake(player);
+        }
+    }
+
+    /**
      * Handle a successful handshake acknowledgement, register all packets, and call events.
      */
     protected void handleHandshakeAcknowledge(
@@ -201,42 +261,7 @@ public abstract class NoxesiumServerHandshaker {
         player.setHandshakeState(HandshakeState.AWAITING_REGISTRIES);
 
         // Start tasks for sending registries and receiving registration of plugin channels
-        var entrypoints = player.getSupportedEntrypointIds();
-        for (var registry : NoxesiumRegistries.REGISTRIES) {
-            // We only have to synchronize server registries as only sided registries
-            // use indices which have to be synchronized.
-            if (registry instanceof SynchronizedServerNoxesiumRegistry<?> synchronizedRegistry) {
-                // Ignore empty registries!
-                var syncContents = synchronizedRegistry.determineAllSyncableContent(entrypoints);
-                if (syncContents.isEmpty()) continue;
-
-                var id = registryUpdateIdentifier.getAndIncrement();
-                player.awaitRegistrySync(id, new IdChangeSet(registry, syncContents.getIds(), Set.of()));
-                if (!player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents))) {
-                    NoxesiumApi.getLogger()
-                            .error("Failed to send registry contents update packet, destroying connection!");
-                    destroy(uniqueId);
-                    return;
-                }
-            } else if (registry instanceof ServerNoxesiumRegistry<?> serverRegistry) {
-                // Ignore empty registries!
-                var syncContents = serverRegistry.determineAllSyncableIds(entrypoints);
-                if (syncContents.isEmpty()) continue;
-
-                var id = registryUpdateIdentifier.getAndIncrement();
-                player.awaitRegistrySync(id, new IdChangeSet(registry, syncContents.values(), Set.of()));
-                if (!player.sendPacket(new ClientboundRegistryIdsUpdatePacket(id, serverRegistry.id(), syncContents))) {
-                    NoxesiumApi.getLogger().error("Failed to send registry id update packet, destroying connection!");
-                    destroy(uniqueId);
-                    return;
-                }
-            }
-        }
-
-        // Test if all tasks are already complete
-        if (player.isHandshakeCompleted()) {
-            completeHandshake(player);
-        }
+        synchronizeRegistries(uniqueId);
     }
 
     /**

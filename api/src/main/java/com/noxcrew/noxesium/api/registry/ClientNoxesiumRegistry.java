@@ -20,6 +20,13 @@ public class ClientNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
     }
 
     /**
+     * Resets only the mappings provided by the server.
+     */
+    public void resetMappings() {
+        byId.clear();
+    }
+
+    /**
      * Registers a new mapping from the given key to the given id.
      * Silently fails if the key is not known.
      */

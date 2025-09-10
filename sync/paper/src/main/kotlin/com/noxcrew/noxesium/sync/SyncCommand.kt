@@ -25,7 +25,30 @@ public fun syncCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
                     ?.forEach { builder.suggest(it) }
                 builder.buildFuture()
             }.executes { ctx ->
+                val feature =
+                    NoxesiumApi
+                        .getInstance()
+                        .getFeatureOrNull(FolderSyncModule::class.java)
+                if (feature == null) {
+                    ctx.source.sender.sendMessage(
+                        Component.text(
+                            "Folder syncing module is not available",
+                            NamedTextColor.RED
+                        )
+                    )
+                    return@executes 0
+                }
                 val folder = ctx.getArgument("folder", String::class.java)
+                if (folder !in feature.syncableFolders) {
+                    ctx.source.sender.sendMessage(
+                        Component.text(
+                            "Folder $folder is not a valid synchronized folder",
+                            NamedTextColor.RED
+                        )
+                    )
+                    return@executes 0
+                }
+
                 val noxesiumPlayer = ctx.noxesiumPlayer ?: return@executes 0
                 noxesiumPlayer.startFolderSync(folder)
                 ctx.source.sender.sendMessage(

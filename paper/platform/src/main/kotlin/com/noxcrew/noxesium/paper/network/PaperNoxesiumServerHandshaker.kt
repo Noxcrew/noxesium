@@ -79,6 +79,12 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             // Inform the client that it has been transferred to a different server
             player.sendPacket(ClientboundHandshakeTransferredPacket())
 
+            // Re-send the player all registries, we do track the indices across stored data
+            // but the registry contents may not be the same between servers so we re-sync
+            // for safety. There is an option in the future to add a partial syncing protocol
+            // that only syncs changes, but for now we redo it all.
+            synchronizeRegistries(player.uniqueId)
+
             // Emit an event to hook into for configuring the player
             Bukkit
                 .getPluginManager()

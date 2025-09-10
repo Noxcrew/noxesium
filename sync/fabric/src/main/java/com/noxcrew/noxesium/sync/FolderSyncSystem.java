@@ -61,6 +61,9 @@ public class FolderSyncSystem extends NoxesiumFeature {
         }
 
         storedFolders.put(folderId, path);
+        if (activeFolders.containsKey(folderId)) {
+            activeFolders.put(folderId, nioPath);
+        }
         config.save();
         return nioPath;
     }

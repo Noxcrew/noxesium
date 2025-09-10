@@ -6,4 +6,5 @@ import java.util.Collection;
 /**
  * Stores a set of id changes.
  */
-public record IdChangeSet(NoxesiumRegistry<?> registry, Collection<Integer> added, Collection<Integer> removed) {}
+public record IdChangeSet(
+        NoxesiumRegistry<?> registry, boolean reset, Collection<Integer> added, Collection<Integer> removed) {}

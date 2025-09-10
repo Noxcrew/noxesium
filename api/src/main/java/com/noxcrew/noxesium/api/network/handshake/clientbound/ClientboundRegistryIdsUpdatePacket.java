@@ -8,5 +8,5 @@ import net.kyori.adventure.key.Key;
  * Sent to the client after handshaking to populate a registry already filled with entries
  * by the client with the appropriate server-indicated identifiers.
  */
-public record ClientboundRegistryIdsUpdatePacket(int id, Key registry, Map<Key, Integer> ids)
+public record ClientboundRegistryIdsUpdatePacket(int id, boolean reset, Key registry, Map<Key, Integer> ids)
         implements NoxesiumPacket {}
