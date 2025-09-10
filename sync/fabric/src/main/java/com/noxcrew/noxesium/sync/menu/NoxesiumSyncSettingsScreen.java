@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.sync.menu;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.sync.FolderSyncSystem;
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncSystem;
 import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;

@@ -1,3 +1,8 @@
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm")
     id("noxesium.sync")
@@ -13,4 +18,8 @@ dependencies {
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks.withType<KotlinCompile> {
+    explicitApiMode.set(ExplicitApiMode.Strict)
 }

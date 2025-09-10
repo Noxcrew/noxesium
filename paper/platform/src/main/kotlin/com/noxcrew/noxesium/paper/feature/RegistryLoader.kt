@@ -63,6 +63,7 @@ public class RegistryLoader : NoxesiumFeature() {
 
                     // Poll events and then immediately reset
                     val events = watchKey.pollEvents()
+                    if (events.isEmpty()) continue
                     watchKey.reset()
                     events
                         .mapNotNull {
@@ -84,7 +85,7 @@ public class RegistryLoader : NoxesiumFeature() {
                         }
                 }
             },
-            1, 1,
+            4, 4,
         )
     }
 

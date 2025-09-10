@@ -1,8 +1,18 @@
 package com.noxcrew.noxesium.sync
 
-import com.noxcrew.noxesium.api.feature.NoxesiumFeature
+import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
+import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
+import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
+import com.noxcrew.noxesium.paper.network.PaperServerPlayer
+import com.noxcrew.noxesium.sync.network.SyncPackets
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
 import java.nio.file.Path
+import java.util.UUID
 import kotlin.io.path.exists
 
 /**
@@ -22,8 +32,15 @@ import kotlin.io.path.exists
  * Clients can configure the location of the folder on their PC themselves so they
  * can link it to pre-existing cloned git repositories as well.
  */
-public class FolderSyncModule : NoxesiumFeature() {
+public class FolderSyncModule : ListeningNoxesiumFeature() {
+    public companion object {
+        /** The required permission node to perform Noxesium syncing. */
+        public const val PERMISSION_NODE: String = "noxesium.sync"
+    }
+
     private val folders = mutableMapOf<String, Path>()
+    private val sessions = mutableMapOf<String, ServerParentFileSystemWatcher>()
+    private val watchersById = mutableMapOf<NoxesiumServerPlayer, MutableMap<Int, ServerParentFileSystemWatcher>>()
 
     /** All folders that admins can enable syncing for. */
     public val syncableFolders: Map<String, Path>
@@ -38,10 +55,74 @@ public class FolderSyncModule : NoxesiumFeature() {
         if (syncExample.exists()) {
             register("example", syncExample)
         }
+
+        // Listen to events from the client related to synchronization
+        SyncPackets.SERVERBOUND_REQUEST_SYNC.addListener(this) { reference, packet, playerId ->
+            if (!reference.isRegistered) return@addListener
+            reference.handleSyncRequest(playerId, packet)
+        }
+        SyncPackets.SERVERBOUND_SYNC_FILE.addListener(this) { reference, packet, playerId ->
+            if (!reference.isRegistered) return@addListener
+            reference.acceptFile(playerId, packet)
+        }
+
+        // Tick polling on all active sessions
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(
+            NoxesiumPaper.plugin,
+            {
+                if (!isRegistered) return@scheduleSyncRepeatingTask
+                sessions.values.forEach { it.poll() }
+            },
+            4, 4,
+        )
+    }
+
+    /** Handles a request from a client to start syncing a new folder. */
+    private fun handleSyncRequest(playerId: UUID, packet: ServerboundRequestSyncPacket) {
+        // Double-check that this player has the required permissions! This avoids clients from faking their way
+        // into synchronization sessions the server didn't request.
+        val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) as? PaperServerPlayer ?: return
+        if (!player.player.bukkitEntity.hasPermission(PERMISSION_NODE)) return
+        val folder = syncableFolders[packet.id] ?: return
+
+        // Create a new session if necessary and add the player to it
+        val session = sessions.computeIfAbsent(packet.id) { ServerParentFileSystemWatcher(it, folder) }
+        val oldId = session.initialize(player, packet.syncId(), packet.files())
+        val watchers = watchersById.computeIfAbsent(player) { mutableMapOf() }
+        oldId?.also { watchers -= it }
+        watchers[packet.syncId()] = session
+    }
+
+    /** Accepts a file being synchronized with the server. */
+    private fun acceptFile(playerId: UUID, packet: ServerboundSyncFilePacket) {
+        val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) ?: return
+        val watcher = watchersById[player]?.get(packet.syncId()) ?: return
+        watcher.acceptFile(packet)
     }
 
     /** Registers a new folder to be syncable. */
     public fun register(id: String, folder: Path) {
         folders[id] = folder
+    }
+
+    /**
+     * End any active sessions when the player disconnects.
+     */
+    @EventHandler
+    public fun onPlayerUnregistered(e: NoxesiumPlayerUnregisteredEvent) {
+        sessions.values.removeIf { watcher ->
+            // Remove this player as a watcher
+            val syncId = watcher.remove(e.noxesiumPlayer)
+            syncId?.also { watchersById[e.noxesiumPlayer]?.remove(it) }
+
+            // Destroy the session if there are no watchers left to
+            // save on system resources.
+            if (watcher.watchers.isEmpty()) {
+                watcher.close()
+                true
+            } else {
+                false
+            }
+        }
     }
 }

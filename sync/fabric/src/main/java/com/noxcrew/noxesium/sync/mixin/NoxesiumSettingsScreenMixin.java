@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.sync.mixin;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumSettingsScreen;
-import com.noxcrew.noxesium.sync.FolderSyncSystem;
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncSystem;
 import com.noxcrew.noxesium.sync.menu.NoxesiumSyncSettingsScreen;
 import java.util.List;
 import net.minecraft.client.Minecraft;

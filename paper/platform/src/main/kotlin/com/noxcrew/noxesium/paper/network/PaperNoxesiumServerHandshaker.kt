@@ -10,6 +10,7 @@ import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
@@ -120,6 +121,17 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         true
     } else {
         false
+    }
+
+    override fun onPlayerDisconnect(uuid: UUID) {
+        val player = NoxesiumPlayerManager.getInstance().getPlayer(uuid)
+        super.onPlayerDisconnect(uuid)
+        if (player != null) {
+            // Emit an event for other systems to hook into on unregistration
+            Bukkit
+                .getPluginManager()
+                .callEvent(NoxesiumPlayerUnregisteredEvent((player as PaperServerPlayer).player.bukkitEntity, player))
+        }
     }
 
     /**

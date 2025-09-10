@@ -12,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 /** Creates the `sync` subcommand. */
 public fun syncCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
     .literal("sync")
-    .requires { sender -> sender.sender.hasPermission("noxesium.command.admin") }
+    .requires { sender -> sender.sender.hasPermission(FolderSyncModule.PERMISSION_NODE) }
     .then(
         Commands
             .argument("folder", StringArgumentType.string())
@@ -33,8 +33,8 @@ public fun syncCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
                     ctx.source.sender.sendMessage(
                         Component.text(
                             "Folder syncing module is not available",
-                            NamedTextColor.RED
-                        )
+                            NamedTextColor.RED,
+                        ),
                     )
                     return@executes 0
                 }
@@ -43,8 +43,8 @@ public fun syncCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
                     ctx.source.sender.sendMessage(
                         Component.text(
                             "Folder $folder is not a valid synchronized folder",
-                            NamedTextColor.RED
-                        )
+                            NamedTextColor.RED,
+                        ),
                     )
                     return@executes 0
                 }
@@ -53,7 +53,7 @@ public fun syncCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
                 noxesiumPlayer.startFolderSync(folder)
                 ctx.source.sender.sendMessage(
                     Component.text(
-                        "Started syncing folder $folder with ${noxesiumPlayer.username}",
+                        "Requesting synchronization of folder $folder with ${noxesiumPlayer.username}",
                         NamedTextColor.WHITE,
                     ),
                 )

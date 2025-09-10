@@ -1,28 +1,53 @@
-package com.noxcrew.noxesium.sync;
+package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Adds the folder syncing system.
  */
 public class FolderSyncSystem extends NoxesiumFeature {
-    private final Map<String, Path> activeFolders = new HashMap<>();
+    private final Map<String, ClientParentFileSystemWatcher> activeFolders = new HashMap<>();
+    private final Map<Integer, ClientParentFileSystemWatcher> watchersById = new HashMap<>();
 
     public FolderSyncSystem() {
         SyncPackets.CLIENTBOUND_REQUEST_SYNC.addListener(this, (reference, packet, ignored) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
+
+            // Start a sync when the server requests it. The client has to confirm it first for this specific IP
+            // so random servers cannot start a request unless the client has already allowed it.
             reference.startSync(packet.id());
+        });
+        SyncPackets.CLIENTBOUND_ESTABLISH_SYNC.addListener(this, (reference, packet, ignored) -> {
+            if (!reference.isRegistered()) return;
+            reference.establishSync(packet);
+        });
+        SyncPackets.CLIENTBOUND_SYNC_FILE.addListener(this, (reference, packet, ignored) -> {
+            if (!reference.isRegistered()) return;
+            reference.acceptFile(packet);
+        });
+
+        ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
+            // Poll changes on all registered watcher on tick end
+            if (!isRegistered()) return;
+            activeFolders.values().forEach(ParentFileSystemWatcher::poll);
         });
     }
 
@@ -35,7 +60,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
     /**
      * Returns all synced folders on the current server that are active.
      */
-    public Map<String, Path> getCurrentSyncedFolders() {
+    public Map<String, ClientParentFileSystemWatcher> getCurrentSyncedFolders() {
         return activeFolders;
     }
 
@@ -61,8 +86,17 @@ public class FolderSyncSystem extends NoxesiumFeature {
         }
 
         storedFolders.put(folderId, path);
+
+        // If the folder is already being watched, create a new watcher!
         if (activeFolders.containsKey(folderId)) {
-            activeFolders.put(folderId, nioPath);
+            var newWatcher = new ClientParentFileSystemWatcher(nioPath, folderId);
+            var oldWatcher = activeFolders.put(folderId, newWatcher);
+            watchersById.remove(oldWatcher.getSynchronizationId());
+            oldWatcher.close();
+
+            // Re-initialize the new location of the watcher!
+            watchersById.put(newWatcher.getSynchronizationId(), newWatcher);
+            newWatcher.initialize();
         }
         config.save();
         return nioPath;
@@ -72,7 +106,16 @@ public class FolderSyncSystem extends NoxesiumFeature {
      * Activates the given folder.
      */
     public void activateFolder(String folderId, Path location) {
-        activeFolders.put(folderId, location);
+        var newWatcher = new ClientParentFileSystemWatcher(location, folderId);
+        var currentWatcher = activeFolders.put(folderId, newWatcher);
+        if (currentWatcher != null) {
+            watchersById.remove(currentWatcher.getSynchronizationId());
+            currentWatcher.close();
+        }
+
+        // Start synchronizing with the server on the start of the folder
+        watchersById.put(newWatcher.getSynchronizationId(), newWatcher);
+        newWatcher.initialize();
     }
 
     /**
@@ -106,5 +149,26 @@ public class FolderSyncSystem extends NoxesiumFeature {
         text = text.append(CommonComponents.SPACE);
         text = text.append(Component.translatable("noxesium.screen.sync.request.footer"));
         Minecraft.getInstance().setScreen(new NoxesiumFolderSyncScreen(text, folderId));
+    }
+
+    /**
+     * Handles a synchronization being established.
+     */
+    private void establishSync(ClientboundEstablishSyncPacket packet) {
+        var sync = watchersById.get(packet.syncId());
+        if (sync == null) return;
+        for (var file : packet.requestedFiles()) {
+            var parts = sync.collectParts(file);
+            for (var part : parts) {
+                NoxesiumServerboundNetworking.send(new ServerboundSyncFilePacket(packet.syncId(), part));
+            }
+        }
+    }
+
+    /**
+     * Handles part of a file being received.
+     */
+    private void acceptFile(ClientboundSyncFilePacket packet) {
+        System.out.println("received " + packet);
     }
 }

@@ -26,8 +26,8 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
 
     init {
         // Listen to the client performing a riptide
-        CommonPackets.SERVER_RIPTIDE.addListener(this) { _, packet, playerId ->
-            if (!isRegistered) return@addListener
+        CommonPackets.SERVER_RIPTIDE.addListener(this) { reference, packet, playerId ->
+            if (!reference.isRegistered) return@addListener
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
 
             // Ignore non-smooth client tridents from lying about the tridents!

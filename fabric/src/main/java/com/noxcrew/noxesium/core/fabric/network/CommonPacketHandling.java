@@ -30,12 +30,12 @@ public class CommonPacketHandling extends NoxesiumFeature {
 
     public CommonPacketHandling() {
         CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             reference.applyPatch(
                     packet.patch(), packet.reset(), NoxesiumRegistries.GAME_COMPONENTS, GameComponents.getInstance());
         });
         CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             if (Minecraft.getInstance().level == null) {
                 NoxesiumApi.getLogger()
                         .warn("Received components for entity {} when level is not set", packet.entityId());
@@ -49,7 +49,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
             }
         });
         CommonPackets.CLIENT_UPDATE_BLOCK_ENTITY_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             if (Minecraft.getInstance().level == null) {
                 NoxesiumApi.getLogger()
                         .warn("Received components for block entity {} when level is not set", packet.blockPos());
@@ -67,7 +67,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
         });
 
         CommonPackets.CLIENT_CUSTOM_SOUND_START.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
 
@@ -118,7 +118,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
         });
 
         CommonPackets.CLIENT_CUSTOM_SOUND_MODIFY.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
             var sound = manager.getSound(packet.id());
@@ -127,14 +127,14 @@ public class CommonPacketHandling extends NoxesiumFeature {
         });
 
         CommonPackets.CLIENT_CUSTOM_SOUND_STOP.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             var manager = NoxesiumApi.getInstance().getFeatureOrNull(NoxesiumSoundModule.class);
             if (manager == null) return;
             manager.stopSound(packet.id());
         });
 
         CommonPackets.CLIENT_OPEN_LINK.addListener(this, (reference, packet, ignored3) -> {
-            if (!isRegistered()) return;
+            if (!reference.isRegistered()) return;
             try {
                 var uri = Util.parseAndValidateUntrustedUri(packet.url());
                 var minecraft = Minecraft.getInstance();

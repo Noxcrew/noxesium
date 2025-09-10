@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.sync;
 import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.PacketCollection;
+import com.noxcrew.noxesium.sync.filesystem.FolderSyncSystem;
 import com.noxcrew.noxesium.sync.network.SyncPacketSerializers;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
 import java.util.Collection;
