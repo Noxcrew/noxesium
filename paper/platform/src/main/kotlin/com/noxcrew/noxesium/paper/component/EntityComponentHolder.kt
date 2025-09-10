@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity
 public class EntityComponentHolder(
     /** The NMS entity instance for this holder. */
     public val entity: Entity,
-) : SimpleMutableNoxesiumComponentHolder() {
+) : SimpleMutableNoxesiumComponentHolder(NoxesiumRegistries.ENTITY_COMPONENTS) {
     // Store any changes made to this component onto the entity's data! We load back from the entity's
     // data when we recreate the entity component holder in the future.
     override fun <T : Any?> `noxesium$setComponent`(component: NoxesiumComponentType<T>, value: T?) {

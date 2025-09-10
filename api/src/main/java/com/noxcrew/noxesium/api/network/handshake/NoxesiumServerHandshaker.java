@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistr
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
+import com.noxcrew.noxesium.api.player.IdChangeSet;
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager;
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
@@ -96,8 +97,19 @@ public abstract class NoxesiumServerHandshaker {
                 var syncContents = registry.determineAllChangedContent(entrypoints);
                 if (syncContents.isEmpty()) continue;
 
+                // Mark down that we're waiting on this registry sync!
                 var id = registryUpdateIdentifier.getAndIncrement();
-                player.awaitRegistrySync(id);
+                var added = new HashSet<Integer>();
+                var removed = new HashSet<Integer>();
+                for (var entry : syncContents.getMap().entrySet()) {
+                    var keyId = syncContents.getKeys().get(entry.getKey());
+                    if (entry.getValue().isEmpty()) {
+                        removed.add(keyId);
+                    } else {
+                        added.add(keyId);
+                    }
+                }
+                player.awaitRegistrySync(id, new IdChangeSet(registry, added, removed));
                 player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents));
             }
         }
@@ -199,7 +211,7 @@ public abstract class NoxesiumServerHandshaker {
                 if (syncContents.isEmpty()) continue;
 
                 var id = registryUpdateIdentifier.getAndIncrement();
-                player.awaitRegistrySync(id);
+                player.awaitRegistrySync(id, new IdChangeSet(registry, syncContents.getIds(), Set.of()));
                 if (!player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, syncContents))) {
                     NoxesiumApi.getLogger()
                             .error("Failed to send registry contents update packet, destroying connection!");
@@ -212,7 +224,7 @@ public abstract class NoxesiumServerHandshaker {
                 if (syncContents.isEmpty()) continue;
 
                 var id = registryUpdateIdentifier.getAndIncrement();
-                player.awaitRegistrySync(id);
+                player.awaitRegistrySync(id, new IdChangeSet(registry, syncContents.values(), Set.of()));
                 if (!player.sendPacket(new ClientboundRegistryIdsUpdatePacket(id, serverRegistry.id(), syncContents))) {
                     NoxesiumApi.getLogger().error("Failed to send registry id update packet, destroying connection!");
                     destroy(uniqueId);
@@ -250,7 +262,7 @@ public abstract class NoxesiumServerHandshaker {
             return;
         }
 
-        if (player.acknowledgeRegistrySync(packet.id())) {
+        if (player.acknowledgeRegistrySync(packet.id(), packet.unknownKeys())) {
             // Try to complete the handshaking, if applicable.
             if (player.isHandshakeCompleted()) {
                 completeHandshake(player);

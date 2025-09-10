@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.api.registry;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,6 +39,13 @@ public class NoxesiumRegistryPatch {
      */
     public Map<Key, Optional<?>> getMap() {
         return data;
+    }
+
+    /**
+     * Returns all ids in this patch.
+     */
+    public Collection<Integer> getIds() {
+        return keys.values();
     }
 
     /**

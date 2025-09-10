@@ -137,14 +137,7 @@ public class NoxesiumStreamCodecs {
 
             @Override
             public void encode(RegistryFriendlyByteBuf buffer, Key key) {
-                var value = -1;
-                if (key != null) {
-                    var content = registry.getByKey(key);
-                    if (content != null) {
-                        value = registry.getIdFor(content);
-                    }
-                }
-                buffer.writeVarInt(value);
+                buffer.writeVarInt(registry.getIdForKey(key));
             }
         };
     }

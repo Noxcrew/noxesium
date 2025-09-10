@@ -11,12 +11,17 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -58,10 +63,17 @@ public class NoxesiumServerPlayer {
     private ClientSettings settings;
 
     @NotNull
-    private final SimpleMutableNoxesiumComponentHolder components = new SimpleMutableNoxesiumComponentHolder();
+    private final SimpleMutableNoxesiumComponentHolder components =
+            new SimpleMutableNoxesiumComponentHolder(NoxesiumRegistries.GAME_COMPONENTS);
 
     @NotNull
     private Set<NoxesiumPacket> pendingPackets = ConcurrentHashMap.newKeySet();
+
+    @NotNull
+    private final Map<Integer, IdChangeSet> sentIndices = new HashMap<>();
+
+    @NotNull
+    private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
 
     private int lastSoundId = 0;
     private boolean dirty = false;
@@ -83,6 +95,10 @@ public class NoxesiumServerPlayer {
                     .map(EntrypointProtocol::id)
                     .toList();
             this.settings = serializedPlayer.settings();
+            for (var entry : serializedPlayer.knownIds().entrySet()) {
+                var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
+                this.knownIndices.put(registry, entry.getValue());
+            }
         }
     }
 
@@ -91,7 +107,11 @@ public class NoxesiumServerPlayer {
      */
     @NotNull
     public SerializedNoxesiumServerPlayer serialize() {
-        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings);
+        var copiedKnownIndices = new HashMap<String, Set<Integer>>();
+        for (var entry : knownIndices.entrySet()) {
+            copiedKnownIndices.put(entry.getKey().id().asString(), entry.getValue());
+        }
+        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings, copiedKnownIndices);
     }
 
     /**
@@ -204,10 +224,23 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Returns whether this player can receive the given key in the
+     * given registry. This will only be `true` if the player has the
+     * entrypoint required and was able to receive the data during
+     * handshaking.
+     */
+    public <T> boolean isAwareOf(NoxesiumRegistry<T> registry, Key key) {
+        var id = registry.getIdForKey(key);
+        if (!knownIndices.containsKey(registry)) return false;
+        return knownIndices.get(registry).contains(id);
+    }
+
+    /**
      * Adds a new identifier to wait for with registry syncs.
      */
-    public void awaitRegistrySync(int id) {
+    public void awaitRegistrySync(int id, IdChangeSet ids) {
         pendingRegistrySyncs.add(id);
+        sentIndices.put(id, ids);
     }
 
     /**
@@ -220,9 +253,24 @@ public class NoxesiumServerPlayer {
     /**
      * Handles acknowledgement of a registry synchronization.
      */
-    public boolean acknowledgeRegistrySync(int id) {
+    public boolean acknowledgeRegistrySync(int id, Collection<Integer> missingIds) {
         if (pendingRegistrySyncs.contains(id)) {
             pendingRegistrySyncs.remove((Object) id);
+
+            // Determine which indices were sent and update the local cache based on it
+            var sent = sentIndices.remove(id);
+            if (sent != null) {
+                var registry = sent.registry();
+                var known = knownIndices.getOrDefault(registry, new HashSet<>());
+                for (var added : sent.added()) {
+                    if (missingIds.contains(added)) continue;
+                    known.add(added);
+                }
+                known.removeAll(sent.removed());
+                known.removeAll(missingIds);
+                knownIndices.put(registry, known);
+                dirty = true;
+            }
             return true;
         }
         return false;
@@ -293,7 +341,7 @@ public class NoxesiumServerPlayer {
         pendingPackets = ConcurrentHashMap.newKeySet();
         pending.forEach(this::sendPacket);
         if (components.hasModified()) {
-            sendPacket(new ClientboundUpdateGameComponentsPacket(false, components.collectModified()));
+            sendPacket(new ClientboundUpdateGameComponentsPacket(false, components.collectModified(this)));
         }
     }
 

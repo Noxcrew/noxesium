@@ -31,8 +31,6 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                 if (!isRegistered) return@scheduleSyncRepeatingTask
                 for (entity in NoxesiumEntityManager.getInstance<Entity, EntityComponentHolder>().allEntities) {
                     if (entity.hasModified()) {
-                        val packet = ClientboundUpdateEntityComponentsPacket(entity.entity.id, false, entity.collectModified())
-
                         // Only if the entity is dirty do we determine which players are able to see it.
                         // We have to calculate a bit here as we don't store the final references to
                         // save on memory. We assume updates to the components are relatively rare (and
@@ -40,7 +38,11 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                         val entityId = entity.entity.id
                         val playerIds = seenEntities.keySet().filter { entityId in seenEntities[it] }
                         val playerManager = NoxesiumPlayerManager.getInstance()
-                        playerIds.mapNotNull { playerManager.getPlayer(it) }.forEach { it.sendPacket(packet) }
+                        playerIds.mapNotNull { playerManager.getPlayer(it) }.forEach {
+                            val patch = entity.collectModified(it)
+                            if (patch.isEmpty) return@forEach
+                            it.sendPacket(ClientboundUpdateEntityComponentsPacket(entity.entity.id, false, patch))
+                        }
                     }
                 }
             },
@@ -65,7 +67,7 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                 ClientboundUpdateEntityComponentsPacket(
                     entity.id,
                     true,
-                    holder.collectAll().takeUnless { it.isEmpty } ?: return,
+                    holder.collectAll(noxesiumPlayer).takeUnless { it.isEmpty } ?: return,
                 ),
             )
         }
@@ -104,7 +106,7 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                     ClientboundUpdateEntityComponentsPacket(
                         e.entity.entityId,
                         true,
-                        holder.collectAll().takeUnless { it.isEmpty } ?: return@scheduleSyncDelayedTask,
+                        holder.collectAll(noxesiumPlayer).takeUnless { it.isEmpty } ?: return@scheduleSyncDelayedTask,
                     ),
                 )
             },

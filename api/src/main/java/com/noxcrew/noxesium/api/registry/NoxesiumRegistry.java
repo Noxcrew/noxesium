@@ -103,9 +103,22 @@ public class NoxesiumRegistry<T> {
 
     /**
      * Returns the index associated with the given value.
+     * Returns -1 if the key is not in this registry.
      */
     public int getIdFor(T value) {
+        if (value == null) return -1;
         return byId.inverse().get(value);
+    }
+
+    /**
+     * Returns the index associated with the given key.
+     * Returns -1 if the key is not in this registry.
+     */
+    public int getIdForKey(Key key) {
+        if (key == null) return -1;
+        var value = getByKey(key);
+        if (value == null) return -1;
+        return getIdFor(value);
     }
 
     /**

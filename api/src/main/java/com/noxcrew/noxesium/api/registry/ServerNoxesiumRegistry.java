@@ -27,11 +27,7 @@ public class ServerNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
         for (var entry : this.entrypoints.entrySet()) {
             // Ignore keys for entrypoints this player does not have know about!
             if (entry.getValue() != null && !entrypoints.contains(entry.getValue())) continue;
-
-            // Determine the id of this key
-            var value = getByKey(entry.getKey());
-            var index = getIdFor(value);
-            result.put(entry.getKey(), index);
+            result.put(entry.getKey(), getIdForKey(entry.getKey()));
         }
         return result;
     }

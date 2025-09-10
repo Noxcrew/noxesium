@@ -27,7 +27,7 @@ public class NoxesiumSyncFabricEntrypoint implements ClientNoxesiumEntrypoint {
 
     @Override
     public String getId() {
-        return "noxesium_sync";
+        return "noxesium-sync";
     }
 
     @Override

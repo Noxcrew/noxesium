@@ -15,7 +15,7 @@ public class NoxesiumSyncPaperEntrypoint : NoxesiumEntrypoint {
         SyncPacketSerializers.register()
     }
 
-    override fun getId(): String = "noxesium_sync"
+    override fun getId(): String = "noxesium-sync"
 
     override fun getPacketCollections(): Collection<PacketCollection> = listOf(
         SyncPackets.INSTANCE,

@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.api.component;
 
+import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
+import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,6 +16,11 @@ import org.jetbrains.annotations.Nullable;
 public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComponentHolder {
     private final Map<NoxesiumComponentType<?>, Object> values = new HashMap<>();
     private Set<NoxesiumComponentType<?>> modified = new HashSet<>();
+    private final NoxesiumRegistry<NoxesiumComponentType<?>> registry;
+
+    public SimpleMutableNoxesiumComponentHolder(final NoxesiumRegistry<NoxesiumComponentType<?>> registry) {
+        this.registry = registry;
+    }
 
     @Override
     public <T> @Nullable T noxesium$getComponent(NoxesiumComponentType<T> component) {
@@ -70,11 +77,12 @@ public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComp
      * Returns all built up modified values as a patch to send
      * to the client.
      */
-    public NoxesiumComponentPatch collectModified() {
+    public NoxesiumComponentPatch collectModified(NoxesiumServerPlayer noxesiumPlayer) {
         var modified = this.modified;
         this.modified = new HashSet<>();
         var data = new HashMap<NoxesiumComponentType<?>, Optional<?>>();
         for (var key : modified) {
+            if (!noxesiumPlayer.isAwareOf(registry, key.id())) continue;
             var value = values.get(key);
             if (value == null) {
                 data.put(key, Optional.empty());
@@ -88,9 +96,10 @@ public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComp
     /**
      * Returns all data in this holder.
      */
-    public NoxesiumComponentPatch collectAll() {
+    public NoxesiumComponentPatch collectAll(NoxesiumServerPlayer noxesiumPlayer) {
         var data = new HashMap<NoxesiumComponentType<?>, Optional<?>>();
         for (var entry : values.entrySet()) {
+            if (!noxesiumPlayer.isAwareOf(registry, entry.getKey().id())) continue;
             data.put(entry.getKey(), Optional.of(entry.getValue()));
         }
         return new NoxesiumComponentPatch(data);
