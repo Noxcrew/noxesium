@@ -133,9 +133,6 @@ public class FileSystemWatcher implements Closeable {
                     var filePath = getRelative(fileName);
                     var isDirectory = Files.isDirectory(file);
 
-                    // Ignore any files being changed that exceed the size limit!
-                    if (!isDirectory && getSize(file) > MAX_FILE_SIZE) continue;
-
                     if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_CREATE)) {
                         if (isDirectory) {
                             // Ignore .gitignored files!
@@ -145,10 +142,14 @@ public class FileSystemWatcher implements Closeable {
                                 oldWatcher.close();
                             }
                         } else {
+                            // Ignore any files being changed that exceed the size limit!
+                            if (getSize(file) > MAX_FILE_SIZE) continue;
                             parent.handleModify(filePath);
                         }
                     } else if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_MODIFY)) {
                         if (!isDirectory) {
+                            // Ignore any files being changed that exceed the size limit!
+                            if (getSize(file) > MAX_FILE_SIZE) continue;
                             parent.handleModify(filePath);
                         }
                     } else if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_DELETE)) {
@@ -160,6 +161,8 @@ public class FileSystemWatcher implements Closeable {
                         } else {
                             parent.handleRemoval(filePath);
                         }
+                    } else {
+                        NoxesiumApi.getLogger().info("Unknown event {} for file {}", event.kind(), file);
                     }
                 }
             }
