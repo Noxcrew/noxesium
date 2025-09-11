@@ -22,6 +22,7 @@ adventure = "4.23.0"
 adventure-fabric = "6.6.0"
 apache-commons = "3.17.0"
 joml = "1.10.8"
+juniversalchardet = "2.5.0"
 
 # Fabric - https://modmuss50.me/fabric.html
 minecraft = "1.21.8"
@@ -60,6 +61,7 @@ adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "ad
 adventure-fabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventure-fabric" }
 apache-commons = { group = "org.apache.commons", name = "commons-lang3", version.ref = "apache-commons" }
 joml = { group = "org.joml", name = "joml", version.ref = "joml" }
+juniversalchardet = { group = "com.github.albfernandez", name = "juniversalchardet", version.ref = "juniversalchardet" }
 
 minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric-loader" }

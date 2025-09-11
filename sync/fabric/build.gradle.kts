@@ -29,6 +29,9 @@ dependencies {
     // Add DevLogin
     localRuntime(libs.devlogin)
 
+    // Add universal charset for detecting encodings
+    implementation(libs.juniversalchardet)
+
     // Add tiny filled dialogs for the file picker
     val lwjglVersion = "3.3.2"
     implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")

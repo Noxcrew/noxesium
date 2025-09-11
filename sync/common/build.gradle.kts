@@ -9,6 +9,7 @@ neoForge {
 dependencies {
     api(project(":api"))
     api(project(":nms"))
+    api(libs.juniversalchardet)
 }
 
 configurations {

@@ -14,8 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  * The parent element to a tree of file system watchers.
@@ -29,6 +31,14 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      * custom payloads are limited at 32kb.
      */
     private static final int MAX_PACKET_SIZE = 31767;
+
+    /**
+     * The area checked for a \0 byte to determine if a file
+     * is a binary file.
+     *
+     * <a href="https://stackoverflow.com/questions/76457826/how-does-text-auto-work-how-does-git-determine-if-something-is-a-text-file">Relevant</a>
+     */
+    private static final int BINARY_CHECK_AREA = 8000;
 
     @NotNull
     private final WatchService watchService;
@@ -104,7 +114,28 @@ public abstract class ParentFileSystemWatcher implements Closeable {
         var file = parentWatcher.getFolder().resolve(path);
         try {
             if (Files.exists(file)) {
-                return split(path, Files.readAllBytes(file));
+                var allBytes = Files.readAllBytes(file);
+                if (Util.getPlatform() == Util.OS.WINDOWS) {
+                    var checkArea = Math.min(allBytes.length, BINARY_CHECK_AREA);
+                    var isBinary = false;
+                    for (var index = 0; index < checkArea; index++) {
+                        if (allBytes[index] == 0) {
+                            isBinary = true;
+                            break;
+                        }
+                    }
+                    if (!isBinary) {
+                        // If this file is not a binary file (so a text file) we have
+                        // to detect any CRLF line endings and filter these out.
+                        var encoding = UniversalDetector.detectCharset(file);
+                        return split(
+                                path,
+                                new String(allBytes, encoding)
+                                        .replace("\r\n", "\n")
+                                        .getBytes(encoding));
+                    }
+                }
+                return split(path, allBytes);
             }
         } catch (Exception e) {
             NoxesiumApi.getLogger().error("Failed to read contents of {}", path, e);

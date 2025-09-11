@@ -13,6 +13,9 @@ plugins {
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
     api(project(":paper:paper-platform"))
+
+    // Add universal charset for detecting encodings
+    implementation(libs.juniversalchardet)
 }
 
 java {
