@@ -75,6 +75,7 @@ public class NoxesiumServerPlayer {
     @NotNull
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
 
+    private final boolean transferred;
     private int lastSoundId = 0;
     private boolean dirty = false;
 
@@ -88,8 +89,8 @@ public class NoxesiumServerPlayer {
         this.displayName = displayName;
 
         if (serializedPlayer != null) {
-            // If serialized data is present, the handshake is complete by definition!
-            this.handshakeState = HandshakeState.COMPLETE;
+            // If serialized data is present, load it in!
+            this.transferred = true;
             this.supportedEntrypoints = serializedPlayer.supportedEntrypoints();
             this.supportedEntrypointIds = this.supportedEntrypoints.stream()
                     .map(EntrypointProtocol::id)
@@ -99,6 +100,8 @@ public class NoxesiumServerPlayer {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.knownIndices.put(registry, entry.getValue());
             }
+        } else {
+            this.transferred = false;
         }
     }
 
@@ -136,6 +139,16 @@ public class NoxesiumServerPlayer {
     @NotNull
     public Component getDisplayName() {
         return displayName;
+    }
+
+    /**
+     * Returns whether this player object originates from a different
+     * server that initially performed a handshake. This means the player
+     * transferred onto this server and has already completed the handshaking
+     * process on the client.
+     */
+    public boolean isTransfer() {
+        return transferred;
     }
 
     /**

@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
-import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
@@ -41,7 +40,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
             val bukkitPlayer = Bukkit.getPlayer(playerId) as CraftPlayer
             val serverPlayer = bukkitPlayer.handle
-            reference.handleHandshake(PaperServerPlayer(serverPlayer, getStoredData(playerId)), packet!!)
+            reference.handleHandshake(PaperServerPlayer(serverPlayer), packet!!)
         }
     }
 
@@ -64,32 +63,19 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
     /**
      * When a player finishes joining, attempt to load any previous stored data from an
-     * external database. If this data is present, instantly complete the handshaking process
-     * for the player.
+     * external database. If this data is present, perform a partial handshake from the
+     * server-side.
      */
     @EventHandler
     public fun onPlayerJoin(event: PlayerJoinEvent) {
+        // Ignore if already handshaken!
+        val playerId = event.player.uniqueId
+        if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) return
+
         getStoredData(event.player.uniqueId)?.also { storedData ->
             val bukkitPlayer = event.player as CraftPlayer
             val serverPlayer = bukkitPlayer.handle
-            val player = PaperServerPlayer(serverPlayer, storedData)
-
-            // Register the player instance directly
-            NoxesiumPlayerManager.getInstance().registerPlayer(player.uniqueId, player)
-
-            // Inform the client that it has been transferred to a different server
-            player.sendPacket(ClientboundHandshakeTransferredPacket())
-
-            // Re-send the player all registries, we do track the indices across stored data
-            // but the registry contents may not be the same between servers so we re-sync
-            // for safety. There is an option in the future to add a partial syncing protocol
-            // that only syncs changes, but for now we redo it all.
-            synchronizeRegistries(player.uniqueId)
-
-            // Emit an event to hook into for configuring the player
-            Bukkit
-                .getPluginManager()
-                .callEvent(NoxesiumPlayerRegisteredEvent(bukkitPlayer, player))
+            handleTransfer(PaperServerPlayer(serverPlayer, storedData))
         }
     }
 
