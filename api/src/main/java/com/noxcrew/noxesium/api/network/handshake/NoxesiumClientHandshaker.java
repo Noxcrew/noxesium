@@ -207,8 +207,7 @@ public abstract class NoxesiumClientHandshaker {
      * Handles the server sending across registry contents.
      */
     protected void handleRegistryUpdate(ClientboundRegistryContentUpdatePacket packet) {
-        // We are allowed to receive registry content changes even when we're done handshaking!
-        if (state != HandshakeState.AWAITING_REGISTRIES && state != HandshakeState.COMPLETE) {
+        if (state != HandshakeState.AWAITING_REGISTRIES) {
             NoxesiumApi.getLogger()
                     .error("Received registry contents while in '{}' state, destroying connection!", state);
             uninitialize();
@@ -282,7 +281,9 @@ public abstract class NoxesiumClientHandshaker {
         // start sending packets properly on initialization like client settings
         var api = NoxesiumApi.getInstance();
         NoxesiumApi.getInstance().getActiveEntrypoints().forEach(entrypoint -> {
-            entrypoint.getAllFeatures().forEach(api::registerFeature);
+            entrypoint.getAllFeatures().stream()
+                    .filter(it -> !it.isRegistered())
+                    .forEach(api::registerFeature);
         });
     }
 
@@ -296,6 +297,10 @@ public abstract class NoxesiumClientHandshaker {
             uninitialize(true);
             return;
         }
+
+        // Set the state back to awaiting registries so the server can re-send
+        // all registry information!
+        state = HandshakeState.AWAITING_REGISTRIES;
 
         // Clear out any data that the previous server set which the
         // new server does not know about.

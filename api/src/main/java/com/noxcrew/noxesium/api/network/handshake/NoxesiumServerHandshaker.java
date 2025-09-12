@@ -392,7 +392,7 @@ public abstract class NoxesiumServerHandshaker {
 
         // Move to the last handshake state and send the client a completion message
         player.setHandshakeState(HandshakeState.COMPLETE);
-        if (!player.isTransfer() && !player.sendPacket(new ClientboundHandshakeCompletePacket())) {
+        if (!player.sendPacket(new ClientboundHandshakeCompletePacket())) {
             NoxesiumApi.getLogger().error("Failed to send handshake completion packet, destroying connection!");
             destroy(player.getUniqueId());
             return false;
