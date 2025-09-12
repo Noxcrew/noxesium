@@ -113,6 +113,9 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         val player = NoxesiumPlayerManager.getInstance().getPlayer(uuid)
         super.onPlayerDisconnect(uuid)
         if (player != null) {
+            // Delete any stored data for this player
+            removeStoredData(player)
+
             // Emit an event for other systems to hook into on unregistration
             Bukkit
                 .getPluginManager()
@@ -131,5 +134,11 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
      * connects to a different server within a network.
      */
     protected open fun storeData(player: NoxesiumServerPlayer) {
+    }
+
+    /**
+     * Indicates that stored data for [player] should be deleted.
+     */
+    protected open fun removeStoredData(player: NoxesiumServerPlayer) {
     }
 }

@@ -294,7 +294,7 @@ public abstract class NoxesiumClientHandshaker {
         if (state != HandshakeState.COMPLETE) {
             // Whenever we got transferred while not completely done handshaking we
             // trigger an immediate handshake failure and re-attempt handshaking soon.
-            uninitialize(true);
+            uninitialize();
             return;
         }
 
@@ -328,19 +328,19 @@ public abstract class NoxesiumClientHandshaker {
      * Un-initializes the connection with the server.
      */
     public void uninitialize(boolean recursive) {
-        // Stop any handshake attempts from any non-recursive cancellation
-        if (!recursive) handshakeCooldown = -1;
-
-        // Don't proceed unless there is a handshake to cancel
-        if (state == HandshakeState.NONE) return;
-
-        // Start by sending a packet to inform the server the handshake was cancelled!
         if (!recursive) {
+            // Stop any handshake attempts from any non-recursive cancellation
+            handshakeCooldown = -1;
+
+            // Start by sending a packet to inform the server the handshake was cancelled!
             NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket());
         } else {
             // Attempt another handshake in 10 seconds!
             handshakeCooldown = 200;
         }
+
+        // Don't proceed unless there is a handshake to cancel
+        if (state == HandshakeState.NONE) return;
 
         state = HandshakeState.NONE;
         challenges.clear();

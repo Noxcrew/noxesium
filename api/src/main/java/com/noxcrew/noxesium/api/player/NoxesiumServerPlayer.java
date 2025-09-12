@@ -298,16 +298,10 @@ public class NoxesiumServerPlayer {
      */
     public boolean isHandshakeCompleted() {
         // We can only complete the handshake if we are awaiting registries!
-        if (handshakeState != HandshakeState.AWAITING_REGISTRIES) {
-            System.out.println("not awaiting");
-            return false;
-        }
+        if (handshakeState != HandshakeState.AWAITING_REGISTRIES) return false;
 
         // If we are waiting some registry sync to complete we cannot complete the handshake
-        if (!pendingRegistrySyncs.isEmpty()) {
-            System.out.println("waiting on " + pendingRegistrySyncs);
-            return false;
-        }
+        if (!pendingRegistrySyncs.isEmpty()) return false;
 
         // Check if every entrypoint has at least one channel registered
         var registeredChannels = NoxesiumClientboundNetworking.getInstance().getRegisteredChannels(this);
@@ -315,10 +309,7 @@ public class NoxesiumServerPlayer {
             var entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id());
 
             // This should never occur but just in case we just prevent the handshake from completing!
-            if (entrypoint == null) {
-                System.out.println("What is a " + protocol.id());
-                return false;
-            }
+            if (entrypoint == null) return false;
 
             // Check for all channels in this entrypoint's collection if none of them are registered
             // we still need to wait!
@@ -327,10 +318,7 @@ public class NoxesiumServerPlayer {
                         .flatMap(it -> it.getPackets().stream())
                         .map(it -> it.id().toString())
                         .toList();
-                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) {
-                    System.out.println("Still waiting on " + channels);
-                    return false;
-                }
+                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) return false;
             }
         }
         return true;
