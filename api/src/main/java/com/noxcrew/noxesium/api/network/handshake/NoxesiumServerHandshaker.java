@@ -138,20 +138,19 @@ public abstract class NoxesiumServerHandshaker {
         // If the handshake start is successful we register the player instance
         NoxesiumPlayerManager.getInstance().registerPlayer(player.getUniqueId(), player);
 
+        System.out.println("handling transfer, can receive? "
+                + NoxesiumClientboundNetworking.getInstance()
+                        .canReceive(player, ClientboundHandshakeTransferredPacket.class));
         if (NoxesiumClientboundNetworking.getInstance()
                 .canReceive(player, ClientboundHandshakeTransferredPacket.class)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
-            if (!player.sendPacket(new ClientboundHandshakeTransferredPacket())) {
-                NoxesiumApi.getLogger().error("Failed to send handshake transfer packet, destroying connection!");
-                destroy(player.getUniqueId());
-                return;
-            }
             completeTransfer(player);
         } else {
             // The client hasn't sent that it can receive the transfer packet,
             // so we queue up this transfer.
             pendingTransfers.add(player.getUniqueId());
+            System.out.println("waiting");
         }
     }
 
@@ -159,11 +158,19 @@ public abstract class NoxesiumServerHandshaker {
      * Completes the transfer and starts synchronizing the new registries.
      */
     protected void completeTransfer(@NotNull NoxesiumServerPlayer player) {
+        System.out.println("completing transfer");
         if (!player.getHandshakeState().equals(HandshakeState.NONE)) {
             NoxesiumApi.getLogger()
                     .error(
                             "Tried to complete transfer while in '{}' state, destroying connection!",
                             player.getHandshakeState());
+            destroy(player.getUniqueId());
+            return;
+        }
+
+        // Send the transfer packet to the client so it clears data
+        if (!player.sendPacket(new ClientboundHandshakeTransferredPacket())) {
+            NoxesiumApi.getLogger().error("Failed to send handshake transfer packet, destroying connection!");
             destroy(player.getUniqueId());
             return;
         }
@@ -291,6 +298,8 @@ public abstract class NoxesiumServerHandshaker {
         // Test if all tasks are already complete
         if (player.isHandshakeCompleted()) {
             completeHandshake(player);
+        } else {
+            System.out.println("handshake not complete");
         }
     }
 
@@ -414,6 +423,7 @@ public abstract class NoxesiumServerHandshaker {
      */
     protected void onChannelRegistered(@Nullable NoxesiumServerPlayer player, @NotNull String channel) {
         if (player == null) return;
+        System.out.println("registered " + channel);
         if (channel.equals(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.id().toString())) {
             // Delay by a tick so the other handshake channels are also registered!
@@ -432,11 +442,17 @@ public abstract class NoxesiumServerHandshaker {
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED.id().toString())) {
             // Delay by a tick so the other handshake channels are also registered!
             runDelayed(() -> {
-                if (!isConnected(player)) return;
+                if (!isConnected(player)) {
+                    System.out.println("not connected");
+                    return;
+                }
 
                 // The client is waiting for the transfer packet to be registered,
                 // finish the transfer after it.
-                if (!pendingTransfers.remove(player.getUniqueId())) return;
+                if (!pendingTransfers.remove(player.getUniqueId())) {
+                    System.out.println("not waiting");
+                    return;
+                }
                 completeTransfer(player);
             });
         } else {
