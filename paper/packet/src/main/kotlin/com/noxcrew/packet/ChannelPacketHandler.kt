@@ -11,8 +11,8 @@ import org.bukkit.entity.Player
 /**
  * A custom packet handler that modifies incoming and outgoing packets.
  */
-internal class NoxcrewPacketHandler(
-    private val packetApi: MinecraftPacketApi,
+internal class ChannelPacketHandler(
+    private val packetApi: PacketApi,
     private val player: Player,
 ) : ChannelDuplexHandler() {
     @Suppress("UNCHECKED_CAST")

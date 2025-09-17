@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.noxcrew.noxesium.api.ExternalNoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
@@ -18,7 +19,7 @@ import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.feature.KotlinxJsonSerializer
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
-import com.noxcrew.packet.MinecraftPacketApi
+import com.noxcrew.packet.PacketApi
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
@@ -43,12 +44,13 @@ public class NoxesiumPaper : JavaPlugin() {
         public lateinit var plugin: Plugin
 
         /** The packet API to use. */
-        public lateinit var packetApi: MinecraftPacketApi
+        public lateinit var packetApi: PacketApi
 
         /** Prepares Noxesium's server-side API. */
-        public fun prepare(plugin: Plugin, packetApi: MinecraftPacketApi) {
+        public fun prepare(plugin: Plugin, packetApi: PacketApi) {
             NoxesiumPaper.plugin = plugin
             NoxesiumPaper.packetApi = packetApi
+            ExternalNoxesiumApi.setInstance(ExternalApi())
             JsonSerializerRegistry.getInstance().register(KOTLINX_SERIALIZER, KotlinxJsonSerializer(Json.Default))
             NoxesiumPlayerManager.setInstance(NoxesiumPlayerManager())
             NoxesiumPlatform.setInstance(PaperPlatform())
@@ -102,7 +104,7 @@ public class NoxesiumPaper : JavaPlugin() {
     private val commands = mutableSetOf<() -> LiteralArgumentBuilder<CommandSourceStack>>()
 
     override fun onLoad() {
-        prepare(this, MinecraftPacketApi(this))
+        prepare(this, PacketApi(this, "noxcrew_packet_handler"))
 
         registerEntrypoint { CommonPaperNoxesiumEntrypoint() }
         registerNoxesiumCommand { listCommand() }

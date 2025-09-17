@@ -101,9 +101,11 @@ private class PacketHandlerWithPriority<T : Packet<*>>(
 public typealias PacketHandlerUnregisterer = () -> Unit
 
 /** Provides the basis for a packet listening, modification, and cancellation API. */
-public class MinecraftPacketApi(
+public class PacketApi(
     /** The plugin instance to use for registering an event listener. */
     private val plugin: Plugin?,
+    /** The unique key to use for the packet handler. */
+    public val key: String,
     /** Whether to kick players when packet handlers throw errors. */
     public val kickForPacketErrors: Boolean = true,
     /** Whether this API is running in a testing environment. If so, no attempt is made to register interceptors. */
@@ -389,7 +391,7 @@ public class MinecraftPacketApi(
 
     /** Registers a connection handler for a new [player]. */
     private fun registerPlayer(player: Player) {
-        val handler = PlayerConnectionHandler(this, player)
+        val handler = PlayerConnectionHandler(key, this, player)
         playerConnectionHandlers.put(player, handler)?.unregister()
         handler.register()
     }

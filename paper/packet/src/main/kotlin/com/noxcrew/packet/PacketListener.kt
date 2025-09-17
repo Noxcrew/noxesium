@@ -1,7 +1,7 @@
 package com.noxcrew.packet
 
 /**
- * When registered via [MinecraftPacketApi.registerListener], all functions annotated with [PacketHandler]
+ * When registered via [PacketApi.registerListener], all functions annotated with [PacketHandler]
  * are registered as handlers for the respective packet type.
  *
  * @see PacketHandler
@@ -9,7 +9,7 @@ package com.noxcrew.packet
 public interface PacketListener
 
 /**
- * When a [PacketListener] is registered via [MinecraftPacketApi.registerListener], all of its functions
+ * When a [PacketListener] is registered via [PacketApi.registerListener], all of its functions
  * annotated with [PacketHandler] are registered as handlers for the respective packet type.
  *
  * @param priority The priority of the packet handler being run. Handlers with a lower priority are
@@ -19,4 +19,4 @@ public interface PacketListener
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-public annotation class PacketHandler(val priority: Int = MinecraftPacketApi.DEFAULT_HANDLER_PRIORITY)
+public annotation class PacketHandler(val priority: Int = PacketApi.DEFAULT_HANDLER_PRIORITY)

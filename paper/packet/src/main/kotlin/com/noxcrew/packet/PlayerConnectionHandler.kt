@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory
 
 /** Handles a player's connection by injecting a custom handler. */
 internal class PlayerConnectionHandler(
-    private val packetApi: MinecraftPacketApi,
+    private val key: String,
+    private val packetApi: PacketApi,
     private val player: Player,
 ) {
     private companion object {
-        private const val NOXCREW_PACKET_HANDLER_KEY = "noxcrew_packet_handler"
         private const val MINECRAFT_PACKET_HANDLER_KEY = "packet_handler"
 
         private val logger = LoggerFactory.getLogger("PlayerConnectionHandler")
@@ -25,8 +25,8 @@ internal class PlayerConnectionHandler(
         registered = true
         getPipeline().addBefore(
             MINECRAFT_PACKET_HANDLER_KEY,
-            NOXCREW_PACKET_HANDLER_KEY,
-            NoxcrewPacketHandler(packetApi, player),
+            key,
+            ChannelPacketHandler(packetApi, player),
         )
     }
 
@@ -38,7 +38,7 @@ internal class PlayerConnectionHandler(
         if (!disconnect) {
             // Swallow the exception here as it just means the player wasn't properly set up yet
             try {
-                getPipeline().remove(NOXCREW_PACKET_HANDLER_KEY)
+                getPipeline().remove(key)
             } catch (exception: Exception) {
                 if (exception !is NoSuchElementException) {
                     logger.error("An unknown error occurred whilst removing a packet handler from a player", exception)
