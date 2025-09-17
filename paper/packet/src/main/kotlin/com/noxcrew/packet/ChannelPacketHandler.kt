@@ -3,17 +3,17 @@ package com.noxcrew.packet
 import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
+import net.minecraft.network.Connection
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBundlePacket
-import org.bukkit.entity.Player
 
 /**
  * A custom packet handler that modifies incoming and outgoing packets.
  */
 internal class ChannelPacketHandler(
     private val packetApi: PacketApi,
-    private val player: Player,
+    private val connection: Connection,
 ) : ChannelDuplexHandler() {
     @Suppress("UNCHECKED_CAST")
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
@@ -24,7 +24,7 @@ internal class ChannelPacketHandler(
             return
         }
 
-        val packets = packetApi.handlePacket(player, msg)
+        val packets = packetApi.handlePacket(connection, msg)
         if (packets.isEmpty()) {
             return
         } else if (packets.size == 1) {
@@ -43,7 +43,7 @@ internal class ChannelPacketHandler(
             return
         }
 
-        val newPackets = packetApi.handlePacket(player, packet)
+        val newPackets = packetApi.handlePacket(connection, packet)
         if (newPackets.isEmpty()) return
         require(newPackets.size == 1) { "Cannot read multiple packets at once" }
         super.channelRead(ctx, newPackets[0])

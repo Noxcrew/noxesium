@@ -1,15 +1,13 @@
 package com.noxcrew.packet
 
-import io.netty.channel.ChannelPipeline
-import org.bukkit.craftbukkit.entity.CraftPlayer
-import org.bukkit.entity.Player
+import net.minecraft.network.Connection
 import org.slf4j.LoggerFactory
 
 /** Handles a player's connection by injecting a custom handler. */
 internal class PlayerConnectionHandler(
     private val key: String,
     private val packetApi: PacketApi,
-    private val player: Player,
+    private val connection: Connection,
 ) {
     private companion object {
         private const val MINECRAFT_PACKET_HANDLER_KEY = "packet_handler"
@@ -23,10 +21,10 @@ internal class PlayerConnectionHandler(
     fun register() {
         if (registered) return
         registered = true
-        getPipeline().addBefore(
+        connection.channel.pipeline().addBefore(
             MINECRAFT_PACKET_HANDLER_KEY,
             key,
-            ChannelPacketHandler(packetApi, player),
+            ChannelPacketHandler(packetApi, connection),
         )
     }
 
@@ -38,7 +36,7 @@ internal class PlayerConnectionHandler(
         if (!disconnect) {
             // Swallow the exception here as it just means the player wasn't properly set up yet
             try {
-                getPipeline().remove(key)
+                connection.channel.pipeline().remove(key)
             } catch (exception: Exception) {
                 if (exception !is NoSuchElementException) {
                     logger.error("An unknown error occurred whilst removing a packet handler from a player", exception)
@@ -46,9 +44,4 @@ internal class PlayerConnectionHandler(
             }
         }
     }
-
-    /** Returns the channel pipeline for this player. */
-    private fun getPipeline(): ChannelPipeline = (player as CraftPlayer)
-        .handle.connection.connection.channel
-        .pipeline()
 }

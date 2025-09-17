@@ -1,18 +1,25 @@
 package com.noxcrew.packet
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent
 import com.google.common.collect.Multimap
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import io.papermc.paper.connection.DisconnectionReason
+import io.papermc.paper.connection.PlayerCommonConnection
+import io.papermc.paper.connection.ReadablePlayerCookieConnectionImpl
+import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent
+import net.minecraft.ChatFormatting
+import net.minecraft.network.Connection
+import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientboundBundlePacket
+import net.minecraft.server.network.ServerCommonPacketListenerImpl
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl
+import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.LoggerFactory
@@ -24,6 +31,7 @@ import kotlin.concurrent.write
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import net.minecraft.world.entity.player.Player as NmsPlayer
 
 /**
  * A function handling an incoming or outgoing packet.
@@ -34,7 +42,7 @@ import kotlin.contracts.contract
  * result will be passed on to the receiver. If any handler in the chain returns null, handling is
  * aborted immediately and no packet is sent.
  */
-public fun interface PacketHandlerFunction<T : Packet<*>> : (Player, T) -> List<Packet<*>?>
+public fun interface PacketHandlerFunction<R, T : Packet<*>> : (R, T) -> List<Packet<*>?>
 
 /**
  * Holds a set of packet handlers for a given packet type.
@@ -46,16 +54,16 @@ private data class PacketHandlers<P : Packet<*>>(private val packet: Class<P>) {
      * This uses an arraylist for fast queries. We insert far less frequently than we access, so
      * access speed should definitely be prioritized.
      */
-    private val handlers: MutableList<PacketHandlerWithPriority<P>> = ArrayList()
+    private val handlers: MutableList<PacketHandlerWithPriority<*, P>> = ArrayList()
 
-    operator fun plusAssign(handler: PacketHandlerWithPriority<P>) {
+    operator fun plusAssign(handler: PacketHandlerWithPriority<*, P>) {
         lock.write {
             handlers += handler
             handlers.sort()
         }
     }
 
-    operator fun minusAssign(handler: PacketHandlerWithPriority<P>) {
+    operator fun minusAssign(handler: PacketHandlerWithPriority<*, P>) {
         lock.write {
             handlers -= handler
             handlers.sort()
@@ -64,7 +72,7 @@ private data class PacketHandlers<P : Packet<*>>(private val packet: Class<P>) {
 
     /** Reads the handlers, ensuring no additions/removals are done whilst [operation] executes. */
     @OptIn(ExperimentalContracts::class)
-    inline fun read(operation: (List<PacketHandlerWithPriority<P>>) -> Unit) {
+    inline fun read(operation: (List<PacketHandlerWithPriority<*, P>>) -> Unit) {
         contract {
             callsInPlace(operation, InvocationKind.EXACTLY_ONCE)
         }
@@ -79,20 +87,33 @@ private data class PacketHandlers<P : Packet<*>>(private val packet: Class<P>) {
  * This is not a data class, because we only want to compare identifier. `fun interface` has no real
  * identity if inlined.
  */
-private class PacketHandlerWithPriority<T : Packet<*>>(
-    val handler: PacketHandlerFunction<T>,
+private class PacketHandlerWithPriority<R, T : Packet<*>>(
+    val handler: PacketHandlerFunction<R, T>,
+    val receiverType: Class<R>,
     val priority: Int,
     val identifier: UUID = UUID.randomUUID(),
-) : Comparable<PacketHandlerWithPriority<*>> {
-    /** Handles the given [packet] for [player]. */
+) : Comparable<PacketHandlerWithPriority<*, *>> {
+    /** Handles the given [packet] for [connection]. */
     @Suppress("UNCHECKED_CAST")
-    fun handle(player: Player, packet: Packet<*>): List<Packet<*>?> {
-        return handler(player, packet as? T ?: return emptyList())
+    fun handle(connection: Connection, packet: Packet<*>): List<Packet<*>?> {
+        // Cast the packet and connection to the right types used by this method
+        val castPacket = packet as? T ?: return listOf(packet)
+        val receiver =
+            when {
+                Player::class.java.isAssignableFrom(receiverType) -> connection.player.bukkitEntity
+                NmsPlayer::class.java.isAssignableFrom(receiverType) -> connection.player
+                PlayerCommonConnection::class.java.isAssignableFrom(receiverType) ->
+                    (connection.packetListener as? ServerConfigurationPacketListenerImpl)?.paperConnection
+                        ?: (connection.packetListener as? ServerGamePacketListenerImpl)?.paperConnection()
+
+                else -> return listOf(packet)
+            } as? R ?: return listOf(packet)
+        return handler(receiver, castPacket)
     }
 
-    override fun compareTo(other: PacketHandlerWithPriority<*>): Int = priority.compareTo(other.priority)
+    override fun compareTo(other: PacketHandlerWithPriority<*, *>): Int = priority.compareTo(other.priority)
 
-    override fun equals(other: Any?): Boolean = this === other || identifier == (other as? PacketHandlerWithPriority<*>)?.identifier
+    override fun equals(other: Any?): Boolean = this === other || identifier == (other as? PacketHandlerWithPriority<*, *>)?.identifier
 
     override fun hashCode(): Int = identifier.hashCode()
 }
@@ -118,8 +139,12 @@ public class PacketApi(
         public const val DEFAULT_HANDLER_PRIORITY: Int = 100
     }
 
+    private val connectionField =
+        ReadablePlayerCookieConnectionImpl::class.java.getDeclaredField("connection").also {
+            it.isAccessible = true
+        }
     private val logger = LoggerFactory.getLogger("MinecraftPacketApi")
-    private val playerConnectionHandlers = mutableMapOf<Player, PlayerConnectionHandler>()
+    private val playerConnectionHandlers = mutableMapOf<UUID, PlayerConnectionHandler>()
     private val packetHandlers: MutableMap<Class<*>, PacketHandlers<*>> = ConcurrentHashMap()
 
     /** For each registered [PacketListener], unregisterers for all of its packet handlers. */
@@ -159,12 +184,13 @@ public class PacketApi(
      * Returns a [PacketHandlerUnregisterer] that unregisters the listener when called.
      */
     @Suppress("UNCHECKED_CAST")
-    public fun <T : Packet<*>> registerHandler(
+    public fun <R, T : Packet<*>> registerHandler(
         type: Class<T>,
+        receiver: Class<R>,
         priority: Int = DEFAULT_HANDLER_PRIORITY,
-        handler: PacketHandlerFunction<T>,
+        handler: PacketHandlerFunction<R, T>,
     ): PacketHandlerUnregisterer {
-        val handlerWithPriority = PacketHandlerWithPriority(handler, priority)
+        val handlerWithPriority = PacketHandlerWithPriority(handler, receiver, priority)
         val handlers = packetHandlers.computeIfAbsent(type) { PacketHandlers(type) } as PacketHandlers<T>
 
         // Register the handler.
@@ -183,17 +209,17 @@ public class PacketApi(
      *
      * Returns a [PacketHandlerUnregisterer] that unregisters the listener when called.
      */
-    public inline fun <reified T : Packet<*>> registerHandler(
+    public inline fun <reified R, reified T : Packet<*>> registerHandler(
         priority: Int = DEFAULT_HANDLER_PRIORITY,
-        handler: PacketHandlerFunction<T>,
-    ): PacketHandlerUnregisterer = registerHandler(T::class.java, priority, handler)
+        handler: PacketHandlerFunction<R, T>,
+    ): PacketHandlerUnregisterer = registerHandler(T::class.java, R::class.java, priority, handler)
 
     /** Returns whether handlers for packets of the given [clazz] are registered. */
     public fun hasHandlers(clazz: Class<out Packet<*>>): Boolean =
         packetHandlers.containsKey(clazz) || clazz == ClientboundBundlePacket::class.java
 
     /** Calls all handlers on the given [packet], returning the manipulated packet. */
-    internal fun handlePacket(player: Player, packet: Packet<*>): List<Packet<*>> {
+    internal fun handlePacket(connection: Connection, packet: Packet<*>): List<Packet<*>> {
         // Early-exit if this type has no handlers!
         val baseType = packet.javaClass
         if (!hasHandlers(baseType)) return listOf(packet)
@@ -247,7 +273,7 @@ public class PacketApi(
                             val output =
                                 try {
                                     // If there is no active packet anymore, stop running these handlers!
-                                    handlerWithPriority.handle(player, iteratorPacket)
+                                    handlerWithPriority.handle(connection, iteratorPacket)
                                 } catch (e: Exception) {
                                     logger.error(
                                         "Error handling packet ${packet.javaClass.simpleName} using handler ${handlerWithPriority.handler}, kicking player!",
@@ -258,9 +284,11 @@ public class PacketApi(
                                         // If an error occurs, kick the player on the main thread!
                                         plugin?.also {
                                             Bukkit.getScheduler().callSyncMethod(it) {
-                                                player.kick(
-                                                    Component.text("An error occurred while parsing packets", NamedTextColor.RED),
-                                                    PlayerKickEvent.Cause.INVALID_PAYLOAD,
+                                                (connection.packetListener as? ServerCommonPacketListenerImpl)?.disconnect(
+                                                    Component
+                                                        .literal("An error occurred while parsing packets")
+                                                        .withStyle(ChatFormatting.RED),
+                                                    DisconnectionReason.INVALID_PAYLOAD,
                                                 )
                                             }
                                             return@read
@@ -326,7 +354,11 @@ public class PacketApi(
                 // method must satisfy the [PacketHandlerFunction] interface
                 require(
                     method.parameters.size == 2 &&
-                        method.parameterTypes[0] == Player::class.java &&
+                        (
+                            Player::class.java.isAssignableFrom(method.parameterTypes[0]) ||
+                                NmsPlayer::class.java.isAssignableFrom(method.parameterTypes[0]) ||
+                                PlayerCommonConnection::class.java.isAssignableFrom(method.parameterTypes[0])
+                        ) &&
                         Packet::class.java.isAssignableFrom(method.parameterTypes[1]) &&
                         // Allow you to return one or multiple packets
                         (
@@ -344,6 +376,7 @@ public class PacketApi(
                 val unregisterer =
                     registerHandler(
                         method.parameterTypes[1] as Class<Packet<*>>,
+                        method.parameterTypes[0],
                         annotation.priority,
                     ) { player, packet ->
                         if (multiple) {
@@ -391,31 +424,47 @@ public class PacketApi(
 
     /** Registers a connection handler for a new [player]. */
     private fun registerPlayer(player: Player) {
-        val handler = PlayerConnectionHandler(key, this, player)
-        playerConnectionHandlers.put(player, handler)?.unregister()
+        val connection = (player as CraftPlayer).handle.connection.connection
+        registerConnection(player.uniqueId, connection)
+    }
+
+    /** Registers a connection handler for a new [connection] for [playerUUID]. */
+    private fun registerConnection(playerUUID: UUID, connection: Connection) {
+        val handler = PlayerConnectionHandler(key, this, connection)
+        playerConnectionHandlers.put(playerUUID, handler)?.unregister()
         handler.register()
     }
 
-    /** Unregisters the connection handler for [player]. */
-    private fun unregisterPlayer(player: Player, disconnect: Boolean = false) {
-        playerConnectionHandlers.remove(player)?.unregister(disconnect)
+    /** Unregisters the connection handler for [playerUUID]. */
+    private fun unregisterPlayer(playerUUID: UUID, disconnect: Boolean = false) {
+        playerConnectionHandlers.remove(playerUUID)?.unregister(disconnect)
     }
 
     @EventHandler
-    public fun onPlayerJoin(event: PlayerJoinEvent) {
+    public fun onPlayerConfigure(event: PlayerConnectionInitialConfigureEvent) {
         try {
-            registerPlayer(event.player)
+            val connection = connectionField.get(event.connection) as Connection
+            registerConnection(event.connection.profile.uniqueId ?: return, connection)
         } catch (exception: Exception) {
-            logger.warn("Failed to set up interceptor for player ${event.player.name}", exception)
+            logger.warn("Failed to set up interceptor for player ${event.connection.profile.name}", exception)
         }
     }
 
     @EventHandler
     public fun onPlayerQuit(event: PlayerQuitEvent) {
         try {
-            unregisterPlayer(event.player, disconnect = true)
+            unregisterPlayer(event.player.uniqueId, disconnect = true)
         } catch (exception: Exception) {
             logger.warn("Failed to remove interceptor for player ${event.player.name}", exception)
+        }
+    }
+
+    @EventHandler
+    public fun onPlayerDisconnected(event: PlayerConnectionCloseEvent) {
+        try {
+            unregisterPlayer(event.playerUniqueId, disconnect = true)
+        } catch (exception: Exception) {
+            logger.warn("Failed to remove interceptor for player ${event.playerName}", exception)
         }
     }
 }

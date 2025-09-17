@@ -99,13 +99,6 @@ public class CommonGameComponentTypes {
             register("server_authoritative_block_updates", Unit.class);
 
     /**
-     * If set, the client sends a {@link ServerboundMouseButtonClickPacket} for every
-     * mouse click at most once per tick per type. Clicks more frequent than once per
-     * tick are ignored.
-     */
-    public static NoxesiumComponentType<Unit> REPORT_MOUSE_CLICKS = register("report_mouse_clicks", Unit.class);
-
-    /**
      * Registers a new component type to the registry.
      */
     private static <R, T> NoxesiumComponentType<T> register(String key, Class<R> clazz) {

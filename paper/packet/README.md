@@ -9,4 +9,9 @@ sent to the client in a bundle.
 
 When listening to serverbound packets handlers must always return a singular packet.
 
-Packets can only be accessed during the PLAY phase, handler is only registered when the PlayerJoinEvent is called.
+Packets can be accessed during both the configuration and play phases, but it might not always have the required object requested. The receiver type can either be:
+- org.bukkit.entity.Player
+- net.minecraft.world.entity.player.Player
+- io.papermc.paper.connection.PlayerCommonConnection
+
+Only the last type is available during the configuration phase, and can be cast to PlayerConfigurationConnection.
