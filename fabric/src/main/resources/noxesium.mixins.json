@@ -78,6 +78,7 @@
     "sound.ChannelExt",
     "sound.CustomNoxesiumSoundsMixin",
     "ui.AddMapSpritesToAtlas",
+    "ui.AlwaysShowDownloadToastsMixin",
     "ui.CustomDebugHotkeysMixin",
     "ui.GuiMixin"
   ],
