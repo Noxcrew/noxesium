@@ -102,7 +102,7 @@ public class NoxesiumPaper : JavaPlugin() {
     private val commands = mutableSetOf<() -> LiteralArgumentBuilder<CommandSourceStack>>()
 
     override fun onLoad() {
-        prepare(this, PacketApi(this, "noxcrew_packet_handler"))
+        prepare(this, PacketApi("noxcrew_packet_handler"))
 
         registerEntrypoint { CommonPaperNoxesiumEntrypoint() }
         registerNoxesiumCommand { listCommand() }
@@ -113,7 +113,7 @@ public class NoxesiumPaper : JavaPlugin() {
 
     override fun onEnable() {
         // Register the packet API once the plugin is available
-        packetApi.register()
+        packetApi.register(this)
 
         enable(entrypoints, commands)
     }
