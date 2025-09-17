@@ -61,6 +61,8 @@
   "noxesium.options.enum.top_flipped": "Opposite Top Corner",
   "noxesium.options.enum.bottom_flipped": "Opposite Bottom Corner",
 
+  "noxesium.options.simple_value": "%s: %s",
+
   "itemGroup.noxesium.server_items": "Custom Blocks",
 
   "category.noxesium": "Noxesium",

@@ -99,7 +99,7 @@ public class NoxesiumOptions {
     private static final OptionInstance<Double> bossBarPosition = new OptionInstance<>(
             "noxesium.options.boss_bar_position.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.boss_bar_position.tooltip")),
-            NoxesiumOptions::percentageLabel,
+            NoxesiumOptions::valueLabel,
             new OptionInstance.IntRange(-20, 20).xmap(it -> (double) it / 20.0, it -> (int) (it * 20.0)),
             Codec.doubleRange(-1.0, 1.0),
             NoxesiumMod.getInstance().getConfig().bossBarPosition,
@@ -124,7 +124,7 @@ public class NoxesiumOptions {
             "noxesium.options.scoreboard_position.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.scoreboard_position.tooltip")),
-            NoxesiumOptions::percentageLabel,
+            NoxesiumOptions::valueLabel,
             new OptionInstance.IntRange(-20, 20).xmap(it -> (double) it / 20.0, it -> (int) (it * 20.0)),
             Codec.doubleRange(-1.0, 1.0),
             NoxesiumMod.getInstance().getConfig().scoreboardPosition,
@@ -247,5 +247,14 @@ public class NoxesiumOptions {
 
     private static Component percentageLabel(Component component, double value) {
         return Component.translatable("options.percent_value", component, (int) (value * 100.0));
+    }
+
+    private static Component valueLabel(Component component, double value) {
+        var integer = (int) (value * 100.0);
+        if (integer < 0) {
+            return Component.translatable("noxesium.options.simple_value", component, Integer.toString(integer));
+        } else {
+            return Component.translatable("noxesium.options.simple_value", component, "+" + integer);
+        }
     }
 }

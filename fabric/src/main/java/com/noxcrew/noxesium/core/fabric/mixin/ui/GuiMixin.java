@@ -99,6 +99,7 @@ public abstract class GuiMixin {
 
     @Inject(method = "renderDemoOverlay", at = @At("HEAD"))
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        // Render extra overlays around the demo overlay
         CustomMapUiWidget.render(graphics, deltaTracker);
         noxesium$renderTextOverlay(graphics, deltaTracker);
     }
