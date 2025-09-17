@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.config;
 
+import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
@@ -95,6 +96,91 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
+    private static final OptionInstance<Double> bossBarPosition = new OptionInstance<>(
+            "noxesium.options.boss_bar_position.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.boss_bar_position.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(-20, 20).xmap(it -> (double) it / 20.0, it -> (int) (it * 20.0)),
+            Codec.doubleRange(-1.0, 1.0),
+            NoxesiumMod.getInstance().getConfig().bossBarPosition,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().bossBarPosition = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> bossBarScale = new OptionInstance<>(
+            "noxesium.options.boss_bar_scale.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.boss_bar_scale.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            Codec.doubleRange(0.1, 2.0),
+            NoxesiumMod.getInstance().getConfig().bossBarScale,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().bossBarScale = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> scoreboardPosition = new OptionInstance<>(
+            "noxesium.options.scoreboard_position.name",
+            OptionInstance.cachedConstantTooltip(
+                    Component.translatable("noxesium.options.scoreboard_position.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(-20, 20).xmap(it -> (double) it / 20.0, it -> (int) (it * 20.0)),
+            Codec.doubleRange(-1.0, 1.0),
+            NoxesiumMod.getInstance().getConfig().scoreboardPosition,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().scoreboardPosition = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> scoreboardScale = new OptionInstance<>(
+            "noxesium.options.scoreboard_scale.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.scoreboard_scale.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            Codec.doubleRange(0.1, 2.0),
+            NoxesiumMod.getInstance().getConfig().scoreboardScale,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().scoreboardScale = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> tabListScale = new OptionInstance<>(
+            "noxesium.options.tab_list_scale.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.tab_list_scale.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            Codec.doubleRange(0.1, 2.0),
+            NoxesiumMod.getInstance().getConfig().tabListScale,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().tabListScale = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> textUiScale = new OptionInstance<>(
+            "noxesium.options.text_ui_scale.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.text_ui_scale.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            Codec.doubleRange(0.1, 2.0),
+            NoxesiumMod.getInstance().getConfig().textUiScale,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().textUiScale = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
+    private static final OptionInstance<Double> actionBarScale = new OptionInstance<>(
+            "noxesium.options.action_bar_scale.name",
+            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.action_bar_scale.tooltip")),
+            NoxesiumOptions::percentageLabel,
+            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            Codec.doubleRange(0.1, 2.0),
+            NoxesiumMod.getInstance().getConfig().actionBarScale,
+            (newValue) -> {
+                NoxesiumMod.getInstance().getConfig().actionBarScale = newValue;
+                NoxesiumMod.getInstance().getConfig().save();
+            });
+
     public static OptionInstance<Boolean> fpsOverlay() {
         return fpsOverlay;
     }
@@ -129,5 +215,37 @@ public class NoxesiumOptions {
 
     public static OptionInstance<Boolean> showCullingBoxes() {
         return showCullingBoxes;
+    }
+
+    public static OptionInstance<Double> bossBarPosition() {
+        return bossBarPosition;
+    }
+
+    public static OptionInstance<Double> bossBarScale() {
+        return bossBarScale;
+    }
+
+    public static OptionInstance<Double> scoreboardPosition() {
+        return scoreboardPosition;
+    }
+
+    public static OptionInstance<Double> scoreboardScale() {
+        return scoreboardScale;
+    }
+
+    public static OptionInstance<Double> tabListScale() {
+        return tabListScale;
+    }
+
+    public static OptionInstance<Double> textUiScale() {
+        return textUiScale;
+    }
+
+    public static OptionInstance<Double> actionBarScale() {
+        return actionBarScale;
+    }
+
+    private static Component percentageLabel(Component component, double value) {
+        return Component.translatable("options.percent_value", component, (int) (value * 100.0));
     }
 }

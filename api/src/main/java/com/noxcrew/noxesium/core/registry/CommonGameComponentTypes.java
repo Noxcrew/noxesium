@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
+import com.noxcrew.noxesium.api.util.UiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.util.List;
 
@@ -96,6 +97,37 @@ public class CommonGameComponentTypes {
      */
     public static NoxesiumComponentType<Unit> SERVER_AUTHORITATIVE_BLOCK_UPDATES =
             register("server_authoritative_block_updates", Unit.class);
+
+    /**
+     * Sets constraints on the rendering size of the boss bar.
+     */
+    public static NoxesiumComponentType<Unit> BOSS_BAR_CONSTRAINTS =
+            register("boss_bar_constraints", UiConstraints.class);
+
+    /**
+     * Sets constraints on the rendering size of the scoreboard.
+     */
+    public static NoxesiumComponentType<Unit> SCOREBOARD_CONSTRAINTS =
+            register("scoreboard_constraints", UiConstraints.class);
+
+    /**
+     * Sets constraints on the rendering size of the tab list.
+     */
+    public static NoxesiumComponentType<Unit> TAB_LIST_CONSTRAINTS =
+            register("tab_list_constraints", UiConstraints.class);
+
+    /**
+     * Sets constraints on the rendering size of the action bar.
+     */
+    public static NoxesiumComponentType<Unit> ACTION_BAR_CONSTRAINTS =
+            register("action_bar_constraints", UiConstraints.class);
+
+    /**
+     * Sets constraints on the rendering size of the title text UI, includes
+     * both the title and its subtitle.
+     */
+    public static NoxesiumComponentType<Unit> TEXT_UI_CONSTRAINTS =
+            register("text_ui_constraints", UiConstraints.class);
 
     /**
      * Registers a new component type to the registry.

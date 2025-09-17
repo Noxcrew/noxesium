@@ -30,6 +30,14 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
     @Override
     protected void addOptions() {
         this.list.addSmall(
+                NoxesiumOptions.bossBarPosition(),
+                NoxesiumOptions.bossBarScale(),
+                NoxesiumOptions.scoreboardPosition(),
+                NoxesiumOptions.scoreboardScale(),
+                NoxesiumOptions.tabListScale(),
+                NoxesiumOptions.textUiScale(),
+                NoxesiumOptions.actionBarScale());
+        this.list.addSmall(
                 NoxesiumOptions.fpsOverlay(),
                 NoxesiumOptions.gameTimeOverlay(),
                 NoxesiumOptions.playerGlowingKeybinds());

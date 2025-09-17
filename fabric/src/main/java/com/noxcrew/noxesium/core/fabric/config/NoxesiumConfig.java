@@ -32,6 +32,13 @@ public class NoxesiumConfig {
     public boolean showCullingBoxes = false;
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
+    public double bossBarPosition = 0.0;
+    public double bossBarScale = 1.0;
+    public double scoreboardPosition = 0.0;
+    public double scoreboardScale = 1.0;
+    public double tabListScale = 1.0;
+    public double textUiScale = 1.0;
+    public double actionBarScale = 1.0;
 
     /**
      * Returns whether to render maps in the UI.
