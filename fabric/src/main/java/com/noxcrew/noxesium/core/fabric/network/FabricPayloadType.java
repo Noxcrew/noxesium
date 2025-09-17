@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
@@ -64,7 +63,11 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
     private StreamCodec<RegistryFriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
         var payloadType = this;
         if (payloadType.jsonSerialized) {
-            var serializer = JsonSerializerRegistry.getInstance().getSerializer(payloadType.clazz.getAnnotation(JsonSerializedPacket.class).value());
+            var serializer = JsonSerializerRegistry.getInstance()
+                    .getSerializer(payloadType
+                            .clazz
+                            .getAnnotation(JsonSerializedPacket.class)
+                            .value());
             return new StreamCodec<>() {
                 @Override
                 @NotNull

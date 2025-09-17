@@ -17,13 +17,13 @@ public class MccNoxesiumEntrypoint implements ClientNoxesiumEntrypoint {
     }
 
     @Override
-    public String getId() {
-        return "noxesium-mcc";
+    public String getVersion() {
+        return "2.0";
     }
 
     @Override
-    public int getProtocolVersion() {
-        return 1;
+    public String getId() {
+        return "noxesium-mcc";
     }
 
     @Override

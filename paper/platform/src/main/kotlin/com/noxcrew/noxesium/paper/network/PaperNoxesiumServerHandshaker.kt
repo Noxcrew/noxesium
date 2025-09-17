@@ -31,7 +31,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
-import org.bukkit.event.player.PlayerUnregisterChannelEvent
 import java.util.UUID
 import java.util.logging.Level
 
@@ -154,13 +153,17 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                 val craftPlayer = player as CraftPlayer
                 val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), craftPlayer.handle.registryAccess())
 
-                val payload = if (payloadType.jsonSerialized) {
-                    val serializer = JsonSerializerRegistry.getInstance().getSerializer(payloadType.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
-                    serializer.decode(buffer.readUtf(), payloadType.clazz)
-                } else {
-                    val codec = PacketSerializerRegistry.getSerializers(payloadType)
-                    codec.decode(buffer)
-                }
+                val payload =
+                    if (payloadType.jsonSerialized) {
+                        val serializer =
+                            JsonSerializerRegistry
+                                .getInstance()
+                                .getSerializer(payloadType.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
+                        serializer.decode(buffer.readUtf(), payloadType.clazz)
+                    } else {
+                        val codec = PacketSerializerRegistry.getSerializers(payloadType)
+                        codec.decode(buffer)
+                    }
 
                 // Perform packet handling on the main thread
                 Bukkit.getScheduler().callSyncMethod(NoxesiumPaper.plugin) {

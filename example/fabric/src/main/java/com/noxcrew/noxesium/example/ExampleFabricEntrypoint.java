@@ -18,8 +18,8 @@ public class ExampleFabricEntrypoint implements ClientNoxesiumEntrypoint {
     }
 
     @Override
-    public int getProtocolVersion() {
-        return 0;
+    public String getVersion() {
+        return "example";
     }
 
     @Override

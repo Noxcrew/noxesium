@@ -6,9 +6,12 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -27,7 +30,8 @@ public class NoxesiumListCommand {
             UUID uuid,
             Component displayName,
             EntrypointProtocol baseProtocol,
-            List<EntrypointProtocol> otherProtocols) {}
+            List<EntrypointProtocol> otherProtocols,
+            Set<Key> capabilities) {}
 
     /**
      * Formats a line showing multiple players.
@@ -43,15 +47,19 @@ public class NoxesiumListCommand {
         for (var index = 0; index < players.size(); index++) {
             var player = players.get(index);
             HoverEvent<Component> hoverEvent = null;
-            if (!player.otherProtocols.isEmpty()) {
+
+            if (!player.otherProtocols.isEmpty() || !player.capabilities.isEmpty()) {
                 // Show other entrypoints in the hover tooltip
                 var text = new ArrayList<Component>();
                 text.add(Component.text("Other entrypoints:", NamedTextColor.GOLD)
                         .decorate(TextDecoration.BOLD));
                 for (var other : player.otherProtocols) {
-                    text.add(Component.text(
-                            " - " + other.id() + ": " + other.rawVersion() + " (" + other.protocolVersion() + ")",
-                            NamedTextColor.GRAY));
+                    text.add(Component.text(" - " + other.id() + ": " + other.version(), NamedTextColor.GRAY));
+                }
+                text.add(Component.empty());
+                text.add(Component.text("Capabilities:", NamedTextColor.GOLD).decorate(TextDecoration.BOLD));
+                for (var capability : player.capabilities) {
+                    text.add(Component.text(" - " + capability.asString(), NamedTextColor.GRAY));
                 }
                 hoverEvent = HoverEvent.showText(Component.join(JoinConfiguration.newlines(), text));
             }
@@ -82,6 +90,7 @@ public class NoxesiumListCommand {
         for (var player : NoxesiumPlayerManager.getInstance().getAllPlayers()) {
             // Determine which protocols each player has
             EntrypointProtocol baseProtocol = null;
+            var capabilities = new HashSet<Key>();
             var otherProtocols = new ArrayList<EntrypointProtocol>();
             for (var entrypoint : player.getSupportedEntrypoints()) {
                 if (entrypoint.id().equals(NoxesiumReferences.COMMON_ENTRYPOINT)) {
@@ -89,25 +98,24 @@ public class NoxesiumListCommand {
                 } else {
                     otherProtocols.add(entrypoint);
                 }
+                capabilities.addAll(entrypoint.capabilities());
             }
             if (baseProtocol == null) continue;
             listed.add(player.getUniqueId());
             players.computeIfAbsent(baseProtocol, (it) -> new ArrayList<>())
-                    .add(new PlayerInfo(player.getUniqueId(), player.getDisplayName(), baseProtocol, otherProtocols));
+                    .add(new PlayerInfo(
+                            player.getUniqueId(), player.getDisplayName(), baseProtocol, otherProtocols, capabilities));
         }
 
-        // Sort by the protocol version of the base protocol
+        // Sort by the protocol version of the base version
         var orderedKeys = new ArrayList<>(players.keySet());
-        orderedKeys.sort(Comparator.comparing(EntrypointProtocol::protocolVersion));
+        orderedKeys.sort(Comparator.comparing(EntrypointProtocol::version));
 
         // Show the information for each player
         for (var protocol : orderedKeys) {
             var playerInfos = players.get(protocol);
             if (playerInfos == null) continue;
-            receiver.sendMessage(formatLine(
-                    Component.text(
-                            protocol.rawVersion() + " (" + protocol.protocolVersion() + ")", NamedTextColor.GOLD),
-                    playerInfos));
+            receiver.sendMessage(formatLine(Component.text(protocol.version(), NamedTextColor.GOLD), playerInfos));
         }
         return listed;
     }

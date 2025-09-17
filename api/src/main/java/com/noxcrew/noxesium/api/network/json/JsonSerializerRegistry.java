@@ -2,11 +2,9 @@ package com.noxcrew.noxesium.api.network.json;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds different JSON serialization implementations which can be used for serialization of packets.

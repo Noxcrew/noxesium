@@ -151,7 +151,7 @@ public abstract class NoxesiumClientHandshaker {
             // Initialize this entrypoint and add it to the list
             if (entrypoint instanceof ClientNoxesiumEntrypoint clientEntrypoint) {
                 var protocol = new EntrypointProtocol(
-                        entrypoint.getId(), clientEntrypoint.getProtocolVersion(), clientEntrypoint.getRawVersion());
+                        entrypoint.getId(), clientEntrypoint.getVersion(), clientEntrypoint.getCapabilities());
                 entrypoints.add(protocol);
                 api.activateEntrypoint(protocol);
             }

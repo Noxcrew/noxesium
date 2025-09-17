@@ -1,9 +1,8 @@
 package com.noxcrew.noxesium.core.network.clientbound;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-import net.kyori.adventure.text.Component;
-
 import java.util.Optional;
+import net.kyori.adventure.text.Component;
 
 /**
  * Sent by the server to open a link dialog on the client.

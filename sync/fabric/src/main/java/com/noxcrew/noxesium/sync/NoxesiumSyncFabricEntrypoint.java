@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.sync.network.SyncPacketSerializers;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
 import java.util.Collection;
 import java.util.List;
+import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Sets up Noxesium Sync's entrypoint.
@@ -27,13 +28,16 @@ public class NoxesiumSyncFabricEntrypoint implements ClientNoxesiumEntrypoint {
     }
 
     @Override
-    public String getId() {
-        return "noxesium-sync";
+    public String getVersion() {
+        return FabricLoader.getInstance()
+                .getModContainer("noxesium_sync")
+                .map(mod -> mod.getMetadata().getVersion().getFriendlyString())
+                .orElse("unknown");
     }
 
     @Override
-    public int getProtocolVersion() {
-        return 0;
+    public String getId() {
+        return "noxesium-sync";
     }
 
     @Override

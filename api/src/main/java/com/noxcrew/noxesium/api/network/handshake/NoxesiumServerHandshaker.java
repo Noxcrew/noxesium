@@ -418,8 +418,7 @@ public abstract class NoxesiumServerHandshaker {
      * Hook for activating the given protocol for the given player. This should inform the player
      * about the plugin channels within the given protocol.
      */
-    protected void activateProtocol(@NotNull NoxesiumServerPlayer player, @NotNull EntrypointProtocol protocol) {
-    }
+    protected void activateProtocol(@NotNull NoxesiumServerPlayer player, @NotNull EntrypointProtocol protocol) {}
 
     /**
      * Handles the given channel being registered for player, sending any pending

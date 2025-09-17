@@ -21,7 +21,7 @@ public fun listCommand(): LiteralArgumentBuilder<CommandSourceStack> = Commands
                 NoxesiumListCommand.formatLine(
                     text("None", NamedTextColor.YELLOW),
                     unlistedPlayers.map {
-                        NoxesiumListCommand.PlayerInfo(it.uniqueId, it.displayName(), null, emptyList())
+                        NoxesiumListCommand.PlayerInfo(it.uniqueId, it.displayName(), null, emptyList(), emptySet())
                     },
                 ),
             )

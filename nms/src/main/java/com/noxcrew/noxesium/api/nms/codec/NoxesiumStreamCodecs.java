@@ -19,6 +19,7 @@ import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import io.netty.buffer.ByteBuf;
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -103,10 +104,10 @@ public class NoxesiumStreamCodecs {
             StreamCodec.recursive(codec -> StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8,
                     EntrypointProtocol::id,
-                    ByteBufCodecs.VAR_INT,
-                    EntrypointProtocol::protocolVersion,
                     ByteBufCodecs.STRING_UTF8,
-                    EntrypointProtocol::rawVersion,
+                    EntrypointProtocol::version,
+                    ByteBufCodecs.collection(HashSet::new, KEY),
+                    EntrypointProtocol::capabilities,
                     EntrypointProtocol::new));
 
     public static <T extends Enum<?>> StreamCodec<ByteBuf, T> forEnum(Class<T> clazz) {

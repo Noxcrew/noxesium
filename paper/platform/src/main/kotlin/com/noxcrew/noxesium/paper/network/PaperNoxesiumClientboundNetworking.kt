@@ -84,8 +84,10 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
                         serverPlayer.registryAccess(),
                     ).also {
                         if (type.jsonSerialized) {
-                            val serializer = JsonSerializerRegistry.getInstance()
-                                .getSerializer(type.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
+                            val serializer =
+                                JsonSerializerRegistry
+                                    .getInstance()
+                                    .getSerializer(type.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
                             it.writeUtf(serializer.encode(payload, type.clazz))
                         } else {
                             // Use the stream codec of this payload type to encode it into the buffer

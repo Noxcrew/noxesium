@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -47,6 +48,13 @@ public class NoxesiumServerPlayer {
     @NotNull
     private final Component displayName;
 
+    private final SimpleMutableNoxesiumComponentHolder components =
+            new SimpleMutableNoxesiumComponentHolder(NoxesiumRegistries.GAME_COMPONENTS);
+    private final List<Integer> pendingRegistrySyncs = new ArrayList<>();
+    private final Map<Integer, IdChangeSet> sentIndices = new HashMap<>();
+    private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
+    private final Set<Key> capabilities = new HashSet<>();
+
     @NotNull
     private HandshakeState handshakeState = HandshakeState.NONE;
 
@@ -56,24 +64,11 @@ public class NoxesiumServerPlayer {
     @NotNull
     private List<String> supportedEntrypointIds = new ArrayList<>();
 
-    @NotNull
-    private final List<Integer> pendingRegistrySyncs = new ArrayList<>();
-
     @Nullable
     private ClientSettings settings;
 
     @NotNull
-    private final SimpleMutableNoxesiumComponentHolder components =
-            new SimpleMutableNoxesiumComponentHolder(NoxesiumRegistries.GAME_COMPONENTS);
-
-    @NotNull
     private Set<NoxesiumPacket> pendingPackets = ConcurrentHashMap.newKeySet();
-
-    @NotNull
-    private final Map<Integer, IdChangeSet> sentIndices = new HashMap<>();
-
-    @NotNull
-    private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
 
     private int lastSoundId = 0;
     private boolean dirty = false;
@@ -93,6 +88,9 @@ public class NoxesiumServerPlayer {
             this.supportedEntrypointIds = this.supportedEntrypoints.stream()
                     .map(EntrypointProtocol::id)
                     .toList();
+            this.capabilities.addAll(this.supportedEntrypoints.stream()
+                    .flatMap((it) -> it.capabilities().stream())
+                    .collect(Collectors.toSet()));
             this.settings = serializedPlayer.settings();
             for (var entry : serializedPlayer.knownIds().entrySet()) {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
@@ -173,6 +171,7 @@ public class NoxesiumServerPlayer {
         for (var entrypoint : entrypoints) {
             supportedEntrypoints.add(entrypoint);
             supportedEntrypointIds.add(entrypoint.id());
+            capabilities.addAll(entrypoint.capabilities());
         }
         this.dirty = true;
     }
@@ -183,7 +182,7 @@ public class NoxesiumServerPlayer {
     public String getBaseVersion() {
         return supportedEntrypoints.stream()
                 .filter(it -> it.id().equals(NoxesiumReferences.COMMON_ENTRYPOINT))
-                .map(EntrypointProtocol::rawVersion)
+                .map(EntrypointProtocol::version)
                 .findAny()
                 .orElse("unknown");
     }
@@ -204,6 +203,15 @@ public class NoxesiumServerPlayer {
     @NotNull
     public List<String> getSupportedEntrypointIds() {
         return supportedEntrypointIds;
+    }
+
+    /**
+     * Returns whether this player supports the given capability.
+     * These are client-reported keys that can be used to identify
+     * certain features or systems the client supports.
+     */
+    public boolean hasCapability(Key capability) {
+        return capabilities.contains(capability);
     }
 
     /**

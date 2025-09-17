@@ -25,8 +25,7 @@ public class PaperNoxesiumServerPlayer(
         get() = _registeredPluginChannels
 
     /** Registers a new plugin channel. */
-    public fun registerPluginChannels(vararg channels: String): Unit =
-        registerPluginChannels(channels.toSet())
+    public fun registerPluginChannels(vararg channels: String): Unit = registerPluginChannels(channels.toSet())
 
     /** Registers a new plugin channel. */
     public fun registerPluginChannels(channels: Collection<String>) {
