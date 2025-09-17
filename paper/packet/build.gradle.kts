@@ -13,7 +13,6 @@ val javaVersion: Int = 21
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
     compileOnlyApi(libs.guava)
-    api(libs.kotlin.coroutines)
     api(libs.slf4j)
 
     // Use the NMS project to get NMS classes for compilation!

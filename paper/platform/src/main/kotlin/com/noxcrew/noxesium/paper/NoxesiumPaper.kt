@@ -16,6 +16,7 @@ import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
+import com.noxcrew.packet.MinecraftPacketApi
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
@@ -35,9 +36,13 @@ public class NoxesiumPaper : JavaPlugin() {
         /** The main plugin instance to use. */
         public lateinit var plugin: Plugin
 
+        /** The packet API to use. */
+        public lateinit var packetApi: MinecraftPacketApi
+
         /** Prepares Noxesium's server-side API. */
-        public fun prepare(plugin: Plugin) {
+        public fun prepare(plugin: Plugin, packetApi: MinecraftPacketApi) {
             NoxesiumPaper.plugin = plugin
+            NoxesiumPaper.packetApi = packetApi
             NoxesiumPlayerManager.setInstance(NoxesiumPlayerManager())
             NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())
@@ -48,7 +53,7 @@ public class NoxesiumPaper : JavaPlugin() {
         public fun enable(
             entrypoints: Collection<() -> NoxesiumEntrypoint> = emptyList(),
             commands: Collection<() -> LiteralArgumentBuilder<CommandSourceStack>> = emptyList(),
-            handshaker: () -> NoxesiumServerHandshaker = { PaperNoxesiumServerHandshaker() }
+            handshaker: () -> NoxesiumServerHandshaker = { PaperNoxesiumServerHandshaker() },
         ) {
             // Process all entry points
             val logger = NoxesiumApi.getLogger()
@@ -75,9 +80,13 @@ public class NoxesiumPaper : JavaPlugin() {
                 it.register()
 
                 // Start a ticking loop to check for registry synchronization
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, {
-                    it.tick()
-                }, 5, 5)
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(
+                    plugin,
+                    {
+                        it.tick()
+                    },
+                    5, 5,
+                )
             }
         }
     }
@@ -86,7 +95,7 @@ public class NoxesiumPaper : JavaPlugin() {
     private val commands = mutableSetOf<() -> LiteralArgumentBuilder<CommandSourceStack>>()
 
     override fun onLoad() {
-        prepare(this)
+        prepare(this, MinecraftPacketApi(this))
 
         registerEntrypoint { CommonPaperNoxesiumEntrypoint() }
         registerNoxesiumCommand { listCommand() }
@@ -96,7 +105,15 @@ public class NoxesiumPaper : JavaPlugin() {
     }
 
     override fun onEnable() {
+        // Register the packet API once the plugin is available
+        packetApi.register()
+
         enable(entrypoints, commands)
+    }
+
+    override fun onDisable() {
+        // Unregister the packet API properly
+        packetApi.unregister()
     }
 
     /** Registers a new entrypoint, expects a delayed supplier to avoid constructing the instance early. */

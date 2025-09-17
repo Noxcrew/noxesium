@@ -27,8 +27,7 @@ import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.minecraft.world.item.ItemStack
-import org.bukkit.craftbukkit.CraftWorld
-import org.bukkit.craftbukkit.block.CraftBlock
+import org.bukkit.block.TileState
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.joml.Vector3f
@@ -373,8 +372,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                         blockPosition.blockY(),
                                         blockPosition.blockZ(),
                                     )
-                                val blockEntity =
-                                    (ctx.source.location.world as CraftWorld).handle.getBlockEntity((block as CraftBlock).position)
+                                val blockEntity = block.state as? TileState
                                 if (blockEntity == null) {
                                     ctx.source.sender.sendMessage(
                                         Component.text(
@@ -415,8 +413,7 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                                         blockPosition.blockY(),
                                         blockPosition.blockZ(),
                                     )
-                                val blockEntity =
-                                    (ctx.source.location.world as CraftWorld).handle.getBlockEntity((block as CraftBlock).position)
+                                val blockEntity = block.state as? TileState
                                 if (blockEntity == null) {
                                     ctx.source.sender.sendMessage(
                                         Component.text(

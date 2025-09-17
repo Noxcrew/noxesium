@@ -10,10 +10,13 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
+import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtOps
-import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.ChunkPos
 import org.bukkit.block.TileState
+import org.bukkit.craftbukkit.block.CraftBlockState
 import org.bukkit.craftbukkit.entity.CraftEntity
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
@@ -103,22 +106,6 @@ public fun <T> ItemStack.setNoxesiumComponent(type: NoxesiumComponentType<T>, va
  * be re-serialized on every fetch. Please cache the result of this function whenever
  * possible.
  */
-public fun <T> BlockEntity.getNoxesiumComponent(type: NoxesiumComponentType<T>): T? = persistentDataContainer
-    .getNoxesiumComponent(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type)
-
-/** Returns whether this holder has the given component set. */
-public fun BlockEntity.hasNoxesiumComponent(type: NoxesiumComponentType<*>): Boolean = persistentDataContainer.hasNoxesiumComponent(type)
-
-/** Sets the given component on this holder. */
-public fun <T> BlockEntity.setNoxesiumComponent(type: NoxesiumComponentType<T>, value: T?) {
-    if (persistentDataContainer.setNoxesiumComponent(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type, value)) setChanged()
-}
-
-/**
- * Returns the given component data on this holder. These values are not cached and will
- * be re-serialized on every fetch. Please cache the result of this function whenever
- * possible.
- */
 public fun <T> TileState.getNoxesiumComponent(type: NoxesiumComponentType<T>): T? = persistentDataContainer
     .getNoxesiumComponent(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type)
 
@@ -127,7 +114,26 @@ public fun TileState.hasNoxesiumComponent(type: NoxesiumComponentType<*>): Boole
 
 /** Sets the given component on this holder. */
 public fun <T> TileState.setNoxesiumComponent(type: NoxesiumComponentType<T>, value: T?) {
-    if (persistentDataContainer.setNoxesiumComponent(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type, value)) update(true, false)
+    if (persistentDataContainer.setNoxesiumComponent(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, type, value)) {
+        // Mark the block entity as changed so it saves
+        val block = (this as CraftBlockState).block
+        block.craftWorld.handle
+            .getBlockEntity(block.position)
+            ?.setChanged()
+
+        // Broadcast a new update packet to all viewers!
+        block.craftWorld.handle.broadcastBlockEntity(block.position)
+    }
+}
+
+/** Broadcasts an update packet for the block entity at [blockPos]. */
+internal fun ServerLevel.broadcastBlockEntity(blockPos: BlockPos) {
+    val chunk = getChunk(blockPos)
+    val blockEntity = chunk.blockEntities[blockPos] ?: return
+    val packet = blockEntity.updatePacket ?: return
+    val chunkPos = ChunkPos(blockPos)
+    val viewers = chunkSource.chunkMap.getPlayers(chunkPos, false)
+    viewers.forEach { it.connection.send(packet) }
 }
 
 /** Returns whether this holder has any Noxesium components. */
@@ -143,7 +149,7 @@ internal fun PersistentDataContainer.hasAnyNoxesiumComponent(): Boolean {
  */
 internal fun <T> PersistentDataContainer.getNoxesiumComponent(
     registry: NoxesiumRegistry<NoxesiumComponentType<*>>,
-    type: NoxesiumComponentType<T>
+    type: NoxesiumComponentType<T>,
 ): T? {
     val codec = ComponentSerializerRegistry.getSerializers(registry, type) ?: return null
     val craft = this as CraftPersistentDataContainer
@@ -167,7 +173,7 @@ internal fun PersistentDataContainer.hasNoxesiumComponent(type: NoxesiumComponen
 internal fun <T> PersistentDataContainer.setNoxesiumComponent(
     registry: NoxesiumRegistry<NoxesiumComponentType<*>>,
     type: NoxesiumComponentType<T>,
-    value: T?
+    value: T?,
 ): Boolean {
     val codec = ComponentSerializerRegistry.getSerializers(registry, type) ?: return false
     val craft = this as CraftPersistentDataContainer

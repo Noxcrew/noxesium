@@ -101,7 +101,7 @@ private class PacketHandlerWithPriority<T : Packet<*>>(
 public typealias PacketHandlerUnregisterer = () -> Unit
 
 /** Provides the basis for a packet listening, modification, and cancellation API. */
-public abstract class MinecraftPacketApi(
+public class MinecraftPacketApi(
     /** The plugin instance to use for registering an event listener. */
     private val plugin: Plugin?,
     /** Whether to kick players when packet handlers throw errors. */
@@ -187,13 +187,14 @@ public abstract class MinecraftPacketApi(
     ): PacketHandlerUnregisterer = registerHandler(T::class.java, priority, handler)
 
     /** Returns whether handlers for packets of the given [clazz] are registered. */
-    public fun hasHandlers(clazz: Class<out Packet<*>>): Boolean = packetHandlers.containsKey(clazz)
+    public fun hasHandlers(clazz: Class<out Packet<*>>): Boolean =
+        packetHandlers.containsKey(clazz) || clazz == ClientboundBundlePacket::class.java
 
     /** Calls all handlers on the given [packet], returning the manipulated packet. */
     internal fun handlePacket(player: Player, packet: Packet<*>): List<Packet<*>> {
-        // Early-exit if this type has no handlers! (excluding bundles)
+        // Early-exit if this type has no handlers!
         val baseType = packet.javaClass
-        if (baseType != ClientboundBundlePacket::class.java && baseType !in packetHandlers) return listOf(packet)
+        if (!hasHandlers(baseType)) return listOf(packet)
 
         val finalPackets = mutableListOf<Packet<*>>()
         var pendingPackets = HashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
@@ -260,9 +261,10 @@ public abstract class MinecraftPacketApi(
                                                     PlayerKickEvent.Cause.INVALID_PAYLOAD,
                                                 )
                                             }
+                                            return@read
                                         }
                                     }
-                                    return@read
+                                    continue
                                 }
 
                             // Look through the output packets and add them to the correct lists
@@ -276,7 +278,7 @@ public abstract class MinecraftPacketApi(
                                     activePackets += packet
                                 } else {
                                     // If this new type does not have a packet handler, early exit!
-                                    if (newType != ClientboundBundlePacket::class.java && newType !in packetHandlers) {
+                                    if (!hasHandlers(newType)) {
                                         finalPackets += packet
                                         continue
                                     }
@@ -419,18 +421,22 @@ public abstract class MinecraftPacketApi(
 /** Sends the given [packets] to [this] player. */
 public fun Player.sendPacket(vararg packets: Packet<*>?) {
     val connection = (this as? CraftPlayer)?.handle?.connection ?: return
-    packets.filterNotNull().forEach(connection::send)
+    for (packet in packets) {
+        connection.send(packet ?: continue)
+    }
 }
 
 /** Sends the given [packets] to [this] collection of players. */
 public fun Collection<Player>.sendPacket(vararg packets: Packet<*>?): Unit = forEach {
-    it.sendPacket(packets.filterNotNull())
+    it.sendPacket(packets.toList())
 }
 
 /** Sends the given [packets] to [this] player. */
-public fun Player.sendPacket(packets: Iterable<Packet<*>>) {
+public fun Player.sendPacket(packets: Iterable<Packet<*>?>) {
     val connection = (this as? CraftPlayer)?.handle?.connection ?: return
-    packets.forEach(connection::send)
+    for (packet in packets) {
+        connection.send(packet ?: continue)
+    }
 }
 
 /** Sends the given [packets] to [this] collection of players. */

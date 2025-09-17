@@ -1,12 +1,15 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.At;
 
 /**
  * Swaps out the beacon beam height with the custom component override.
@@ -14,12 +17,33 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(BeaconRenderer.class)
 public class BeaconRendererMixin {
 
-    @ModifyConstant(method = "render", constant = @Constant(intValue = 2048))
-    private int render(int constant, @Local(argsOnly = true) BlockEntity blockEntity) {
+    @WrapOperation(
+            method = "render",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/renderer/blockentity/BeaconRenderer;renderBeaconBeam(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;FFJIII)V"))
+    private void render(
+            PoseStack poseStack,
+            MultiBufferSource multiBufferSource,
+            float partialTicks,
+            float width,
+            long gameTime,
+            int y,
+            int height,
+            int color,
+            Operation<Void> original,
+            @Local(argsOnly = true) BlockEntity blockEntity) {
         var override = blockEntity.noxesium$getComponent(CommonBlockEntityComponentTypes.BEACON_BEAM_HEIGHT);
         if (override != null) {
-            return override;
+            // Determine the maximum value this section can have
+            var limit = Math.max(override + 1 - y, 0);
+            height = Math.min(height, limit);
+
+            // Don't render invisible sections!
+            if (height == 0) return;
         }
-        return 2048;
+        original.call(poseStack, multiBufferSource, partialTicks, width, gameTime, y, height, color);
     }
 }

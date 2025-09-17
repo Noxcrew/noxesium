@@ -40,6 +40,13 @@ public class NoxesiumRegistries {
 
     /**
      * Defines custom block entity components that can be read from any block entity's NBT data.
+     * <p>
+     * It should be noted that this is only supported for block entities that send data packets, that is
+     * any block entity that also stores some data or state. As of 1.21.8 these are:
+     * Banner, Beacon, Bed, Brushable (Suspicious Gravel/Sand), Campfire, Conduit, Creaking Heart,
+     * Decorated Pot, Jigsaw, Sign, Skull, Spawner, Structure Block, Test Block, End Gateway, Trial Spawner, Trial Vault
+     * <p>
+     * Importantly, containers are not included as their data is not sent at all times!
      */
     public static NoxesiumRegistry<NoxesiumComponentType<?>> BLOCK_ENTITY_COMPONENTS =
             createRegistry("block_entity_components", true, false);
