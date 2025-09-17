@@ -24,7 +24,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -34,7 +33,6 @@ import org.apache.commons.lang3.tuple.Triple;
  */
 public class QibBehaviorModule extends NoxesiumFeature {
 
-    private AABB lastBoundingBox;
     private final Map<Key, AtomicInteger> collidingWithTypes = new HashMap<>();
     private final Map<Entity, AtomicInteger> collidingWithEntities = new HashMap<>();
     private final Set<Entity> triggeredJump = new HashSet<>();
@@ -56,33 +54,33 @@ public class QibBehaviorModule extends NoxesiumFeature {
             if (player == null) return;
 
             HashSet<Entity> entities = null;
-            if (lastBoundingBox != null) {
-                var from = lastBoundingBox.getBottomCenter();
-                var to = player.getBoundingBox().getBottomCenter();
 
-                var diffX = to.x - from.x;
-                var diffY = to.y - from.y;
-                var diffZ = to.z - from.z;
-                var differenceLengthSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
+            // Perform checks between the start and end location
+            var from = player.getPosition(0f);
+            var to = player.getPosition(1f);
 
-                // If there's more than 0.5 between the two targets we do intermediate steps
-                // to ensure we collide with everything!
-                if (differenceLengthSquared >= 0.25) {
-                    var dimensions = player.getDimensions(player.getPose());
-                    var currentLocation = from;
-                    var differenceLength = Math.sqrt(differenceLengthSquared);
-                    var factor = 0.5 / differenceLength;
-                    var times = Math.ceil(differenceLength / .5) - 1;
-                    for (int i = 0; i < times; i++) {
-                        currentLocation = currentLocation.add(diffX * factor, diffY * factor, diffZ * factor);
+            var diffX = to.x - from.x;
+            var diffY = to.y - from.y;
+            var diffZ = to.z - from.z;
+            var differenceLengthSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
 
-                        if (entities == null) {
-                            entities = SpatialInteractionEntityTree.findEntities(
-                                    dimensions.makeBoundingBox(currentLocation));
-                        } else {
-                            entities.addAll(SpatialInteractionEntityTree.findEntities(
-                                    dimensions.makeBoundingBox(currentLocation)));
-                        }
+            // If there's more than 0.5 between the two targets we do intermediate steps
+            // to ensure we collide with everything!
+            if (differenceLengthSquared >= 0.25) {
+                var dimensions = player.getDimensions(player.getPose());
+                var currentLocation = from;
+                var differenceLength = Math.sqrt(differenceLengthSquared);
+                var factor = 0.5 / differenceLength;
+                var times = Math.ceil(differenceLength / .5) - 1;
+                for (int i = 0; i < times; i++) {
+                    currentLocation = currentLocation.add(diffX * factor, diffY * factor, diffZ * factor);
+
+                    if (entities == null) {
+                        entities =
+                                SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation));
+                    } else {
+                        entities.addAll(
+                                SpatialInteractionEntityTree.findEntities(dimensions.makeBoundingBox(currentLocation)));
                     }
                 }
             }
@@ -94,7 +92,6 @@ public class QibBehaviorModule extends NoxesiumFeature {
             }
 
             checkForCollisions(entities);
-            lastBoundingBox = player.getBoundingBox();
         });
     }
 

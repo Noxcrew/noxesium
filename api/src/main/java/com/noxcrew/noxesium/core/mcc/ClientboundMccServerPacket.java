@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.core.mcc;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
-
 import java.util.List;
 
 /**
