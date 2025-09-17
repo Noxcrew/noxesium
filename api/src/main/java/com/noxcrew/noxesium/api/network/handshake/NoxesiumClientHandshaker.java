@@ -281,9 +281,7 @@ public abstract class NoxesiumClientHandshaker {
         // start sending packets properly on initialization like client settings
         var api = NoxesiumApi.getInstance();
         NoxesiumApi.getInstance().getActiveEntrypoints().forEach(entrypoint -> {
-            entrypoint.getAllFeatures().stream()
-                    .filter(it -> !it.isRegistered())
-                    .forEach(api::registerFeature);
+            entrypoint.getAllFeatures().forEach(api::registerFeature);
         });
     }
 

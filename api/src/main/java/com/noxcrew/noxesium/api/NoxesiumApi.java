@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.PacketCollection;
@@ -95,11 +94,10 @@ public class NoxesiumApi {
      * be registered. Usually called by the initializer.
      */
     public void registerFeature(NoxesiumFeature feature) {
-        Preconditions.checkState(
-                !features.containsKey(feature.getClass()),
-                "Feature " + feature.getClass().getSimpleName() + " is already registered");
-        features.put(feature.getClass(), feature);
-        feature.register();
+        if (!features.containsKey(feature.getClass())) {
+            features.put(feature.getClass(), feature);
+            feature.register();
+        }
     }
 
     /**
