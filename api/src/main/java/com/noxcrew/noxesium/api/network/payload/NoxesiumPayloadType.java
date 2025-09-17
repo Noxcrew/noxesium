@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.network.payload;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
@@ -39,6 +40,11 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public final boolean clientToServer;
 
     /**
+     * Whether this packet is JSON serialized.
+     */
+    public final boolean jsonSerialized;
+
+    /**
      * All listeners registered to this payload type.
      */
     private final Set<Pair<WeakReference<?>, TriConsumer<?, T, UUID>>> listeners = ConcurrentHashMap.newKeySet();
@@ -51,6 +57,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
         this.id = id;
         this.clazz = clazz;
         this.clientToServer = clientToServer;
+        this.jsonSerialized = clazz.isAnnotationPresent(JsonSerializedPacket.class);
     }
 
     /**

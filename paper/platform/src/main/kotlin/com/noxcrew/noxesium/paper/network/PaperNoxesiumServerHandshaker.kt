@@ -2,10 +2,13 @@ package com.noxcrew.noxesium.paper.network
 
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumReferences
+import com.noxcrew.noxesium.api.network.EntrypointProtocol
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket
+import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
@@ -156,8 +159,19 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                 // Decode the message and let handlers handle it
                 val craftPlayer = player as CraftPlayer
                 val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), craftPlayer.handle.registryAccess())
-                val codec = PacketSerializerRegistry.getSerializers(payloadType) ?: return null
-                payloadType.handle(player.uniqueId, codec.decode(buffer))
+
+                val payload = if (payloadType.jsonSerialized) {
+                    val serializer = JsonSerializerRegistry.getInstance().getSerializer(payloadType.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
+                    serializer.decode(buffer.readUtf(), payloadType.clazz)
+                } else {
+                    val codec = PacketSerializerRegistry.getSerializers(payloadType)
+                    codec.decode(buffer)
+                }
+
+                // Perform packet handling on the main thread
+                Bukkit.getScheduler().callSyncMethod(NoxesiumPaper.plugin) {
+                    payloadType.handle(player.uniqueId, payload)
+                }
             } catch (x: Exception) {
                 NoxesiumPaper.plugin.logger.log(
                     Level.WARNING,
@@ -170,6 +184,18 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             return null
         }
         return packet
+    }
+
+    override fun activateProtocol(player: NoxesiumServerPlayer, protocol: EntrypointProtocol) {
+        super.activateProtocol(player, protocol)
+
+        // Register all plugin channels with this user for the newly authenticated protocols
+        val entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id) ?: return
+        (player as? PaperNoxesiumServerPlayer)?.registerPluginChannels(
+            entrypoint
+                .packetCollections
+                .flatMap { it.pluginChannelIdentifiers },
+        )
     }
 
     override fun isConnected(player: NoxesiumServerPlayer): Boolean =

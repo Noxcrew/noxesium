@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.paper.commands.componentCommands
@@ -14,12 +15,14 @@ import com.noxcrew.noxesium.paper.commands.openLinkCommand
 import com.noxcrew.noxesium.paper.commands.playSoundCommand
 import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
+import com.noxcrew.noxesium.paper.feature.KotlinxJsonSerializer
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
 import com.noxcrew.packet.MinecraftPacketApi
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import kotlinx.serialization.json.Json
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -33,6 +36,9 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 public class NoxesiumPaper : JavaPlugin() {
     public companion object {
+        /** The identifier of the default kotlinx serializer. */
+        public const val KOTLINX_SERIALIZER: String = "kotlinx-default"
+
         /** The main plugin instance to use. */
         public lateinit var plugin: Plugin
 
@@ -43,6 +49,7 @@ public class NoxesiumPaper : JavaPlugin() {
         public fun prepare(plugin: Plugin, packetApi: MinecraftPacketApi) {
             NoxesiumPaper.plugin = plugin
             NoxesiumPaper.packetApi = packetApi
+            JsonSerializerRegistry.getInstance().register(KOTLINX_SERIALIZER, KotlinxJsonSerializer(Json.Default))
             NoxesiumPlayerManager.setInstance(NoxesiumPlayerManager())
             NoxesiumPlatform.setInstance(PaperPlatform())
             NoxesiumNetworking.setInstance(PaperNoxesiumClientboundNetworking())

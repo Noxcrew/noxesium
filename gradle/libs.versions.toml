@@ -48,7 +48,6 @@ run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 [libraries]
 # Tooling
 kotlin-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
-kotlin-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serialization-hocon", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 slf4j = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }

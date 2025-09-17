@@ -19,7 +19,6 @@ dependencies {
 
     api(libs.kotlin.coroutines)
     api(libs.kotlin.serialization.json)
-    api(libs.kotlin.serialization.hocon)
     api(libs.slf4j)
     api(libs.caffeine)
     api(libs.viaversion)

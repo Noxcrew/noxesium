@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.paper.network
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
+import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket
+import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry
@@ -65,8 +67,6 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
     override fun <T : NoxesiumPacket> send(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<T>, payload: T): Boolean {
         // Check if we're allowed to send it!
         if (!canReceive(player, type)) return false
-        val serializer =
-            requireNotNull(PacketSerializerRegistry.getSerializers(type)) { "No serializer defined for packet type '${type.id()}'" }
 
         // Force serialization of the packet to happen right here so we can set the target player
         // for the stream codecs! Do not defer this to happen later in the netty thread. We do this just so
@@ -83,8 +83,15 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
                         Unpooled.buffer(),
                         serverPlayer.registryAccess(),
                     ).also {
-                        // Use the stream codec of this payload type to encode it into the buffer
-                        serializer.encode(it, payload)
+                        if (type.jsonSerialized) {
+                            val serializer = JsonSerializerRegistry.getInstance()
+                                .getSerializer(type.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
+                            it.writeUtf(serializer.encode(payload, type.clazz))
+                        } else {
+                            // Use the stream codec of this payload type to encode it into the buffer
+                            val serializer = PacketSerializerRegistry.getSerializers(type)
+                            serializer.encode(it, payload)
+                        }
                     }.let {
                         // Copy only the used bytes otherwise we send lingering empty data which crashes clients
                         val out = ByteArray(it.readableBytes())

@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.network.handshake;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
@@ -318,6 +319,9 @@ public abstract class NoxesiumServerHandshaker {
 
         // Store the acknowledged entrypoints on this player's data
         player.addEntrypoints(packet.protocols());
+        for (var protocol : packet.protocols()) {
+            activateProtocol(player, protocol);
+        }
 
         // Mark that we are now waiting to sync registries
         player.setHandshakeState(HandshakeState.AWAITING_REGISTRIES);
@@ -408,6 +412,13 @@ public abstract class NoxesiumServerHandshaker {
         pendingTransfers.remove(uuid);
         pendingChecks.remove(uuid);
         NoxesiumPlayerManager.getInstance().unregisterPlayer(uuid);
+    }
+
+    /**
+     * Hook for activating the given protocol for the given player. This should inform the player
+     * about the plugin channels within the given protocol.
+     */
+    protected void activateProtocol(@NotNull NoxesiumServerPlayer player, @NotNull EntrypointProtocol protocol) {
     }
 
     /**

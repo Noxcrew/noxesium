@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.core.fabric.network;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
+import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
+import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry;
 import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
@@ -61,9 +63,23 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
      */
     private StreamCodec<RegistryFriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
         var payloadType = this;
-        var codec = Preconditions.checkNotNull(
-                PacketSerializerRegistry.getSerializers(payloadType),
-                "No serializer was registered for packets of type '" + payloadType.id() + "'");
+        if (payloadType.jsonSerialized) {
+            var serializer = JsonSerializerRegistry.getInstance().getSerializer(payloadType.clazz.getAnnotation(JsonSerializedPacket.class).value());
+            return new StreamCodec<>() {
+                @Override
+                @NotNull
+                public NoxesiumPayload<T> decode(RegistryFriendlyByteBuf buffer) {
+                    return new NoxesiumPayload<>(payloadType, serializer.decode(buffer.readUtf(), payloadType.clazz));
+                }
+
+                @Override
+                public void encode(RegistryFriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
+                    buffer.writeUtf(serializer.encode(payload.value(), payloadType.clazz));
+                }
+            };
+        }
+
+        var codec = PacketSerializerRegistry.getSerializers(payloadType);
         return new StreamCodec<>() {
             @Override
             @NotNull
