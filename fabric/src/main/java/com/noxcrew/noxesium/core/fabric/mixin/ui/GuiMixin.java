@@ -1,8 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.mixin.ui;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
-import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
+import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.render.CustomMapUiWidget;
 import java.util.ArrayList;
 import net.fabricmc.loader.api.FabricLoader;
@@ -72,8 +73,11 @@ public abstract class GuiMixin {
         // Add debug overlays if enabled, these are not using translations as they are purely for debugging purposes!
         // Start with qib system debug information
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging && minecraft.player != null) {
-            text.add(Component.literal("§bEntities in model: §7"
-                    + SpatialInteractionEntityTree.getModelContents().size()));
+            var models = NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .map(module -> module.getSpatialTree().getModelContents().size())
+                    .orElse(0);
+            text.add(Component.literal("§bEntities in model: §7" + models));
             text.add(Component.literal("§bIn water: "
                     + (minecraft.player.isInWaterOrRain()
                             ? "§aYes"

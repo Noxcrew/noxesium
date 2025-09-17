@@ -6,7 +6,7 @@ import com.noxcrew.noxesium.api.NoxesiumSide;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
-import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
+import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
@@ -102,7 +102,9 @@ public class NoxesiumMod implements ClientModInitializer {
             public void run() {
                 while (true) {
                     try {
-                        SpatialInteractionEntityTree.rebuild();
+                        NoxesiumApi.getInstance()
+                                .getFeatureOptional(QibBehaviorModule.class)
+                                .ifPresent(it -> it.getSpatialTree().rebuild());
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;

@@ -22,6 +22,7 @@ dependencies {
     api(libs.slf4j)
     api(libs.caffeine)
     api(libs.viaversion)
+    api(libs.prtree)
 
     // Add the API module as a dependency
     api(project(":api"))

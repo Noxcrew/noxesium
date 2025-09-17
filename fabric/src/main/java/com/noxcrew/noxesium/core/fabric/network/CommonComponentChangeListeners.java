@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.client.DebugOption;
 import com.noxcrew.noxesium.api.component.ComponentChangeContext;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
@@ -9,6 +10,7 @@ import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.mixin.rules.mouse.MouseHandlerExt;
 import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
@@ -16,6 +18,7 @@ import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.BiConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Interaction;
 
 /**
  * Registers listeners for component changes.
@@ -26,6 +29,15 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             // Update the bounding box of the entity whenever a new override is received
             var entity = context.receiver();
             entity.setBoundingBox(entity.makeBoundingBox());
+        });
+        listenEntity(CommonEntityComponentTypes.QIB_BEHAVIOR, (ignored, context) -> {
+            // Update an entity's membership in the spatial container when changing their qib behavior
+            var entity = context.receiver();
+            if (entity instanceof Interaction interaction) {
+                NoxesiumApi.getInstance()
+                        .getFeatureOptional(QibBehaviorModule.class)
+                        .ifPresent(module -> module.getSpatialTree().update(interaction));
+            }
         });
 
         listenGame(CommonGameComponentTypes.CAMERA_LOCKED, (ignored, context) -> {

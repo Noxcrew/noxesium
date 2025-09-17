@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
-import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
+import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
@@ -65,7 +66,9 @@ public abstract class QibPacketHooksMixin {
      */
     @Unique
     private void noxesium$resetEntities() {
-        SpatialInteractionEntityTree.clear();
+        NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent(it -> it.getSpatialTree()
+                .clear());
+
         if (Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.noxesium$clearClientsidePotionEffects();
     }

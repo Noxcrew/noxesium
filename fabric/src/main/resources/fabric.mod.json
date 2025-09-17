@@ -42,9 +42,6 @@
       "net/minecraft/world/entity/LivingEntity": [
         "com/noxcrew/noxesium/core/fabric/feature/entity/LivingEntityExtension"
       ],
-      "net/minecraft/world/entity/Interaction": [
-        "com/noxcrew/noxesium/core/fabric/feature/entity/InteractionExtension"
-      ],
       "net/minecraft/client/renderer/entity/state/GuardianRenderState": [
         "com/noxcrew/noxesium/core/fabric/feature/entity/BeamColorStateExtension"
       ],

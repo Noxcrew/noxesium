@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
-import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialInteractionEntityTree;
+import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.phys.AABB;
@@ -21,16 +23,28 @@ public abstract class SpatialEntityMixin {
 
     @Inject(method = "setBoundingBox", at = @At("HEAD"))
     public void onUpdateBoundingBox(AABB aABB, CallbackInfo ci) {
-        // Ignore if we're already at the exact same position!
-        if (((Object) this) instanceof Interaction interaction && !aABB.equals(getBoundingBox())) {
-            SpatialInteractionEntityTree.update(interaction);
+        if (((Object) this) instanceof Interaction interaction
+                &&
+                // Ignore non-qibs!
+                interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)
+                &&
+                // Ignore if we're already at the exact same position!
+                !aABB.equals(getBoundingBox())) {
+            NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .ifPresent(it -> it.getSpatialTree().update(interaction));
         }
     }
 
     @Inject(method = "setRemoved", at = @At("RETURN"))
     public void onRemoved(Entity.RemovalReason removalReason, CallbackInfo ci) {
-        if (((Object) this) instanceof Interaction interaction) {
-            SpatialInteractionEntityTree.remove(interaction);
+        if (((Object) this) instanceof Interaction interaction
+                &&
+                // Ignore non-qib entities!
+                interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
+            NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .ifPresent(it -> it.getSpatialTree().remove(interaction));
         }
     }
 }

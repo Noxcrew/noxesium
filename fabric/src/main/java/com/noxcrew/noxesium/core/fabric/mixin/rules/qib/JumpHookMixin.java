@@ -27,7 +27,7 @@ public abstract class JumpHookMixin {
         if (entity instanceof LocalPlayer localPlayer) {
             NoxesiumApi.getInstance()
                     .getFeatureOptional(QibBehaviorModule.class)
-                    .ifPresent(it -> it.onPlayerJump(localPlayer));
+                    .ifPresent(QibBehaviorModule::onPlayerJump);
         }
     }
 }

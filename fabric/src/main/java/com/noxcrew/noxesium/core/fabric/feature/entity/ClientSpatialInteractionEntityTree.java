@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.qib.SpatialTree;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -18,27 +20,27 @@ import org.khelekore.prtree.SimpleMBR;
 /**
  * Stores a spatial tree with the locations of all interaction entities.
  */
-public class SpatialInteractionEntityTree {
+public class ClientSpatialInteractionEntityTree implements SpatialTree {
 
     private static final int DEFAULT_BRANCHING_FACTOR = 30;
 
-    private static final Map<Integer, Entity> pendingEntities = new ConcurrentHashMap<>();
-    private static final Set<Integer> removedEntities = ConcurrentHashMap.newKeySet();
-    private static final AtomicBoolean rebuilding = new AtomicBoolean();
-    private static final AtomicBoolean needsRebuilding = new AtomicBoolean();
+    private final Map<Integer, Entity> pendingEntities = new ConcurrentHashMap<>();
+    private final Set<Integer> removedEntities = ConcurrentHashMap.newKeySet();
+    private final AtomicBoolean rebuilding = new AtomicBoolean();
+    private final AtomicBoolean needsRebuilding = new AtomicBoolean();
 
-    private static HashSet<Integer> staticEntities = new HashSet<>();
-    private static HashSet<AABB> modelContents = new HashSet<>();
-    private static PRTree<Entity> staticModel = new PRTree<>(new EntityMBRConverter(), DEFAULT_BRANCHING_FACTOR);
+    private HashSet<Integer> staticEntities = new HashSet<>();
+    private HashSet<AABB> modelContents = new HashSet<>();
+    private PRTree<Entity> staticModel = new PRTree<>(new EntityMBRConverter(), DEFAULT_BRANCHING_FACTOR);
 
-    static {
+    public ClientSpatialInteractionEntityTree() {
         staticModel.load(Set.of());
     }
 
     /**
      * Returns the contents of the model, if debugging is active.
      */
-    public static Set<AABB> getModelContents() {
+    public Set<AABB> getModelContents() {
         return modelContents;
     }
 
@@ -46,7 +48,7 @@ public class SpatialInteractionEntityTree {
      * Returns the state of [entity] in this tree.
      */
     @Nullable
-    public static String getSpatialTreeState(Entity entity) {
+    public String getSpatialTreeState(Entity entity) {
         if (pendingEntities.containsKey(entity.getId())) {
             return "pending";
         }
@@ -62,7 +64,7 @@ public class SpatialInteractionEntityTree {
     /**
      * Rebuilds the model if applicable.
      */
-    public static void rebuild() {
+    public void rebuild() {
         if (!needsRebuilding.get()) return;
         if (!rebuilding.compareAndSet(false, true)) return;
         try {
@@ -76,7 +78,6 @@ public class SpatialInteractionEntityTree {
             var newStaticEntities = new HashSet<>(staticEntities);
             var addedEntities = new HashSet<>(pendingEntities.keySet());
             var removingEntities = new HashSet<>(removedEntities);
-            removingEntities.removeAll(addedEntities);
             needsRebuilding.set(false);
 
             newStaticEntities.addAll(addedEntities);
@@ -99,7 +100,6 @@ public class SpatialInteractionEntityTree {
             staticModel = newModel;
             staticEntities = newStaticEntities;
             pendingEntities.keySet().removeAll(addedEntities);
-            removedEntities.removeAll(addedEntities);
             removedEntities.removeAll(removingEntities);
 
             if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
@@ -130,7 +130,8 @@ public class SpatialInteractionEntityTree {
     /**
      * Returns all entities that clip [hitbox].
      */
-    public static HashSet<Entity> findEntities(AABB hitbox) {
+    @Override
+    public HashSet<Entity> findEntities(AABB hitbox) {
         double[] values = {hitbox.minX, hitbox.maxX, hitbox.minY, hitbox.maxY, hitbox.minZ, hitbox.maxZ};
         var mbr = new SimpleMBR(values);
         var collisions = new HashSet<Entity>();
@@ -161,32 +162,34 @@ public class SpatialInteractionEntityTree {
     /**
      * Updates the current position of [entity] to [aabb].
      */
-    public static void update(Interaction entity) {
-        if (!entity.noxesium$isInWorld()) return;
-        if (entity.isRemoved()) {
+    public void update(Interaction entity) {
+        if (entity.isRemoved() || !entity.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
             remove(entity);
             return;
         }
 
-        removedEntities.add(entity.getId());
-        pendingEntities.put(entity.getId(), entity);
+        removedEntities.remove(entity.getId());
+        if (!staticEntities.contains(entity.getId())) {
+            pendingEntities.put(entity.getId(), entity);
+        }
         needsRebuilding.set(true);
     }
 
     /**
      * Removes a given [entity] from the tree.
      */
-    public static void remove(Interaction entity) {
-        if (!entity.noxesium$isInWorld()) return;
+    public void remove(Interaction entity) {
         pendingEntities.remove(entity.getId());
-        removedEntities.add(entity.getId());
+        if (staticEntities.contains(entity.getId())) {
+            removedEntities.add(entity.getId());
+        }
         needsRebuilding.set(true);
     }
 
     /**
      * Clears all stored information.
      */
-    public static void clear() {
+    public void clear() {
         pendingEntities.clear();
         removedEntities.addAll(staticEntities);
         needsRebuilding.set(true);
