@@ -46,9 +46,6 @@ public abstract class GuiMixin {
     private void noxesium$renderTextOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
 
-        // Check that the main GUI is not hidden
-        if (minecraft.options.hideGui) return;
-
         // Check that we have something to show
         if (this.getDebugOverlay().showDebugScreen()
                 || (!NoxesiumMod.getInstance().getConfig().showFpsOverlay
@@ -96,7 +93,7 @@ public abstract class GuiMixin {
         }
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
+    @Inject(method = "renderDemoOverlay", at = @At("HEAD"))
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         CustomMapUiWidget.render(graphics, deltaTracker);
         noxesium$renderTextOverlay(graphics, deltaTracker);

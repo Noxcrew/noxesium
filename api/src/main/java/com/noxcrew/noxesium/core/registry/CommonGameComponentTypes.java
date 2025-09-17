@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.api.util.Unit;
-import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.List;
 
 /**

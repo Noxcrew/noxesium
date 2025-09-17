@@ -14,5 +14,6 @@ import java.util.Set;
 public record SerializedNoxesiumServerPlayer(
         List<EntrypointProtocol> supportedEntrypoints,
         ClientSettings settings,
+        Set<String> enabledLazyPackets,
         Map<String, String> mods,
         Map<String, Set<Integer>> knownIds) {}

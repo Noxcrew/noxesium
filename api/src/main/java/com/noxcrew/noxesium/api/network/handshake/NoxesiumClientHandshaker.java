@@ -8,11 +8,13 @@ import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
 import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.GameComponents;
@@ -22,10 +24,12 @@ import com.noxcrew.noxesium.api.util.EncryptionUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import net.kyori.adventure.key.Key;
 
 /**
  * Performs handshaking with the server-side to be run from the client-side.
@@ -45,6 +49,13 @@ public abstract class NoxesiumClientHandshaker {
      * All encryption challenges sent to the server awaiting an answer.
      */
     protected final Map<NoxesiumEntrypoint, String> challenges = new HashMap<>();
+
+    /**
+     * Returns the current handshaking state.
+     */
+    public HandshakeState getHandshakeState() {
+        return state;
+    }
 
     /**
      * Registers the handshaker.
@@ -71,6 +82,11 @@ public abstract class NoxesiumClientHandshaker {
         // Whenever the handshake is completed we listen.
         HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE.addListener(this, (reference, packet, ignored3) -> {
             reference.handleComplete();
+        });
+
+        // Handle a new set of lazy packets being enabled.
+        HandshakePackets.CLIENTBOUND_LAZY_PACKETS.addListener(this, (reference, packet, ignored3) -> {
+            reference.handleLazyPackets(packet);
         });
 
         // Whenever the handshake is interrupted.
@@ -135,6 +151,7 @@ public abstract class NoxesiumClientHandshaker {
 
         var api = NoxesiumApi.getInstance();
         var entrypoints = new ArrayList<EntrypointProtocol>();
+        var enabledLazyPackets = new HashSet<Key>();
         for (var pair : packet.entrypoints().entrySet()) {
             var id = pair.getKey();
             var challengeResult = pair.getValue();
@@ -156,6 +173,16 @@ public abstract class NoxesiumClientHandshaker {
                         entrypoint.getId(), clientEntrypoint.getVersion(), clientEntrypoint.getCapabilities());
                 entrypoints.add(protocol);
                 api.activateEntrypoint(protocol);
+
+                // Go through all packets for this entry point and determine if they are lazy but enabled
+                for (var packetCollection : clientEntrypoint.getPacketCollections()) {
+                    for (var packetType : packetCollection.getPackets()) {
+                        if (!packetType.lazy) continue;
+                        if (packetType.hasListeners()) {
+                            enabledLazyPackets.add(packetType.id());
+                        }
+                    }
+                }
             }
         }
 
@@ -170,6 +197,11 @@ public abstract class NoxesiumClientHandshaker {
         NoxesiumServerboundNetworking.send(
                 new ServerboundHandshakeAcknowledgePacket(entrypoints, collectMods(entrypoints)));
         state = HandshakeState.AWAITING_REGISTRIES;
+
+        // Inform the server which packets are lazy
+        if (!enabledLazyPackets.isEmpty()) {
+            NoxesiumServerboundNetworking.send(new ServerboundLazyPacketsPacket(enabledLazyPackets));
+        }
     }
 
     /**
@@ -295,6 +327,18 @@ public abstract class NoxesiumClientHandshaker {
     }
 
     /**
+     * Handles the server sending an update on lazy packets.
+     */
+    protected void handleLazyPackets(ClientboundLazyPacketsPacket packet) {
+        if (state == HandshakeState.NONE) {
+            // Don't allow this packet unless we have started the handshake
+            uninitialize();
+            return;
+        }
+        NoxesiumServerboundNetworking.getInstance().addEnabledLazyPackets(packet.packets());
+    }
+
+    /**
      * Handles the server informing the client about a transfer.
      */
     protected void handleTransfer() {
@@ -353,6 +397,7 @@ public abstract class NoxesiumClientHandshaker {
         challenges.clear();
         HandshakePackets.INSTANCE.unregister();
         NoxesiumApi.getInstance().unregisterAll();
+        NoxesiumServerboundNetworking.getInstance().resetEnablesLazyPackets();
         GameComponents.getInstance().noxesium$reloadComponents();
     }
 }

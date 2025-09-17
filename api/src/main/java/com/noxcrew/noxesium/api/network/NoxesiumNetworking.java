@@ -56,6 +56,11 @@ public abstract class NoxesiumNetworking {
     }
 
     /**
+     * Indicates that it should be re-assessed whether the given payload type is lazy.
+     */
+    public abstract void markLazyActive(NoxesiumPayloadType<?> payloadType);
+
+    /**
      * Creates a new payload of the type specific to this platform.
      */
     public abstract <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(

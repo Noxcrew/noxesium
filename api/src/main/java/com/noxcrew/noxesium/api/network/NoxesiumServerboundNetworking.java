@@ -2,6 +2,10 @@ package com.noxcrew.noxesium.api.network;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import net.kyori.adventure.key.Key;
 
 /**
  * Sets up the Noxesium networking system in the serverbound direction.
@@ -22,6 +26,37 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
         var type = getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;
         return type.sendServerboundAny(packet);
+    }
+
+    private final Set<Key> enabledLazyPackets = new HashSet<>();
+
+    /**
+     * Returns whether the given lazy packet type should be sent.
+     */
+    public boolean shouldSendLazy(NoxesiumPayloadType<?> type) {
+        return !type.lazy || shouldSendLazy(type.id());
+    }
+
+    /**
+     * Returns whether the given lazy packet type should be sent.
+     */
+    public boolean shouldSendLazy(Key type) {
+        return enabledLazyPackets.contains(type);
+    }
+
+    /**
+     * Marks the given packets as having a server listener, meaning they
+     * should be sent to the current server.
+     */
+    public void addEnabledLazyPackets(Collection<Key> packets) {
+        this.enabledLazyPackets.addAll(packets);
+    }
+
+    /**
+     * Resets the list of enabled lazy packets.
+     */
+    public void resetEnablesLazyPackets() {
+        this.enabledLazyPackets.clear();
     }
 
     /**

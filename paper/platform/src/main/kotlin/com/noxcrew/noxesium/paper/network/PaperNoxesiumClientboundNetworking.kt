@@ -3,11 +3,13 @@ package com.noxcrew.noxesium.paper.network
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket
 import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket
 import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry
+import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.PaperPlatform
 import io.netty.buffer.Unpooled
@@ -110,5 +112,13 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
             serverPlayer.connection.send(packet)
         }
         return true
+    }
+
+    override fun markLazyActive(payloadType: NoxesiumPayloadType<*>) {
+        // Inform all authenticated players directly about the newly un-lazy packet
+        val packet = ClientboundLazyPacketsPacket(setOf(payloadType.id()))
+        NoxesiumPlayerManager.getInstance().allPlayers.forEach {
+            it.sendPacket(packet)
+        }
     }
 }

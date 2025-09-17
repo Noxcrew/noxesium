@@ -56,7 +56,6 @@ public class CommonGameComponentSerializers {
                 CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES,
                 NoxesiumCodecs.UNIT,
                 NoxesiumStreamCodecs.UNIT);
-        register(CommonGameComponentTypes.REPORT_MOUSE_CLICKS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
 
         register(
                 NmsGameComponentTypes.HAND_ITEM_OVERRIDE,

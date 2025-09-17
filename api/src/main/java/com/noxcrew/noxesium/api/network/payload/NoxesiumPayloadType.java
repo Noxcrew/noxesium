@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
 import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
 import java.lang.ref.WeakReference;
@@ -45,6 +46,11 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public final boolean jsonSerialized;
 
     /**
+     * Whether this packet is lazy.
+     */
+    public final boolean lazy;
+
+    /**
      * All listeners registered to this payload type.
      */
     private final Set<Pair<WeakReference<?>, TriConsumer<?, T, UUID>>> listeners = ConcurrentHashMap.newKeySet();
@@ -58,6 +64,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
         this.clazz = clazz;
         this.clientToServer = clientToServer;
         this.jsonSerialized = clazz.isAnnotationPresent(JsonSerializedPacket.class);
+        this.lazy = clazz.isAnnotationPresent(LazyPacket.class);
     }
 
     /**
@@ -141,8 +148,14 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * player. On the client this will always be the local client's uuid.
      */
     public <R> void addListener(R reference, @NotNull TriConsumer<R, T, UUID> listener) {
+        var wasEmpty = !hasListeners();
         listeners.removeIf((it) -> it.getKey().get() == null);
         listeners.add(Pair.of(new WeakReference<>(reference), listener));
+
+        // If this listener was previously not active, inform the other side!
+        if (wasEmpty) {
+            NoxesiumNetworking.getInstance().markLazyActive(this);
+        }
     }
 
     /**

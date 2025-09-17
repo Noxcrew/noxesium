@@ -8,11 +8,13 @@ import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandsha
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 
@@ -30,6 +32,8 @@ public class HandshakePackets {
             server(INSTANCE, "serverbound_handshake_cancel", ServerboundHandshakeCancelPacket.class);
     public static final NoxesiumPayloadType<ServerboundRegistryUpdateResultPacket> SERVERBOUND_REGISTRY_UPDATE_RESULT =
             server(INSTANCE, "serverbound_registry_update_result", ServerboundRegistryUpdateResultPacket.class);
+    public static final NoxesiumPayloadType<ServerboundLazyPacketsPacket> SERVERBOUND_LAZY_PACKETS =
+            server(INSTANCE, "serverbound_lazy_packets", ServerboundLazyPacketsPacket.class);
 
     public static final NoxesiumPayloadType<ClientboundHandshakeAcknowledgePacket> CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE =
             client(INSTANCE, "clientbound_handshake_ack", ClientboundHandshakeAcknowledgePacket.class);
@@ -44,4 +48,6 @@ public class HandshakePackets {
     public static final NoxesiumPayloadType<ClientboundRegistryContentUpdatePacket>
             CLIENTBOUND_REGISTRY_CONTENT_UPDATE = client(
                     INSTANCE, "clientbound_registry_update_content", ClientboundRegistryContentUpdatePacket.class);
+    public static final NoxesiumPayloadType<ClientboundLazyPacketsPacket> CLIENTBOUND_LAZY_PACKETS =
+            client(INSTANCE, "clientbound_lazy_packets", ClientboundLazyPacketsPacket.class);
 }

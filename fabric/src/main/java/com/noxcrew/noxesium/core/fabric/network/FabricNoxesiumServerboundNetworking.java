@@ -2,8 +2,11 @@ package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import java.util.Set;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
@@ -69,5 +72,14 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void markLazyActive(NoxesiumPayloadType<?> payloadType) {
+        // Directly inform the server that this packet has become active!
+        // Ignore if we are not in the handshaking state.
+        var handshaker = NoxesiumMod.getInstance().getHandshaker();
+        if (handshaker == null || handshaker.getHandshakeState() == HandshakeState.NONE) return;
+        send(new ServerboundLazyPacketsPacket(Set.of(payloadType.id())));
     }
 }

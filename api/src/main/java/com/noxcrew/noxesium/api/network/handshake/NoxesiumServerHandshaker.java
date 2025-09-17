@@ -9,10 +9,12 @@ import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandsha
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
 import com.noxcrew.noxesium.api.player.IdChangeSet;
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import net.kyori.adventure.key.Key;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -72,6 +75,9 @@ public abstract class NoxesiumServerHandshaker {
         });
         HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT.addListener(this, (reference, packet, playerId) -> {
             reference.onRegistryUpdateResult(playerId, packet);
+        });
+        HandshakePackets.SERVERBOUND_LAZY_PACKETS.addListener(this, (reference, packet, playerId) -> {
+            reference.onLazyPackets(playerId, packet);
         });
     }
 
@@ -258,6 +264,25 @@ public abstract class NoxesiumServerHandshaker {
             return;
         }
 
+        // Inform the client about lazy packets in use
+        var lazyPacketsEnabled = new HashSet<Key>();
+        for (var entrypointId : player.getSupportedEntrypointIds()) {
+            var entrypoint = NoxesiumApi.getInstance().getEntrypoint(entrypointId);
+            if (entrypoint != null) {
+                for (var packetCollection : entrypoint.getPacketCollections()) {
+                    for (var packetType : packetCollection.getPackets()) {
+                        if (!packetType.lazy) continue;
+                        if (packetType.hasListeners()) {
+                            lazyPacketsEnabled.add(packetType.id());
+                        }
+                    }
+                }
+            }
+        }
+        if (!lazyPacketsEnabled.isEmpty()) {
+            player.sendPacket(new ClientboundLazyPacketsPacket(lazyPacketsEnabled));
+        }
+
         var entrypoints = player.getSupportedEntrypointIds();
         for (var registry : NoxesiumRegistries.REGISTRIES) {
             // We only have to synchronize server registries as only sided registries
@@ -364,6 +389,19 @@ public abstract class NoxesiumServerHandshaker {
                     .error("Received invalid registry result update for id {}, destroying connection!", packet.id());
             destroy(uniqueId);
         }
+    }
+
+    /**
+     * Handles a lazy packets packet.
+     */
+    protected void onLazyPackets(@NotNull UUID uniqueId, @NotNull ServerboundLazyPacketsPacket packet) {
+        var player = NoxesiumPlayerManager.getInstance().getPlayer(uniqueId);
+        if (player == null) {
+            NoxesiumApi.getLogger().error("Received registry update for unknown player!");
+            destroy(uniqueId);
+            return;
+        }
+        player.addEnabledLazyPackets(packet.packets());
     }
 
     /**

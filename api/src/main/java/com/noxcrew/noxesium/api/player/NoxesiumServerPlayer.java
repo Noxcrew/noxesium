@@ -11,6 +11,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
@@ -55,6 +56,7 @@ public class NoxesiumServerPlayer {
     private final Map<Integer, IdChangeSet> sentIndices = new HashMap<>();
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
     private final Set<Key> capabilities = new HashSet<>();
+    private final Set<Key> enabledLazyPackets = new HashSet<>();
 
     @NotNull
     private HandshakeState handshakeState = HandshakeState.NONE;
@@ -97,6 +99,9 @@ public class NoxesiumServerPlayer {
                     .collect(Collectors.toSet()));
             this.mods = serializedPlayer.mods();
             this.settings = serializedPlayer.settings();
+            for (var packet : serializedPlayer.enabledLazyPackets()) {
+                this.enabledLazyPackets.add(Key.key(packet));
+            }
             for (var entry : serializedPlayer.knownIds().entrySet()) {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.knownIndices.put(registry, entry.getValue());
@@ -113,7 +118,12 @@ public class NoxesiumServerPlayer {
         for (var entry : knownIndices.entrySet()) {
             copiedKnownIndices.put(entry.getKey().id().asString(), entry.getValue());
         }
-        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings, mods, copiedKnownIndices);
+        return new SerializedNoxesiumServerPlayer(
+                supportedEntrypoints,
+                settings,
+                enabledLazyPackets.stream().map(Key::asString).collect(Collectors.toSet()),
+                mods,
+                copiedKnownIndices);
     }
 
     /**
@@ -200,6 +210,28 @@ public class NoxesiumServerPlayer {
         }
         this.mods = map;
         this.dirty = true;
+    }
+
+    /**
+     * Returns whether this player wants to receive the given lazy packet type.
+     */
+    public boolean shouldSendLazyPacket(NoxesiumPayloadType<?> packet) {
+        return !packet.lazy || shouldSendLazyPacket(packet.id());
+    }
+
+    /**
+     * Returns whether this player wants to receive the given lazy packet type.
+     */
+    public boolean shouldSendLazyPacket(Key packet) {
+        return enabledLazyPackets.contains(packet);
+    }
+
+    /**
+     * Marks the given packets as having a client listener, meaning they
+     * should be sent to this client.
+     */
+    public void addEnabledLazyPackets(Collection<Key> packets) {
+        this.enabledLazyPackets.addAll(packets);
     }
 
     /**
