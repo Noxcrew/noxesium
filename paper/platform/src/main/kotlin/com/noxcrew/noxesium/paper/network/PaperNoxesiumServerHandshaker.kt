@@ -125,12 +125,6 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     @EventHandler
     public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
         onChannelRegistered(event.player.noxesiumPlayer, event.channel)
-        println("REGISTER ${event.player.name} - ${event.channel}")
-    }
-
-    @EventHandler
-    public fun onChannelRegistered(event: PlayerUnregisterChannelEvent) {
-        println("UNREGISTER ${event.player.name} - ${event.channel}")
     }
 
     @PacketHandler

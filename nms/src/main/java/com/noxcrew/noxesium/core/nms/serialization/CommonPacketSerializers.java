@@ -33,12 +33,12 @@ public class CommonPacketSerializers {
         SerializableRegistries.registerSerializers(
                 NoxesiumRegistries.QIB_EFFECTS, NoxesiumCodecs.QIB_DEFINITION, NoxesiumStreamCodecs.QIB_DEFINITION);
 
-        /*registerSerializer(
+        registerSerializer(
                 CommonPackets.SERVER_CLIENT_SETTINGS,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.CLIENT_SETTINGS,
                         ServerboundClientSettingsPacket::settings,
-                        ServerboundClientSettingsPacket::new));*/
+                        ServerboundClientSettingsPacket::new));
         registerSerializer(
                 CommonPackets.SERVER_QIB_TRIGGERED,
                 StreamCodec.composite(
