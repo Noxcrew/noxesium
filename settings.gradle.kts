@@ -23,6 +23,7 @@ include("fabric")
 
 includeGroup(
     "paper",
+    "packet",
     "platform",
     "legacy",
 )
