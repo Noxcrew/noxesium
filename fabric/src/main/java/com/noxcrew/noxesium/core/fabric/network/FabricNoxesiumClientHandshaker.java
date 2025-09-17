@@ -1,11 +1,18 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.EntrypointProtocol;
+import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumClientHandshaker;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
@@ -71,5 +78,39 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
                 HandshakePackets.SERVERBOUND_HANDSHAKE.id().asString()))) return;
 
         super.initialize();
+    }
+
+    @Override
+    protected Collection<ModInfo> collectMods(List<EntrypointProtocol> entrypoints) {
+        // Determine any mods that provide entrypoints that were not authenticated, those should be hidden!
+        var entrypointIds = entrypoints.stream().map(EntrypointProtocol::id).toList();
+        var modsToShow = new HashSet<String>();
+        var modsToHide = new HashSet<String>();
+        FabricLoader.getInstance()
+                .getEntrypointContainers("noxesium", ClientNoxesiumEntrypoint.class)
+                .forEach(entrypointContainer -> {
+                    var modId = entrypointContainer.getProvider().getMetadata().getId();
+                    if (entrypointIds.contains(
+                            entrypointContainer.getEntrypoint().getId())) {
+                        modsToShow.add(modId);
+                    } else {
+                        modsToHide.add(modId);
+                    }
+                });
+
+        // Some mods may have multiple endpoints, show them if they have any valid ones!
+        modsToHide.removeAll(modsToShow);
+
+        // Determine the final list of mods to report to the server
+        var mods = new HashSet<ModInfo>();
+        FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
+            // Ignore mods that are marked as hidden!
+            if (modsToHide.contains(modContainer.getMetadata().getId())) return;
+
+            mods.add(new ModInfo(
+                    modContainer.getMetadata().getId(),
+                    modContainer.getMetadata().getVersion().getFriendlyString()));
+        });
+        return mods;
     }
 }

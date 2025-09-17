@@ -322,6 +322,7 @@ public abstract class NoxesiumServerHandshaker {
         for (var protocol : packet.protocols()) {
             activateProtocol(player, protocol);
         }
+        player.setMods(packet.mods());
 
         // Mark that we are now waiting to sync registries
         player.setHandshakeState(HandshakeState.AWAITING_REGISTRIES);

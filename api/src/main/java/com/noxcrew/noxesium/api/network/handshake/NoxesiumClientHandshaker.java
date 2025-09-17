@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
+import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
@@ -19,6 +20,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.EncryptionUtil;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,9 +167,16 @@ public abstract class NoxesiumClientHandshaker {
         }
 
         // Inform the server about the handshake success and start waiting for registries
-        NoxesiumServerboundNetworking.send(new ServerboundHandshakeAcknowledgePacket(entrypoints));
+        NoxesiumServerboundNetworking.send(
+                new ServerboundHandshakeAcknowledgePacket(entrypoints, collectMods(entrypoints)));
         state = HandshakeState.AWAITING_REGISTRIES;
     }
+
+    /**
+     * Collects all installed mods to be sent to the server given the list of entrypoints which were
+     * successfully authenticated.
+     */
+    protected abstract Collection<ModInfo> collectMods(List<EntrypointProtocol> entrypoints);
 
     /**
      * Handles the server sending across registry ids.

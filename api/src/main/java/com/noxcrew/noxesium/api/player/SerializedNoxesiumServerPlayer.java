@@ -2,8 +2,6 @@ package com.noxcrew.noxesium.api.player;
 
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,9 +12,7 @@ import java.util.Set;
  * behind a proxy using e.g. Redis.
  */
 public record SerializedNoxesiumServerPlayer(
-        List<EntrypointProtocol> supportedEntrypoints, ClientSettings settings, Map<String, Set<Integer>> knownIds) {
-
-    public SerializedNoxesiumServerPlayer() {
-        this(new ArrayList<>(), null, new HashMap<>());
-    }
-}
+        List<EntrypointProtocol> supportedEntrypoints,
+        ClientSettings settings,
+        Map<String, String> mods,
+        Map<String, Set<Integer>> knownIds) {}

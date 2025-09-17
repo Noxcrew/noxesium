@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.component.SimpleMutableNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
+import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
@@ -70,6 +71,9 @@ public class NoxesiumServerPlayer {
     @NotNull
     private Set<NoxesiumPacket> pendingPackets = ConcurrentHashMap.newKeySet();
 
+    @NotNull
+    private Map<String, String> mods = new HashMap<>();
+
     private int lastSoundId = 0;
     private boolean dirty = false;
 
@@ -91,6 +95,7 @@ public class NoxesiumServerPlayer {
             this.capabilities.addAll(this.supportedEntrypoints.stream()
                     .flatMap((it) -> it.capabilities().stream())
                     .collect(Collectors.toSet()));
+            this.mods = serializedPlayer.mods();
             this.settings = serializedPlayer.settings();
             for (var entry : serializedPlayer.knownIds().entrySet()) {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
@@ -108,7 +113,7 @@ public class NoxesiumServerPlayer {
         for (var entry : knownIndices.entrySet()) {
             copiedKnownIndices.put(entry.getKey().id().asString(), entry.getValue());
         }
-        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings, copiedKnownIndices);
+        return new SerializedNoxesiumServerPlayer(supportedEntrypoints, settings, mods, copiedKnownIndices);
     }
 
     /**
@@ -173,6 +178,27 @@ public class NoxesiumServerPlayer {
             supportedEntrypointIds.add(entrypoint.id());
             capabilities.addAll(entrypoint.capabilities());
         }
+        this.dirty = true;
+    }
+
+    /**
+     * Returns a mapping of all mods installed on this client
+     * by mod id to their version.
+     * These are as reported by the client and may be falsified.
+     */
+    public Map<String, String> getMods() {
+        return mods;
+    }
+
+    /**
+     * Sets the installed client mods.
+     */
+    public void setMods(Collection<ModInfo> mods) {
+        var map = new HashMap<String, String>();
+        for (var mod : mods) {
+            map.put(mod.id(), mod.version());
+        }
+        this.mods = map;
         this.dirty = true;
     }
 

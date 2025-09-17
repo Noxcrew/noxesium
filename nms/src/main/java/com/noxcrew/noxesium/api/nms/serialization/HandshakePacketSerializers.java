@@ -16,6 +16,7 @@ import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistr
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
@@ -36,8 +37,10 @@ public class HandshakePacketSerializers {
         registerSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE,
                 StreamCodec.composite(
-                        NoxesiumStreamCodecs.ENTRYPOINT_PROTOCOL.apply(ByteBufCodecs.list()),
+                        NoxesiumStreamCodecs.ENTRYPOINT_PROTOCOL.apply(ByteBufCodecs.collection(HashSet::new)),
                         ServerboundHandshakeAcknowledgePacket::protocols,
+                        NoxesiumStreamCodecs.MOD_INFO.apply(ByteBufCodecs.collection(HashSet::new)),
+                        ServerboundHandshakeAcknowledgePacket::mods,
                         ServerboundHandshakeAcknowledgePacket::new));
         registerSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL,

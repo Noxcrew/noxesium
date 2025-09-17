@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
+import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
 import com.noxcrew.noxesium.api.nms.serialization.SerializerPair;
@@ -109,6 +110,9 @@ public class NoxesiumStreamCodecs {
                     ByteBufCodecs.collection(HashSet::new, KEY),
                     EntrypointProtocol::capabilities,
                     EntrypointProtocol::new));
+
+    public static final StreamCodec<ByteBuf, ModInfo> MOD_INFO = StreamCodec.recursive(codec -> StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ModInfo::id, ByteBufCodecs.STRING_UTF8, ModInfo::version, ModInfo::new));
 
     public static <T extends Enum<?>> StreamCodec<ByteBuf, T> forEnum(Class<T> clazz) {
         return new StreamCodec<>() {
