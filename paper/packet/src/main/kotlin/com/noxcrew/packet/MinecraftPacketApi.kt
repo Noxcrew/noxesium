@@ -191,18 +191,22 @@ public abstract class MinecraftPacketApi(
 
     /** Calls all handlers on the given [packet], returning the manipulated packet. */
     internal fun handlePacket(player: Player, packet: Packet<*>): List<Packet<*>> {
+        // Early-exit if this type has no handlers! (excluding bundles)
+        val baseType = packet.javaClass
+        if (baseType != ClientboundBundlePacket::class.java && baseType !in packetHandlers) return listOf(packet)
+
         val finalPackets = mutableListOf<Packet<*>>()
-        var pendingPackets = mutableMapOf<Class<in Packet<*>>, MutableList<Packet<*>>>()
+        var pendingPackets = HashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
         val checkedTypes = mutableSetOf<Class<*>>()
 
         // Queue up the initial packet
-        pendingPackets[packet.javaClass] = mutableListOf(packet)
+        pendingPackets[baseType] = mutableListOf(packet)
 
         // Iterate across all packets to be processed in a BFS.
         while (pendingPackets.isNotEmpty()) {
             val currentPackets = pendingPackets
             val typesCheckedThisLayer = mutableListOf<Class<*>>()
-            pendingPackets = mutableMapOf()
+            pendingPackets = HashMap()
 
             while (currentPackets.isNotEmpty()) {
                 val type = currentPackets.keys.firstOrNull() ?: break
@@ -219,11 +223,11 @@ public abstract class MinecraftPacketApi(
                 }
 
                 // If it's a bundle, unpack into the next group of packets!
-                if (ClientboundBundlePacket::class.java.isAssignableFrom(type)) {
+                if (type == ClientboundBundlePacket::class.java) {
                     for (bundlePacket in activePackets) {
                         for (packet in (bundlePacket as? ClientboundBundlePacket ?: continue).subPackets()) {
                             if (packet != null) {
-                                pendingPackets.computeIfAbsent(packet.javaClass) { mutableListOf() } += packet
+                                pendingPackets.getOrPut(packet.javaClass) { mutableListOf() } += packet
                             }
                         }
                     }
@@ -266,12 +270,19 @@ public abstract class MinecraftPacketApi(
                                 // Filter out null packets!
                                 if (packet == null) continue
 
-                                if (packet.javaClass == type) {
+                                val newType = packet.javaClass
+                                if (newType == type) {
                                     // The type is the same, continue iterating with it!
                                     activePackets += packet
                                 } else {
+                                    // If this new type does not have a packet handler, early exit!
+                                    if (newType != ClientboundBundlePacket::class.java && newType !in packetHandlers) {
+                                        finalPackets += packet
+                                        continue
+                                    }
+
                                     // If the type has changed, iterate over this on the next layer!
-                                    pendingPackets.computeIfAbsent(packet.javaClass) { mutableListOf() } += packet
+                                    pendingPackets.getOrPut(newType) { mutableListOf() } += packet
                                 }
                             }
                         }
