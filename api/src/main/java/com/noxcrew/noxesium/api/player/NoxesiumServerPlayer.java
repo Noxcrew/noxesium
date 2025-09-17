@@ -216,6 +216,8 @@ public class NoxesiumServerPlayer {
      * Returns whether this player wants to receive the given lazy packet type.
      */
     public boolean shouldSendLazyPacket(NoxesiumPayloadType<?> packet) {
+        // Early-exit if the entrypoint is not registered!
+        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, packet)) return false;
         return !packet.lazy || shouldSendLazyPacket(packet.id());
     }
 

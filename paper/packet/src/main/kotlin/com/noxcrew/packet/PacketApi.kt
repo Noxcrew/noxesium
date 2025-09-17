@@ -123,14 +123,10 @@ public typealias PacketHandlerUnregisterer = () -> Unit
 
 /** Provides the basis for a packet listening, modification, and cancellation API. */
 public class PacketApi(
-    /** The plugin instance to use for registering an event listener. */
-    private val plugin: Plugin?,
     /** The unique key to use for the packet handler. */
     public val key: String,
     /** Whether to kick players when packet handlers throw errors. */
     public val kickForPacketErrors: Boolean = true,
-    /** Whether this API is running in a testing environment. If so, no attempt is made to register interceptors. */
-    public val isTestEnvironment: Boolean = false,
 ) : Listener {
     public companion object {
         /**
@@ -146,6 +142,7 @@ public class PacketApi(
     private val logger = LoggerFactory.getLogger("MinecraftPacketApi")
     private val playerConnectionHandlers = mutableMapOf<UUID, PlayerConnectionHandler>()
     private val packetHandlers: MutableMap<Class<*>, PacketHandlers<*>> = ConcurrentHashMap()
+    private var plugin: Plugin? = null
 
     /** For each registered [PacketListener], unregisterers for all of its packet handlers. */
     private val listenerUnregisterers: Multimap<PacketListener, PacketHandlerUnregisterer> = ThreadsafeMultimap()
@@ -155,14 +152,13 @@ public class PacketApi(
         private set
 
     /** Registers the packet API. */
-    public fun register() {
+    public fun register(plugin: Plugin) {
         if (registered) return
         registered = true
 
-        plugin?.also { Bukkit.getPluginManager().registerEvents(this, it) }
-        if (!isTestEnvironment && Bukkit.getServer() != null) {
-            Bukkit.getOnlinePlayers().forEach(::registerPlayer)
-        }
+        this.plugin = plugin
+        Bukkit.getPluginManager().registerEvents(this, plugin)
+        Bukkit.getOnlinePlayers().forEach(::registerPlayer)
     }
 
     /** Unregisters the packet API. */

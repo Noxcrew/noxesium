@@ -1,16 +1,17 @@
 package com.noxcrew.noxesium.core.mcc;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
+import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
 
 /**
  * Sent by MCC Island whenever the game state changes.
  * Possible values for the phase type:
- * - LOADING
- * - WAITING_FOR_PLAYERS
- * - PRE_GAME
- * - PLAY
- * - INTERMISSION
- * - POST_GAME
+ * - loading
+ * - waiting_for_players
+ * - pre_game
+ * - play
+ * - intermission
+ * - post_game
  * <p>
  * Values for the stage key differ based on the game.
  *
@@ -23,6 +24,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
  * @param mapId       The id assigned to the current map.
  * @param mapName     The display name of the current map localised to the client's language.
  */
+@LazyPacket
 public record ClientboundMccGameStatePacket(
         String game,
         String queueType,
