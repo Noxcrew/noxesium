@@ -6,7 +6,10 @@ import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class PacketCollection {
     private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
+    private final Set<String> pluginChannels = new HashSet<>();
 
     /**
      * Registers a new clientbound packet.
@@ -77,7 +81,15 @@ public final class PacketCollection {
         Preconditions.checkArgument(!packets.containsKey(id));
         var type = NoxesiumNetworking.getInstance().createPayloadType(namespace, id, clazz, clientToServer);
         packets.put(id, type);
+        pluginChannels.add(type.id().asString());
         return type;
+    }
+
+    /**
+     * Returns all plugin channel identifiers in this collection.
+     */
+    public Collection<String> getPluginChannelIdentifiers() {
+        return pluginChannels;
     }
 
     /**

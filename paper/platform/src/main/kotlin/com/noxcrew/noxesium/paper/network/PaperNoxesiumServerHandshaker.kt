@@ -1,9 +1,12 @@
 package com.noxcrew.noxesium.paper.network
 
 import com.noxcrew.noxesium.api.NoxesiumApi
+import com.noxcrew.noxesium.api.NoxesiumReferences
+import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
@@ -11,22 +14,48 @@ import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
+import com.noxcrew.packet.PacketHandler
+import com.noxcrew.packet.PacketListener
+import io.netty.buffer.Unpooled
+import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket
+import net.minecraft.network.protocol.common.custom.DiscardedPayload
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
+import org.bukkit.event.player.PlayerUnregisterChannelEvent
 import java.util.UUID
+import java.util.logging.Level
 
 /**
  * Performs handshaking with the server-side to be run from the client-side.
  */
-public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listener {
+public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listener, PacketListener {
     override fun register() {
         super.register()
         Bukkit.getPluginManager().registerEvents(this, NoxesiumPaper.plugin)
+        NoxesiumPaper.packetApi.registerListener(this)
+
+        // Tick all players and detect handshake completions after channels are created
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(
+            NoxesiumPaper.plugin,
+            {
+                for (player in NoxesiumPlayerManager.getInstance().allPlayers) {
+                    player.tick()
+
+                    // Test if all handshake tasks are already complete
+                    if (player.isHandshakeCompleted()) {
+                        completeHandshake(player)
+                    }
+                }
+            },
+            1, 1,
+        )
 
         // Respond to initial handshake packet and create the server player instance
         HandshakePackets.SERVERBOUND_HANDSHAKE.addListener(
@@ -40,7 +69,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
             val bukkitPlayer = Bukkit.getPlayer(playerId) as CraftPlayer
             val serverPlayer = bukkitPlayer.handle
-            reference.handleHandshake(PaperServerPlayer(serverPlayer), packet!!)
+            reference.handleHandshake(PaperNoxesiumServerPlayer(serverPlayer), packet!!)
         }
     }
 
@@ -72,11 +101,17 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         val playerId = event.player.uniqueId
         if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) return
 
+        // Try to handle a transfer from another server
+        val bukkitPlayer = event.player as CraftPlayer
+        val serverPlayer = bukkitPlayer.handle
         getStoredData(event.player.uniqueId)?.also { storedData ->
-            val bukkitPlayer = event.player as CraftPlayer
-            val serverPlayer = bukkitPlayer.handle
-            handleTransfer(PaperServerPlayer(serverPlayer, storedData))
+            handleTransfer(PaperNoxesiumServerPlayer(serverPlayer, storedData))
+            return@also
         }
+
+        // If we're not transferring, send this player the initial signal by way of informing
+        // them about the handshake plugin channels.
+        serverPlayer.sendPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
     }
 
     @EventHandler
@@ -87,10 +122,58 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     @EventHandler
     public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
         onChannelRegistered(event.player.noxesiumPlayer, event.channel)
+        println("REGISTER ${event.player.name} - ${event.channel}")
+    }
+
+    @EventHandler
+    public fun onChannelRegistered(event: PlayerUnregisterChannelEvent) {
+        println("UNREGISTER ${event.player.name} - ${event.channel}")
+    }
+
+    @PacketHandler
+    public fun onCustomPayload(player: Player, packet: ServerboundCustomPayloadPacket): ServerboundCustomPayloadPacket? {
+        (packet.payload as? DiscardedPayload)?.also { payload ->
+            // Ignore packets not for Noxesium!
+            if (payload.id.namespace != NoxesiumReferences.PACKET_NAMESPACE) return@also
+
+            // Determine the current Noxesium player and if they can send this type of packet
+            val noxesiumPlayer = player.noxesiumPlayer as? PaperNoxesiumServerPlayer
+            val knownChannels = noxesiumPlayer?.registeredPluginChannels ?: HandshakePackets.INSTANCE.pluginChannelIdentifiers
+            val channel = payload.id.toString()
+            if (channel !in knownChannels) {
+                NoxesiumPaper.plugin.logger.log(
+                    Level.WARNING,
+                    "Received unauthorized plugin message on channel '$channel' for ${player.name}",
+                )
+                return null
+            }
+
+            // Determine the payload type for this packet if the client knows of it
+            val networking = NoxesiumClientboundNetworking.getInstance() as? PaperNoxesiumClientboundNetworking
+            val payloadType = networking?.getPayloadType(channel) ?: return null
+
+            try {
+                // Decode the message and let handlers handle it
+                val craftPlayer = player as CraftPlayer
+                val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), craftPlayer.handle.registryAccess())
+                val codec = PacketSerializerRegistry.getSerializers(payloadType) ?: return null
+                payloadType.handle(player.uniqueId, codec.decode(buffer))
+            } catch (x: Exception) {
+                NoxesiumPaper.plugin.logger.log(
+                    Level.WARNING,
+                    "Failed to decode plugin message on channel '$channel' for ${player.name}",
+                    x,
+                )
+            }
+
+            // Always hide Noxesium packets from Bukkit!
+            return null
+        }
+        return packet
     }
 
     override fun isConnected(player: NoxesiumServerPlayer): Boolean =
-        super.isConnected(player) && !(player as PaperServerPlayer).player.hasDisconnected()
+        super.isConnected(player) && !(player as PaperNoxesiumServerPlayer).player.hasDisconnected()
 
     override fun runDelayed(runnable: Runnable) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(NoxesiumPaper.plugin, runnable)
@@ -100,7 +183,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         // Emit an event for other systems to hook into
         Bukkit
             .getPluginManager()
-            .callEvent(NoxesiumPlayerRegisteredEvent((player as PaperServerPlayer).player.bukkitEntity, player))
+            .callEvent(NoxesiumPlayerRegisteredEvent((player as PaperNoxesiumServerPlayer).player.bukkitEntity, player))
 
         // Store the player's data externally after handshake completion
         storeData(player)
@@ -119,7 +202,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             // Emit an event for other systems to hook into on unregistration
             Bukkit
                 .getPluginManager()
-                .callEvent(NoxesiumPlayerUnregisteredEvent((player as PaperServerPlayer).player.bukkitEntity, player))
+                .callEvent(NoxesiumPlayerUnregisteredEvent((player as PaperNoxesiumServerPlayer).player.bukkitEntity, player))
         }
     }
 

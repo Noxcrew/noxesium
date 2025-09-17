@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.paper.network
 
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking
 import com.noxcrew.noxesium.api.network.NoxesiumPacket
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType
@@ -16,6 +17,7 @@ import net.minecraft.resources.ResourceLocation
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
+    private val payloadTypes = mutableMapOf<String, NoxesiumPayloadType<*>>()
     public var capturedPacket: ClientboundCustomPayloadPacket? = null
 
     /**
@@ -26,21 +28,37 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
      */
     public var capturePackets: Boolean = false
 
+    /** Returns the payload type for the given channel. */
+    public fun getPayloadType(channel: String): NoxesiumPayloadType<*>? = payloadTypes[channel]
+
     override fun getRegisteredChannels(player: NoxesiumServerPlayer): Collection<String> =
-        (player as PaperServerPlayer).player.bukkitEntity.listeningPluginChannels
+        (player as PaperNoxesiumServerPlayer).registeredPluginChannels
+
+    override fun register(payloadType: NoxesiumPayloadType<*>?, entrypoint: NoxesiumEntrypoint?) {
+        super.register(payloadType, entrypoint)
+        if (payloadType != null) {
+            require(payloadType.id().asString() !in payloadTypes) {
+                "Payload channel ${
+                    payloadType.id().asString()
+                } registered multiple times"
+            }
+            payloadTypes[payloadType.id().asString()] = payloadType
+        }
+    }
 
     override fun <T : NoxesiumPacket> createPayloadType(
         namespace: String,
         id: String,
         clazz: Class<T>,
         clientToServer: Boolean,
-    ): NoxesiumPayloadType<T> = PaperPayloadType(Key.key(namespace, id), clazz, clientToServer)
+    ): NoxesiumPayloadType<T> = NoxesiumPayloadType(Key.key(namespace, id), clazz, clientToServer)
 
     override fun canReceive(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<*>): Boolean {
         // Prevent sending if the client does not know of this channel!
-        val serverPlayer = (player as PaperServerPlayer).player
+        val noxesiumPlayer = (player as PaperNoxesiumServerPlayer)
+        val serverPlayer = noxesiumPlayer.player
         if (serverPlayer.connection == null) return false
-        if (type.id().toString() !in serverPlayer.bukkitEntity.listeningPluginChannels) return false
+        if (type.id().toString() !in noxesiumPlayer.registeredPluginChannels) return false
         return super.canReceive(player, type)
     }
 
@@ -54,7 +72,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         // for the stream codecs! Do not defer this to happen later in the netty thread. We do this just so
         // we can apply the ViaVersion codecs defined above, serializing on a separate thread is fine
         // for any other implementations that do not need such a technique.
-        val serverPlayer = (player as PaperServerPlayer).player
+        val serverPlayer = (player as PaperNoxesiumServerPlayer).player
         (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = serverPlayer
         val packet =
             ClientboundCustomPayloadPacket(

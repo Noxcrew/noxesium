@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.sync.filesystem
 
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
-import com.noxcrew.noxesium.paper.network.PaperServerPlayer
+import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.event.NoxesiumSyncCompletedEvent
 import com.noxcrew.noxesium.sync.network.SyncedPart
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket
@@ -44,7 +44,7 @@ public class ServerParentFileSystemWatcher(
         }
 
         // Inform the player that they've started synchronizing
-        (player as? PaperServerPlayer)?.player?.bukkitEntity?.sendMessage(
+        (player as? PaperNoxesiumServerPlayer)?.player?.bukkitEntity?.sendMessage(
             Component.text(
                 "You are now synchronizing $folderId",
                 NamedTextColor.AQUA,

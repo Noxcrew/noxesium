@@ -5,7 +5,7 @@ import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
-import com.noxcrew.noxesium.paper.network.PaperServerPlayer
+import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.network.SyncPackets
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket
@@ -81,7 +81,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
     private fun handleSyncRequest(playerId: UUID, packet: ServerboundRequestSyncPacket) {
         // Double-check that this player has the required permissions! This avoids clients from faking their way
         // into synchronization sessions the server didn't request.
-        val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) as? PaperServerPlayer ?: return
+        val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) as? PaperNoxesiumServerPlayer ?: return
         if (!player.player.bukkitEntity.hasPermission(PERMISSION_NODE)) return
         val folder = syncableFolders[packet.id] ?: return
 

@@ -19,7 +19,6 @@ import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes
 import com.noxcrew.noxesium.paper.feature.PaperBlockEntityModule
 import com.noxcrew.noxesium.paper.feature.PaperEntityModule
-import com.noxcrew.noxesium.paper.feature.PaperPlayerModule
 import com.noxcrew.noxesium.paper.feature.RegistryLoader
 import com.noxcrew.noxesium.paper.feature.SmoothTrident
 import java.net.URL
@@ -53,11 +52,10 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
     )
 
     override fun getAllFeatures(): Collection<NoxesiumFeature> = listOf(
-        PaperPlayerModule(),
         PaperEntityModule(),
         PaperBlockEntityModule(),
         RegistryLoader(),
-        SmoothTrident()
+        SmoothTrident(),
     )
 
     override fun getEncryptionKey(): URL? =
