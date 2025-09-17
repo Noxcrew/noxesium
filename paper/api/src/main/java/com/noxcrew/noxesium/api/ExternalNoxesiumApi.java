@@ -8,20 +8,22 @@ import org.bukkit.entity.Player;
  * Provides the external Noxesium API which forwards any requests to the Noxesium plugin if installed.
  */
 public class ExternalNoxesiumApi {
-    private static ExternalNoxesiumApi instance = new ExternalNoxesiumApi();
+    private static ExternalNoxesiumApi instance;
 
     /**
      * Returns the external Noxesium API instance.
      */
     public static ExternalNoxesiumApi getInstance() {
+        if (instance == null) {
+            try {
+                var clazz = Class.forName("com.noxcrew.noxesium.paper.ExternalApi");
+                return (ExternalNoxesiumApi) clazz.newInstance();
+            } catch (Exception x) {
+                // If we fail to load the class, fall back to no-op!
+            }
+            instance = new ExternalNoxesiumApi();
+        }
         return instance;
-    }
-
-    /**
-     * Sets the external Noxesium API instance.
-     */
-    public static void setInstance(ExternalNoxesiumApi externalNoxesiumApi) {
-        instance = externalNoxesiumApi;
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.paper
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.noxcrew.noxesium.api.ExternalNoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
@@ -50,7 +49,6 @@ public class NoxesiumPaper : JavaPlugin() {
         public fun prepare(plugin: Plugin, packetApi: PacketApi) {
             NoxesiumPaper.plugin = plugin
             NoxesiumPaper.packetApi = packetApi
-            ExternalNoxesiumApi.setInstance(ExternalApi())
             JsonSerializerRegistry.getInstance().register(KOTLINX_SERIALIZER, KotlinxJsonSerializer(Json.Default))
             NoxesiumPlayerManager.setInstance(NoxesiumPlayerManager())
             NoxesiumPlatform.setInstance(PaperPlatform())
