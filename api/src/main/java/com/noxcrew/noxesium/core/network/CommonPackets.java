@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateBlockEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -40,11 +39,6 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_stop_sound", ClientboundCustomSoundStopPacket.class);
     public static final NoxesiumPayloadType<ClientboundUpdateEntityComponentsPacket> CLIENT_UPDATE_ENTITY_COMPONENTS =
             client(INSTANCE, "clientbound_update_entity_components", ClientboundUpdateEntityComponentsPacket.class);
-    public static final NoxesiumPayloadType<ClientboundUpdateBlockEntityComponentsPacket>
-            CLIENT_UPDATE_BLOCK_ENTITY_COMPONENTS = client(
-                    INSTANCE,
-                    "clientbound_update_block_entity_components",
-                    ClientboundUpdateBlockEntityComponentsPacket.class);
     public static final NoxesiumPayloadType<ClientboundUpdateGameComponentsPacket> CLIENT_UPDATE_GAME_COMPONENTS =
             client(INSTANCE, "clientbound_update_game_components", ClientboundUpdateGameComponentsPacket.class);
     public static final NoxesiumPayloadType<ClientboundOpenLinkPacket> CLIENT_OPEN_LINK =

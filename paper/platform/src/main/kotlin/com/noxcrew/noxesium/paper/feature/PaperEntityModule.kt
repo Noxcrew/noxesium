@@ -51,8 +51,8 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
     }
 
     /**
-     * Send a newly registered player information about all entities they are already able
-     * to see.
+     * Send a newly registered player information about all entities
+     * they are already able to see.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public fun onFinishHandshake(e: NoxesiumPlayerRegisteredEvent) {
@@ -93,23 +93,23 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
 
         // Delay this by one task as the entity has not yet been sent, we need to send this packet
         // after the entity is known to the client!
+        val noxesiumPlayer = e.player.noxesiumPlayer ?: return
+        val holder =
+            NoxesiumEntityManager
+                .getInstance<Entity, EntityComponentHolder>()
+                .getComponentHolderIfPresent((e.entity as CraftEntity).handle)
+                ?: return
+        val packet =
+            ClientboundUpdateEntityComponentsPacket(
+                e.entity.entityId,
+                true,
+                holder.collectAll(noxesiumPlayer).takeUnless { it.isEmpty } ?: return,
+            )
+
+        // Start the delayed task only if there is some packet to send!
         Bukkit.getScheduler().scheduleSyncDelayedTask(
             NoxesiumPaper.plugin,
-            {
-                val noxesiumPlayer = e.player.noxesiumPlayer ?: return@scheduleSyncDelayedTask
-                val holder =
-                    NoxesiumEntityManager
-                        .getInstance<Entity, EntityComponentHolder>()
-                        .getComponentHolderIfPresent((e.entity as CraftEntity).handle)
-                        ?: return@scheduleSyncDelayedTask
-                noxesiumPlayer.sendPacket(
-                    ClientboundUpdateEntityComponentsPacket(
-                        e.entity.entityId,
-                        true,
-                        holder.collectAll(noxesiumPlayer).takeUnless { it.isEmpty } ?: return@scheduleSyncDelayedTask,
-                    ),
-                )
-            },
+            { noxesiumPlayer.sendPacket(packet) },
             1,
         )
     }

@@ -12,7 +12,6 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateBlockEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -116,16 +115,6 @@ public class CommonPacketSerializers {
                         NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.ENTITY_COMPONENTS),
                         ClientboundUpdateEntityComponentsPacket::patch,
                         ClientboundUpdateEntityComponentsPacket::new));
-        registerSerializer(
-                CommonPackets.CLIENT_UPDATE_BLOCK_ENTITY_COMPONENTS,
-                StreamCodec.composite(
-                        NoxesiumStreamCodecs.VECTOR_3I,
-                        ClientboundUpdateBlockEntityComponentsPacket::blockPos,
-                        ByteBufCodecs.BOOL,
-                        ClientboundUpdateBlockEntityComponentsPacket::reset,
-                        NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS),
-                        ClientboundUpdateBlockEntityComponentsPacket::patch,
-                        ClientboundUpdateBlockEntityComponentsPacket::new));
         registerSerializer(
                 CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS,
                 StreamCodec.composite(

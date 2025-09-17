@@ -20,7 +20,6 @@ import net.kyori.adventure.text.JoinConfiguration;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.CommonComponents;
 
 /**
@@ -46,23 +45,6 @@ public class CommonPacketHandling extends NoxesiumFeature {
                 NoxesiumApi.getLogger().warn("Received components for unknown entity {}", packet.entityId());
             } else {
                 reference.applyPatch(packet.patch(), packet.reset(), NoxesiumRegistries.ENTITY_COMPONENTS, entity);
-            }
-        });
-        CommonPackets.CLIENT_UPDATE_BLOCK_ENTITY_COMPONENTS.addListener(this, (reference, packet, ignored3) -> {
-            if (!reference.isRegistered()) return;
-            if (Minecraft.getInstance().level == null) {
-                NoxesiumApi.getLogger()
-                        .warn("Received components for block entity {} when level is not set", packet.blockPos());
-                return;
-            }
-            var blockEntity = Minecraft.getInstance()
-                    .level
-                    .getBlockEntity(new BlockPos(packet.blockPos().x, packet.blockPos().y, packet.blockPos().z));
-            if (blockEntity == null) {
-                NoxesiumApi.getLogger().warn("Received components for unknown block entity {}", packet.blockPos());
-            } else {
-                reference.applyPatch(
-                        packet.patch(), packet.reset(), NoxesiumRegistries.BLOCK_ENTITY_COMPONENTS, blockEntity);
             }
         });
 
