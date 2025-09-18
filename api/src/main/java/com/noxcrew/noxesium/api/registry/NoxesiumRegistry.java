@@ -107,7 +107,8 @@ public class NoxesiumRegistry<T> {
      */
     public int getIdFor(T value) {
         if (value == null) return -1;
-        return byId.inverse().get(value);
+        var boxed = byId.inverse().get(value);
+        return boxed == null ? -1 : boxed;
     }
 
     /**
@@ -124,6 +125,7 @@ public class NoxesiumRegistry<T> {
     /**
      * Returns the key associated with the given value.
      */
+    @Nullable
     public Key getKeyFor(T value) {
         return byKey.inverse().get(value);
     }
