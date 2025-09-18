@@ -70,10 +70,10 @@ public class PaperBlockEntityModule : ListeningNoxesiumFeature(), PacketListener
         val nmsWorld = (player.world as CraftWorld).handle
 
         // Process all block entities nested in the chunk
-        packet.chunkData.getBlockEntitiesTagsConsumer(packet.x, packet.z).accept(BlockEntityDataStorer(nmsWorld))
+        packet.chunkData?.getBlockEntitiesTagsConsumer(packet.x, packet.z)?.accept(BlockEntityDataStorer(nmsWorld))
 
         // Process all nested extra block entity packets
-        packet.chunkData.extraPackets.forEach { subPacket ->
+        packet.chunkData?.extraPackets?.forEach { subPacket ->
             if (subPacket is ClientboundBlockEntityDataPacket) {
                 val blockEntity = nmsWorld.getBlockEntityIfExists(subPacket.pos)
                 if (blockEntity != null) {

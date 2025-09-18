@@ -139,7 +139,7 @@ public class PacketApi(
         ReadablePlayerCookieConnectionImpl::class.java.getDeclaredField("connection").also {
             it.isAccessible = true
         }
-    private val logger = LoggerFactory.getLogger("MinecraftPacketApi")
+    private val logger = LoggerFactory.getLogger("PacketApi")
     private val playerConnectionHandlers = mutableMapOf<UUID, PlayerConnectionHandler>()
     private val packetHandlers: MutableMap<Class<*>, PacketHandlers<*>> = ConcurrentHashMap()
     private var plugin: Plugin? = null
@@ -272,7 +272,7 @@ public class PacketApi(
                                     handlerWithPriority.handle(connection, iteratorPacket)
                                 } catch (e: Exception) {
                                     logger.error(
-                                        "Error handling packet ${packet.javaClass.simpleName} using handler ${handlerWithPriority.handler}, kicking player!",
+                                        "Error handling packet ${packet.javaClass.simpleName}, kicking player!",
                                         e,
                                     )
 
