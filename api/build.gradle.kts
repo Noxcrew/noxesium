@@ -1,3 +1,7 @@
+plugins {
+    id("noxesium.publishing")
+}
+
 dependencies {
     api(libs.annotations)
     api(libs.gson)

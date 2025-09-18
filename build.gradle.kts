@@ -53,7 +53,6 @@ allprojects {
 
 subprojects {
     apply<JavaLibraryPlugin>()
-    apply<Noxesium_publishingPlugin>()
     apply<SpotlessPlugin>()
 
     tasks {
@@ -105,6 +104,7 @@ subprojects {
     }
 
     extensions.configure<JavaPluginExtension> {
+        withJavadocJar()
         withSourcesJar()
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }

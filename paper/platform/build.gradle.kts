@@ -9,9 +9,8 @@ plugins {
     id("com.gradleup.shadow")
     id("xyz.jpenilla.run-paper")
     id("noxesium.nms")
+    id("noxesium.publishing")
 }
-
-val javaVersion: Int = 21
 
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
@@ -30,20 +29,7 @@ dependencies {
     api(project(":paper:paper-packet"))
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 // Configure any existing RunServerTasks
 tasks.withType<RunServer> {
     jvmArgs("-Dio.papermc.paper.suppress.sout.nags=true")
-}
-
-tasks.withType<KotlinCompile> {
-    explicitApiMode.set(ExplicitApiMode.Strict)
-
-    compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-    }
 }

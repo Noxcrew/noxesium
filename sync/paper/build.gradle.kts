@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("noxesium.sync")
+    id("noxesium.publishing")
     id("xyz.jpenilla.run-paper")
     id("io.papermc.paperweight.userdev")
 }
@@ -16,13 +17,4 @@ dependencies {
 
     // Add universal charset for detecting encodings
     implementation(libs.juniversalchardet)
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-tasks.withType<KotlinCompile> {
-    explicitApiMode.set(ExplicitApiMode.Strict)
 }

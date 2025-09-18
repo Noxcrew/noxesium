@@ -5,9 +5,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "2.2.0"
     id("io.papermc.paperweight.userdev")
+    id("noxesium.publishing")
 }
-
-val javaVersion: Int = 21
 
 dependencies {
     paperweight.paperDevBundle("${property("paper_version")}")
@@ -20,17 +19,4 @@ dependencies {
 
     // Add the API module as a dependency
     api(project(":api"))
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
-tasks.withType<KotlinCompile> {
-    explicitApiMode.set(ExplicitApiMode.Strict)
-
-    compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-    }
 }

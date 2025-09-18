@@ -1,5 +1,6 @@
 plugins {
     id("net.neoforged.moddev")
+    id("noxesium.publishing")
 }
 
 /*
