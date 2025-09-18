@@ -100,7 +100,7 @@ private class PacketHandlerWithPriority<R, T : Packet<*>>(
         val castPacket = packet as? T ?: return listOf(packet)
         val receiver =
             when {
-                Player::class.java.isAssignableFrom(receiverType) -> connection.player.bukkitEntity
+                Player::class.java.isAssignableFrom(receiverType) -> connection.player?.bukkitEntity
                 NmsPlayer::class.java.isAssignableFrom(receiverType) -> connection.player
                 PlayerCommonConnection::class.java.isAssignableFrom(receiverType) ->
                     (connection.packetListener as? ServerConfigurationPacketListenerImpl)?.paperConnection
