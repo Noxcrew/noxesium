@@ -17,6 +17,6 @@ public class GuiGraphicsMixin {
             at = @At("RETURN"))
     public void constructor(Minecraft minecraft, Matrix3x2fStack pose, GuiRenderState guiRenderState, CallbackInfo ci) {
         // Double the scale of all drawings to match the doubled resolution.
-        pose.scale(2f);
+        // pose.scale(2f);
     }
 }

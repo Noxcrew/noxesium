@@ -24,6 +24,6 @@ public class GuiRendererMixin {
                                     "Lnet/minecraft/client/renderer/CachedOrthoProjectionMatrixBuffer;getBuffer(FF)Lcom/mojang/blaze3d/buffers/GpuBufferSlice;"))
     public GpuBufferSlice wrapBufferResize(
             CachedOrthoProjectionMatrixBuffer instance, float width, float height, Operation<GpuBufferSlice> original) {
-        return original.call(instance, width * 2, height * 2);
+        return original.call(instance, width, height); // width * 2, height * 2);
     }
 }
