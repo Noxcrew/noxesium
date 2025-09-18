@@ -210,19 +210,27 @@ public class PacketApi(
         handler: PacketHandlerFunction<R, T>,
     ): PacketHandlerUnregisterer = registerHandler(T::class.java, R::class.java, priority, handler)
 
-    /** Returns whether handlers for packets of the given [clazz] are registered. */
-    public fun hasHandlers(clazz: Class<out Packet<*>>): Boolean =
-        packetHandlers.containsKey(clazz) || clazz == ClientboundBundlePacket::class.java
+    /** Returns whether handlers for packets of the given [packet] are registered. */
+    public fun hasHandlers(packet: Packet<*>): Boolean {
+        if (packet is ClientboundBundlePacket) {
+            // For bundles check if anything inside the bundle is in use!
+            return packet.subPackets().any { hasHandlers(it) }
+        }
+        return packetHandlers.containsKey(packet.javaClass)
+    }
 
     /** Calls all handlers on the given [packet], returning the manipulated packet. */
     internal fun handlePacket(connection: Connection, packet: Packet<*>): List<Packet<*>> {
         // Early-exit if this type has no handlers!
-        val baseType = packet.javaClass
-        if (!hasHandlers(baseType)) return listOf(packet)
+        if (!hasHandlers(packet)) return listOf(packet)
 
+        val baseType = packet.javaClass
         val finalPackets = mutableListOf<Packet<*>>()
-        var pendingPackets = HashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
+        var pendingPackets = LinkedHashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
         val checkedTypes = mutableSetOf<Class<*>>()
+
+        // Only ensure ordered if we require it!
+        var requireOrder = false
 
         // Queue up the initial packet
         pendingPackets[baseType] = mutableListOf(packet)
@@ -231,11 +239,12 @@ public class PacketApi(
         while (pendingPackets.isNotEmpty()) {
             val currentPackets = pendingPackets
             val typesCheckedThisLayer = mutableListOf<Class<*>>()
-            pendingPackets = HashMap()
+
+            // Use a linked hash map so order is maintained!
+            pendingPackets = LinkedHashMap()
 
             while (currentPackets.isNotEmpty()) {
-                val type = currentPackets.keys.firstOrNull() ?: break
-                var activePackets = currentPackets.remove(type) ?: break
+                val (type, activePackets) = currentPackets.pollFirstEntry() ?: break
 
                 // If this packet type has already been checked, it's finished!
                 if (type in checkedTypes) {
@@ -249,6 +258,10 @@ public class PacketApi(
 
                 // If it's a bundle, unpack into the next group of packets!
                 if (type == ClientboundBundlePacket::class.java) {
+                    // Require order from here on out! We cannot put the bundle back together in a different
+                    // order without causing issues, so we ensure we strictly follow order from here on out.
+                    requireOrder = true
+
                     for (bundlePacket in activePackets) {
                         for (packet in (bundlePacket as? ClientboundBundlePacket ?: continue).subPackets()) {
                             if (packet != null) {
@@ -260,10 +273,11 @@ public class PacketApi(
                 }
 
                 // Go through all packet handlers of this type of packet
+                var packetList = activePackets
                 packetHandlers[type]?.read { handlers ->
                     for (handlerWithPriority in handlers) {
-                        val iteratorPackets = activePackets
-                        activePackets = mutableListOf()
+                        val iteratorPackets = packetList
+                        packetList = mutableListOf()
 
                         for (iteratorPacket in iteratorPackets) {
                             val output =
@@ -301,10 +315,11 @@ public class PacketApi(
                                 val newType = packet.javaClass
                                 if (newType == type) {
                                     // The type is the same, continue iterating with it!
-                                    activePackets += packet
+                                    packetList += packet
                                 } else {
-                                    // If this new type does not have a packet handler, early exit!
-                                    if (!hasHandlers(newType)) {
+                                    // If we are not required to keep a bundle packet ordered
+                                    // we skip processing of any packets that do not need it.
+                                    if (!requireOrder && !hasHandlers(packet)) {
                                         finalPackets += packet
                                         continue
                                     }
@@ -318,7 +333,7 @@ public class PacketApi(
                 }
 
                 // We got through the handlers nicely, these packets are finished!
-                finalPackets += activePackets
+                finalPackets += packetList
             }
 
             // Only allow each packet type to be checked once per layer,
