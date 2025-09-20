@@ -1,13 +1,15 @@
 package com.noxcrew.noxesium.core.registry;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
-import com.noxcrew.noxesium.api.util.UiConstraints;
+import com.noxcrew.noxesium.api.util.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Stores all common Noxesium game component types.
@@ -99,35 +101,10 @@ public class CommonGameComponentTypes {
             register("server_authoritative_block_updates", Unit.class);
 
     /**
-     * Sets constraints on the rendering size of the boss bar.
+     * Sets constraints on the rendering size of GUI elements.
      */
-    public static NoxesiumComponentType<Unit> BOSS_BAR_CONSTRAINTS =
-            register("boss_bar_constraints", UiConstraints.class);
-
-    /**
-     * Sets constraints on the rendering size of the scoreboard.
-     */
-    public static NoxesiumComponentType<Unit> SCOREBOARD_CONSTRAINTS =
-            register("scoreboard_constraints", UiConstraints.class);
-
-    /**
-     * Sets constraints on the rendering size of the tab list.
-     */
-    public static NoxesiumComponentType<Unit> TAB_LIST_CONSTRAINTS =
-            register("tab_list_constraints", UiConstraints.class);
-
-    /**
-     * Sets constraints on the rendering size of the action bar.
-     */
-    public static NoxesiumComponentType<Unit> ACTION_BAR_CONSTRAINTS =
-            register("action_bar_constraints", UiConstraints.class);
-
-    /**
-     * Sets constraints on the rendering size of the title text UI, includes
-     * both the title and its subtitle.
-     */
-    public static NoxesiumComponentType<Unit> TEXT_UI_CONSTRAINTS =
-            register("text_ui_constraints", UiConstraints.class);
+    public static NoxesiumComponentType<Map<GuiElement, GuiConstraints>> GUI_CONSTRAINTS =
+            register("gui_constraints", Map.class);
 
     /**
      * Registers a new component type to the registry.

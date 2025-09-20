@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.ui;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
@@ -15,13 +16,13 @@ public class BossBarMixin {
     public void wrapBossBarRender(GuiGraphics guiGraphics, Operation<Void> original) {
         guiGraphics.pose().pushMatrix();
         var config = NoxesiumMod.getInstance().getConfig();
-        guiGraphics.pose().scale((float) config.bossBarScale);
+        guiGraphics.pose().scale((float) config.getScale(GuiElement.BOSS_BAR));
         guiGraphics
                 .pose()
                 .translate(
                         (float) (config.bossBarPosition
                                 * ((double) guiGraphics.guiWidth())
-                                / config.bossBarScale
+                                / config.getScale(GuiElement.BOSS_BAR)
                                 / 2.0),
                         0);
         original.call(guiGraphics);
@@ -32,6 +33,6 @@ public class BossBarMixin {
             method = "render",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I"))
     public int wrapGetWidth(GuiGraphics instance, Operation<Integer> original) {
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().bossBarScale);
+        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.BOSS_BAR));
     }
 }

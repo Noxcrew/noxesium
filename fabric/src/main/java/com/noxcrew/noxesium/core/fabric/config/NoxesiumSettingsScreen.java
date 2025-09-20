@@ -1,53 +1,126 @@
 package com.noxcrew.noxesium.core.fabric.config;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.OptionsList;
+import net.minecraft.client.OptionInstance;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.tabs.GridLayoutTab;
+import net.minecraft.client.gui.components.tabs.TabManager;
+import net.minecraft.client.gui.components.tabs.TabNavigationBar;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
+
+import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
 
 /**
  * The custom settings screen used by Noxesium which opens when clicking on Noxesium in Mod Menu or by pressing F3+W.
  */
-public class NoxesiumSettingsScreen extends OptionsSubScreen {
+public class NoxesiumSettingsScreen extends Screen {
+    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+    private final TabManager tabManager = new TabManager(this::addRenderableWidget, this::removeWidget);
+    private final Screen lastScreen;
 
-    public NoxesiumSettingsScreen(Screen screen) {
-        super(screen, Minecraft.getInstance().options, Component.translatable("noxesium.options.screen.noxesium"));
+    @Nullable
+    private TabNavigationBar tabNavigationBar;
+
+    public NoxesiumSettingsScreen(Screen lastScreen) {
+        super(Component.translatable("noxesium.options.screen.noxesium"));
+        this.lastScreen = lastScreen;
     }
-
-    /**
-     * Returns the list including the options on this screen.
-     */
-    public OptionsList getList() {
-        return this.list;
-    }
-
-    /**
-     * Hook for adding extra options to this screen through a mixin.
-     */
-    public void addExtraOptions() {}
 
     @Override
-    protected void addOptions() {
-        this.list.addSmall(
-                NoxesiumOptions.bossBarPosition(),
-                NoxesiumOptions.bossBarScale(),
-                NoxesiumOptions.scoreboardPosition(),
-                NoxesiumOptions.scoreboardScale(),
-                NoxesiumOptions.tabListScale(),
-                NoxesiumOptions.textUiScale(),
-                NoxesiumOptions.actionBarScale());
-        this.list.addSmall(
-                NoxesiumOptions.fpsOverlay(),
-                NoxesiumOptions.gameTimeOverlay(),
-                NoxesiumOptions.playerGlowingKeybinds());
-        this.list.addSmall(
-                NoxesiumOptions.dumpIncomingPackets(),
-                NoxesiumOptions.dumpOutgoingPackets(),
-                NoxesiumOptions.qibSystemDebugVisuals(),
-                NoxesiumOptions.debugScoreboardTeams(),
-                NoxesiumOptions.extendedPacketLogging(),
-                NoxesiumOptions.showCullingBoxes());
-        addExtraOptions();
+    protected void init() {
+        this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
+            .addTabs(new GuiTab(), new DeveloperTab())
+            .build();
+        this.addRenderableWidget(this.tabNavigationBar);
+
+        LinearLayout linearlayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build());
+        this.layout.visitWidgets(widget -> {
+            widget.setTabOrderGroup(1);
+            this.addRenderableWidget(widget);
+        });
+        this.tabNavigationBar.selectTab(0, false);
+        this.repositionElements();
+    }
+
+    @Override
+    public void repositionElements() {
+        if (this.tabNavigationBar != null) {
+            this.tabNavigationBar.setWidth(this.width);
+            this.tabNavigationBar.arrangeElements();
+            var bottom = this.tabNavigationBar.getRectangle().bottom();
+            var screenrectangle = new ScreenRectangle(0, bottom, this.width, this.height - this.layout.getFooterHeight() - bottom);
+            this.tabManager.setTabArea(screenrectangle);
+            this.layout.setHeaderHeight(bottom);
+            this.layout.arrangeElements();
+        }
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int p_283640_, int p_281243_, float p_282743_) {
+        super.render(guiGraphics, p_283640_, p_281243_, p_282743_);
+        guiGraphics.blit(
+            RenderPipelines.GUI_TEXTURED, Screen.FOOTER_SEPARATOR, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2
+        );
+    }
+
+    @Override
+    protected void renderMenuBackground(GuiGraphics guiGraphics) {
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TAB_HEADER_BACKGROUND, 0, 0, 0.0F, 0.0F, this.width, this.layout.getHeaderHeight(), 16, 16);
+        this.renderMenuBackground(guiGraphics, 0, this.layout.getHeaderHeight(), this.width, this.height);
+    }
+
+    @Override
+    public void onClose() {
+        this.minecraft.setScreen(this.lastScreen);
+    }
+
+    /**
+     * Creates a new widget for the given option.
+     */
+    private AbstractWidget createWidget(OptionInstance<?> option) {
+        return option.createButton(this.minecraft.options);
+    }
+
+    class GuiTab extends GridLayoutTab {
+        GuiTab() {
+            super(Component.translatable("noxesium.options.header.gui_options"));
+
+            var rowHelper = layout.columnSpacing(3).rowSpacing(3).createRowHelper(2);
+
+            rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition()));
+
+            for (var scalar : NoxesiumOptions.guiScales().values()) {
+                rowHelper.addChild(createWidget(scalar));
+            }
+        }
+    }
+
+    class DeveloperTab extends GridLayoutTab {
+        DeveloperTab() {
+            super(Component.translatable("noxesium.options.header.developer_options"));
+
+            var rowHelper = layout.columnSpacing(3).rowSpacing(3).createRowHelper(2);
+
+            rowHelper.addChild(createWidget(NoxesiumOptions.fpsOverlay()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.gameTimeOverlay()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.playerGlowingKeybinds()));
+
+            rowHelper.addChild(createWidget(NoxesiumOptions.dumpIncomingPackets()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.dumpOutgoingPackets()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.qibSystemDebugVisuals()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.debugScoreboardTeams()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.extendedPacketLogging()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.showCullingBoxes()));
+        }
     }
 }

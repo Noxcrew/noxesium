@@ -7,4 +7,5 @@ package com.noxcrew.noxesium.api.util;
  * @param minValue The minimum value the client may use.
  * @param maxValue The maximum value the client may use.
  */
-public record UiConstraints(double scalar, double minValue, double maxValue) {}
+public record GuiConstraints(double scalar, double minValue, double maxValue) {
+}

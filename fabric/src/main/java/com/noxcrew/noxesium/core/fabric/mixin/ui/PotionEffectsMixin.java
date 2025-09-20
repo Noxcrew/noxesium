@@ -12,27 +12,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Gui.class)
-public class ActionBarMixin {
-    @WrapMethod(method = "renderOverlayMessage")
-    public void wrapActionBarRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
+public class PotionEffectsMixin {
+    @WrapMethod(method = "renderEffects")
+    public void wrapEffectsRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, Operation<Void> original) {
         guiGraphics.pose().pushMatrix();
         var config = NoxesiumMod.getInstance().getConfig();
-        guiGraphics.pose().scale((float) config.getScale(GuiElement.ACTION_BAR));
+        guiGraphics.pose().scale((float) config.getScale(GuiElement.ACTIVE_EFFECTS));
         original.call(guiGraphics, deltaTracker);
         guiGraphics.pose().popMatrix();
     }
 
     @WrapOperation(
-            method = "renderOverlayMessage",
+            method = "renderEffects",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I"))
     public int wrapGetWidth(GuiGraphics instance, Operation<Integer> original) {
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.ACTION_BAR));
-    }
-
-    @WrapOperation(
-            method = "renderOverlayMessage",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"))
-    public int wrapGetHeight(GuiGraphics instance, Operation<Integer> original) {
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.ACTION_BAR));
+        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.ACTIVE_EFFECTS));
     }
 }

@@ -10,6 +10,7 @@ import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.kyori.adventure.key.Key;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -38,8 +39,10 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         // Create a custom payload that uses the payload object as a wrapper so we can
         // provide a custom stream codec to use for this packet.
         if (clientToServer) {
+            //PayloadTypeRegistry.configurationC2S().register(type, getStreamCodec());
             PayloadTypeRegistry.playC2S().register(type, getStreamCodec());
         } else {
+            //PayloadTypeRegistry.configurationS2C().register(type, getStreamCodec());
             PayloadTypeRegistry.playS2C().register(type, getStreamCodec());
             ClientPlayNetworking.registerReceiver(type, new FabricPacketHandler<>());
         }
@@ -50,8 +53,10 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         super.unregister();
 
         if (clientToServer) {
+            unregisterPacket(PayloadTypeRegistry.configurationC2S(), type.id());
             unregisterPacket(PayloadTypeRegistry.playC2S(), type.id());
         } else {
+            unregisterPacket(PayloadTypeRegistry.configurationS2C(), type.id());
             unregisterPacket(PayloadTypeRegistry.playS2C(), type.id());
             ClientPlayNetworking.unregisterReceiver(type.id());
         }
@@ -100,7 +105,7 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
     /**
      * Unregisters the packet with the given id from the given registry.
      */
-    private static void unregisterPacket(PayloadTypeRegistry<RegistryFriendlyByteBuf> registry, ResourceLocation id) {
+    private static void unregisterPacket(PayloadTypeRegistry<?> registry, ResourceLocation id) {
         ((PayloadTypeRegistryExt) registry).getPacketTypes().remove(id);
     }
 }

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.ui;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,9 +19,10 @@ public class ScoreboardMixin {
     public void wrapScoreboardRender(GuiGraphics guiGraphics, Objective objective, Operation<Void> original) {
         guiGraphics.pose().pushMatrix();
         var config = NoxesiumMod.getInstance().getConfig();
-        guiGraphics.pose().scale((float) config.scoreboardScale);
+        var scale = config.getScale(GuiElement.SCOREBOARD);
+        guiGraphics.pose().scale((float) scale);
         guiGraphics.pose().translate(0, (float)
-                (-config.scoreboardPosition * ((double) guiGraphics.guiHeight()) / config.scoreboardScale / 2.0));
+                (-config.scoreboardPosition * ((double) guiGraphics.guiHeight()) / scale / 2.0));
         original.call(guiGraphics, objective);
         guiGraphics.pose().popMatrix();
     }
@@ -35,7 +37,7 @@ public class ScoreboardMixin {
             method = "displayScoreboardSidebar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I"))
     public int wrapGetWidth(GuiGraphics instance, Operation<Integer> original) {
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().scoreboardScale);
+        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.SCOREBOARD));
     }
 
     @WrapOperation(
@@ -43,6 +45,6 @@ public class ScoreboardMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"))
     public int wrapGetHeight(GuiGraphics instance, Operation<Integer> original) {
         // Increase the height by 9 to account for the header which vanilla does not otherwise account for.
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().scoreboardScale) + 9;
+        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.SCOREBOARD)) + 9;
     }
 }

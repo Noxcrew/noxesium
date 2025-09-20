@@ -15,6 +15,7 @@ import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistryPatch;
+import com.noxcrew.noxesium.api.util.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import io.netty.buffer.ByteBuf;
@@ -110,6 +111,16 @@ public class NoxesiumStreamCodecs {
                     ByteBufCodecs.collection(HashSet::new, KEY),
                     EntrypointProtocol::capabilities,
                     EntrypointProtocol::new));
+
+    public static final StreamCodec<ByteBuf, GuiConstraints> GUI_CONSTRAINTS =
+        StreamCodec.recursive(codec -> StreamCodec.composite(
+            ByteBufCodecs.DOUBLE,
+            GuiConstraints::scalar,
+            ByteBufCodecs.DOUBLE,
+            GuiConstraints::minValue,
+            ByteBufCodecs.DOUBLE,
+            GuiConstraints::maxValue,
+            GuiConstraints::new));
 
     public static final StreamCodec<ByteBuf, ModInfo> MOD_INFO = StreamCodec.recursive(codec -> StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, ModInfo::id, ByteBufCodecs.STRING_UTF8, ModInfo::version, ModInfo::new));

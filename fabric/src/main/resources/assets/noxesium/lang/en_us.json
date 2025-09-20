@@ -3,14 +3,15 @@
   "debug.warning.option.disabled": "This debug option is disabled.",
   "debug.warning.option.disabled_by_server": "The server you are playing on has disabled this debug option.",
 
-
   "debug.fps_overlay": "%s fps",
   "debug.game_time_overlay": "%s st, %s gt",
 
+  "noxesium.options.screen.noxesium": "Noxesium Settings",
+  "noxesium.options.header.gui_options": "GUI Settings",
+  "noxesium.options.header.developer_options": "Developer Setitngs",
+
   "noxesium.options.game_time_overlay.name": "Game Time Overlay",
   "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
-  "noxesium.options.pages.noxesium": "Noxesium",
-  "noxesium.options.screen.noxesium": "Noxesium Settings",
   "noxesium.options.fps_overlay.name": "FPS Overlay",
   "noxesium.options.fps_overlay.tooltip": "Adds a small overlay that shows the current fps in the top left corner of your screen.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
@@ -47,10 +48,16 @@
   "noxesium.options.scoreboard_scale.tooltip": "Changes the size of the scoreboard relative to the GUI scale.",
   "noxesium.options.tab_list_scale.name": "Tab List Scale",
   "noxesium.options.tab_list_scale.tooltip": "Changes the size of the TAB list relative to the GUI scale.",
-  "noxesium.options.text_ui_scale.name": "Screen Text Scale",
-  "noxesium.options.text_ui_scale.tooltip": "Changes the size of title texts relative to the GUI scale.",
   "noxesium.options.action_bar_scale.name": "Action Bar Scale",
   "noxesium.options.action_bar_scale.tooltip": "Changes the size of action bar text relative to the GUI scale.",
+  "noxesium.options.title_scale.name": "Title Scale",
+  "noxesium.options.title_scale.tooltip": "Changes the size of title texts relative to the GUI scale.",
+  "noxesium.options.chat_scale.name": "Chat Scale",
+  "noxesium.options.chat_scale.tooltip": "Changes the size of chat relative to the GUI scale.",
+  "noxesium.options.subtitles_scale.name": "Closed Captions Scale",
+  "noxesium.options.subtitles_scale.tooltip": "Changes the size of Closed Captions (CC) relative to the GUI scale.",
+  "noxesium.options.active_effects_scale.name": "Potion Effects Scale",
+  "noxesium.options.active_effects_scale.tooltip": "Changes the size of potion effect indicator in the top right, relative to the GUI scale.",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",

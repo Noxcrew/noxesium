@@ -2,15 +2,19 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
 import com.noxcrew.noxesium.core.client.setting.MapLocation;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Stores Noxesium's configured values.
@@ -33,12 +37,24 @@ public class NoxesiumConfig {
     public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
     public double bossBarPosition = 0.0;
-    public double bossBarScale = 1.0;
     public double scoreboardPosition = 0.0;
-    public double scoreboardScale = 1.0;
-    public double tabListScale = 1.0;
-    public double textUiScale = 1.0;
-    public double actionBarScale = 1.0;
+    public Map<GuiElement, Double> scales = new HashMap<>();
+
+    /**
+     * Returns the scale of the given element.
+     */
+    public double getScale(GuiElement element) {
+        var rawValue = scales.getOrDefault(element, 1.0);
+        var map = GameComponents.getInstance().noxesium$getOptionalComponent(CommonGameComponentTypes.GUI_CONSTRAINTS);
+        if (map.isPresent()) {
+            var constraints = map.get().get(element);
+            if (constraints != null) {
+                var value = rawValue * constraints.scalar();
+                return Math.clamp(value, constraints.minValue(), constraints.maxValue());
+            }
+        }
+        return rawValue;
+    }
 
     /**
      * Returns whether to render maps in the UI.

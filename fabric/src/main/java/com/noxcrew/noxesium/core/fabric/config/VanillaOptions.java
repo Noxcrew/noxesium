@@ -39,7 +39,7 @@ public class VanillaOptions {
             "noxesium.options.ui_map_size.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_map_size.tooltip")),
             VanillaOptions::percentValueLabel,
-            new OptionInstance.IntRange(1, 20).xmap(it -> (double) it / 10.0, it -> (int) (it * 10.0)),
+            new OptionInstance.IntRange(1, 200).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
             Codec.doubleRange(0.1, 2.0),
             NoxesiumMod.getInstance().getConfig().mapUiSize,
             (newValue) -> {

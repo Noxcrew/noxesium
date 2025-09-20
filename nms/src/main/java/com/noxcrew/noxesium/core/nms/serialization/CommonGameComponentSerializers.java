@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
 import com.mojang.serialization.Codec;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
@@ -12,6 +13,8 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -56,6 +59,10 @@ public class CommonGameComponentSerializers {
                 CommonGameComponentTypes.SERVER_AUTHORITATIVE_BLOCK_UPDATES,
                 NoxesiumCodecs.UNIT,
                 NoxesiumStreamCodecs.UNIT);
+        register(
+            CommonGameComponentTypes.GUI_CONSTRAINTS,
+            Codec.unboundedMap(NoxesiumCodecs.forEnum(GuiElement.class), NoxesiumCodecs.GUI_CONSTRAINTS),
+            ByteBufCodecs.map(HashMap::new, NoxesiumStreamCodecs.forEnum(GuiElement.class), NoxesiumStreamCodecs.GUI_CONSTRAINTS));
 
         register(
                 NmsGameComponentTypes.HAND_ITEM_OVERRIDE,
