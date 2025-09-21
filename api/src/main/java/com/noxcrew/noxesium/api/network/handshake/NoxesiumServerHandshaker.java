@@ -134,7 +134,7 @@ public abstract class NoxesiumServerHandshaker {
     /**
      * Handles a client transferring to this server.
      */
-    protected void handleTransfer(@NotNull NoxesiumServerPlayer player) {
+    public void handleTransfer(@NotNull NoxesiumServerPlayer player) {
         if (NoxesiumPlayerManager.getInstance().getPlayer(player.getUniqueId()) != null) {
             NoxesiumApi.getLogger()
                     .error("Failed to send transfer user as data was already present, destroying connection!");

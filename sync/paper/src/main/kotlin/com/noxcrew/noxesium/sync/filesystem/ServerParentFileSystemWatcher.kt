@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.sync.event.NoxesiumSyncCompletedEvent
 import com.noxcrew.noxesium.sync.network.SyncedPart
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket
+import io.papermc.paper.connection.PlayerGameConnection
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -44,7 +45,7 @@ public class ServerParentFileSystemWatcher(
         }
 
         // Inform the player that they've started synchronizing
-        (player as? PaperNoxesiumServerPlayer)?.player?.bukkitEntity?.sendMessage(
+        ((player as? PaperNoxesiumServerPlayer)?.connection as? PlayerGameConnection)?.player?.sendMessage(
             Component.text(
                 "You are now synchronizing $folderId",
                 NamedTextColor.AQUA,

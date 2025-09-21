@@ -57,6 +57,7 @@ public class NoxesiumServerPlayer {
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
     private final Set<Key> capabilities = new HashSet<>();
     private final Set<Key> enabledLazyPackets = new HashSet<>();
+    private final boolean isTransferred;
 
     @NotNull
     private HandshakeState handshakeState = HandshakeState.NONE;
@@ -90,6 +91,7 @@ public class NoxesiumServerPlayer {
 
         if (serializedPlayer != null) {
             // If serialized data is present, load it in!
+            this.isTransferred = true;
             this.supportedEntrypoints = serializedPlayer.supportedEntrypoints();
             this.supportedEntrypointIds = this.supportedEntrypoints.stream()
                     .map(EntrypointProtocol::id)
@@ -106,6 +108,8 @@ public class NoxesiumServerPlayer {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.knownIndices.put(registry, entry.getValue());
             }
+        } else {
+            this.isTransferred = false;
         }
     }
 
@@ -162,6 +166,13 @@ public class NoxesiumServerPlayer {
      */
     public void unmarkDirty() {
         dirty = false;
+    }
+
+    /**
+     * Returns whether this player object was transferred from another initial server.
+     */
+    public boolean isTransferred() {
+        return isTransferred;
     }
 
     /**
@@ -403,6 +414,7 @@ public class NoxesiumServerPlayer {
      * batches.
      */
     public void tick() {
+        if (handshakeState != HandshakeState.COMPLETE) return;
         if (isAwaitingRegistries()) return;
 
         var pending = pendingPackets;
@@ -410,6 +422,7 @@ public class NoxesiumServerPlayer {
         pending.forEach(this::sendPacket);
         if (components.hasModified()) {
             sendPacket(new ClientboundUpdateGameComponentsPacket(false, components.collectModified(this)));
+            components.clearModifications();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerCommonSerializer;
 import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerPlaySerializer;
 
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
@@ -33,7 +34,7 @@ public class CommonPacketSerializers {
         SerializableRegistries.registerSerializers(
                 NoxesiumRegistries.QIB_EFFECTS, NoxesiumCodecs.QIB_DEFINITION, NoxesiumStreamCodecs.QIB_DEFINITION);
 
-        registerPlaySerializer(
+        registerCommonSerializer(
                 CommonPackets.SERVER_CLIENT_SETTINGS,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.CLIENT_SETTINGS,

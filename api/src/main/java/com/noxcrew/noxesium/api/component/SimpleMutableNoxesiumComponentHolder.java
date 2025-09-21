@@ -78,8 +78,6 @@ public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComp
      * to the client.
      */
     public NoxesiumComponentPatch collectModified(NoxesiumServerPlayer noxesiumPlayer) {
-        var modified = this.modified;
-        this.modified = new HashSet<>();
         var data = new HashMap<NoxesiumComponentType<?>, Optional<?>>();
         for (var key : modified) {
             if (!noxesiumPlayer.isAwareOf(registry, key.id())) continue;

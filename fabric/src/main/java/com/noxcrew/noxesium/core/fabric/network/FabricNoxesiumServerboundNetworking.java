@@ -53,24 +53,29 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
         // Check if the server is willing to receive this packet and if we have registered this packet
         // on the client in the registry! (the entrypoint is active)
         var resourceLocation = ResourceLocation.parse(type.id().asString());
-        return switch (getConfiguredProtocol()) {
-            case CONFIGURATION -> ClientConfigurationNetworking.canSend(resourceLocation)
-                    && ((PayloadTypeRegistryImpl<FriendlyByteBuf>) PayloadTypeRegistry.configurationS2C())
-                                    .get(resourceLocation)
-                            != null;
-            case PLAY -> ClientPlayNetworking.canSend(resourceLocation)
-                    && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
-                                    .get(resourceLocation)
-                            != null;
-            default -> false;
-        };
+        try {
+            return switch (getMinecraftProtocol()) {
+                case CONFIGURATION -> ClientConfigurationNetworking.canSend(resourceLocation)
+                        && ((PayloadTypeRegistryImpl<FriendlyByteBuf>) PayloadTypeRegistry.configurationC2S())
+                                        .get(resourceLocation)
+                                != null;
+                case PLAY -> ClientPlayNetworking.canSend(resourceLocation)
+                        && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
+                                        .get(resourceLocation)
+                                != null;
+                default -> false;
+            };
+        } catch (Exception e) {
+            // If an exception occurred the protocol got changed concurrently by a different thread!
+            return false;
+        }
     }
 
     @Override
     public <T extends NoxesiumPacket> boolean send(NoxesiumPayloadType<T> type, T payload) {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (canSend(type)) {
-            if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets) {
+            if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets && Minecraft.getInstance().player != null) {
                 Minecraft.getInstance()
                         .player
                         .displayClientMessage(
@@ -91,7 +96,7 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
             }
             if (type instanceof FabricPayloadType) {
                 var fabricPayload = new NoxesiumPayload<>((FabricPayloadType<? super T>) type, payload);
-                switch (getConfiguredProtocol()) {
+                switch (getMinecraftProtocol()) {
                     case CONFIGURATION -> {
                         ClientConfigurationNetworking.send(fabricPayload);
                     }
@@ -101,14 +106,13 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
                     default -> throw new UnsupportedOperationException(
                             "Cannot send payload when not in a configured protocol");
                 }
-                ;
-
             } else {
                 throw new UnsupportedOperationException("Attempted to send payload of type '" + type.getClass()
                         + "' with Noxesium, which requires FabricPayloadType objects!");
             }
             return true;
         }
+        System.out.println("CANNOT SEND");
         return false;
     }
 

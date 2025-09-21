@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.paper.network
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.api.network.EntrypointProtocol
@@ -23,6 +24,8 @@ import io.netty.buffer.Unpooled
 import io.papermc.paper.connection.PlayerCommonConnection
 import io.papermc.paper.connection.PlayerConfigurationConnection
 import io.papermc.paper.connection.PlayerGameConnection
+import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent
+import io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket
@@ -31,16 +34,24 @@ import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 
 /**
  * Performs handshaking with the server-side to be run from the client-side.
  */
 public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listener, PacketListener {
+    /**
+     * On Paper we track all players from the initial connection as a way to store
+     * the connection object properly, we register and unregister with the main map
+     * whenever we enter/leave the config/play phase.
+     */
+    private val allPlayers = ConcurrentHashMap<UUID, PaperNoxesiumServerPlayer>()
+
     override fun register() {
         super.register()
         Bukkit.getPluginManager().registerEvents(this, NoxesiumPaper.plugin)
@@ -50,7 +61,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
             NoxesiumPaper.plugin,
             {
-                for (player in NoxesiumPlayerManager.getInstance().allPlayers) {
+                for (player in allPlayers.values) {
                     player.tick()
 
                     // Test if all handshake tasks are already complete
@@ -67,13 +78,19 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             this,
         ) { reference, packet, playerId ->
             if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) {
-                NoxesiumApi.getLogger().error("Received registry contents while player was known, destroying connection!")
+                NoxesiumApi.getLogger().error("Received handshake attempt while player was known, destroying connection!")
                 destroy(playerId)
                 return@addListener
             }
 
-            // TODO Determine connection object!
-            reference.handleHandshake(PaperNoxesiumServerPlayer(playerId, username, connection), packet!!)
+            val player = allPlayers[playerId]
+            if (player == null) {
+                NoxesiumApi.getLogger().error("Received handshake attempt for unknown uuid, destroying connection!")
+                destroy(playerId)
+                return@addListener
+            }
+
+            reference.handleHandshake(player, packet!!)
         }
     }
 
@@ -95,34 +112,45 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     }
 
     /**
-     * When a player finishes joining, attempt to load any previous stored data from an
-     * external database. If this data is present, perform a partial handshake from the
-     * server-side.
+     * When the client first initiates a connection we start by creating a Noxesium player for
+     * them, which we keep updated thereafter.
      */
     @EventHandler
-    public fun onPlayerJoin(event: PlayerJoinEvent) {
-        // Ignore if already handshaken!
-        val playerId = event.player.uniqueId
-        if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) return
-
-        // TODO Move this to another event handler!
-
-        // Try to handle a transfer from another server
-        val bukkitPlayer = event.player as CraftPlayer
-        val serverPlayer = bukkitPlayer.handle
-        getStoredData(event.player.uniqueId)?.also { storedData ->
-            handleTransfer(PaperNoxesiumServerPlayer(serverPlayer, storedData))
-            return@also
-        }
-
-        // If we're not transferring, send this player the initial signal by way of informing
-        // them about the handshake plugin channels.
-        serverPlayer.sendPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
+    public fun onPlayerPreLogin(event: AsyncPlayerPreLoginEvent) {
+        val noxesiumPlayer =
+            PaperNoxesiumServerPlayer(
+                this,
+                uniqueId = event.uniqueId,
+                username = event.name,
+                initialConnection = event.connection,
+                serializedPlayer = getStoredData(event.uniqueId),
+            )
+        allPlayers[event.uniqueId] = noxesiumPlayer
     }
 
+    /** Move back to the configuration connection if the player re-enters the configuration phase. */
     @EventHandler
-    public fun onPlayerQuit(event: PlayerQuitEvent) {
-        onPlayerDisconnect(event.player.uniqueId)
+    public fun onReconfigure(event: PlayerConnectionReconfigureEvent) {
+        allPlayers[event.connection.profile.uniqueId ?: return]?.connection = event.connection
+    }
+
+    /** Enter the configuration phase when the player first starts configuring. */
+    @EventHandler
+    public fun onInitialConfigure(event: PlayerConnectionInitialConfigureEvent) {
+        allPlayers[event.connection.profile.uniqueId ?: return]?.connection = event.connection
+    }
+
+    /** Enter the play phase when the player finishes joining. */
+    @EventHandler
+    public fun onPlayerJoin(event: PlayerJoinEvent) {
+        allPlayers[event.player.uniqueId]?.connection = event.player.connection
+    }
+
+    /** Destroy the data if the connection is closed. */
+    @EventHandler
+    public fun onPlayerConnectionClose(event: PlayerConnectionCloseEvent) {
+        onPlayerDisconnect(event.playerUniqueId)
+        allPlayers.remove(event.playerUniqueId)?.connection = null
     }
 
     @EventHandler

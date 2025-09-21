@@ -92,7 +92,7 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
     @Override
     public Collection<PacketCollection> getPacketCollections() {
-        return List.of(CommonPackets.INSTANCE);
+        return List.of(CommonPackets.INSTANCE, CommonPackets.INSTANCE_CONFIG_COMPATIBLE);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentChangedEvent
 import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentsClearEvent
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerJoinEvent
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
 import com.noxcrew.noxesium.paper.feature.hasNoxesiumComponent
@@ -109,17 +109,18 @@ public class PaperQibModule : ListeningNoxesiumFeature() {
     /** Check if we should start checking when a player unregisters. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public fun onPlayerUnregistered(e: NoxesiumPlayerUnregisteredEvent) {
-        players.computeIfAbsent(e.player) {
+        val onlinePlayer = Bukkit.getPlayer(e.noxesiumPlayer.uniqueId) ?: return
+        players.computeIfAbsent(onlinePlayer) {
             ServerQibCollisionManager(
-                (e.player as CraftPlayer).handle,
-                getSpatialTree(e.player),
+                (onlinePlayer as CraftPlayer).handle,
+                getSpatialTree(onlinePlayer),
             )
         }
     }
 
     /** Clean up behaviors when a player registers with Noxesium. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public fun onPlayerRegistered(e: NoxesiumPlayerRegisteredEvent) {
+    public fun onPlayerRegistered(e: NoxesiumPlayerJoinEvent) {
         players.remove(e.player)
     }
 

@@ -20,10 +20,11 @@ import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
  * Defines all common Noxesium packets.
  */
 public class CommonPackets {
+    public static final PacketCollection INSTANCE_CONFIG_COMPATIBLE = new PacketCollection(true);
     public static final PacketCollection INSTANCE = new PacketCollection();
 
     public static final NoxesiumPayloadType<ServerboundClientSettingsPacket> SERVER_CLIENT_SETTINGS =
-            server(INSTANCE, "serverbound_client_settings", ServerboundClientSettingsPacket.class);
+            server(INSTANCE_CONFIG_COMPATIBLE, "serverbound_client_settings", ServerboundClientSettingsPacket.class);
     public static final NoxesiumPayloadType<ServerboundQibTriggeredPacket> SERVER_QIB_TRIGGERED =
             server(INSTANCE, "serverbound_qib_triggered", ServerboundQibTriggeredPacket.class);
     public static final NoxesiumPayloadType<ServerboundRiptidePacket> SERVER_RIPTIDE =

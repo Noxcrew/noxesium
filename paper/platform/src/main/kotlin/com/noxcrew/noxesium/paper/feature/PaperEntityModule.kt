@@ -6,7 +6,7 @@ import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket
 import com.noxcrew.noxesium.paper.NoxesiumPaper
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerJoinEvent
 import com.noxcrew.noxesium.paper.component.EntityComponentHolder
 import io.papermc.paper.event.player.PlayerTrackEntityEvent
 import io.papermc.paper.event.player.PlayerUntrackEntityEvent
@@ -44,6 +44,7 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
                             it.sendPacket(ClientboundUpdateEntityComponentsPacket(entity.entity.id, false, patch))
                         }
                     }
+                    entity.clearModifications()
                 }
             },
             1, 1,
@@ -55,7 +56,7 @@ public class PaperEntityModule : ListeningNoxesiumFeature() {
      * they are already able to see.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public fun onFinishHandshake(e: NoxesiumPlayerRegisteredEvent) {
+    public fun onFinishHandshake(e: NoxesiumPlayerJoinEvent) {
         val noxesiumPlayer = e.noxesiumPlayer
         val lookup = (e.player.world as CraftWorld).handle.entities
         for (entityId in seenEntities.get(e.player.uniqueId)) {

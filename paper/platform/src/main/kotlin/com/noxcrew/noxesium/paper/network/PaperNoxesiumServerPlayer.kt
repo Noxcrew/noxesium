@@ -1,12 +1,15 @@
 package com.noxcrew.noxesium.paper.network
 
+import com.noxcrew.noxesium.api.network.ConnectionProtocolType
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
+import com.noxcrew.noxesium.api.network.handshake.HandshakeState
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
 import io.papermc.paper.connection.PaperCommonConnection
 import io.papermc.paper.connection.PaperPlayerConfigurationConnection
 import io.papermc.paper.connection.PlayerCommonConnection
 import io.papermc.paper.connection.PlayerConfigurationConnection
+import io.papermc.paper.connection.PlayerConnection
 import io.papermc.paper.connection.PlayerGameConnection
 import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
@@ -19,20 +22,53 @@ import java.util.UUID
 
 /** A variant of a Noxesium player that holds a reference to a server player. */
 public class PaperNoxesiumServerPlayer(
+    private val parent: PaperNoxesiumServerHandshaker,
     uniqueId: UUID,
     username: String,
-    /** The connection instance. */
-    public var connection: PlayerCommonConnection?,
+    initialConnection: PlayerConnection,
     serializedPlayer: SerializedNoxesiumServerPlayer? = null,
 ) : NoxesiumServerPlayer(uniqueId, username, Component.text(username), serializedPlayer) {
-    // All players know about the handshake packets by default!
-    private val _registeredPluginChannels = HandshakePackets.INSTANCE.pluginChannelIdentifiers.toMutableSet()
+    private val _registeredPluginChannels = mutableSetOf<String>()
     private val declaredField =
         PaperCommonConnection::class.java.getDeclaredField("handle").also {
             it.isAccessible = true
         }
 
-    private var pendingPluginChannels = mutableSetOf<String>()
+    // Start out by awaiting to send the handshake packets to the client!
+    private var pendingPluginChannels = HandshakePackets.INSTANCE.pluginChannelIdentifiers.toMutableSet()
+    private var firstHandshake = true
+
+    /** The current connection type of this player. */
+    public var connectionType: ConnectionProtocolType = ConnectionProtocolType.NONE
+
+    /** The current connection object for this player. */
+    public var connection: PlayerConnection? = initialConnection
+        set(value) {
+            if (field == value) return
+            field = value
+
+            // Update the type of connection this player currently has
+            connectionType =
+                when (value) {
+                    is PlayerCommonConnection -> ConnectionProtocolType.CONFIGURATION
+                    is PlayerGameConnection -> ConnectionProtocolType.PLAY
+                    else -> ConnectionProtocolType.NONE
+                }
+
+            // Start transferring if this is the first time we're able to
+            if (handshakeState == HandshakeState.NONE && connectionType != ConnectionProtocolType.NONE) {
+                // Try to perform a transfer at most once, as afterward the client won't be assumed
+                // to be done with the handshake!
+                val transfer = firstHandshake && isTransferred
+                firstHandshake = false
+                if (transfer) {
+                    parent.handleTransfer(this)
+                }
+            }
+
+            // Tick again after changing the connection type
+            tick()
+        }
 
     /** Returns whether this player is still connected. */
     public val isConnected: Boolean
@@ -73,12 +109,12 @@ public class PaperNoxesiumServerPlayer(
         } else if (connection is PlayerGameConnection) {
             ((connection as PlayerGameConnection).player as CraftPlayer).handle.connection.send(packet)
         } else {
-            throw IllegalStateException("Invalid connection type ${connection?.javaClass}")
+            throw IllegalStateException("Invalid connection type for sending payloads ${connection?.javaClass}")
         }
     }
 
     /** Sends this player a request to register the given [channels]. */
-    public fun sendPluginChannels(channels: Collection<String>) {
+    private fun sendPluginChannels(channels: Collection<String>) {
         val stream = ByteArrayOutputStream()
         for (channel in channels) {
             stream.write(channel.toByteArray(Charsets.UTF_8))
@@ -96,6 +132,9 @@ public class PaperNoxesiumServerPlayer(
 
     override fun tick() {
         super.tick()
+
+        // Do not send plugin channels until we have a connection!
+        if (connectionType == ConnectionProtocolType.NONE) return
 
         // Send the client new plugin channels that it does not yet know about
         if (pendingPluginChannels.isEmpty()) return
