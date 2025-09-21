@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin;
 
+import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +19,7 @@ public class ConnectionTerminationMixin {
     private void disconnect(Screen screen, boolean bl, CallbackInfo ci) {
         var handshaker = NoxesiumMod.getInstance().getHandshaker();
         if (handshaker != null) {
-            handshaker.uninitialize();
+            handshaker.uninitialize(NoxesiumErrorReason.DISCONNECT);
         }
     }
 }

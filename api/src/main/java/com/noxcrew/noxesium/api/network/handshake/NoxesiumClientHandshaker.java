@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
+import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket;
@@ -40,6 +41,11 @@ public abstract class NoxesiumClientHandshaker {
      * The current state of the server connection.
      */
     protected HandshakeState state = HandshakeState.NONE;
+
+    /**
+     * The total amount of handshakes attempted.
+     */
+    protected int attemptedHandshakes = 0;
 
     /**
      * An amount of ticks before the client should re-attempt to start a handshake.
@@ -93,7 +99,7 @@ public abstract class NoxesiumClientHandshaker {
         // Whenever the handshake is interrupted.
         HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL.addListener(this, (reference, packet, ignored3) -> {
             // End the handshake without sending a packet about it!
-            reference.uninitialize(true);
+            reference.uninitialize(NoxesiumErrorReason.SERVER_CANCELLED);
         });
     }
 
@@ -102,8 +108,13 @@ public abstract class NoxesiumClientHandshaker {
      */
     public void tick() {
         if (handshakeCooldown < 0) return;
+        if (attemptedHandshakes >= 3) {
+            handshakeCooldown = -1;
+            return;
+        }
         if (handshakeCooldown-- <= 0) {
             initialize();
+            handshakeCooldown = -1;
         }
     }
 
@@ -113,6 +124,9 @@ public abstract class NoxesiumClientHandshaker {
     public void initialize() {
         // Ignore if already initialized since this is driven by the client itself
         if (state != HandshakeState.NONE) return;
+
+        // Indicate an honest attempt is being made at handshaking
+        attemptedHandshakes++;
 
         // Register the handshake packet collection at all times
         HandshakePackets.INSTANCE.register(null);
@@ -147,7 +161,7 @@ public abstract class NoxesiumClientHandshaker {
         if (state != HandshakeState.AWAITING_RESPONSE) {
             NoxesiumApi.getLogger()
                     .error("Received handshake response while in '{}' state, destroying connection!", state);
-            uninitialize();
+            uninitialize(NoxesiumErrorReason.INVALID_STATE);
             return;
         }
 
@@ -165,7 +179,7 @@ public abstract class NoxesiumClientHandshaker {
             // If the challenge result is invalid, fail the handshake!
             if (!Objects.equals(challenges.get(entrypoint), challengeResult)) {
                 NoxesiumApi.getLogger().error("Server responded with invalid decryption for entrypoint id {}", id);
-                uninitialize();
+                uninitialize(NoxesiumErrorReason.FAILED_CHALLENGE);
                 return;
             }
 
@@ -191,7 +205,7 @@ public abstract class NoxesiumClientHandshaker {
         // Break the handshake if no entrypoints were properly established
         if (entrypoints.isEmpty()) {
             NoxesiumApi.getLogger().error("Server sent no valid entrypoints for authentication");
-            uninitialize();
+            uninitialize(NoxesiumErrorReason.NO_MATCHING_ENTRYPOINTS);
             return;
         }
 
@@ -216,23 +230,23 @@ public abstract class NoxesiumClientHandshaker {
      * Handles the server sending across registry ids.
      */
     protected void handleRegistryUpdate(ClientboundRegistryIdsUpdatePacket packet) {
-        if (state != HandshakeState.AWAITING_REGISTRIES) {
-            NoxesiumApi.getLogger().error("Received registry ids while in '{}' state, destroying connection!", state);
-            uninitialize();
-            return;
-        }
+        if (!inHandshakeState()) return;
 
         // Process all contents of the packet
         var unknownKeys = new ArrayList<Integer>();
         var registry = (ClientNoxesiumRegistry<?>) NoxesiumRegistries.REGISTRIES_BY_ID.get(packet.registry());
         if (registry == null) {
+            // If the registry is unknown, simply inform the server all entries are unknown to the client, but log a
+            // warning!
             NoxesiumApi.getLogger()
-                    .error(
+                    .warn(
                             "Received registry ids for registry '{}' which does not exist",
                             packet.registry().asString());
-            uninitialize();
+            NoxesiumServerboundNetworking.send(new ServerboundRegistryUpdateResultPacket(
+                    packet.id(), new ArrayList<>(packet.ids().values())));
             return;
         }
+
         if (packet.reset()) {
             registry.resetMappings();
         }
@@ -250,22 +264,20 @@ public abstract class NoxesiumClientHandshaker {
      * Handles the server sending across registry contents.
      */
     protected void handleRegistryUpdate(ClientboundRegistryContentUpdatePacket packet) {
-        if (state != HandshakeState.AWAITING_REGISTRIES) {
-            NoxesiumApi.getLogger()
-                    .error("Received registry contents while in '{}' state, destroying connection!", state);
-            uninitialize();
-            return;
-        }
+        if (!inHandshakeState()) return;
 
         // Process all contents of the packet
         var patch = packet.patch();
         var registry = (ClientNoxesiumRegistry<?>) NoxesiumRegistries.REGISTRIES_BY_ID.get(patch.getRegistry());
         if (registry == null) {
+            // If the registry is unknown, simply inform the server all entries are unknown to the client, but log a
+            // warning!
             NoxesiumApi.getLogger()
-                    .error(
+                    .warn(
                             "Received registry contents for registry '{}' which does not exist",
                             patch.getRegistry().asString());
-            uninitialize();
+            NoxesiumServerboundNetworking.send(new ServerboundRegistryUpdateResultPacket(
+                    packet.id(), new ArrayList<>(packet.patch().getIds())));
             return;
         }
 
@@ -297,7 +309,7 @@ public abstract class NoxesiumClientHandshaker {
         if (state != HandshakeState.AWAITING_REGISTRIES) {
             NoxesiumApi.getLogger()
                     .error("Received handshake completion while in '{}' state, destroying connection!", state);
-            uninitialize();
+            uninitialize(NoxesiumErrorReason.INVALID_STATE);
             return;
         }
 
@@ -320,6 +332,9 @@ public abstract class NoxesiumClientHandshaker {
         // Mark the handshaking complete
         state = HandshakeState.COMPLETE;
 
+        // If we succeed in handshaking, reset the attempt number!
+        attemptedHandshakes = 0;
+
         // Register all features for the successfully authenticated entrypoints so features can
         // start sending packets properly on initialization like client settings
         var api = NoxesiumApi.getInstance();
@@ -332,11 +347,7 @@ public abstract class NoxesiumClientHandshaker {
      * Handles the server sending an update on lazy packets.
      */
     protected void handleLazyPackets(ClientboundLazyPacketsPacket packet) {
-        if (state == HandshakeState.NONE) {
-            // Don't allow this packet unless we have started the handshake
-            uninitialize();
-            return;
-        }
+        if (!inHandshakeState()) return;
         NoxesiumServerboundNetworking.getInstance().addEnabledLazyPackets(packet.packets());
     }
 
@@ -347,7 +358,7 @@ public abstract class NoxesiumClientHandshaker {
         if (state != HandshakeState.COMPLETE) {
             // Whenever we got transferred while not completely done handshaking we
             // trigger an immediate handshake failure and re-attempt handshaking soon.
-            uninitialize();
+            uninitialize(NoxesiumErrorReason.NOT_TRANSFER_READY);
             return;
         }
 
@@ -361,6 +372,19 @@ public abstract class NoxesiumClientHandshaker {
     }
 
     /**
+     * Checks that the handshaking state is anything but none.
+     */
+    private boolean inHandshakeState() {
+        if (state == HandshakeState.NONE) {
+            // Don't allow this packet unless we have started the handshake
+            NoxesiumApi.getLogger().error("Received handshake packet while in 'NONE' state, destroying connection!");
+            uninitialize(NoxesiumErrorReason.INVALID_STATE);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Resets any data on the client set based on server information that isn't
      * tied to the current world or entities.
      */
@@ -371,36 +395,70 @@ public abstract class NoxesiumClientHandshaker {
     }
 
     /**
-     * Un-initializes the connection with the server.
+     * Triggers a handshake attempt in 10 seconds.
      */
-    public void uninitialize() {
-        uninitialize(false);
+    public void reattemptHandshakeLater() {
+        // Don't attempt more than 3 handshakes!
+        if (attemptedHandshakes >= 3) return;
+        handshakeCooldown = 200;
     }
 
     /**
      * Un-initializes the connection with the server.
      */
-    public void uninitialize(boolean recursive) {
-        if (!recursive) {
-            // Stop any handshake attempts from any non-recursive cancellation
-            handshakeCooldown = -1;
+    public void uninitialize(NoxesiumErrorReason error) {
+        // If handshake packets are not registered, we ignore un-initialization!
+        // This means we never even started handshaking a single time.
+        if (!HandshakePackets.INSTANCE.isRegistered()) return;
 
-            // Start by sending a packet to inform the server the handshake was cancelled!
-            NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket());
-        } else {
-            // Attempt another handshake in 10 seconds!
-            handshakeCooldown = 200;
+        // If the connection is still present, destroy it!
+        if (state != HandshakeState.NONE) {
+            state = HandshakeState.NONE;
+            challenges.clear();
+            NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.NONE);
+            NoxesiumServerboundNetworking.getInstance().resetEnablesLazyPackets();
+            NoxesiumApi.getInstance().unregisterAll();
+            GameComponents.getInstance().noxesium$reloadComponents();
         }
 
-        // Don't proceed unless there is a handshake to cancel
-        if (state == HandshakeState.NONE) return;
+        // Stop any handshake attempts from any non-recursive cancellation
+        handshakeCooldown = -1;
 
-        state = HandshakeState.NONE;
-        challenges.clear();
-        NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.NONE);
-        NoxesiumServerboundNetworking.getInstance().resetEnablesLazyPackets();
-        HandshakePackets.INSTANCE.unregister();
-        NoxesiumApi.getInstance().unregisterAll();
-        GameComponents.getInstance().noxesium$reloadComponents();
+        // Handle different reasons in different ways
+        switch (error) {
+            case DISCONNECT -> {
+                // Unregister handshake packets only when disconnecting, we don't unregister
+                // them as long as we are still connected to a server that supports Noxesium.
+                // If we did unregister them it would result in the cancel packet becoming
+                // unserializable which can cause errors.
+                HandshakePackets.INSTANCE.unregister();
+
+                // Reset the handshake attempt number
+                attemptedHandshakes = 0;
+            }
+
+            case CHANNEL_UNREGISTERED -> {
+                // If the channel was unregistered, do not attempt to contact the server (it no longer
+                // listens to handshake channels), and do not attempt again as it will automatically
+                // trigger if the server re-registers.
+            }
+
+            case SERVER_CANCELLED -> {
+                // If the server cancelled the handshake, don't send a packet back, but do try again!
+                reattemptHandshakeLater();
+            }
+
+            case NO_MATCHING_ENTRYPOINTS -> {
+                // If there are no matching entrypoints, there is no need to bother handshaking.
+                // Do inform the server however!
+                NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket(error));
+            }
+
+            default -> {
+                // By default, inform the server that the handshake was broken and try again later!
+                NoxesiumServerboundNetworking.send(new ServerboundHandshakeCancelPacket(error));
+                reattemptHandshakeLater();
+            }
+        }
     }
 }

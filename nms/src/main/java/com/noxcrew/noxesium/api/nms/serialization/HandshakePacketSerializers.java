@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.nms.serialization;
 
 import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerCommonSerializer;
 
+import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
@@ -46,7 +47,10 @@ public class HandshakePacketSerializers {
                         ServerboundHandshakeAcknowledgePacket::new));
         registerCommonSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL,
-                StreamCodec.unit(new ServerboundHandshakeCancelPacket()));
+                StreamCodec.composite(
+                        NoxesiumStreamCodecs.forEnum(NoxesiumErrorReason.class),
+                        ServerboundHandshakeCancelPacket::reason,
+                        ServerboundHandshakeCancelPacket::new));
         registerCommonSerializer(
                 HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT,
                 StreamCodec.composite(

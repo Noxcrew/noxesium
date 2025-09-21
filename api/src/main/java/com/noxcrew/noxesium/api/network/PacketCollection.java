@@ -20,6 +20,7 @@ public final class PacketCollection {
     private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
     private final Set<String> pluginChannels = new HashSet<>();
     private final boolean configPhaseCompatible;
+    private boolean registered;
 
     /**
      * Registers a new clientbound packet.
@@ -109,9 +110,18 @@ public final class PacketCollection {
     }
 
     /**
+     * Returns whether this collection has been registered.
+     */
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    /**
      * Registers all packets.
      */
     public void register(@Nullable NoxesiumEntrypoint entrypoint) {
+        if (registered) return;
+        registered = true;
         for (var type : packets.values()) {
             type.register(entrypoint);
         }
@@ -121,6 +131,8 @@ public final class PacketCollection {
      * Unregisters all packets.
      */
     public void unregister() {
+        if (!registered) return;
+        registered = false;
         for (var type : packets.values()) {
             type.unregister();
         }

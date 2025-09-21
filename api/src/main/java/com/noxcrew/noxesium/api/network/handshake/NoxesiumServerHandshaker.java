@@ -72,6 +72,7 @@ public abstract class NoxesiumServerHandshaker {
         });
         HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL.addListener(this, (reference, packet, playerId) -> {
             reference.onPlayerDisconnect(playerId);
+            NoxesiumApi.getLogger().info("Client {} cancelled handshake for reason '{}'", playerId, packet.reason());
         });
         HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT.addListener(this, (reference, packet, playerId) -> {
             reference.onRegistryUpdateResult(playerId, packet);

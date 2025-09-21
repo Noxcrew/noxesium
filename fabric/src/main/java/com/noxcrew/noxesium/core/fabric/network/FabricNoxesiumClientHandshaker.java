@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
+import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumClientHandshaker;
@@ -55,13 +56,13 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         C2SConfigurationChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             System.out.println("config unregister " + channels);
             if (channels.contains(HANDSHAKE_CHANNEL)) {
-                uninitialize();
+                uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
             }
         });
         C2SPlayChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             System.out.println("play unregister " + channels);
             if (channels.contains(HANDSHAKE_CHANNEL)) {
-                uninitialize();
+                uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
             }
         });
 
