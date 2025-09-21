@@ -95,13 +95,6 @@ public final class PacketCollection {
     }
 
     /**
-     * Returns whether these packets should be registered during the configuration phase.
-     */
-    public boolean isConfigPhaseCompatible() {
-        return configPhaseCompatible;
-    }
-
-    /**
      * Returns all plugin channel identifiers in this collection.
      */
     public Collection<String> getPluginChannelIdentifiers() {

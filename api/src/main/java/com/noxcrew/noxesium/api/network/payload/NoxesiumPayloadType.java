@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.network.payload;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
@@ -69,8 +70,8 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
         this.id = id;
         this.clazz = clazz;
         this.clientToServer = clientToServer;
-        this.configPhaseCompatible = configPhaseCompatible;
         this.jsonSerialized = clazz.isAnnotationPresent(JsonSerializedPacket.class);
+        this.configPhaseCompatible = this.jsonSerialized || configPhaseCompatible;
         this.lazy = clazz.isAnnotationPresent(LazyPacket.class);
     }
 
@@ -101,6 +102,16 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public void unregister() {
         NoxesiumNetworking.getInstance().unregister(this);
     }
+
+    /**
+     * Binds this packet to the given protocol.
+     */
+    public void bind(ConnectionProtocolType protocolType) {}
+
+    /**
+     * Unbinds this packet from the given protocol.
+     */
+    public void unbind(ConnectionProtocolType protocolType) {}
 
     /**
      * Sends the given [payload] as the type of this payload.

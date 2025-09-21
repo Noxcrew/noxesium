@@ -42,6 +42,6 @@ public class ComponentSerializerRegistry {
             @Nullable NoxesiumComponentListener<T, ?> listener) {
         serializers
                 .computeIfAbsent(registry, (ignored) -> new HashMap<>())
-                .put(component, new ComponentSerializers<>(new SerializerPair<>(codec, streamCodec), listener));
+                .put(component, new ComponentSerializers<>(new PlaySerializerPair<>(codec, streamCodec), listener));
     }
 }

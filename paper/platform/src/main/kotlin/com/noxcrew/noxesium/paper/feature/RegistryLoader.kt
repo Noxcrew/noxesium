@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.JsonOps
 import com.noxcrew.noxesium.api.NoxesiumApi
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature
+import com.noxcrew.noxesium.api.nms.serialization.CommonSerializerPair
 import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries
-import com.noxcrew.noxesium.api.nms.serialization.SerializerPair
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import net.kyori.adventure.key.Key
@@ -27,7 +27,7 @@ import kotlin.io.path.readText
  */
 public class RegistryLoader : NoxesiumFeature() {
     private val watchService = FileSystems.getDefault().newWatchService()
-    private val watchKeys = mutableMapOf<Map.Entry<NoxesiumRegistry<*>, SerializerPair<*>>, WatchKey>()
+    private val watchKeys = mutableMapOf<Map.Entry<NoxesiumRegistry<*>, CommonSerializerPair<*>>, WatchKey>()
 
     init {
         for (entry in SerializableRegistries.getAllSerializers()) {

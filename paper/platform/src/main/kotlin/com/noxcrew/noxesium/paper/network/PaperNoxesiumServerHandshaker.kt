@@ -20,12 +20,15 @@ import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
 import com.noxcrew.packet.PacketHandler
 import com.noxcrew.packet.PacketListener
 import io.netty.buffer.Unpooled
+import io.papermc.paper.connection.PlayerCommonConnection
+import io.papermc.paper.connection.PlayerConfigurationConnection
+import io.papermc.paper.connection.PlayerGameConnection
+import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -69,9 +72,8 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                 return@addListener
             }
 
-            val bukkitPlayer = Bukkit.getPlayer(playerId) as CraftPlayer
-            val serverPlayer = bukkitPlayer.handle
-            reference.handleHandshake(PaperNoxesiumServerPlayer(serverPlayer), packet!!)
+            // TODO Determine connection object!
+            reference.handleHandshake(PaperNoxesiumServerPlayer(playerId, username, connection), packet!!)
         }
     }
 
@@ -103,6 +105,8 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         val playerId = event.player.uniqueId
         if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) return
 
+        // TODO Move this to another event handler!
+
         // Try to handle a transfer from another server
         val bukkitPlayer = event.player as CraftPlayer
         val serverPlayer = bukkitPlayer.handle
@@ -127,19 +131,29 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     }
 
     @PacketHandler
-    public fun onCustomPayload(player: Player, packet: ServerboundCustomPayloadPacket): ServerboundCustomPayloadPacket? {
+    public fun onCustomPayload(
+        connection: PlayerCommonConnection,
+        packet: ServerboundCustomPayloadPacket,
+    ): ServerboundCustomPayloadPacket? {
         (packet.payload as? DiscardedPayload)?.also { payload ->
             // Ignore packets not for Noxesium!
             if (payload.id.namespace != NoxesiumReferences.PACKET_NAMESPACE) return@also
 
             // Determine the current Noxesium player and if they can send this type of packet
-            val noxesiumPlayer = player.noxesiumPlayer as? PaperNoxesiumServerPlayer
+            val playerUUID =
+                (connection as? PlayerConfigurationConnection)?.profile?.id ?: (connection as? PlayerGameConnection)?.player?.uniqueId
+                    ?: return null
+            val playerName =
+                (connection as? PlayerConfigurationConnection)?.profile?.name ?: (connection as? PlayerGameConnection)?.player?.name
+                    ?: playerUUID.toString()
+
+            val noxesiumPlayer = NoxesiumPlayerManager.getInstance().getPlayer(playerUUID) as? PaperNoxesiumServerPlayer
             val knownChannels = noxesiumPlayer?.registeredPluginChannels ?: HandshakePackets.INSTANCE.pluginChannelIdentifiers
             val channel = payload.id.toString()
             if (channel !in knownChannels) {
                 NoxesiumPaper.plugin.logger.log(
                     Level.WARNING,
-                    "Received unauthorized plugin message on channel '$channel' for ${player.name}",
+                    "Received unauthorized plugin message on channel '$channel' for $playerName",
                 )
                 return null
             }
@@ -150,8 +164,10 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
             try {
                 // Decode the message and let handlers handle it
-                val craftPlayer = player as CraftPlayer
-                val buffer = RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), craftPlayer.handle.registryAccess())
+                val buffer =
+                    ((connection as? PlayerGameConnection)?.player as? CraftPlayer)?.handle?.registryAccess()?.let { registryAccess ->
+                        RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), registryAccess)
+                    } ?: FriendlyByteBuf(Unpooled.wrappedBuffer(payload.data))
 
                 val payload =
                     if (payloadType.jsonSerialized) {
@@ -162,17 +178,25 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                         serializer.decode(buffer.readUtf(), payloadType.clazz)
                     } else {
                         val codec = PacketSerializerRegistry.getSerializers(payloadType)
-                        codec.decode(buffer)
+
+                        if (payloadType.configPhaseCompatible) {
+                            codec.decode((buffer as? RegistryFriendlyByteBuf) ?: RegistryFriendlyByteBuf(buffer, null))
+                        } else {
+                            require(buffer is RegistryFriendlyByteBuf) {
+                                "Tried to deserialize non-config phase compatible packet ${payload.id}"
+                            }
+                            codec.decode(buffer)
+                        }
                     }
 
                 // Perform packet handling on the main thread
                 Bukkit.getScheduler().callSyncMethod(NoxesiumPaper.plugin) {
-                    payloadType.handle(player.uniqueId, payload)
+                    payloadType.handle(playerUUID, payload)
                 }
             } catch (x: Exception) {
                 NoxesiumPaper.plugin.logger.log(
                     Level.WARNING,
-                    "Failed to decode plugin message on channel '$channel' for ${player.name}",
+                    "Failed to decode plugin message on channel '$channel' for $playerName",
                     x,
                 )
             }
@@ -196,7 +220,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     }
 
     override fun isConnected(player: NoxesiumServerPlayer): Boolean =
-        super.isConnected(player) && !(player as PaperNoxesiumServerPlayer).player.hasDisconnected()
+        super.isConnected(player) && !(player as PaperNoxesiumServerPlayer).isConnected
 
     override fun runDelayed(runnable: Runnable) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(NoxesiumPaper.plugin, runnable)
@@ -206,7 +230,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         // Emit an event for other systems to hook into
         Bukkit
             .getPluginManager()
-            .callEvent(NoxesiumPlayerRegisteredEvent((player as PaperNoxesiumServerPlayer).player.bukkitEntity, player))
+            .callEvent(NoxesiumPlayerRegisteredEvent(player))
 
         // Store the player's data externally after handshake completion
         storeData(player)
@@ -225,7 +249,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             // Emit an event for other systems to hook into on unregistration
             Bukkit
                 .getPluginManager()
-                .callEvent(NoxesiumPlayerUnregisteredEvent((player as PaperNoxesiumServerPlayer).player.bukkitEntity, player))
+                .callEvent(NoxesiumPlayerUnregisteredEvent(player))
         }
     }
 

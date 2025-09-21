@@ -8,9 +8,9 @@ import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
+import com.noxcrew.noxesium.api.nms.serialization.CommonSerializerPair;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
-import com.noxcrew.noxesium.api.nms.serialization.SerializerPair;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
@@ -255,10 +255,10 @@ public class NoxesiumStreamCodecs {
         };
     }
 
-    public static StreamCodec<RegistryFriendlyByteBuf, NoxesiumRegistryPatch> noxesiumRegistryPatch() {
+    public static StreamCodec<FriendlyByteBuf, NoxesiumRegistryPatch> noxesiumRegistryPatch() {
         return new StreamCodec<>() {
             @Override
-            public NoxesiumRegistryPatch decode(RegistryFriendlyByteBuf buffer) {
+            public NoxesiumRegistryPatch decode(FriendlyByteBuf buffer) {
                 var key = Key.key(buffer.readUtf());
 
                 // Determine the serializer to use for this registry
@@ -293,7 +293,7 @@ public class NoxesiumStreamCodecs {
             }
 
             @Override
-            public void encode(RegistryFriendlyByteBuf buffer, NoxesiumRegistryPatch patch) {
+            public void encode(FriendlyByteBuf buffer, NoxesiumRegistryPatch patch) {
                 // Start with the id of the registry
                 buffer.writeUtf(patch.getRegistry().asString());
 
@@ -336,7 +336,7 @@ public class NoxesiumStreamCodecs {
                 }
             }
 
-            private <T> void encodeComponent(RegistryFriendlyByteBuf buffer, SerializerPair<T> serializer, Object raw) {
+            private <T> void encodeComponent(FriendlyByteBuf buffer, CommonSerializerPair<T> serializer, Object raw) {
                 serializer.streamCodec().cast().encode(buffer, (T) raw);
             }
         };

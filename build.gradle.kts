@@ -72,14 +72,6 @@ subprojects {
         withType<AbstractArchiveTask> {
             archiveBaseName.set("noxesium-${project.name}")
         }
-
-        withType<KotlinCompile> {
-            explicitApiMode.set(ExplicitApiMode.Strict)
-
-            compilerOptions {
-                jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-            }
-        }
     }
 
     extensions.configure<SpotlessExtension> {
@@ -106,5 +98,18 @@ subprojects {
     extensions.configure<JavaPluginExtension> {
         withSourcesJar()
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    }
+
+    // Set this late as the Kotlin plugin may not be applied yet!
+    afterEvaluate {
+        tasks {
+            withType<KotlinCompile> {
+                explicitApiMode.set(ExplicitApiMode.Strict)
+
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+                }
+            }
+        }
     }
 }

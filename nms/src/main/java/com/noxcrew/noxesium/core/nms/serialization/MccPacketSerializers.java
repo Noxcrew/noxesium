@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerPlaySerializer;
 
 import com.noxcrew.noxesium.core.mcc.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.core.mcc.ClientboundMccServerPacket;
@@ -18,7 +18,7 @@ public class MccPacketSerializers {
      * Registers all serializers.
      */
     public static void register() {
-        registerSerializer(
+        registerPlaySerializer(
                 MccPackets.CLIENTBOUND_MCC_GAME_STATE,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
@@ -38,7 +38,7 @@ public class MccPacketSerializers {
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundMccGameStatePacket::mapName,
                         ClientboundMccGameStatePacket::new));
-        registerSerializer(
+        registerPlaySerializer(
                 MccPackets.CLIENTBOUND_MCC_SERVER,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
@@ -46,7 +46,7 @@ public class MccPacketSerializers {
                         ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),
                         ClientboundMccServerPacket::types,
                         ClientboundMccServerPacket::new));
-        registerSerializer(
+        registerPlaySerializer(
                 MccPackets.CLIENTBOUND_MCC_STATISTIC,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,

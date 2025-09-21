@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import net.kyori.adventure.key.Key;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Sets up the Noxesium networking system in the serverbound direction.
@@ -27,6 +28,12 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
         if (type == null) return false;
         return type.sendServerboundAny(packet);
     }
+
+    @NotNull
+    private ConnectionProtocolType configuredProtocol = ConnectionProtocolType.NONE;
+
+    @NotNull
+    private ConnectionProtocolType boundProtocol = ConnectionProtocolType.NONE;
 
     private final Set<Key> enabledLazyPackets = new HashSet<>();
 
@@ -57,6 +64,52 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
      */
     public void resetEnablesLazyPackets() {
         this.enabledLazyPackets.clear();
+    }
+
+    /**
+     * Returns the protocol that has been configured.
+     */
+    @NotNull
+    public ConnectionProtocolType getConfiguredProtocol() {
+        return configuredProtocol;
+    }
+
+    /**
+     * Returns the protocol Minecraft has initialized.
+     */
+    @NotNull
+    public abstract ConnectionProtocolType getMinecraftProtocol();
+
+    /**
+     * Handles the current protocol changing to the given protocol type.
+     */
+    public void setConfiguredProtocol(ConnectionProtocolType protocolType) {
+        // Ignore if unchanged
+        if (configuredProtocol == protocolType) return;
+        configuredProtocol = protocolType;
+
+        // We can only bind if the active protocol is a match as it requires accessing the connection
+        // of the current protocol type
+        var activeProtocol = getMinecraftProtocol();
+
+        // If the active protocol is different from what we last bound against the receivers
+        // have been automatically destroyed as the addon has been destroyed.
+        if (activeProtocol != boundProtocol) {
+            boundProtocol = ConnectionProtocolType.NONE;
+        }
+
+        if (protocolType == ConnectionProtocolType.NONE) {
+            getPacketTypes().values().forEach(it -> it.unbind(boundProtocol));
+        } else {
+            // Only re-bind if the protocol isn't already bound to!
+            // Otherwise we have already bound and we can ignore it.
+            if (boundProtocol == ConnectionProtocolType.NONE) {
+                getPacketTypes().values().forEach(it -> it.bind(activeProtocol));
+            }
+        }
+
+        // Store what protocol we bound against
+        boundProtocol = activeProtocol;
     }
 
     /**

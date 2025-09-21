@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
@@ -7,12 +8,15 @@ import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPac
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import java.util.Set;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.impl.networking.PayloadTypeRegistryImpl;
+import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
 import net.kyori.adventure.key.Key;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -34,14 +38,32 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
     }
 
     @Override
+    public @NotNull ConnectionProtocolType getMinecraftProtocol() {
+        if (ClientNetworkingImpl.getClientPlayAddon() != null) {
+            return ConnectionProtocolType.PLAY;
+        }
+        if (ClientNetworkingImpl.getClientConfigurationAddon() != null) {
+            return ConnectionProtocolType.CONFIGURATION;
+        }
+        return ConnectionProtocolType.NONE;
+    }
+
+    @Override
     public boolean canSend(NoxesiumPayloadType<?> type) {
         // Check if the server is willing to receive this packet and if we have registered this packet
-        // on the client in the C2S registry! (the entrypoint is active)
+        // on the client in the registry! (the entrypoint is active)
         var resourceLocation = ResourceLocation.parse(type.id().asString());
-        return ClientPlayNetworking.canSend(resourceLocation)
-                && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
-                                .get(resourceLocation)
-                        != null;
+        return switch (getConfiguredProtocol()) {
+            case CONFIGURATION -> ClientConfigurationNetworking.canSend(resourceLocation)
+                    && ((PayloadTypeRegistryImpl<FriendlyByteBuf>) PayloadTypeRegistry.configurationS2C())
+                                    .get(resourceLocation)
+                            != null;
+            case PLAY -> ClientPlayNetworking.canSend(resourceLocation)
+                    && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
+                                    .get(resourceLocation)
+                            != null;
+            default -> false;
+        };
     }
 
     @Override
@@ -68,7 +90,19 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
                                 false);
             }
             if (type instanceof FabricPayloadType) {
-                ClientPlayNetworking.send(new NoxesiumPayload<>((FabricPayloadType<? super T>) type, payload));
+                var fabricPayload = new NoxesiumPayload<>((FabricPayloadType<? super T>) type, payload);
+                switch (getConfiguredProtocol()) {
+                    case CONFIGURATION -> {
+                        ClientConfigurationNetworking.send(fabricPayload);
+                    }
+                    case PLAY -> {
+                        ClientPlayNetworking.send(fabricPayload);
+                    }
+                    default -> throw new UnsupportedOperationException(
+                            "Cannot send payload when not in a configured protocol");
+                }
+                ;
+
             } else {
                 throw new UnsupportedOperationException("Attempted to send payload of type '" + type.getClass()
                         + "' with Noxesium, which requires FabricPayloadType objects!");

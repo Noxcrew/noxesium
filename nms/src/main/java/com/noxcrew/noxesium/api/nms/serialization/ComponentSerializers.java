@@ -7,4 +7,4 @@ import org.jetbrains.annotations.Nullable;
  * Stores codecs for serializing a component.
  */
 public record ComponentSerializers<T>(
-        SerializerPair<T> serializers, @Nullable NoxesiumComponentListener<T, ?> listener) {}
+        PlaySerializerPair<T> serializers, @Nullable NoxesiumComponentListener<T, ?> listener) {}

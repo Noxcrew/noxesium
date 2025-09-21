@@ -6,7 +6,7 @@ import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Stores the two types of codecs.
+ * Stores the two types of codecs for the play phase.
  */
-public record SerializerPair<T>(
+public record PlaySerializerPair<T>(
         Codec<T> codec, @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {}

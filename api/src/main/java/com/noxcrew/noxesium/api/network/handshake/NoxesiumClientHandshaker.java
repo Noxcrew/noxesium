@@ -4,6 +4,7 @@ import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
@@ -395,9 +396,10 @@ public abstract class NoxesiumClientHandshaker {
 
         state = HandshakeState.NONE;
         challenges.clear();
+        NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.NONE);
+        NoxesiumServerboundNetworking.getInstance().resetEnablesLazyPackets();
         HandshakePackets.INSTANCE.unregister();
         NoxesiumApi.getInstance().unregisterAll();
-        NoxesiumServerboundNetworking.getInstance().resetEnablesLazyPackets();
         GameComponents.getInstance().noxesium$reloadComponents();
     }
 }
