@@ -1,7 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.feature.render;
 
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
-import net.fabricmc.loader.api.FabricLoader;
+import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,10 +42,9 @@ public class CustomMapUiWidget {
         if (minecraft.player == null) return;
 
         // Check that this layer is enabled
-        if (!NoxesiumMod.getInstance().getConfig().shouldRenderMapsInUi()) return;
+        var config = NoxesiumMod.getInstance().getConfig();
+        if (!config.shouldRenderMapsInUi()) return;
 
-        var font = minecraft.font;
-        var offset = FabricLoader.getInstance().isModLoaded("toggle-sprint-display") ? font.lineHeight : 0;
         var mainArm = minecraft.player.getMainArm();
         for (var arm : HumanoidArm.values()) {
             if (hasMapItem(minecraft.player, arm)) {
@@ -54,12 +54,11 @@ public class CustomMapUiWidget {
                 renderMap(
                         minecraft,
                         guiGraphics,
-                        deltaTracker,
                         pose,
                         arm,
                         minecraft.player.getItemInHand(
                                 mainArm == arm ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND),
-                        offset);
+                        config);
                 pose.popMatrix();
             }
         }
@@ -83,39 +82,29 @@ public class CustomMapUiWidget {
     private static void renderMap(
             Minecraft minecraft,
             GuiGraphics graphics,
-            DeltaTracker deltaTracker,
             Matrix3x2fStack pose,
             HumanoidArm arm,
             ItemStack item,
-            int offset) {
-        var scale = 1f
-                / ((float) minecraft.getWindow().getGuiScale())
-                * 4f
-                * ((float) NoxesiumMod.getInstance().getConfig().mapUiSize);
+            NoxesiumConfig config) {
         var setting = NoxesiumMod.getInstance().getConfig().mapUiLocation;
-        var bottom = setting.isBottom();
         var flipped = setting.isFlipped();
 
+        var padding = 10f;
+        var border = 7;
+        var size = 128;
+        var scale = (float) config.getScale(GuiElement.MAP);
+        var scaledHeight = ((float) size) * scale;
+        var offset = (float) ((config.mapPosition + 1f) * (graphics.guiHeight() - (2 * padding) - scaledHeight) / 2.0);
+
         if ((arm == HumanoidArm.RIGHT) != flipped) {
-            if (bottom) {
-                // Translate it to be at the bottom right of the GUI
-                pose.translate(graphics.guiWidth() - (148f * scale), graphics.guiHeight() - (148f * scale));
-            } else {
-                // Only translate to the right of the GUI
-                pose.translate(graphics.guiWidth() - (148f * scale), 0f);
-            }
+            pose.translate(graphics.guiWidth() - (size * scale), offset);
         } else {
-            if (bottom) {
-                // Translate it to be at the bottom of the GUI
-                pose.translate(0f, graphics.guiHeight() - (148f * scale));
-            } else {
-                // Only add the offset on the left top side!
-                pose.translate(0f, offset);
-            }
+            pose.translate(0f, offset);
         }
 
-        pose.scale(1f * scale, 1f * scale);
-        pose.translate(10f, 10f);
+        pose.translate(padding, padding);
+        pose.scale(scale, scale);
+
         var mapId = item.get(DataComponents.MAP_ID);
         var mapitemsaveddata = MapItem.getSavedData(mapId, minecraft.level);
 
@@ -123,13 +112,12 @@ public class CustomMapUiWidget {
         graphics.blitSprite(
                 RenderPipelines.GUI_TEXTURED,
                 mapitemsaveddata == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD,
-                -7,
-                -7,
-                142,
-                142);
+                -border,
+                -border,
+                size + 2 * border,
+                size + 2 * border);
 
         if (mapitemsaveddata != null) {
-            // Draw the contents of the map itself, including all decorations!
             var mapRenderer = minecraft.getMapRenderer();
             mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);
             mapRenderState.decorations.forEach(it -> it.renderOnFrame = true);

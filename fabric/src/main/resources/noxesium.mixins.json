@@ -75,18 +75,18 @@
     "settings.screen.AccessibilitySettingsScreenMixin",
     "sound.ChannelExt",
     "sound.CustomNoxesiumSoundsMixin",
-    "ui.ActionBarMixin",
     "ui.AddMapSpritesToAtlas",
     "ui.AlwaysShowDownloadToastsMixin",
     "ui.BossBarMixin",
     "ui.ChatMixin",
     "ui.CustomDebugHotkeysMixin",
+    "ui.GuiGraphicsExt",
     "ui.GuiMixin",
-    "ui.PotionEffectsMixin",
+    "ui.RescaleGuiMixin",
     "ui.ScoreboardMixin",
     "ui.SubtitleMixin",
     "ui.TabListMixin",
-    "ui.TitleMixin"
+    "ui.WindowExt"
   ],
   "injectors": {
     "defaultRequire": 1

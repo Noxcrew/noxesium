@@ -1,5 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.config;
 
+import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
+
+import java.util.HashSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -7,6 +11,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.tabs.GridLayoutTab;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
@@ -15,8 +20,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-
-import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
 
 /**
  * The custom settings screen used by Noxesium which opens when clicking on Noxesium in Mod Menu or by pressing F3+W.
@@ -37,12 +40,14 @@ public class NoxesiumSettingsScreen extends Screen {
     @Override
     protected void init() {
         this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
-            .addTabs(new GuiTab(), new DeveloperTab())
-            .build();
+                .addTabs(new GuiTab(), new DeveloperTab())
+                .build();
         this.addRenderableWidget(this.tabNavigationBar);
 
-        LinearLayout linearlayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
-        linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build());
+        LinearLayout linearlayout =
+                this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
+        linearlayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose())
+                .build());
         this.layout.visitWidgets(widget -> {
             widget.setTabOrderGroup(1);
             this.addRenderableWidget(widget);
@@ -57,7 +62,8 @@ public class NoxesiumSettingsScreen extends Screen {
             this.tabNavigationBar.setWidth(this.width);
             this.tabNavigationBar.arrangeElements();
             var bottom = this.tabNavigationBar.getRectangle().bottom();
-            var screenrectangle = new ScreenRectangle(0, bottom, this.width, this.height - this.layout.getFooterHeight() - bottom);
+            var screenrectangle =
+                    new ScreenRectangle(0, bottom, this.width, this.height - this.layout.getFooterHeight() - bottom);
             this.tabManager.setTabArea(screenrectangle);
             this.layout.setHeaderHeight(bottom);
             this.layout.arrangeElements();
@@ -68,13 +74,31 @@ public class NoxesiumSettingsScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int p_283640_, int p_281243_, float p_282743_) {
         super.render(guiGraphics, p_283640_, p_281243_, p_282743_);
         guiGraphics.blit(
-            RenderPipelines.GUI_TEXTURED, Screen.FOOTER_SEPARATOR, 0, this.height - this.layout.getFooterHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2
-        );
+                RenderPipelines.GUI_TEXTURED,
+                Screen.FOOTER_SEPARATOR,
+                0,
+                this.height - this.layout.getFooterHeight() - 2,
+                0.0F,
+                0.0F,
+                this.width,
+                2,
+                32,
+                2);
     }
 
     @Override
     protected void renderMenuBackground(GuiGraphics guiGraphics) {
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TAB_HEADER_BACKGROUND, 0, 0, 0.0F, 0.0F, this.width, this.layout.getHeaderHeight(), 16, 16);
+        guiGraphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                TAB_HEADER_BACKGROUND,
+                0,
+                0,
+                0.0F,
+                0.0F,
+                this.width,
+                this.layout.getHeaderHeight(),
+                16,
+                16);
         this.renderMenuBackground(guiGraphics, 0, this.layout.getHeaderHeight(), this.width, this.height);
     }
 
@@ -84,10 +108,15 @@ public class NoxesiumSettingsScreen extends Screen {
     }
 
     /**
+     * Hook for extending the developer tab.
+     */
+    public void addToDeveloperTab(GridLayout.RowHelper rowHelper) {}
+
+    /**
      * Creates a new widget for the given option.
      */
-    private AbstractWidget createWidget(OptionInstance<?> option) {
-        return option.createButton(this.minecraft.options);
+    public static AbstractWidget createWidget(OptionInstance<?> option) {
+        return option.createButton(Minecraft.getInstance().options);
     }
 
     class GuiTab extends GridLayoutTab {
@@ -98,10 +127,21 @@ public class NoxesiumSettingsScreen extends Screen {
 
             rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition()));
             rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition()));
+            rowHelper.addChild(createWidget(VanillaOptions.mapUiLocation()));
 
+            var widgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
             for (var scalar : NoxesiumOptions.guiScales().values()) {
-                rowHelper.addChild(createWidget(scalar));
+                var widget = (OptionInstance.OptionInstanceSliderButton<?>) createWidget(scalar);
+                widgets.add(widget);
+                rowHelper.addChild(widget);
             }
+
+            rowHelper.addChild(Button.builder(
+                            Component.translatable("noxesium.options.reset_scales"),
+                            button -> widgets.forEach(it -> it.setValue(0.495)))
+                    .bounds(0, 0, 150, 20)
+                    .build());
         }
     }
 
@@ -121,6 +161,8 @@ public class NoxesiumSettingsScreen extends Screen {
             rowHelper.addChild(createWidget(NoxesiumOptions.debugScoreboardTeams()));
             rowHelper.addChild(createWidget(NoxesiumOptions.extendedPacketLogging()));
             rowHelper.addChild(createWidget(NoxesiumOptions.showCullingBoxes()));
+
+            addToDeveloperTab(rowHelper);
         }
     }
 }

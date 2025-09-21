@@ -22,7 +22,7 @@ import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
  * Defines the handshake packets.
  */
 public class HandshakePackets {
-    public static final PacketCollection INSTANCE = new PacketCollection();
+    public static final PacketCollection INSTANCE = new PacketCollection(true);
 
     public static final NoxesiumPayloadType<ServerboundHandshakePacket> SERVERBOUND_HANDSHAKE =
             server(INSTANCE, "serverbound_handshake", ServerboundHandshakePacket.class);

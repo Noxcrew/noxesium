@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.config;
 
 import com.mojang.serialization.Codec;
+import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
 import com.noxcrew.noxesium.core.client.setting.MapLocation;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
@@ -35,24 +36,13 @@ public class VanillaOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Double> mapUiSize = new OptionInstance<>(
-            "noxesium.options.ui_map_size.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_map_size.tooltip")),
-            VanillaOptions::percentValueLabel,
-            new OptionInstance.IntRange(1, 200).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
-            Codec.doubleRange(0.1, 2.0),
-            NoxesiumMod.getInstance().getConfig().mapUiSize,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().mapUiSize = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            });
-
     private static final OptionInstance<MapLocation> mapUiLocation = new OptionInstance<>(
             "noxesium.options.ui_map_location.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.ui_map_location.tooltip")),
             VanillaOptions::triStateValueLabel,
             new OptionInstance.Enum<>(
-                    Arrays.asList(MapLocation.values()), Codec.STRING.xmap(MapLocation::valueOf, MapLocation::name)),
+                    Arrays.asList(MapLocation.TOP, MapLocation.TOP_FLIPPED),
+                    Codec.STRING.xmap(MapLocation::valueOf, MapLocation::name)),
             NoxesiumMod.getInstance().getConfig().mapUiLocation,
             (newValue) -> {
                 NoxesiumMod.getInstance().getConfig().mapUiLocation = newValue;
@@ -68,15 +58,11 @@ public class VanillaOptions {
     }
 
     public static OptionInstance<Double> mapUiSize() {
-        return mapUiSize;
+        return NoxesiumOptions.guiScales().get(GuiElement.MAP);
     }
 
     public static OptionInstance<MapLocation> mapUiLocation() {
         return mapUiLocation;
-    }
-
-    private static Component percentValueLabel(Component component, double d) {
-        return Component.translatable("options.percent_value", component, (int) (d * 100.0));
     }
 
     private static Component triStateValueLabel(Component component, Enum<?> e) {

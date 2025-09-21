@@ -64,5 +64,9 @@ public abstract class NoxesiumNetworking {
      * Creates a new payload of the type specific to this platform.
      */
     public abstract <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace, @NotNull String id, @NotNull Class<T> clazz, boolean clientToServer);
+            @NotNull String namespace,
+            @NotNull String id,
+            @NotNull Class<T> clazz,
+            boolean clientToServer,
+            boolean configPhaseCompatible);
 }

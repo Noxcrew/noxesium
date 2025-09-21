@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
@@ -7,6 +8,7 @@ import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry;
 import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.kyori.adventure.key.Key;
@@ -27,8 +29,8 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
      */
     public final CustomPacketPayload.Type<NoxesiumPayload<T>> type;
 
-    public FabricPayloadType(Key id, Class<T> clazz, boolean clientToServer) {
-        super(id, clazz, clientToServer);
+    public FabricPayloadType(Key id, Class<T> clazz, boolean clientToServer, boolean configPhaseCompatible) {
+        super(id, clazz, clientToServer, configPhaseCompatible);
         this.type = new CustomPacketPayload.Type<>(ResourceLocation.parse(id.asString()));
     }
 
@@ -39,12 +41,15 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         // Create a custom payload that uses the payload object as a wrapper so we can
         // provide a custom stream codec to use for this packet.
         if (clientToServer) {
-            //PayloadTypeRegistry.configurationC2S().register(type, getStreamCodec());
+            if (configPhaseCompatible) PayloadTypeRegistry.configurationC2S().register(type, getStreamCodec());
             PayloadTypeRegistry.playC2S().register(type, getStreamCodec());
         } else {
-            //PayloadTypeRegistry.configurationS2C().register(type, getStreamCodec());
+            if (configPhaseCompatible) PayloadTypeRegistry.configurationS2C().register(type, getStreamCodec());
             PayloadTypeRegistry.playS2C().register(type, getStreamCodec());
-            ClientPlayNetworking.registerReceiver(type, new FabricPacketHandler<>());
+
+            if (configPhaseCompatible)
+                ClientConfigurationNetworking.registerReceiver(type, new FabricConfigPacketHandler<>());
+            ClientPlayNetworking.registerReceiver(type, new FabricPlayPacketHandler<>());
         }
     }
 
@@ -53,10 +58,10 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         super.unregister();
 
         if (clientToServer) {
-            unregisterPacket(PayloadTypeRegistry.configurationC2S(), type.id());
+            if (configPhaseCompatible) unregisterPacket(PayloadTypeRegistry.configurationC2S(), type.id());
             unregisterPacket(PayloadTypeRegistry.playC2S(), type.id());
         } else {
-            unregisterPacket(PayloadTypeRegistry.configurationS2C(), type.id());
+            if (configPhaseCompatible) unregisterPacket(PayloadTypeRegistry.configurationS2C(), type.id());
             unregisterPacket(PayloadTypeRegistry.playS2C(), type.id());
             ClientPlayNetworking.unregisterReceiver(type.id());
         }
@@ -65,7 +70,7 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
     /**
      * Returns a stream codec for this payload.
      */
-    private StreamCodec<RegistryFriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
+    private StreamCodec<FriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
         var payloadType = this;
         if (payloadType.jsonSerialized) {
             var serializer = JsonSerializerRegistry.getInstance()
@@ -76,12 +81,12 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
             return new StreamCodec<>() {
                 @Override
                 @NotNull
-                public NoxesiumPayload<T> decode(RegistryFriendlyByteBuf buffer) {
+                public NoxesiumPayload<T> decode(FriendlyByteBuf buffer) {
                     return new NoxesiumPayload<>(payloadType, serializer.decode(buffer.readUtf(), payloadType.clazz));
                 }
 
                 @Override
-                public void encode(RegistryFriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
+                public void encode(FriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
                     buffer.writeUtf(serializer.encode(payload.value(), payloadType.clazz));
                 }
             };
@@ -91,13 +96,27 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         return new StreamCodec<>() {
             @Override
             @NotNull
-            public NoxesiumPayload<T> decode(RegistryFriendlyByteBuf buffer) {
-                return new NoxesiumPayload<>(payloadType, codec.decode(buffer));
+            public NoxesiumPayload<T> decode(FriendlyByteBuf buffer) {
+                if (configPhaseCompatible) {
+                    return new NoxesiumPayload<>(payloadType, codec.decode(new RegistryFriendlyByteBuf(buffer, null)));
+                } else {
+                    Preconditions.checkState(
+                            buffer instanceof RegistryFriendlyByteBuf,
+                            "Tried to deserialize non-config phase compatible packet " + id());
+                    return new NoxesiumPayload<>(payloadType, codec.decode((RegistryFriendlyByteBuf) buffer));
+                }
             }
 
             @Override
-            public void encode(RegistryFriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
-                codec.encode(buffer, payload.value());
+            public void encode(FriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
+                if (configPhaseCompatible) {
+                    codec.encode(new RegistryFriendlyByteBuf(buffer, null), payload.value());
+                } else {
+                    Preconditions.checkState(
+                            buffer instanceof RegistryFriendlyByteBuf,
+                            "Tried to serialize non-config phase compatible packet " + id());
+                    codec.encode((RegistryFriendlyByteBuf) buffer, payload.value());
+                }
             }
         };
     }

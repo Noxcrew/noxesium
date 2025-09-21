@@ -9,31 +9,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Uninitializes the protocol whenever the player instance is destroyed.
+ * Uninitializes the protocol whenever the client disconnects, which can happen during
+ * either the configuration or play phases.
  */
 @Mixin(Minecraft.class)
 public class ConnectionTerminationMixin {
-    @Inject(
-            method = "clearClientLevel",
-            at =
-                    @At(
-                            value = "FIELD",
-                            target =
-                                    "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/player/LocalPlayer;"))
-    private void clearClientLevel(Screen screen, CallbackInfo ci) {
-        var handshaker = NoxesiumMod.getInstance().getHandshaker();
-        if (handshaker != null) {
-            handshaker.uninitialize();
-        }
-    }
-
-    @Inject(
-            method = "disconnect",
-            at =
-                    @At(
-                            value = "FIELD",
-                            target =
-                                    "Lnet/minecraft/client/Minecraft;player:Lnet/minecraft/client/player/LocalPlayer;"))
+    @Inject(method = "disconnect", at = @At(value = "RETURN"))
     private void disconnect(Screen screen, boolean bl, CallbackInfo ci) {
         var handshaker = NoxesiumMod.getInstance().getHandshaker();
         if (handshaker != null) {

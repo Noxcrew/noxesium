@@ -7,14 +7,13 @@ import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
 import com.noxcrew.noxesium.core.client.setting.MapLocation;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.fabricmc.loader.api.FabricLoader;
-
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import net.fabricmc.loader.api.FabricLoader;
 
 /**
  * Stores Noxesium's configured values.
@@ -34,16 +33,29 @@ public class NoxesiumConfig {
     public boolean printPacketExceptions = false;
     public boolean debugScoreboardTeams = false;
     public boolean showCullingBoxes = false;
-    public double mapUiSize = 0.8;
     public MapLocation mapUiLocation = MapLocation.TOP;
     public double bossBarPosition = 0.0;
     public double scoreboardPosition = 0.0;
-    public Map<GuiElement, Double> scales = new HashMap<>();
+    public double mapPosition = -1.0;
+    public Map<GuiElement, Double> scales;
+
+    // Legacy value, merged into scales!
+    @Deprecated
+    public double mapUiSize = 0.8;
 
     /**
      * Returns the scale of the given element.
      */
     public double getScale(GuiElement element) {
+        if (scales == null) {
+            scales = new HashMap<>();
+
+            // Legacy load old settings!
+            if (mapUiLocation.isBottom()) {
+                mapPosition = 1.0;
+            }
+            scales.put(GuiElement.MAP, mapUiSize);
+        }
         var rawValue = scales.getOrDefault(element, 1.0);
         var map = GameComponents.getInstance().noxesium$getOptionalComponent(CommonGameComponentTypes.GUI_CONSTRAINTS);
         if (map.isPresent()) {
@@ -53,7 +65,7 @@ public class NoxesiumConfig {
                 return Math.clamp(value, constraints.minValue(), constraints.maxValue());
             }
         }
-        return rawValue;
+        return Math.clamp(rawValue, 0.001, 100.0);
     }
 
     /**

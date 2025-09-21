@@ -18,10 +18,9 @@
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
   "noxesium.options.render_maps_as_ui.tooltip": "If enabled, maps held in one hand are rendered in the top left/right corner of your screen instead of relative to your hand location.\n\nIf set to \"Ask server\" the server you are playing on is able to enable or disable this feature.",
-  "noxesium.options.ui_map_size.name": "Map UI Size",
-  "noxesium.options.ui_map_size.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
+
   "noxesium.options.ui_map_location.name": "Map UI Location",
-  "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting.",
+  "noxesium.options.ui_map_location.tooltip": "Controls the location of the map for the \"Render Maps in UI\" setting, relative to the hand the map is held in.",
 
   "noxesium.options.dump_incoming_packets.name": "Dump Incoming Packets",
   "noxesium.options.dump_incoming_packets.tooltip": "Enables logging of Noxesium packets that are handled by the client.\n\n§cIntended for server developers working on Noxesium integrations.",
@@ -38,12 +37,15 @@
   "noxesium.options.show_culling_boxes.name": "Show Entity Culling Hitboxes",
   "noxesium.options.show_culling_boxes.tooltip": "Replaces hitboxes shown with F3+B with the culling hitbox which is what controls whether the entity should stay rendered. This shows the configured width and height of display entities.\n\n§cIntended for server developers debugging entity culling.",
 
-  "noxesium.options.boss_bar_position.name": "Boss Bar Position",
+  "noxesium.options.boss_bar_position.name": "Boss Bar X Position",
   "noxesium.options.boss_bar_position.tooltip": "Controls the horizontal position of the boss bar relative to the top middle of the screen.",
+  "noxesium.options.scoreboard_position.name": "Scoreboard Y Position",
+  "noxesium.options.scoreboard_position.tooltip": "Controls the vertical position of the scoreboard relative to the center right of the screen.",
+  "noxesium.options.map_position.name": "Map Y Position",
+  "noxesium.options.map_position.tooltip": "Controls the vertical position of the map for the \"Render Maps in UI\" setting relative to the center of the screen.",
+
   "noxesium.options.boss_bar_scale.name": "Boss Bar Scale",
   "noxesium.options.boss_bar_scale.tooltip": "Changes the size of the boss bar relative to the GUI scale.",
-  "noxesium.options.scoreboard_position.name": "Scoreboard Position",
-  "noxesium.options.scoreboard_position.tooltip": "Controls the vertical position of the scoreboard relative to the center right of the screen.",
   "noxesium.options.scoreboard_scale.name": "Scoreboard Scale",
   "noxesium.options.scoreboard_scale.tooltip": "Changes the size of the scoreboard relative to the GUI scale.",
   "noxesium.options.tab_list_scale.name": "Tab List Scale",
@@ -58,15 +60,19 @@
   "noxesium.options.subtitles_scale.tooltip": "Changes the size of Closed Captions (CC) relative to the GUI scale.",
   "noxesium.options.active_effects_scale.name": "Potion Effects Scale",
   "noxesium.options.active_effects_scale.tooltip": "Changes the size of potion effect indicator in the top right, relative to the GUI scale.",
+  "noxesium.options.map_scale.name": "Map Scale",
+  "noxesium.options.map_scale.tooltip": "Controls the size of the map for the \"Render Maps in UI\" setting.",
+  "noxesium.options.hotbar_scale.name": "Hotbar Scale",
+  "noxesium.options.hotbar_scale.tooltip": "Changes the size of the hotbar relative to the GUI scale.",
+
+  "noxesium.options.reset_scales": "Reset All Scales",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",
   "noxesium.options.enum.false": "Never",
 
-  "noxesium.options.enum.top": "Top Corner",
-  "noxesium.options.enum.bottom": "Bottom Corner",
-  "noxesium.options.enum.top_flipped": "Opposite Top Corner",
-  "noxesium.options.enum.bottom_flipped": "Opposite Bottom Corner",
+  "noxesium.options.enum.top": "Regular",
+  "noxesium.options.enum.top_flipped": "Inverted",
 
   "noxesium.options.simple_value": "%s: %s",
 

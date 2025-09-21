@@ -47,6 +47,12 @@
       ],
       "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": [
         "com/noxcrew/noxesium/core/fabric/feature/entity/BeamColorStateExtension"
+      ],
+      "com/mojang/blaze3d/platform/Window": [
+        "com/noxcrew/noxesium/core/fabric/feature/render/WindowScalingExtension"
+      ],
+      "net/minecraft/client/gui/GuiGraphics": [
+        "com/noxcrew/noxesium/core/fabric/feature/render/GuiGraphicsScalingExtension"
       ]
     }
   },

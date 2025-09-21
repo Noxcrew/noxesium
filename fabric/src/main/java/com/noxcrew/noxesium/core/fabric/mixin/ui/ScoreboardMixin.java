@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.fabric.feature.render.GuiGraphicsScalingExtension;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.scores.Objective;
@@ -17,14 +18,12 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class ScoreboardMixin {
     @WrapMethod(method = "displayScoreboardSidebar")
     public void wrapScoreboardRender(GuiGraphics guiGraphics, Objective objective, Operation<Void> original) {
-        guiGraphics.pose().pushMatrix();
         var config = NoxesiumMod.getInstance().getConfig();
-        var scale = config.getScale(GuiElement.SCOREBOARD);
-        guiGraphics.pose().scale((float) scale);
-        guiGraphics.pose().translate(0, (float)
-                (-config.scoreboardPosition * ((double) guiGraphics.guiHeight()) / scale / 2.0));
-        original.call(guiGraphics, objective);
-        guiGraphics.pose().popMatrix();
+        ((GuiGraphicsScalingExtension) guiGraphics).noxesium$whileRescaled(GuiElement.SCOREBOARD, () -> {
+            guiGraphics.pose().translate(0, (float)
+                    (-config.scoreboardPosition * ((double) guiGraphics.guiHeight()) / 2.0));
+            original.call(guiGraphics, objective);
+        });
     }
 
     @ModifyConstant(method = "displayScoreboardSidebar", constant = @Constant(intValue = 3, ordinal = 0))
@@ -35,16 +34,9 @@ public class ScoreboardMixin {
 
     @WrapOperation(
             method = "displayScoreboardSidebar",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiWidth()I"))
-    public int wrapGetWidth(GuiGraphics instance, Operation<Integer> original) {
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.SCOREBOARD));
-    }
-
-    @WrapOperation(
-            method = "displayScoreboardSidebar",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"))
     public int wrapGetHeight(GuiGraphics instance, Operation<Integer> original) {
         // Increase the height by 9 to account for the header which vanilla does not otherwise account for.
-        return (int) (original.call(instance) / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.SCOREBOARD)) + 9;
+        return original.call(instance) + 9;
     }
 }

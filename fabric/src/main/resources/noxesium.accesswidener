@@ -25,3 +25,5 @@ accessible method net/minecraft/world/entity/Entity makeBoundingBox ()Lnet/minec
 
 accessible field net/minecraft/client/Minecraft fontManager Lnet/minecraft/client/gui/font/FontManager;
 accessible field net/minecraft/client/gui/font/FontManager fontSets Ljava/util/Map;
+
+accessible method net/minecraft/client/gui/components/AbstractSliderButton setValue (D)V

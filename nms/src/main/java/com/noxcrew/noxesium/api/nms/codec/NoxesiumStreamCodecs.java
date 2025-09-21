@@ -113,14 +113,14 @@ public class NoxesiumStreamCodecs {
                     EntrypointProtocol::new));
 
     public static final StreamCodec<ByteBuf, GuiConstraints> GUI_CONSTRAINTS =
-        StreamCodec.recursive(codec -> StreamCodec.composite(
-            ByteBufCodecs.DOUBLE,
-            GuiConstraints::scalar,
-            ByteBufCodecs.DOUBLE,
-            GuiConstraints::minValue,
-            ByteBufCodecs.DOUBLE,
-            GuiConstraints::maxValue,
-            GuiConstraints::new));
+            StreamCodec.recursive(codec -> StreamCodec.composite(
+                    ByteBufCodecs.DOUBLE,
+                    GuiConstraints::scalar,
+                    ByteBufCodecs.DOUBLE,
+                    GuiConstraints::minValue,
+                    ByteBufCodecs.DOUBLE,
+                    GuiConstraints::maxValue,
+                    GuiConstraints::new));
 
     public static final StreamCodec<ByteBuf, ModInfo> MOD_INFO = StreamCodec.recursive(codec -> StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8, ModInfo::id, ByteBufCodecs.STRING_UTF8, ModInfo::version, ModInfo::new));

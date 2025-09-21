@@ -25,8 +25,12 @@ import org.jetbrains.annotations.NotNull;
 public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetworking {
     @Override
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace, @NotNull String id, Class<T> clazz, boolean clientToServer) {
-        return new FabricPayloadType<>(Key.key(namespace, id), clazz, clientToServer);
+            @NotNull String namespace,
+            @NotNull String id,
+            Class<T> clazz,
+            boolean clientToServer,
+            boolean configPhaseCompatible) {
+        return new FabricPayloadType<>(Key.key(namespace, id), clazz, clientToServer, configPhaseCompatible);
     }
 
     @Override

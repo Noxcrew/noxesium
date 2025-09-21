@@ -11,6 +11,11 @@ public enum GuiElement {
     TITLE,
     ACTION_BAR,
     CHAT,
+    HOTBAR,
     ACTIVE_EFFECTS,
     SUBTITLES,
+    /**
+     * The custom on-screen map added by Noxesium.
+     */
+    MAP,
 }

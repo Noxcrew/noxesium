@@ -5,8 +5,10 @@ package com.noxcrew.noxesium.core.client.setting;
  */
 public enum MapLocation {
     TOP,
-    BOTTOM,
     TOP_FLIPPED,
+
+    // Legacy positions, v3+ lets you set the height yourself!
+    BOTTOM,
     BOTTOM_FLIPPED;
 
     /**

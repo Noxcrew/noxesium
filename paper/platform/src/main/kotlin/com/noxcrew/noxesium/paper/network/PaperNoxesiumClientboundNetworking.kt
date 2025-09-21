@@ -55,7 +55,8 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         id: String,
         clazz: Class<T>,
         clientToServer: Boolean,
-    ): NoxesiumPayloadType<T> = NoxesiumPayloadType(Key.key(namespace, id), clazz, clientToServer)
+        configPhaseCompatible: Boolean,
+    ): NoxesiumPayloadType<T> = NoxesiumPayloadType(Key.key(namespace, id), clazz, clientToServer, configPhaseCompatible)
 
     override fun canReceive(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<*>): Boolean {
         // Prevent sending if the client does not know of this channel!
