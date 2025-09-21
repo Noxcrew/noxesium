@@ -37,16 +37,16 @@ public class NoxesiumConfig {
     public double bossBarPosition = 0.0;
     public double scoreboardPosition = 0.0;
     public double mapPosition = -1.0;
-    public Map<GuiElement, Double> scales;
+    private Map<GuiElement, Double> scales;
 
     // Legacy value, merged into scales!
     @Deprecated
     public double mapUiSize = 0.8;
 
     /**
-     * Returns the scale of the given element.
+     * Returns the scales map.
      */
-    public double getScale(GuiElement element) {
+    public Map<GuiElement, Double> getScales() {
         if (scales == null) {
             scales = new HashMap<>();
 
@@ -56,7 +56,14 @@ public class NoxesiumConfig {
             }
             scales.put(GuiElement.MAP, mapUiSize);
         }
-        var rawValue = scales.getOrDefault(element, 1.0);
+        return scales;
+    }
+
+    /**
+     * Returns the scale of the given element.
+     */
+    public double getScale(GuiElement element) {
+        var rawValue = getScales().getOrDefault(element, 1.0);
         var map = GameComponents.getInstance().noxesium$getOptionalComponent(CommonGameComponentTypes.GUI_CONSTRAINTS);
         if (map.isPresent()) {
             var constraints = map.get().get(element);

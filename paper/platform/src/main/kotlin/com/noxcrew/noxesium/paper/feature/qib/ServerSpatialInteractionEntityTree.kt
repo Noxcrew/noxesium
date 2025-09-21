@@ -37,7 +37,6 @@ public class ServerSpatialInteractionEntityTree(
      */
     public fun rebuild() {
         if (!needsRebuilding.get()) return
-        println("rebuild")
         if (!rebuilding.compareAndSet(false, true)) return
         try {
             val converter = ServerEntityMBRConverter()
@@ -103,7 +102,6 @@ public class ServerSpatialInteractionEntityTree(
 
     /** Updates the current position of [entity]. */
     public fun update(entity: Interaction) {
-        println("update $entity")
         if (entity.isRemoved) {
             remove(entity)
             return

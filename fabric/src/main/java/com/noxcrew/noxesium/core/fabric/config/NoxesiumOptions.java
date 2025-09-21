@@ -150,9 +150,9 @@ public class NoxesiumOptions {
                             new OptionInstance.IntRange(1, 200)
                                     .xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
                             Codec.doubleRange(0.01, 2.0),
-                            NoxesiumMod.getInstance().getConfig().scales.getOrDefault(guiElement, 1.0),
+                            NoxesiumMod.getInstance().getConfig().getScales().getOrDefault(guiElement, 1.0),
                             (newValue) -> {
-                                NoxesiumMod.getInstance().getConfig().scales.put(guiElement, newValue);
+                                NoxesiumMod.getInstance().getConfig().getScales().put(guiElement, newValue);
                                 NoxesiumMod.getInstance().getConfig().save();
                             }));
         }

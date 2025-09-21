@@ -106,6 +106,7 @@ public class PaperNoxesiumServerPlayer(
             val conn = connection as PaperPlayerConfigurationConnection
             val handle = declaredField.get(conn) as ServerConfigurationPacketListenerImpl
             handle.send(packet)
+            println("sending $packet")
         } else if (connection is PlayerGameConnection) {
             ((connection as PlayerGameConnection).player as CraftPlayer).handle.connection.send(packet)
         } else {
@@ -115,6 +116,8 @@ public class PaperNoxesiumServerPlayer(
 
     /** Sends this player a request to register the given [channels]. */
     private fun sendPluginChannels(channels: Collection<String>) {
+        if (channels.isEmpty()) return
+
         val stream = ByteArrayOutputStream()
         for (channel in channels) {
             stream.write(channel.toByteArray(Charsets.UTF_8))
