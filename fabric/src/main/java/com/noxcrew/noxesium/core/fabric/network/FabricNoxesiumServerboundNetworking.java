@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
@@ -103,8 +104,9 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
                     case PLAY -> {
                         ClientPlayNetworking.send(fabricPayload);
                     }
-                    default -> throw new UnsupportedOperationException(
-                            "Cannot send payload when not in a configured protocol");
+                    default -> {
+                        NoxesiumApi.getLogger().error("Cannot send payload when not in a configured protocol");
+                    }
                 }
             } else {
                 throw new UnsupportedOperationException("Attempted to send payload of type '" + type.getClass()
