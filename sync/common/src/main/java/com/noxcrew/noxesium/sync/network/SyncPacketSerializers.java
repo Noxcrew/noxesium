@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.sync.network;
 
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerPlaySerializer;
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacket;
@@ -31,13 +31,13 @@ public class SyncPacketSerializers {
                 SyncedPart::content,
                 SyncedPart::new);
 
-        registerPlaySerializer(
+        registerSerializer(
                 SyncPackets.CLIENTBOUND_REQUEST_SYNC,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundRequestSyncPacket::id,
                         ClientboundRequestSyncPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 SyncPackets.CLIENTBOUND_ESTABLISH_SYNC,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -45,7 +45,7 @@ public class SyncPacketSerializers {
                         ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8),
                         ClientboundEstablishSyncPacket::requestedFiles,
                         ClientboundEstablishSyncPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 SyncPackets.CLIENTBOUND_SYNC_FILE,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -53,7 +53,7 @@ public class SyncPacketSerializers {
                         syncedPartCodec,
                         ClientboundSyncFilePacket::part,
                         ClientboundSyncFilePacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 SyncPackets.SERVERBOUND_REQUEST_SYNC,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
@@ -63,7 +63,7 @@ public class SyncPacketSerializers {
                         ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG),
                         ServerboundRequestSyncPacket::files,
                         ServerboundRequestSyncPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 SyncPackets.SERVERBOUND_SYNC_FILE,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,

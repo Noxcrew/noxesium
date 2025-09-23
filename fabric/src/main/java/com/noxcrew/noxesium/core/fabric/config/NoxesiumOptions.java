@@ -152,7 +152,10 @@ public class NoxesiumOptions {
                             Codec.doubleRange(0.01, 2.0),
                             NoxesiumMod.getInstance().getConfig().getScales().getOrDefault(guiElement, 1.0),
                             (newValue) -> {
-                                NoxesiumMod.getInstance().getConfig().getScales().put(guiElement, newValue);
+                                NoxesiumMod.getInstance()
+                                        .getConfig()
+                                        .getScales()
+                                        .put(guiElement, newValue);
                                 NoxesiumMod.getInstance().getConfig().save();
                             }));
         }

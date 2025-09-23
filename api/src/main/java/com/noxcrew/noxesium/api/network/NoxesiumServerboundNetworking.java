@@ -1,12 +1,14 @@
 package com.noxcrew.noxesium.api.network;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Sets up the Noxesium networking system in the serverbound direction.
@@ -99,17 +101,38 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
         }
 
         if (protocolType == ConnectionProtocolType.NONE) {
-            getPacketTypes().values().forEach(it -> it.unbind(boundProtocol));
+            // Only unbind if it's currently bound to PLAY!
+            if (boundProtocol == ConnectionProtocolType.PLAY) {
+                getPacketTypes().values().forEach(it -> it.unbind(boundProtocol));
+            }
         } else {
             // Only re-bind if the protocol isn't already bound to!
-            // Otherwise we have already bound and we can ignore it.
-            if (boundProtocol == ConnectionProtocolType.NONE) {
+            // Otherwise, we have already bound and we can ignore it.
+
+            // Also, only bind to the play protocol!
+            if (boundProtocol == ConnectionProtocolType.NONE && activeProtocol == ConnectionProtocolType.PLAY) {
                 getPacketTypes().values().forEach(it -> it.bind(activeProtocol));
+
+                // Store what protocol we bound against
+                boundProtocol = activeProtocol;
             }
         }
+    }
 
-        // Store what protocol we bound against
-        boundProtocol = activeProtocol;
+    @Override
+    public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
+        super.register(payloadType, entrypoint);
+        if (boundProtocol == ConnectionProtocolType.PLAY) {
+            payloadType.bind(boundProtocol);
+        }
+    }
+
+    @Override
+    public void unregister(NoxesiumPayloadType<?> payloadType) {
+        super.unregister(payloadType);
+        if (boundProtocol == ConnectionProtocolType.PLAY) {
+            payloadType.unbind(boundProtocol);
+        }
     }
 
     /**

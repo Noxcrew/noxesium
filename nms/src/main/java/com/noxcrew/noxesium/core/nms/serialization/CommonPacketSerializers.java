@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerCommonSerializer;
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerPlaySerializer;
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
@@ -34,13 +33,13 @@ public class CommonPacketSerializers {
         SerializableRegistries.registerSerializers(
                 NoxesiumRegistries.QIB_EFFECTS, NoxesiumCodecs.QIB_DEFINITION, NoxesiumStreamCodecs.QIB_DEFINITION);
 
-        registerCommonSerializer(
+        registerSerializer(
                 CommonPackets.SERVER_CLIENT_SETTINGS,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.CLIENT_SETTINGS,
                         ServerboundClientSettingsPacket::settings,
                         ServerboundClientSettingsPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.SERVER_QIB_TRIGGERED,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.KEY,
@@ -50,11 +49,11 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.VAR_INT,
                         ServerboundQibTriggeredPacket::entityId,
                         ServerboundQibTriggeredPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.SERVER_RIPTIDE,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT, ServerboundRiptidePacket::slot, ServerboundRiptidePacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.SERVER_MOUSE_BUTTON_CLICK,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.forEnum(ServerboundMouseButtonClickPacket.Action.class),
@@ -62,7 +61,7 @@ public class CommonPacketSerializers {
                         NoxesiumStreamCodecs.forEnum(ServerboundMouseButtonClickPacket.Button.class),
                         ServerboundMouseButtonClickPacket::button,
                         ServerboundMouseButtonClickPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_CUSTOM_SOUND_MODIFY,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -74,7 +73,7 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.optional(ByteBufCodecs.FLOAT),
                         ClientboundCustomSoundModifyPacket::startVolume,
                         ClientboundCustomSoundModifyPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_CUSTOM_SOUND_START,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -100,13 +99,13 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.optional(ByteBufCodecs.VAR_INT),
                         ClientboundCustomSoundStartPacket::entityId,
                         ClientboundCustomSoundStartPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_CUSTOM_SOUND_STOP,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundCustomSoundStopPacket::id,
                         ClientboundCustomSoundStopPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -116,7 +115,7 @@ public class CommonPacketSerializers {
                         NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.ENTITY_COMPONENTS),
                         ClientboundUpdateEntityComponentsPacket::patch,
                         ClientboundUpdateEntityComponentsPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS,
                 StreamCodec.composite(
                         ByteBufCodecs.BOOL,
@@ -124,7 +123,7 @@ public class CommonPacketSerializers {
                         NoxesiumStreamCodecs.noxesiumComponentPatch(NoxesiumRegistries.GAME_COMPONENTS),
                         ClientboundUpdateGameComponentsPacket::patch,
                         ClientboundUpdateGameComponentsPacket::new));
-        registerPlaySerializer(
+        registerSerializer(
                 CommonPackets.CLIENT_OPEN_LINK,
                 StreamCodec.composite(
                         ByteBufCodecs.optional(NoxesiumPlatform.getInstance().getComponentStreamCodec()),

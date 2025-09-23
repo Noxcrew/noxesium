@@ -17,7 +17,6 @@ import net.fabricmc.fabric.impl.networking.client.ClientNetworkingImpl;
 import net.kyori.adventure.key.Key;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -30,12 +29,8 @@ import org.jetbrains.annotations.NotNull;
 public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetworking {
     @Override
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> createPayloadType(
-            @NotNull String namespace,
-            @NotNull String id,
-            Class<T> clazz,
-            boolean clientToServer,
-            boolean configPhaseCompatible) {
-        return new FabricPayloadType<>(Key.key(namespace, id), clazz, clientToServer, configPhaseCompatible);
+            @NotNull String namespace, @NotNull String id, Class<T> clazz, boolean clientToServer) {
+        return new FabricPayloadType<>(Key.key(namespace, id), clazz, clientToServer);
     }
 
     @Override
@@ -55,19 +50,13 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
         // on the client in the registry! (the entrypoint is active)
         var resourceLocation = ResourceLocation.parse(type.id().asString());
         try {
-            return switch (getMinecraftProtocol()) {
-                case CONFIGURATION -> ClientConfigurationNetworking.canSend(resourceLocation)
-                        && ((PayloadTypeRegistryImpl<FriendlyByteBuf>) PayloadTypeRegistry.configurationC2S())
-                                        .get(resourceLocation)
-                                != null;
-                case PLAY -> ClientPlayNetworking.canSend(resourceLocation)
-                        && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
-                                        .get(resourceLocation)
-                                != null;
-                default -> false;
-            };
+            return getMinecraftProtocol() == ConnectionProtocolType.PLAY
+                    && ClientPlayNetworking.canSend(resourceLocation)
+                    && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
+                                    .get(resourceLocation)
+                            != null;
         } catch (Exception e) {
-            // If an exception occurred the protocol got changed concurrently by a different thread!
+            NoxesiumApi.getLogger().error("Failed to determine if packet of type '{}' can be sent", type);
             return false;
         }
     }

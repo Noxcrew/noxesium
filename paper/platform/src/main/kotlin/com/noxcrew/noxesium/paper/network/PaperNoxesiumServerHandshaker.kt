@@ -24,39 +24,23 @@ import io.netty.buffer.Unpooled
 import io.papermc.paper.connection.PlayerCommonConnection
 import io.papermc.paper.connection.PlayerConfigurationConnection
 import io.papermc.paper.connection.PlayerGameConnection
-import io.papermc.paper.event.connection.configuration.PlayerConnectionInitialConfigureEvent
-import io.papermc.paper.event.connection.configuration.PlayerConnectionReconfigureEvent
-import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
-import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket
-import net.minecraft.network.protocol.configuration.ServerboundFinishConfigurationPacket
-import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerRegisterChannelEvent
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
-import kotlin.collections.get
 
 /**
  * Performs handshaking with the server-side to be run from the client-side.
  */
 public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Listener, PacketListener {
-    /**
-     * On Paper we track all players from the initial connection as a way to store
-     * the connection object properly, we register and unregister with the main map
-     * whenever we enter/leave the config/play phase.
-     */
-    private val allPlayers = ConcurrentHashMap<UUID, PaperNoxesiumServerPlayer>()
-
     override fun register() {
         super.register()
         Bukkit.getPluginManager().registerEvents(this, NoxesiumPaper.plugin)
@@ -66,7 +50,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
             NoxesiumPaper.plugin,
             {
-                for (player in allPlayers.values) {
+                for (player in NoxesiumPlayerManager.getInstance().allPlayers) {
                     player.tick()
 
                     // Test if all handshake tasks are already complete
@@ -88,14 +72,15 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                 return@addListener
             }
 
-            val player = allPlayers[playerId]
+            val player = (Bukkit.getPlayer(playerId) as? CraftPlayer)?.handle
             if (player == null) {
-                NoxesiumApi.getLogger().error("Received handshake attempt for unknown uuid, destroying connection!")
+                NoxesiumApi.getLogger().error("Received handshake for unknown player $playerId, destroying connection!")
                 destroy(playerId)
                 return@addListener
             }
 
-            reference.handleHandshake(player, packet!!)
+            val noxesiumPlayer = PaperNoxesiumServerPlayer(player, serializedPlayer = getStoredData(playerId))
+            reference.handleHandshake(noxesiumPlayer, packet!!)
         }
     }
 
@@ -117,45 +102,32 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     }
 
     /**
-     * When the client first initiates a connection we start by creating a Noxesium player for
-     * them, which we keep updated thereafter.
+     * We do not need the login event but this listener exists to enforce the legacy login event hack
+     * to be present which ensures no new player instance is created when the config phase ends.
      */
     @EventHandler
-    public fun onPlayerPreLogin(event: AsyncPlayerPreLoginEvent) {
-        val noxesiumPlayer =
-            PaperNoxesiumServerPlayer(
-                this,
-                uniqueId = event.uniqueId,
-                username = event.name,
-                initialConnection = event.connection,
-                serializedPlayer = getStoredData(event.uniqueId),
-            )
-        allPlayers[event.uniqueId] = noxesiumPlayer
+    public fun onPlayerLogin(event: PlayerLoginEvent) {
     }
 
-    /** Move back to the configuration connection if the player re-enters the configuration phase. */
-    @EventHandler
-    public fun onReconfigure(event: PlayerConnectionReconfigureEvent) {
-        allPlayers[event.connection.profile.uniqueId ?: return]?.connection = event.connection
-    }
-
-    /** Enter the configuration phase when the player first starts configuring. */
-    @EventHandler
-    public fun onInitialConfigure(event: PlayerConnectionInitialConfigureEvent) {
-        allPlayers[event.connection.profile.uniqueId ?: return]?.connection = event.connection
-    }
-
-    /** Enter the play phase when the player finishes joining. */
+    /** Perform a transfer if a player joins with existing data present. */
     @EventHandler
     public fun onPlayerJoin(event: PlayerJoinEvent) {
-        allPlayers[event.player.uniqueId]?.connection = event.player.connection
+        val player = (event.player as? CraftPlayer)?.handle ?: return
+
+        // If the player has stored data perform a transfer
+        getStoredData(event.player.uniqueId)?.also { storedData ->
+            handleTransfer(PaperNoxesiumServerPlayer(player, serializedPlayer = storedData))
+            return
+        }
+
+        // If the player is new, inform them they can authenticate!
+        player.sendPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
     }
 
     /** Destroy the data if the connection is closed. */
     @EventHandler
     public fun onPlayerConnectionClose(event: PlayerConnectionCloseEvent) {
         onPlayerDisconnect(event.playerUniqueId)
-        allPlayers.remove(event.playerUniqueId)?.connection = null
     }
 
     @EventHandler
@@ -163,31 +135,10 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         onChannelRegistered(event.player.noxesiumPlayer, event.channel)
     }
 
-    @PacketHandler
-    public fun onReenterConfig(
-        player: Player,
-        packet: ClientboundStartConfigurationPacket,
-    ): ClientboundStartConfigurationPacket {
-        // When the client is told to start configuring we immediately afterwards
-        // break down the outbound protocol so we can no longer send anything!
-        allPlayers[player.uniqueId]?.connection = null
-        return packet
-    }
-
-    @PacketHandler
-    public fun onFinishConfiguration(
-        connection: PlayerConfigurationConnection,
-        packet: ClientboundFinishConfigurationPacket,
-    ): ClientboundFinishConfigurationPacket {
-        // If the server informs the client that configuration is about to complete,
-        // we have to very quickly destroy the connection object we have cached!
-        // We can no longer send anything to this until it gets updated and passed
-        // by the join event. As soon as the client responds, the outbound handler will
-        // be destroyed.
-        allPlayers[connection.profile.uniqueId]?.connection = null
-        return packet
-    }
-
+    /**
+     * Capture payloads even during the configuration phase to prevent Bukkit from seeing anything
+     * about any of the Noxesium plugin channels.
+     */
     @PacketHandler
     public fun onCustomPayload(
         connection: PlayerCommonConnection,
@@ -200,10 +151,10 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             // Determine the current Noxesium player and if they can send this type of packet
             val playerUUID =
                 (connection as? PlayerConfigurationConnection)?.profile?.id ?: (connection as? PlayerGameConnection)?.player?.uniqueId
-                ?: return null
+                    ?: return null
             val playerName =
                 (connection as? PlayerConfigurationConnection)?.profile?.name ?: (connection as? PlayerGameConnection)?.player?.name
-                ?: playerUUID.toString()
+                    ?: playerUUID.toString()
 
             val noxesiumPlayer = NoxesiumPlayerManager.getInstance().getPlayer(playerUUID) as? PaperNoxesiumServerPlayer
             val knownChannels = noxesiumPlayer?.registeredPluginChannels ?: HandshakePackets.INSTANCE.pluginChannelIdentifiers
@@ -225,7 +176,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                 val buffer =
                     ((connection as? PlayerGameConnection)?.player as? CraftPlayer)?.handle?.registryAccess()?.let { registryAccess ->
                         RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(payload.data), registryAccess)
-                    } ?: FriendlyByteBuf(Unpooled.wrappedBuffer(payload.data))
+                    } ?: return null
 
                 val payload =
                     if (payloadType.jsonSerialized) {
@@ -236,15 +187,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                         serializer.decode(buffer.readUtf(), payloadType.clazz)
                     } else {
                         val codec = PacketSerializerRegistry.getSerializers(payloadType)
-
-                        if (payloadType.configPhaseCompatible) {
-                            codec.decode((buffer as? RegistryFriendlyByteBuf) ?: RegistryFriendlyByteBuf(buffer, null))
-                        } else {
-                            require(buffer is RegistryFriendlyByteBuf) {
-                                "Tried to deserialize non-config phase compatible packet ${payload.id}"
-                            }
-                            codec.decode(buffer)
-                        }
+                        codec.decode(buffer)
                     }
 
                 // Perform packet handling on the main thread

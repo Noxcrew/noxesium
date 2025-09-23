@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
@@ -9,11 +8,9 @@ import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry;
 import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.kyori.adventure.key.Key;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -30,15 +27,13 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
      */
     public final CustomPacketPayload.Type<NoxesiumPayload<T>> type;
 
-    public FabricPayloadType(Key id, Class<T> clazz, boolean clientToServer, boolean configPhaseCompatible) {
-        super(id, clazz, clientToServer, configPhaseCompatible);
+    public FabricPayloadType(Key id, Class<T> clazz, boolean clientToServer) {
+        super(id, clazz, clientToServer);
         this.type = new CustomPacketPayload.Type<>(ResourceLocation.parse(id.asString()));
     }
 
     @Override
     public void register(@Nullable NoxesiumEntrypoint entrypoint) {
-        super.register(entrypoint);
-
         // Create a custom payload that uses the payload object as a wrapper so we can
         // provide a custom stream codec to use for this packet.
         if (clientToServer) {
@@ -47,18 +42,13 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
             PayloadTypeRegistry.playS2C().register(type, getStreamCodec());
         }
 
-        // Also register on the config phase if applicable!
-        if (configPhaseCompatible) {
-            if (clientToServer) {
-                PayloadTypeRegistry.configurationC2S().register(type, getStreamCodec());
-            } else {
-                PayloadTypeRegistry.configurationS2C().register(type, getStreamCodec());
-            }
-        }
+        // Register and bind after adding to the registry!
+        super.register(entrypoint);
     }
 
     @Override
     public void unregister() {
+        // Unbind before removing from the registry!
         super.unregister();
 
         if (clientToServer) {
@@ -66,57 +56,28 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         } else {
             unregisterPacket(PayloadTypeRegistry.playS2C(), type.id());
         }
-
-        // Also unregister on the config phase if applicable!
-        if (configPhaseCompatible) {
-            if (clientToServer) {
-                unregisterPacket(PayloadTypeRegistry.configurationC2S(), type.id());
-            } else {
-                unregisterPacket(PayloadTypeRegistry.configurationS2C(), type.id());
-            }
-        }
     }
 
     @Override
     public void bind(ConnectionProtocolType protocolType) {
         super.bind(protocolType);
-
-        switch (protocolType) {
-            case CONFIGURATION -> {
-                if (!clientToServer) {
-                    ClientConfigurationNetworking.registerReceiver(type, new FabricConfigPacketHandler<>());
-                }
-            }
-            case PLAY -> {
-                if (!clientToServer) {
-                    ClientPlayNetworking.registerReceiver(type, new FabricPlayPacketHandler<>());
-                }
-            }
-            default -> {}
+        if (!clientToServer) {
+            ClientPlayNetworking.registerReceiver(type, new FabricPacketHandler<>());
         }
     }
 
     @Override
     public void unbind(ConnectionProtocolType protocolType) {
-        switch (protocolType) {
-            case CONFIGURATION -> {
-                if (!clientToServer) {
-                    ClientConfigurationNetworking.unregisterReceiver(type.id());
-                }
-            }
-            case PLAY -> {
-                if (!clientToServer) {
-                    ClientPlayNetworking.unregisterReceiver(type.id());
-                }
-            }
-            default -> {}
+        super.unbind(protocolType);
+        if (!clientToServer) {
+            ClientPlayNetworking.unregisterReceiver(type.id());
         }
     }
 
     /**
      * Returns a stream codec for this payload.
      */
-    private StreamCodec<FriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
+    private StreamCodec<RegistryFriendlyByteBuf, NoxesiumPayload<T>> getStreamCodec() {
         var payloadType = this;
         if (payloadType.jsonSerialized) {
             var serializer = JsonSerializerRegistry.getInstance()
@@ -127,12 +88,12 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
             return new StreamCodec<>() {
                 @Override
                 @NotNull
-                public NoxesiumPayload<T> decode(FriendlyByteBuf buffer) {
+                public NoxesiumPayload<T> decode(RegistryFriendlyByteBuf buffer) {
                     return new NoxesiumPayload<>(payloadType, serializer.decode(buffer.readUtf(), payloadType.clazz));
                 }
 
                 @Override
-                public void encode(FriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
+                public void encode(RegistryFriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
                     buffer.writeUtf(serializer.encode(payload.value(), payloadType.clazz));
                 }
             };
@@ -142,36 +103,13 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         return new StreamCodec<>() {
             @Override
             @NotNull
-            public NoxesiumPayload<T> decode(FriendlyByteBuf buffer) {
-                if (configPhaseCompatible) {
-                    return new NoxesiumPayload<>(
-                            payloadType,
-                            codec.decode(
-                                    buffer instanceof RegistryFriendlyByteBuf
-                                            ? (RegistryFriendlyByteBuf) buffer
-                                            : new RegistryFriendlyByteBuf(buffer, null)));
-                } else {
-                    Preconditions.checkState(
-                            buffer instanceof RegistryFriendlyByteBuf,
-                            "Tried to deserialize non-config phase compatible packet " + id());
-                    return new NoxesiumPayload<>(payloadType, codec.decode((RegistryFriendlyByteBuf) buffer));
-                }
+            public NoxesiumPayload<T> decode(RegistryFriendlyByteBuf buffer) {
+                return new NoxesiumPayload<>(payloadType, codec.decode(buffer));
             }
 
             @Override
-            public void encode(FriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
-                if (configPhaseCompatible) {
-                    codec.encode(
-                            buffer instanceof RegistryFriendlyByteBuf
-                                    ? (RegistryFriendlyByteBuf) buffer
-                                    : new RegistryFriendlyByteBuf(buffer, null),
-                            payload.value());
-                } else {
-                    Preconditions.checkState(
-                            buffer instanceof RegistryFriendlyByteBuf,
-                            "Tried to serialize non-config phase compatible packet " + id());
-                    codec.encode((RegistryFriendlyByteBuf) buffer, payload.value());
-                }
+            public void encode(RegistryFriendlyByteBuf buffer, NoxesiumPayload<T> payload) {
+                codec.encode(buffer, payload.value());
             }
         };
     }

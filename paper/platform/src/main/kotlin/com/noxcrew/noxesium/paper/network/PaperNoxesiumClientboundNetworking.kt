@@ -13,14 +13,11 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.PaperPlatform
 import io.netty.buffer.Unpooled
-import io.papermc.paper.connection.PlayerGameConnection
 import net.kyori.adventure.key.Key
-import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
 import net.minecraft.resources.ResourceLocation
-import org.bukkit.craftbukkit.entity.CraftPlayer
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
@@ -65,8 +62,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         id: String,
         clazz: Class<T>,
         clientToServer: Boolean,
-        configPhaseCompatible: Boolean,
-    ): NoxesiumPayloadType<T> = NoxesiumPayloadType(Key.key(namespace, id), clazz, clientToServer, configPhaseCompatible)
+    ): NoxesiumPayloadType<T> = NoxesiumPayloadType(Key.key(namespace, id), clazz, clientToServer)
 
     override fun canReceive(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<*>): Boolean {
         // Prevent sending if the client does not know of this channel!
@@ -84,16 +80,11 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         // for the stream codecs! Do not defer this to happen later in the netty thread. We do this just so
         // we can apply the ViaVersion codecs defined above, serializing on a separate thread is fine
         // for any other implementations that do not need such a technique.
-        val connection = (player as PaperNoxesiumServerPlayer).connection
-        (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer =
-            ((connection as? PlayerGameConnection)?.player as? CraftPlayer)?.handle
+        val player = (player as PaperNoxesiumServerPlayer).player
+        (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = player
 
         // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
-        val buffer =
-            ((connection as? PlayerGameConnection)?.player as? CraftPlayer)?.handle?.registryAccess()?.let { registryAccess ->
-                RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess)
-            } ?: FriendlyByteBuf(Unpooled.buffer())
-
+        val buffer = RegistryFriendlyByteBuf(Unpooled.buffer(), player.registryAccess())
         if (type.jsonSerialized) {
             val serializer =
                 JsonSerializerRegistry
@@ -103,13 +94,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         } else {
             // Use the stream codec of this payload type to encode it into the buffer
             val serializer = PacketSerializerRegistry.getSerializers(type)
-
-            if (type.configPhaseCompatible) {
-                serializer.encode((buffer as? RegistryFriendlyByteBuf) ?: RegistryFriendlyByteBuf(buffer, null), payload)
-            } else {
-                require(buffer is RegistryFriendlyByteBuf) { "Tried to serialize non-config phase compatible packet ${type.id()}" }
-                serializer.encode(buffer, payload)
-            }
+            serializer.encode(buffer, payload)
         }
         (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = null
 

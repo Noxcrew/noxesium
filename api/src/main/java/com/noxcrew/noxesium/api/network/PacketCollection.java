@@ -19,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 public final class PacketCollection {
     private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
     private final Set<String> pluginChannels = new HashSet<>();
-    private final boolean configPhaseCompatible;
     private boolean registered;
 
     /**
@@ -80,19 +79,10 @@ public final class PacketCollection {
     public <T extends NoxesiumPacket> NoxesiumPayloadType<T> register(
             String namespace, String id, Class<T> clazz, boolean clientToServer) {
         Preconditions.checkArgument(!packets.containsKey(id));
-        var type = NoxesiumNetworking.getInstance()
-                .createPayloadType(namespace, id, clazz, clientToServer, configPhaseCompatible);
+        var type = NoxesiumNetworking.getInstance().createPayloadType(namespace, id, clazz, clientToServer);
         packets.put(id, type);
         pluginChannels.add(type.id().asString());
         return type;
-    }
-
-    public PacketCollection() {
-        this(false);
-    }
-
-    public PacketCollection(boolean configPhaseCompatible) {
-        this.configPhaseCompatible = configPhaseCompatible;
     }
 
     /**

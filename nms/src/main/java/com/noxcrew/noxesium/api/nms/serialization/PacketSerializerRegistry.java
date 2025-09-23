@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.NotNull;
@@ -31,25 +30,13 @@ public class PacketSerializerRegistry {
     }
 
     /**
-     * Registers a new serializer for the given packet type.
-     */
-    public static <T extends NoxesiumPacket> void registerCommonSerializer(
-            NoxesiumPayloadType<T> payloadType, @Nullable StreamCodec<? super FriendlyByteBuf, T> streamCodec) {
-        Preconditions.checkState(
-                !payloadType.jsonSerialized, "Cannot register a serializer for a JSON serialized packet");
-        serializers.put(payloadType, streamCodec);
-    }
-
-    /**
      * Registers a new serializer for the given packet type that only works during
      * the play phase.
      */
-    public static <T extends NoxesiumPacket> void registerPlaySerializer(
+    public static <T extends NoxesiumPacket> void registerSerializer(
             NoxesiumPayloadType<T> payloadType, @Nullable StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         Preconditions.checkState(
                 !payloadType.jsonSerialized, "Cannot register a serializer for a JSON serialized packet");
-        Preconditions.checkState(
-                !payloadType.configPhaseCompatible, "Cannot register a play serializer for a config phase packet");
         serializers.put(payloadType, streamCodec);
     }
 }

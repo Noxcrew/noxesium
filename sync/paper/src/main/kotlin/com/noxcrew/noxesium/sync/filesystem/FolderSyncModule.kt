@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.network.SyncPackets
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket
-import io.papermc.paper.connection.PlayerGameConnection
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import java.nio.file.Path
@@ -83,7 +82,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
         // Double-check that this player has the required permissions! This avoids clients from faking their way
         // into synchronization sessions the server didn't request.
         val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) as? PaperNoxesiumServerPlayer ?: return
-        val bukkitPlayer = (player.connection as? PlayerGameConnection)?.player ?: return
+        val bukkitPlayer = player.player.bukkitEntity
         if (!bukkitPlayer.hasPermission(PERMISSION_NODE)) return
         val folder = syncableFolders[packet.id] ?: return
 

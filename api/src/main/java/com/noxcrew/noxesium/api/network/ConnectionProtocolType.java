@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.api.network;
 
 /**
- * The different vanilla protocol statuses that Noxesium supports being connected during.
+ * The different vanilla protocol statuses.
  */
 public enum ConnectionProtocolType {
     NONE,

@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.api.nms.serialization;
 
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerCommonSerializer;
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
@@ -31,13 +31,13 @@ public class HandshakePacketSerializers {
      * Registers all serializers.
      */
     public static void register() {
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE,
                 StreamCodec.composite(
                         ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                         ServerboundHandshakePacket::entrypoints,
                         ServerboundHandshakePacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.ENTRYPOINT_PROTOCOL.apply(ByteBufCodecs.collection(HashSet::new)),
@@ -45,13 +45,13 @@ public class HandshakePacketSerializers {
                         NoxesiumStreamCodecs.MOD_INFO.apply(ByteBufCodecs.collection(HashSet::new)),
                         ServerboundHandshakeAcknowledgePacket::mods,
                         ServerboundHandshakeAcknowledgePacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.forEnum(NoxesiumErrorReason.class),
                         ServerboundHandshakeCancelPacket::reason,
                         ServerboundHandshakeCancelPacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -59,29 +59,29 @@ public class HandshakePacketSerializers {
                         ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.VAR_INT),
                         ServerboundRegistryUpdateResultPacket::unknownKeys,
                         ServerboundRegistryUpdateResultPacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.SERVERBOUND_LAZY_PACKETS,
                 StreamCodec.composite(
                         ByteBufCodecs.collection(HashSet::new, NoxesiumStreamCodecs.KEY),
                         ServerboundLazyPacketsPacket::packets,
                         ServerboundLazyPacketsPacket::new));
 
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE,
                 StreamCodec.composite(
                         ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                         ClientboundHandshakeAcknowledgePacket::entrypoints,
                         ClientboundHandshakeAcknowledgePacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE,
                 StreamCodec.unit(new ClientboundHandshakeCompletePacket()));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED,
                 StreamCodec.unit(new ClientboundHandshakeTransferredPacket()));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL,
                 StreamCodec.unit(new ClientboundHandshakeCancelPacket()));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -93,7 +93,7 @@ public class HandshakePacketSerializers {
                         ByteBufCodecs.map(HashMap::new, NoxesiumStreamCodecs.KEY, ByteBufCodecs.VAR_INT),
                         ClientboundRegistryIdsUpdatePacket::ids,
                         ClientboundRegistryIdsUpdatePacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_REGISTRY_CONTENT_UPDATE,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
@@ -103,7 +103,7 @@ public class HandshakePacketSerializers {
                         NoxesiumStreamCodecs.noxesiumRegistryPatch(),
                         ClientboundRegistryContentUpdatePacket::patch,
                         ClientboundRegistryContentUpdatePacket::new));
-        registerCommonSerializer(
+        registerSerializer(
                 HandshakePackets.CLIENTBOUND_LAZY_PACKETS,
                 StreamCodec.composite(
                         ByteBufCodecs.collection(HashSet::new, NoxesiumStreamCodecs.KEY),

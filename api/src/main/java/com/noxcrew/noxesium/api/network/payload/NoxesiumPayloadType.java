@@ -52,11 +52,6 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public final boolean lazy;
 
     /**
-     * Whether this payload is config phase compatible.
-     */
-    public final boolean configPhaseCompatible;
-
-    /**
      * All listeners registered to this payload type.
      */
     private final Set<Pair<WeakReference<?>, TriConsumer<?, T, UUID>>> listeners = ConcurrentHashMap.newKeySet();
@@ -65,13 +60,11 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
      * Creates a new Noxesium payload type which can be listened to
      * by custom packet handlers.
      */
-    public NoxesiumPayloadType(
-            @NotNull Key id, @NotNull Class<T> clazz, boolean clientToServer, boolean configPhaseCompatible) {
+    public NoxesiumPayloadType(@NotNull Key id, @NotNull Class<T> clazz, boolean clientToServer) {
         this.id = id;
         this.clazz = clazz;
         this.clientToServer = clientToServer;
         this.jsonSerialized = clazz.isAnnotationPresent(JsonSerializedPacket.class);
-        this.configPhaseCompatible = this.jsonSerialized || configPhaseCompatible;
         this.lazy = clazz.isAnnotationPresent(LazyPacket.class);
     }
 

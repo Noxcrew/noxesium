@@ -12,10 +12,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.C2SConfigurationChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
@@ -41,43 +39,34 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         // We initialize and uninitialize the handshake whenever the handshake channel is registered or unregistered by
         // the server, we use this to detect when it starts and stops being available. This should work regardless of
         // how the server has its proxy configured.
-        C2SConfigurationChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            System.out.println("config register " + channels);
-            if (channels.contains(HANDSHAKE_CHANNEL)) {
-                initialize();
-            }
-        });
         C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            System.out.println("play register " + channels);
             if (channels.contains(HANDSHAKE_CHANNEL)) {
                 initialize();
-            }
-        });
-        C2SConfigurationChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            System.out.println("config unregister " + channels);
-            if (channels.contains(HANDSHAKE_CHANNEL)) {
-                uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
             }
         });
         C2SPlayChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
-            System.out.println("play unregister " + channels);
             if (channels.contains(HANDSHAKE_CHANNEL)) {
                 uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
             }
         });
 
-        // Mark down when the protocol changes and attempt to re-initialize afterwards
+        // Mark down when the protocol changes
         ClientConfigurationConnectionEvents.START.register((ignored1, ignored2) -> {
             NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.CONFIGURATION);
-            initialize();
         });
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.PLAY);
-            initialize();
+
+            // Whenever we (re-)enter the PLAY phase we check if we have the handshake channel available
+            // and either initialize or break down a previous connection that may have lasted through a config phase.
+            if (ClientPlayNetworking.canSend(HANDSHAKE_CHANNEL)) {
+                initialize();
+            } else {
+                uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
+            }
         });
 
-        // We listen in ConnectionTerminationMixin to any instance of leaving the PLAY phase and uninitialize from
-        // there.
+        // We listen in ConnectionTerminationMixin to disconnecting the server and use that to destroy the connection.
 
         // Attempt to re-run handshaking 10s after a previous handshake went wrong, this waits
         // out any possible server switches that may have occurred mid-handshake.
@@ -88,36 +77,18 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
 
     @Override
     public void initialize() {
-        var packetId = ResourceLocation.parse(
-                HandshakePackets.SERVERBOUND_HANDSHAKE.id().asString());
-        var currentProtocol = NoxesiumServerboundNetworking.getInstance().getMinecraftProtocol();
-        System.out.println("Initializing " + currentProtocol);
-        switch (currentProtocol) {
-            case CONFIGURATION -> {
-                // Check if the packet has been registered yet.
-                if (!ClientConfigurationNetworking.canSend(packetId)) {
-                    System.out.println("not allowed " + packetId);
-                    return;
-                }
-            }
+        // Check if the connection has been established first, just in case.
+        // This should not be able to fail, so we just stop trying to authenticate.
+        if (Minecraft.getInstance().getConnection() == null) return;
 
-            case PLAY -> {
-                // Check if the connection has been established first, just in case.
-                // This should not be able to fail, so we just stop trying to authenticate.
-                if (Minecraft.getInstance().getConnection() == null) return;
+        // Don't allow if the server doesn't accept any handshakes, don't use our own method as it checks if
+        // it's been registered yet which it hasn't! We want to hide the plugin channels from the server since
+        // some servers (like Zero Minr) kick on detecting any plugin channels that aren't whitelisted,
+        // whereas no client mod will care what a server asks for.
+        // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant
+        // for the server to customise the client.
+        if (!ClientPlayNetworking.canSend(HANDSHAKE_CHANNEL)) return;
 
-                // Don't allow if the server doesn't accept any handshakes, don't use our own method as it checks if
-                // it's been registered yet which it hasn't! We want to hide the plugin channels from the server since
-                // some servers (like Zero Minr) kick on detecting any plugin channels that aren't whitelisted,
-                // whereas no client mod will care what a server asks for.
-                // Also, it's fine if Noxesium simply doesn't enable unless the server needs it since it's a mod meant
-                // for the server to customise the client.
-                if (!ClientPlayNetworking.canSend(packetId)) return;
-            }
-            case NONE -> {
-                return;
-            }
-        }
         super.initialize();
     }
 

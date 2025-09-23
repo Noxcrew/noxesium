@@ -17,8 +17,6 @@ internal class ChannelPacketHandler(
 ) : ChannelDuplexHandler() {
     @Suppress("UNCHECKED_CAST")
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        println("writing $msg")
-
         // Packet Events supports sending hidden packets which are sent as direct byte buffers instead
         // of packets. To avoid breaking them we need to ignore non-packet objects.
         if (msg !is Packet<*>) {
@@ -39,8 +37,6 @@ internal class ChannelPacketHandler(
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, packet: Any) {
-        println("reading $packet")
-
         // Ignore non packet objects
         if (packet !is Packet<*>) {
             super.channelRead(ctx, packet)

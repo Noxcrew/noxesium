@@ -42,7 +42,6 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
 
     override fun getPacketCollections(): Collection<PacketCollection> = listOf(
         CommonPackets.INSTANCE,
-        CommonPackets.INSTANCE_CONFIG_COMPATIBLE,
     )
 
     override fun getRegistryCollections(): Collection<RegistryCollection<*>> = listOf(
