@@ -47,6 +47,8 @@ public class PaperNoxesiumServerPlayer(
             if (field == value) return
             field = value
 
+            println("connection is now $connection")
+
             // Update the type of connection this player currently has
             connectionType =
                 when (value) {
@@ -66,8 +68,8 @@ public class PaperNoxesiumServerPlayer(
                 }
             }
 
-            // Tick again after changing the connection type
-            tick()
+            // Send any queued packets on the new connection
+            sendQueuedPackets()
         }
 
     /** Returns whether this player is still connected. */
@@ -102,16 +104,20 @@ public class PaperNoxesiumServerPlayer(
      * Sends the given [packet] to this player.
      */
     public fun sendPayload(packet: ClientboundCustomPayloadPacket) {
-        if (connection is PlayerConfigurationConnection) {
+        val handle = if (connection is PlayerConfigurationConnection) {
             val conn = connection as PaperPlayerConfigurationConnection
-            val handle = declaredField.get(conn) as ServerConfigurationPacketListenerImpl
-            handle.send(packet)
-            println("sending $packet")
+            (declaredField.get(conn) as ServerConfigurationPacketListenerImpl)
         } else if (connection is PlayerGameConnection) {
-            ((connection as PlayerGameConnection).player as CraftPlayer).handle.connection.send(packet)
+            ((connection as PlayerGameConnection).player as CraftPlayer).handle.connection
         } else {
             throw IllegalStateException("Invalid connection type for sending payloads ${connection?.javaClass}")
         }
+
+        // Validate that the connection hasn't been destroyed yet!
+        if (handle.connection.channel.)
+
+        println("queued up $packet")
+        handle.send(packet)
     }
 
     /** Sends this player a request to register the given [channels]. */
@@ -133,17 +139,17 @@ public class PaperNoxesiumServerPlayer(
         )
     }
 
-    override fun tick() {
-        super.tick()
-
-        // Do not send plugin channels until we have a connection!
+    /** Sends any queued packets. */
+    private fun sendQueuedPackets() {
+        // Do not send anything until we have a connection!
         if (connectionType == ConnectionProtocolType.NONE) return
 
         // Send the client new plugin channels that it does not yet know about
-        if (pendingPluginChannels.isEmpty()) return
-        val newChannels = pendingPluginChannels
-        pendingPluginChannels = mutableSetOf()
-        sendPluginChannels(newChannels)
-        _registeredPluginChannels += newChannels
+        if (pendingPluginChannels.isNotEmpty()) {
+            val newChannels = pendingPluginChannels
+            pendingPluginChannels = mutableSetOf()
+            sendPluginChannels(newChannels)
+            _registeredPluginChannels += newChannels
+        }
     }
 }

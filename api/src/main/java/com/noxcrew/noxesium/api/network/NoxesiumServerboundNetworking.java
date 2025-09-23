@@ -25,10 +25,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
      */
     public static boolean send(NoxesiumPacket packet) {
         var type = getInstance().getPacketTypes().get(packet.getClass());
-        if (type == null) {
-            System.out.println("no type" + packet.getClass());
-            return false;
-        }
+        if (type == null) return false;
         return type.sendServerboundAny(packet);
     }
 

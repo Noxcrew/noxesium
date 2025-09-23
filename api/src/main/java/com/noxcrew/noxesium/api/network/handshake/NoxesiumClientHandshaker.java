@@ -150,7 +150,6 @@ public abstract class NoxesiumClientHandshaker {
         });
 
         // Inform the server about the handshake
-        System.out.println("sending first");
         NoxesiumServerboundNetworking.send(new ServerboundHandshakePacket(ids));
     }
 

@@ -114,7 +114,6 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
             }
             return true;
         }
-        System.out.println("CANNOT SEND");
         return false;
     }
 

@@ -30,8 +30,12 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
+import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket
+import net.minecraft.network.protocol.configuration.ServerboundFinishConfigurationPacket
+import net.minecraft.network.protocol.game.ClientboundStartConfigurationPacket
 import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.entity.CraftPlayer
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
@@ -40,6 +44,7 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
+import kotlin.collections.get
 
 /**
  * Performs handshaking with the server-side to be run from the client-side.
@@ -156,6 +161,31 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     @EventHandler
     public fun onChannelRegistered(event: PlayerRegisterChannelEvent) {
         onChannelRegistered(event.player.noxesiumPlayer, event.channel)
+    }
+
+    @PacketHandler
+    public fun onReenterConfig(
+        player: Player,
+        packet: ClientboundStartConfigurationPacket,
+    ): ClientboundStartConfigurationPacket {
+        // When the client is told to start configuring we immediately afterwards
+        // break down the outbound protocol so we can no longer send anything!
+        allPlayers[player.uniqueId]?.connection = null
+        return packet
+    }
+
+    @PacketHandler
+    public fun onFinishConfiguration(
+        connection: PlayerConfigurationConnection,
+        packet: ClientboundFinishConfigurationPacket,
+    ): ClientboundFinishConfigurationPacket {
+        // If the server informs the client that configuration is about to complete,
+        // we have to very quickly destroy the connection object we have cached!
+        // We can no longer send anything to this until it gets updated and passed
+        // by the join event. As soon as the client responds, the outbound handler will
+        // be destroyed.
+        allPlayers[connection.profile.uniqueId]?.connection = null
+        return packet
     }
 
     @PacketHandler
