@@ -170,10 +170,10 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             // Determine the current Noxesium player and if they can send this type of packet
             val playerUUID =
                 (connection as? PlayerConfigurationConnection)?.profile?.id ?: (connection as? PlayerGameConnection)?.player?.uniqueId
-                    ?: return null
+                ?: return null
             val playerName =
                 (connection as? PlayerConfigurationConnection)?.profile?.name ?: (connection as? PlayerGameConnection)?.player?.name
-                    ?: playerUUID.toString()
+                ?: playerUUID.toString()
 
             val noxesiumPlayer = NoxesiumPlayerManager.getInstance().getPlayer(playerUUID) as? PaperNoxesiumServerPlayer
             val knownChannels = noxesiumPlayer?.registeredPluginChannels ?: HandshakePackets.INSTANCE.pluginChannelIdentifiers
@@ -218,7 +218,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                     }
 
                 // Perform packet handling on the main thread
-                Bukkit.getScheduler().callSyncMethod(NoxesiumPaper.plugin) {
+                ensureMain {
                     payloadType.handle(playerUUID, payload)
                 }
             } catch (x: Exception) {
@@ -298,5 +298,10 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
      * Indicates that stored data for [player] should be deleted.
      */
     protected open fun removeStoredData(player: NoxesiumServerPlayer) {
+    }
+
+    /** Runs the given [function] delayed on the main thread. */
+    private fun ensureMain(function: () -> Unit) {
+        Bukkit.getScheduler().callSyncMethod(NoxesiumPaper.plugin) { function() }
     }
 }
