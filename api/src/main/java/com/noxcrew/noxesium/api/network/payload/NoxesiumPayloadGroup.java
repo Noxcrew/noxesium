@@ -101,7 +101,10 @@ public class NoxesiumPayloadGroup {
         // Append p0, p1, etc. for the different protocol types.
         var newPayload = NoxesiumNetworking.getInstance()
                 .createPayloadType(
-                        this, Key.key(id.namespace(), id.value() + "-p" + payloadTypes.size()), clazz, clientToServer);
+                        this,
+                        Key.key(id.namespace(), id.value() + "-p" + (payloadTypes.size() + 1)),
+                        clazz,
+                        clientToServer);
         payloadTypes.add(newPayload);
         packetCollection.addPluginChannelIdentifier(newPayload.id().toString());
         return this;
