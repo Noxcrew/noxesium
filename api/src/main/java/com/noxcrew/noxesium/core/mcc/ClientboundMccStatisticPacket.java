@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.core.mcc;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
 
 /**
  * Sent by MCC Island whenever the player obtains a statistic key.
@@ -10,5 +9,4 @@ import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
  * @param record    If true, this is a record type statistic where the new value represents the new record.
  * @param value     The amount the statistic incremented by.
  */
-@LazyPacket
 public record ClientboundMccStatisticPacket(String statistic, boolean record, int value) implements NoxesiumPacket {}

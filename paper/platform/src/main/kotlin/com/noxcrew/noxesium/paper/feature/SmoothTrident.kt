@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper.feature
 
 import com.noxcrew.noxesium.core.network.CommonPackets
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import io.papermc.paper.event.entity.EntityAttemptSpinAttackEvent
 import net.minecraft.sounds.SoundEvent
@@ -26,7 +27,7 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
 
     init {
         // Listen to the client performing a riptide
-        CommonPackets.SERVER_RIPTIDE.addListener(this) { reference, packet, playerId ->
+        CommonPackets.SERVER_RIPTIDE.addListener(this, ServerboundRiptidePacket::class.java) { reference, packet, playerId ->
             if (!reference.isRegistered) return@addListener
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
 

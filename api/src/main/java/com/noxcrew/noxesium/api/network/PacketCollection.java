@@ -3,12 +3,13 @@ package com.noxcrew.noxesium.api.network;
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * packet types before packets can be sent. Packet classes themselves are shared.
  */
 public final class PacketCollection {
-    private final Map<String, NoxesiumPayloadType<?>> packets = new HashMap<>();
+    private final Map<Key, NoxesiumPayloadGroup> packets = new HashMap<>();
     private final Set<String> pluginChannels = new HashSet<>();
     private boolean registered;
 
@@ -25,24 +26,20 @@ public final class PacketCollection {
      * Registers a new clientbound packet.
      *
      * @param id  The identifier of this packet.
-     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(
-            PacketCollection collection, String id, Class<T> clazz) {
-        return client(collection, NoxesiumReferences.PACKET_NAMESPACE, id, clazz);
+    public static NoxesiumPayloadGroup client(PacketCollection collection, String id) {
+        return client(collection, NoxesiumReferences.PACKET_NAMESPACE, id);
     }
 
     /**
      * Registers a new clientbound packet.
      *
      * @param id  The identifier of this packet.
-     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> client(
-            PacketCollection collection, String namespace, String id, Class<T> clazz) {
-        return collection.register(namespace, id, clazz, false);
+    public static NoxesiumPayloadGroup client(PacketCollection collection, String namespace, String id) {
+        return collection.register(namespace, id, false);
     }
 
     /**
@@ -52,37 +49,39 @@ public final class PacketCollection {
      * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> server(
-            PacketCollection collection, String id, Class<T> clazz) {
-        return server(collection, NoxesiumReferences.PACKET_NAMESPACE, id, clazz);
+    public static NoxesiumPayloadGroup server(PacketCollection collection, String id) {
+        return server(collection, NoxesiumReferences.PACKET_NAMESPACE, id);
     }
 
     /**
      * Registers a new serverbound packet.
      *
      * @param id  The identifier of this packet.
-     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public static <T extends NoxesiumPacket> NoxesiumPayloadType<T> server(
-            PacketCollection collection, String namespace, String id, Class<T> clazz) {
-        return collection.register(namespace, id, clazz, true);
+    public static NoxesiumPayloadGroup server(PacketCollection collection, String namespace, String id) {
+        return collection.register(namespace, id, true);
     }
 
     /**
      * Registers a new packet.
      *
      * @param id  The identifier of this packet.
-     * @param <T> The type of packet.
      * @return The PacketType instance.
      */
-    public <T extends NoxesiumPacket> NoxesiumPayloadType<T> register(
-            String namespace, String id, Class<T> clazz, boolean clientToServer) {
-        Preconditions.checkArgument(!packets.containsKey(id));
-        var type = NoxesiumNetworking.getInstance().createPayloadType(namespace, id, clazz, clientToServer);
-        packets.put(id, type);
-        pluginChannels.add(type.id().asString());
-        return type;
+    public NoxesiumPayloadGroup register(String namespace, String id, boolean clientToServer) {
+        var key = Key.key(namespace, id);
+        Preconditions.checkArgument(!packets.containsKey(key));
+        var group = new NoxesiumPayloadGroup(this, key, clientToServer);
+        packets.put(key, group);
+        return group;
+    }
+
+    /**
+     * Registers a new plugin channel identifier.
+     */
+    public void addPluginChannelIdentifier(String pluginChannelId) {
+        pluginChannels.add(pluginChannelId);
     }
 
     /**
@@ -93,9 +92,9 @@ public final class PacketCollection {
     }
 
     /**
-     * Returns the packet types in this collection.
+     * Returns the packet groups in this collection.
      */
-    public Collection<NoxesiumPayloadType<?>> getPackets() {
+    public Collection<NoxesiumPayloadGroup> getPackets() {
         return packets.values();
     }
 
@@ -112,8 +111,11 @@ public final class PacketCollection {
     public void register(@Nullable NoxesiumEntrypoint entrypoint) {
         if (registered) return;
         registered = true;
-        for (var type : packets.values()) {
-            type.register(entrypoint);
+        for (var group : packets.values()) {
+            NoxesiumNetworking.getInstance().register(group, entrypoint);
+            for (var type : group.getPayloadTypes()) {
+                type.register(entrypoint);
+            }
         }
     }
 
@@ -123,8 +125,11 @@ public final class PacketCollection {
     public void unregister() {
         if (!registered) return;
         registered = false;
-        for (var type : packets.values()) {
-            type.unregister();
+        for (var group : packets.values()) {
+            NoxesiumNetworking.getInstance().unregister(group);
+            for (var type : group.getPayloadTypes()) {
+                type.unregister();
+            }
         }
     }
 }

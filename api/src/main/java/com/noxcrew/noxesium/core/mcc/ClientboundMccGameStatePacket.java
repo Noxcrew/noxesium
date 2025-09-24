@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.core.mcc;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
 
 /**
  * Sent by MCC Island whenever the game state changes.
@@ -24,7 +23,6 @@ import com.noxcrew.noxesium.api.network.handshake.LazyPacket;
  * @param mapId       The id assigned to the current map.
  * @param mapName     The display name of the current map localised to the client's language.
  */
-@LazyPacket
 public record ClientboundMccGameStatePacket(
         String game,
         String queueType,

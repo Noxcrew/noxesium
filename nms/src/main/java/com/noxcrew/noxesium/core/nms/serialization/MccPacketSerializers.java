@@ -5,7 +5,6 @@ import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistr
 import com.noxcrew.noxesium.core.mcc.ClientboundMccGameStatePacket;
 import com.noxcrew.noxesium.core.mcc.ClientboundMccServerPacket;
 import com.noxcrew.noxesium.core.mcc.ClientboundMccStatisticPacket;
-import com.noxcrew.noxesium.core.mcc.MccPackets;
 import java.util.ArrayList;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -19,7 +18,7 @@ public class MccPacketSerializers {
      */
     public static void register() {
         registerSerializer(
-                MccPackets.CLIENTBOUND_MCC_GAME_STATE,
+                ClientboundMccGameStatePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundMccGameStatePacket::game,
@@ -39,7 +38,7 @@ public class MccPacketSerializers {
                         ClientboundMccGameStatePacket::mapName,
                         ClientboundMccGameStatePacket::new));
         registerSerializer(
-                MccPackets.CLIENTBOUND_MCC_SERVER,
+                ClientboundMccServerPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundMccServerPacket::server,
@@ -47,7 +46,7 @@ public class MccPacketSerializers {
                         ClientboundMccServerPacket::types,
                         ClientboundMccServerPacket::new));
         registerSerializer(
-                MccPackets.CLIENTBOUND_MCC_STATISTIC,
+                ClientboundMccStatisticPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundMccStatisticPacket::statistic,

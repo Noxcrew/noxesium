@@ -11,7 +11,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
-import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
@@ -238,10 +238,8 @@ public class NoxesiumServerPlayer {
     /**
      * Returns whether this player wants to receive the given lazy packet type.
      */
-    public boolean shouldSendLazyPacket(NoxesiumPayloadType<?> packet) {
-        // Early-exit if the entrypoint is not registered!
-        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, packet)) return false;
-        return !packet.lazy || shouldSendLazyPacket(packet.id());
+    public boolean shouldSendLazyPacket(NoxesiumPayloadGroup group) {
+        return !group.isLazy() || shouldSendLazyPacket(group.id());
     }
 
     /**
@@ -447,16 +445,16 @@ public class NoxesiumServerPlayer {
         var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;
 
-        // Check if the client can receive this type before we queue the packet, this ensures
-        // that queuing packets doesn't change the return value of this method
-        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, type)) return false;
+        // Check if the client can receive this type before we queue the packet
+        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, type.getGroup())) return false;
 
         // If this packet updates some registry we halt it until we're done updating registries!
         if (isAwaitingRegistries() && packet instanceof NoxesiumRegistryDependentPacket) {
             pendingPackets.add(packet);
             return true;
         }
-        return type.sendClientboundAny(this, packet);
+        type.sendClientboundAny(this, packet);
+        return true;
     }
 
     /**

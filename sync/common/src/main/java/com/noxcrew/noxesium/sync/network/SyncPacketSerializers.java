@@ -32,13 +32,13 @@ public class SyncPacketSerializers {
                 SyncedPart::new);
 
         registerSerializer(
-                SyncPackets.CLIENTBOUND_REQUEST_SYNC,
+                ClientboundRequestSyncPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundRequestSyncPacket::id,
                         ClientboundRequestSyncPacket::new));
         registerSerializer(
-                SyncPackets.CLIENTBOUND_ESTABLISH_SYNC,
+                ClientboundEstablishSyncPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundEstablishSyncPacket::syncId,
@@ -46,7 +46,7 @@ public class SyncPacketSerializers {
                         ClientboundEstablishSyncPacket::requestedFiles,
                         ClientboundEstablishSyncPacket::new));
         registerSerializer(
-                SyncPackets.CLIENTBOUND_SYNC_FILE,
+                ClientboundSyncFilePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundSyncFilePacket::syncId,
@@ -54,7 +54,7 @@ public class SyncPacketSerializers {
                         ClientboundSyncFilePacket::part,
                         ClientboundSyncFilePacket::new));
         registerSerializer(
-                SyncPackets.SERVERBOUND_REQUEST_SYNC,
+                ServerboundRequestSyncPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.STRING_UTF8,
                         ServerboundRequestSyncPacket::id,
@@ -64,7 +64,7 @@ public class SyncPacketSerializers {
                         ServerboundRequestSyncPacket::files,
                         ServerboundRequestSyncPacket::new));
         registerSerializer(
-                SyncPackets.SERVERBOUND_SYNC_FILE,
+                ServerboundSyncFilePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ServerboundSyncFilePacket::syncId,

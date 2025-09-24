@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.network;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,7 +29,10 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     public static boolean send(NoxesiumPacket packet) {
         var type = getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;
-        return type.sendServerboundAny(packet);
+        var instance = NoxesiumServerboundNetworking.getInstance();
+        if (!instance.canSend(type)) return false;
+        type.sendServerboundAny(packet);
+        return true;
     }
 
     @NotNull
@@ -42,8 +46,8 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     /**
      * Returns whether the given lazy packet type should be sent.
      */
-    public boolean shouldSendLazy(NoxesiumPayloadType<?> type) {
-        return (!type.lazy || shouldSendLazy(type.id())) && canSend(type);
+    public boolean shouldSendLazy(NoxesiumPayloadGroup group) {
+        return !group.isLazy() || shouldSendLazy(group.id());
     }
 
     /**
@@ -111,7 +115,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
 
             // Also, only bind to the play protocol!
             if (boundProtocol == ConnectionProtocolType.NONE && activeProtocol == ConnectionProtocolType.PLAY) {
-                getPacketTypes().values().forEach(it -> it.bind(activeProtocol));
+                getPacketTypes().values().forEach(it -> it.bind(boundProtocol));
 
                 // Store what protocol we bound against
                 boundProtocol = activeProtocol;
@@ -120,44 +124,37 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     }
 
     @Override
-    public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
-        super.register(payloadType, entrypoint);
+    public void register(NoxesiumPayloadGroup payloadGroup, @Nullable NoxesiumEntrypoint entrypoint) {
+        super.register(payloadGroup, entrypoint);
         if (boundProtocol == ConnectionProtocolType.PLAY) {
-            payloadType.bind(boundProtocol);
+            for (var payloadType : payloadGroup.getPayloadTypes()) {
+                payloadType.bind(boundProtocol);
+            }
         }
     }
 
     @Override
-    public void unregister(NoxesiumPayloadType<?> payloadType) {
-        super.unregister(payloadType);
+    public void unregister(NoxesiumPayloadGroup payloadGroup) {
+        super.unregister(payloadGroup);
         if (boundProtocol == ConnectionProtocolType.PLAY) {
-            payloadType.unbind(boundProtocol);
+            for (var payloadType : payloadGroup.getPayloadTypes()) {
+                payloadType.unbind(boundProtocol);
+            }
         }
     }
 
     /**
-     * Checks if the connected server should be receiving packets of the given type.
+     * Checks if the connected server can receive packets of the given type.
      *
-     * @param packet The packet class
-     * @return Whether the connected server should be receiving the packet
+     * @param type The packet type
+     * @return Whether this client can send the given packet
      */
-    public boolean canSend(Class<?> packet) {
-        var type = packetTypes.get(packet);
-        if (type == null) return false;
-        return canSend(type);
+    public <T extends NoxesiumPacket> boolean canSend(@NotNull NoxesiumPayloadType<T> type) {
+        return type.getGroup().getPacketCollection().isRegistered();
     }
 
     /**
-     * Checks if the connected server should be receiving packets of the given type.
-     *
-     * @param type The packet type
-     * @return Whether the connected server should be receiving the packet
+     * Sends this packet to the currently connected server, if possible.
      */
-    public abstract boolean canSend(NoxesiumPayloadType<?> type);
-
-    /**
-     * Sends this packet to the currently connected server, if possible. Returns whether the packet
-     * was successfully sent or not.
-     */
-    public abstract <T extends NoxesiumPacket> boolean send(NoxesiumPayloadType<T> type, T payload);
+    public abstract <T extends NoxesiumPacket> void send(@NotNull NoxesiumPayloadType<T> type, T payload);
 }

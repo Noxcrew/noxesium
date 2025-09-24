@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumErrorReason
 import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState
 import com.noxcrew.noxesium.api.network.handshake.NoxesiumServerHandshaker
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
@@ -53,6 +54,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         // Respond to initial handshake packet and create the server player instance
         HandshakePackets.SERVERBOUND_HANDSHAKE.addListener(
             this,
+            ServerboundHandshakePacket::class.java,
         ) { reference, packet, playerId ->
             if (NoxesiumPlayerManager.getInstance().getPlayer(playerId) != null) {
                 NoxesiumApi.getLogger().error("Received handshake attempt while player was known, destroying connection!")

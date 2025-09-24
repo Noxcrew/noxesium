@@ -37,8 +37,11 @@ public class FabricPacketHandler<T extends CustomPacketPayload> implements Clien
                                                         .withColor(ChatFormatting.WHITE))),
                                 false);
             }
-            if (noxesiumPayload.noxesiumType().hasListeners()) {
-                noxesiumPayload.noxesiumType().handle(context.player().getUUID(), noxesiumPayload.value());
+            if (noxesiumPayload.noxesiumType().getGroup().hasListeners()) {
+                noxesiumPayload
+                        .noxesiumType()
+                        .getGroup()
+                        .handle(context.player().getUUID(), noxesiumPayload.value());
             }
         }
     }

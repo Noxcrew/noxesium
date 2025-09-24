@@ -14,6 +14,7 @@ import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPac
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandshakePacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
@@ -68,19 +69,24 @@ public abstract class NoxesiumServerHandshaker {
         HandshakePackets.INSTANCE.register(null);
 
         // Respond to incoming handshake packets (except the initial one!)
-        HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (reference, packet, playerId) -> {
-            reference.handleHandshakeAcknowledge(playerId, packet);
-        });
-        HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL.addListener(this, (reference, packet, playerId) -> {
-            NoxesiumApi.getLogger().info("Client {} cancelled handshake for reason '{}'", playerId, packet.reason());
-            reference.onPlayerDisconnect(playerId);
-        });
-        HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT.addListener(this, (reference, packet, playerId) -> {
-            reference.onRegistryUpdateResult(playerId, packet);
-        });
-        HandshakePackets.SERVERBOUND_LAZY_PACKETS.addListener(this, (reference, packet, playerId) -> {
-            reference.onLazyPackets(playerId, packet);
-        });
+        HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(
+                this, ServerboundHandshakeAcknowledgePacket.class, (reference, packet, playerId) -> {
+                    reference.handleHandshakeAcknowledge(playerId, packet);
+                });
+        HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL.addListener(
+                this, ServerboundHandshakeCancelPacket.class, (reference, packet, playerId) -> {
+                    NoxesiumApi.getLogger()
+                            .info("Client {} cancelled handshake for reason '{}'", playerId, packet.reason());
+                    reference.onPlayerDisconnect(playerId);
+                });
+        HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT.addListener(
+                this, ServerboundRegistryUpdateResultPacket.class, (reference, packet, playerId) -> {
+                    reference.onRegistryUpdateResult(playerId, packet);
+                });
+        HandshakePackets.SERVERBOUND_LAZY_PACKETS.addListener(
+                this, ServerboundLazyPacketsPacket.class, (reference, packet, playerId) -> {
+                    reference.onLazyPackets(playerId, packet);
+                });
     }
 
     /**
@@ -149,7 +155,7 @@ public abstract class NoxesiumServerHandshaker {
         NoxesiumPlayerManager.getInstance().registerPlayer(player.getUniqueId(), player);
 
         if (NoxesiumClientboundNetworking.getInstance()
-                .canReceive(player, ClientboundHandshakeTransferredPacket.class)) {
+                .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             completeTransfer(player);
@@ -224,7 +230,7 @@ public abstract class NoxesiumServerHandshaker {
         // Determine the response based on the current state
         var acknowledgePacket = new ClientboundHandshakeAcknowledgePacket(entrypoints);
         if (NoxesiumClientboundNetworking.getInstance()
-                .canReceive(player, ClientboundHandshakeAcknowledgePacket.class)) {
+                .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             if (!player.sendPacket(acknowledgePacket)) {
@@ -253,7 +259,7 @@ public abstract class NoxesiumServerHandshaker {
             if (entrypoint != null) {
                 for (var packetCollection : entrypoint.getPacketCollections()) {
                     for (var packetType : packetCollection.getPackets()) {
-                        if (!packetType.lazy) continue;
+                        if (!packetType.isLazy()) continue;
                         if (packetType.hasListeners()) {
                             lazyPacketsEnabled.add(packetType.id());
                         }
@@ -401,9 +407,10 @@ public abstract class NoxesiumServerHandshaker {
             // We don't need to tell them about this!
         } else {
             // Inform the client about the reason if relevant
-            NoxesiumClientboundNetworking.send(
-                    NoxesiumPlayerManager.getInstance().getPlayer(uniqueId),
-                    new ClientboundHandshakeCancelPacket(errorReason));
+            var player = NoxesiumPlayerManager.getInstance().getPlayer(uniqueId);
+            if (player != null) {
+                player.sendPacket(new ClientboundHandshakeCancelPacket(errorReason));
+            }
         }
 
         onPlayerDisconnect(uniqueId);

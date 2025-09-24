@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.api.network;
 
 import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
 import java.util.Collection;
@@ -22,32 +23,22 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
         return (NoxesiumClientboundNetworking) instance;
     }
 
-    /**
-     * Sends the given packet, automatically detects the type of the packet based on the registered packets.
-     */
-    public static boolean send(@Nullable NoxesiumServerPlayer player, @NotNull NoxesiumPacket packet) {
-        if (player == null) return false;
-        var type = getInstance().getPacketTypes().get(packet.getClass());
-        if (type == null) return false;
-        return type.sendClientboundAny(player, packet);
-    }
-
-    protected final Map<NoxesiumPayloadType<?>, NoxesiumEntrypoint> entrypoints = new HashMap<>();
+    protected final Map<NoxesiumPayloadGroup, NoxesiumEntrypoint> entrypoints = new HashMap<>();
 
     @Override
-    public void register(NoxesiumPayloadType<?> payloadType, @Nullable NoxesiumEntrypoint entrypoint) {
-        super.register(payloadType, entrypoint);
+    public void register(NoxesiumPayloadGroup group, @Nullable NoxesiumEntrypoint entrypoint) {
+        super.register(group, entrypoint);
         Preconditions.checkState(
-                !entrypoints.containsKey(payloadType), "Cannot register payload type '" + payloadType + "' twice");
-        entrypoints.put(payloadType, entrypoint);
+                !entrypoints.containsKey(group), "Cannot register payload group '" + group + "' twice");
+        entrypoints.put(group, entrypoint);
     }
 
     /**
-     * Returns the entrypoint that registered the given payload type.
+     * Returns the entrypoint that registered the given payload group.
      */
     @Nullable
-    public NoxesiumEntrypoint getPacketEntrypoint(@NotNull NoxesiumPayloadType<?> type) {
-        return entrypoints.get(type);
+    public NoxesiumEntrypoint getPacketEntrypoint(@NotNull NoxesiumPayloadGroup group) {
+        return entrypoints.get(group);
     }
 
     /**
@@ -56,15 +47,18 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     public abstract Collection<String> getRegisteredChannels(@NotNull NoxesiumServerPlayer player);
 
     /**
-     * Checks if the connected player can receive packets of the given type.
+     * Checks if the connected player can receive any packets of the given group.
      *
-     * @param packet The packet class
+     * @param group The packet group
      * @return Whether the connected player can receive the packet
      */
-    public boolean canReceive(@NotNull NoxesiumServerPlayer player, @NotNull Class<?> packet) {
-        var type = packetTypes.get(packet);
-        if (type == null) return false;
-        return canReceive(player, type);
+    public boolean canReceive(@NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadGroup group) {
+        for (var type : group.getPayloadTypes()) {
+            if (canReceive(player, type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -73,12 +67,13 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
      * @param type The packet type
      * @return Whether the connected player can receive the packet
      */
-    public boolean canReceive(@NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<?> type) {
+    public <T extends NoxesiumPacket> boolean canReceive(
+            @NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<T> type) {
         // Prevent sending if the entrypoint that registered this packet is not known to this player!
         // This avoids situations where the client somehow has the correct channel without authenticating
         // properly with that endpoint.
         // If there is no entrypoint (or null which is for handshake packets) we always allow it!
-        var entrypoint = entrypoints.get(type);
+        var entrypoint = entrypoints.get(type.getGroup());
         if (entrypoint == null) return true;
         return player.getSupportedEntrypointIds().contains(entrypoint.getId());
     }
@@ -87,6 +82,6 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
      * Sends this packet to the currently connected server, if possible. Returns whether the packet
      * was successfully sent or not.
      */
-    public abstract <T extends NoxesiumPacket> boolean send(
+    public abstract <T extends NoxesiumPacket> void send(
             @NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
 }

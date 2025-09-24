@@ -7,11 +7,11 @@ import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
-import com.noxcrew.noxesium.core.network.CommonPackets;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -34,13 +34,13 @@ public class CommonPacketSerializers {
                 NoxesiumRegistries.QIB_EFFECTS, NoxesiumCodecs.QIB_DEFINITION, NoxesiumStreamCodecs.QIB_DEFINITION);
 
         registerSerializer(
-                CommonPackets.SERVER_CLIENT_SETTINGS,
+                ServerboundClientSettingsPacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.CLIENT_SETTINGS,
                         ServerboundClientSettingsPacket::settings,
                         ServerboundClientSettingsPacket::new));
         registerSerializer(
-                CommonPackets.SERVER_QIB_TRIGGERED,
+                ServerboundQibTriggeredPacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.KEY,
                         ServerboundQibTriggeredPacket::behavior,
@@ -50,11 +50,11 @@ public class CommonPacketSerializers {
                         ServerboundQibTriggeredPacket::entityId,
                         ServerboundQibTriggeredPacket::new));
         registerSerializer(
-                CommonPackets.SERVER_RIPTIDE,
+                ServerboundRiptidePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT, ServerboundRiptidePacket::slot, ServerboundRiptidePacket::new));
         registerSerializer(
-                CommonPackets.SERVER_MOUSE_BUTTON_CLICK,
+                ServerboundMouseButtonClickPacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.forEnum(ServerboundMouseButtonClickPacket.Action.class),
                         ServerboundMouseButtonClickPacket::action,
@@ -62,7 +62,7 @@ public class CommonPacketSerializers {
                         ServerboundMouseButtonClickPacket::button,
                         ServerboundMouseButtonClickPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_CUSTOM_SOUND_MODIFY,
+                ClientboundCustomSoundModifyPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundCustomSoundModifyPacket::id,
@@ -74,7 +74,7 @@ public class CommonPacketSerializers {
                         ClientboundCustomSoundModifyPacket::startVolume,
                         ClientboundCustomSoundModifyPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_CUSTOM_SOUND_START,
+                ClientboundCustomSoundStartPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundCustomSoundStartPacket::id,
@@ -100,13 +100,13 @@ public class CommonPacketSerializers {
                         ClientboundCustomSoundStartPacket::entityId,
                         ClientboundCustomSoundStartPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_CUSTOM_SOUND_STOP,
+                ClientboundCustomSoundStopPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundCustomSoundStopPacket::id,
                         ClientboundCustomSoundStopPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_UPDATE_ENTITY_COMPONENTS,
+                ClientboundUpdateEntityComponentsPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundUpdateEntityComponentsPacket::entityId,
@@ -116,7 +116,7 @@ public class CommonPacketSerializers {
                         ClientboundUpdateEntityComponentsPacket::patch,
                         ClientboundUpdateEntityComponentsPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_UPDATE_GAME_COMPONENTS,
+                ClientboundUpdateGameComponentsPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.BOOL,
                         ClientboundUpdateGameComponentsPacket::reset,
@@ -124,12 +124,22 @@ public class CommonPacketSerializers {
                         ClientboundUpdateGameComponentsPacket::patch,
                         ClientboundUpdateGameComponentsPacket::new));
         registerSerializer(
-                CommonPackets.CLIENT_OPEN_LINK,
+                ClientboundOpenLinkPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.optional(NoxesiumPlatform.getInstance().getComponentStreamCodec()),
                         ClientboundOpenLinkPacket::text,
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundOpenLinkPacket::url,
                         ClientboundOpenLinkPacket::new));
+        registerSerializer(
+                ClientboundOpenLinkV2Packet.class,
+                StreamCodec.composite(
+                        ByteBufCodecs.optional(NoxesiumPlatform.getInstance().getComponentStreamCodec()),
+                        ClientboundOpenLinkV2Packet::text,
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundOpenLinkV2Packet::url,
+                        ByteBufCodecs.STRING_UTF8,
+                        ClientboundOpenLinkV2Packet::test,
+                        ClientboundOpenLinkV2Packet::new));
     }
 }

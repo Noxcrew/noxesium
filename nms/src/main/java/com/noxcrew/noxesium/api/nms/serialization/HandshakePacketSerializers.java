@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.api.nms.serialization;
 import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
-import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
@@ -32,13 +31,13 @@ public class HandshakePacketSerializers {
      */
     public static void register() {
         registerSerializer(
-                HandshakePackets.SERVERBOUND_HANDSHAKE,
+                ServerboundHandshakePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                         ServerboundHandshakePacket::entrypoints,
                         ServerboundHandshakePacket::new));
         registerSerializer(
-                HandshakePackets.SERVERBOUND_HANDSHAKE_ACKNOWLEDGE,
+                ServerboundHandshakeAcknowledgePacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.ENTRYPOINT_PROTOCOL.apply(ByteBufCodecs.collection(HashSet::new)),
                         ServerboundHandshakeAcknowledgePacket::protocols,
@@ -46,13 +45,13 @@ public class HandshakePacketSerializers {
                         ServerboundHandshakeAcknowledgePacket::mods,
                         ServerboundHandshakeAcknowledgePacket::new));
         registerSerializer(
-                HandshakePackets.SERVERBOUND_HANDSHAKE_CANCEL,
+                ServerboundHandshakeCancelPacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.forEnum(NoxesiumErrorReason.class),
                         ServerboundHandshakeCancelPacket::reason,
                         ServerboundHandshakeCancelPacket::new));
         registerSerializer(
-                HandshakePackets.SERVERBOUND_REGISTRY_UPDATE_RESULT,
+                ServerboundRegistryUpdateResultPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ServerboundRegistryUpdateResultPacket::id,
@@ -60,32 +59,31 @@ public class HandshakePacketSerializers {
                         ServerboundRegistryUpdateResultPacket::unknownKeys,
                         ServerboundRegistryUpdateResultPacket::new));
         registerSerializer(
-                HandshakePackets.SERVERBOUND_LAZY_PACKETS,
+                ServerboundLazyPacketsPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.collection(HashSet::new, NoxesiumStreamCodecs.KEY),
                         ServerboundLazyPacketsPacket::packets,
                         ServerboundLazyPacketsPacket::new));
 
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE,
+                ClientboundHandshakeAcknowledgePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8),
                         ClientboundHandshakeAcknowledgePacket::entrypoints,
                         ClientboundHandshakeAcknowledgePacket::new));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE,
-                StreamCodec.unit(new ClientboundHandshakeCompletePacket()));
+                ClientboundHandshakeCompletePacket.class, StreamCodec.unit(new ClientboundHandshakeCompletePacket()));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED,
+                ClientboundHandshakeTransferredPacket.class,
                 StreamCodec.unit(new ClientboundHandshakeTransferredPacket()));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL,
+                ClientboundHandshakeCancelPacket.class,
                 StreamCodec.composite(
                         NoxesiumStreamCodecs.forEnum(NoxesiumErrorReason.class),
                         ClientboundHandshakeCancelPacket::reason,
                         ClientboundHandshakeCancelPacket::new));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE,
+                ClientboundRegistryIdsUpdatePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundRegistryIdsUpdatePacket::id,
@@ -97,7 +95,7 @@ public class HandshakePacketSerializers {
                         ClientboundRegistryIdsUpdatePacket::ids,
                         ClientboundRegistryIdsUpdatePacket::new));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_REGISTRY_CONTENT_UPDATE,
+                ClientboundRegistryContentUpdatePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
                         ClientboundRegistryContentUpdatePacket::id,
@@ -107,7 +105,7 @@ public class HandshakePacketSerializers {
                         ClientboundRegistryContentUpdatePacket::patch,
                         ClientboundRegistryContentUpdatePacket::new));
         registerSerializer(
-                HandshakePackets.CLIENTBOUND_LAZY_PACKETS,
+                ClientboundLazyPacketsPacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.collection(HashSet::new, NoxesiumStreamCodecs.KEY),
                         ClientboundLazyPacketsPacket::packets,

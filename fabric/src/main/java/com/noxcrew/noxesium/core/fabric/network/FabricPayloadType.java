@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.json.JsonSerializedPacket;
 import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry;
 import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
@@ -27,8 +28,8 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
      */
     public final CustomPacketPayload.Type<NoxesiumPayload<T>> type;
 
-    public FabricPayloadType(Key id, Class<T> clazz, boolean clientToServer) {
-        super(id, clazz, clientToServer);
+    public FabricPayloadType(NoxesiumPayloadGroup group, Key id, Class<T> clazz, boolean clientToServer) {
+        super(group, id, clazz, clientToServer);
         this.type = new CustomPacketPayload.Type<>(ResourceLocation.parse(id.asString()));
     }
 
@@ -99,7 +100,7 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
             };
         }
 
-        var codec = PacketSerializerRegistry.getSerializers(payloadType);
+        var codec = PacketSerializerRegistry.getSerializers(payloadType.typeClass());
         return new StreamCodec<>() {
             @Override
             @NotNull

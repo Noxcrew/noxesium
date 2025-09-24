@@ -57,11 +57,11 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
         }
 
         // Listen to events from the client related to synchronization
-        SyncPackets.SERVERBOUND_REQUEST_SYNC.addListener(this) { reference, packet, playerId ->
+        SyncPackets.SERVERBOUND_REQUEST_SYNC.addListener(this, ServerboundRequestSyncPacket::class.java) { reference, packet, playerId ->
             if (!reference.isRegistered) return@addListener
             reference.handleSyncRequest(playerId, packet)
         }
-        SyncPackets.SERVERBOUND_SYNC_FILE.addListener(this) { reference, packet, playerId ->
+        SyncPackets.SERVERBOUND_SYNC_FILE.addListener(this, ServerboundSyncFilePacket::class.java) { reference, packet, playerId ->
             if (!reference.isRegistered) return@addListener
             reference.acceptFile(playerId, packet)
         }

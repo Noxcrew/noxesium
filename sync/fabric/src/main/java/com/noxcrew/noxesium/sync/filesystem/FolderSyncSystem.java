@@ -6,6 +6,7 @@ import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,21 +26,24 @@ public class FolderSyncSystem extends NoxesiumFeature {
     private final Map<Integer, ClientParentFileSystemWatcher> watchersById = new HashMap<>();
 
     public FolderSyncSystem() {
-        SyncPackets.CLIENTBOUND_REQUEST_SYNC.addListener(this, (reference, packet, ignored) -> {
-            if (!reference.isRegistered()) return;
+        SyncPackets.CLIENTBOUND_REQUEST_SYNC.addListener(
+                this, ClientboundRequestSyncPacket.class, (reference, packet, ignored) -> {
+                    if (!reference.isRegistered()) return;
 
-            // Start a sync when the server requests it. The client has to confirm it first for this specific IP
-            // so random servers cannot start a request unless the client has already allowed it.
-            reference.startSync(packet.id());
-        });
-        SyncPackets.CLIENTBOUND_ESTABLISH_SYNC.addListener(this, (reference, packet, ignored) -> {
-            if (!reference.isRegistered()) return;
-            reference.establishSync(packet);
-        });
-        SyncPackets.CLIENTBOUND_SYNC_FILE.addListener(this, (reference, packet, ignored) -> {
-            if (!reference.isRegistered()) return;
-            reference.acceptFile(packet);
-        });
+                    // Start a sync when the server requests it. The client has to confirm it first for this specific IP
+                    // so random servers cannot start a request unless the client has already allowed it.
+                    reference.startSync(packet.id());
+                });
+        SyncPackets.CLIENTBOUND_ESTABLISH_SYNC.addListener(
+                this, ClientboundEstablishSyncPacket.class, (reference, packet, ignored) -> {
+                    if (!reference.isRegistered()) return;
+                    reference.establishSync(packet);
+                });
+        SyncPackets.CLIENTBOUND_SYNC_FILE.addListener(
+                this, ClientboundSyncFilePacket.class, (reference, packet, ignored) -> {
+                    if (!reference.isRegistered()) return;
+                    reference.acceptFile(packet);
+                });
 
         ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
             // Poll changes on all registered watcher on tick end

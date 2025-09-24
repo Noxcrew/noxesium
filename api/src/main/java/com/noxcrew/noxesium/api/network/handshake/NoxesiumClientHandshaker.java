@@ -10,6 +10,9 @@ import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeAcknowledgePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCancelPacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeCompletePacket;
+import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundHandshakeTransferredPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryContentUpdatePacket;
 import com.noxcrew.noxesium.api.network.handshake.clientbound.ClientboundRegistryIdsUpdatePacket;
@@ -69,44 +72,51 @@ public abstract class NoxesiumClientHandshaker {
      */
     public void register() {
         // Listen to the server response to the handshake
-        HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleHandshakeAcknowledge(packet);
-        });
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.addListener(
+                this, ClientboundHandshakeAcknowledgePacket.class, (reference, packet, ignored3) -> {
+                    reference.handleHandshakeAcknowledge(packet);
+                });
 
         // Whenever we receive registry packets we update the registries
-        HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleRegistryUpdate(packet);
-        });
-        HandshakePackets.CLIENTBOUND_REGISTRY_CONTENT_UPDATE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleRegistryUpdate(packet);
-        });
+        HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE.addListener(
+                this, ClientboundRegistryIdsUpdatePacket.class, (reference, packet, ignored3) -> {
+                    reference.handleRegistryUpdate(packet);
+                });
+        HandshakePackets.CLIENTBOUND_REGISTRY_CONTENT_UPDATE.addListener(
+                this, ClientboundRegistryContentUpdatePacket.class, (reference, packet, ignored3) -> {
+                    reference.handleRegistryUpdate(packet);
+                });
 
         // Whenever the server indicates a transfer we update the state
-        HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleTransfer();
-        });
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED.addListener(
+                this, ClientboundHandshakeTransferredPacket.class, (reference, packet, ignored3) -> {
+                    reference.handleTransfer();
+                });
 
         // Whenever the handshake is completed we listen.
-        HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleComplete();
-        });
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_COMPLETE.addListener(
+                this, ClientboundHandshakeCompletePacket.class, (reference, packet, ignored3) -> {
+                    reference.handleComplete();
+                });
 
         // Handle a new set of lazy packets being enabled.
-        HandshakePackets.CLIENTBOUND_LAZY_PACKETS.addListener(this, (reference, packet, ignored3) -> {
-            reference.handleLazyPackets(packet);
-        });
+        HandshakePackets.CLIENTBOUND_LAZY_PACKETS.addListener(
+                this, ClientboundLazyPacketsPacket.class, (reference, packet, ignored3) -> {
+                    reference.handleLazyPackets(packet);
+                });
 
         // Whenever the handshake is interrupted.
-        HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL.addListener(this, (reference, packet, ignored3) -> {
-            // End the handshake without sending a packet about it!
-            NoxesiumApi.getLogger().error("Server cancelled handshake for reason '{}'", packet.reason());
-            reference.uninitialize(NoxesiumErrorReason.SERVER_ERROR);
+        HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL.addListener(
+                this, ClientboundHandshakeCancelPacket.class, (reference, packet, ignored3) -> {
+                    // End the handshake without sending a packet about it!
+                    NoxesiumApi.getLogger().error("Server cancelled handshake for reason '{}'", packet.reason());
+                    reference.uninitialize(NoxesiumErrorReason.SERVER_ERROR);
 
-            // Do not attempt to re-handshake if there are simply no matching entrypoints!
-            if (packet.reason() == NoxesiumErrorReason.NO_MATCHING_ENTRYPOINTS) {
-                handshakeCooldown = -1;
-            }
-        });
+                    // Do not attempt to re-handshake if there are simply no matching entrypoints!
+                    if (packet.reason() == NoxesiumErrorReason.NO_MATCHING_ENTRYPOINTS) {
+                        handshakeCooldown = -1;
+                    }
+                });
     }
 
     /**
@@ -198,7 +208,7 @@ public abstract class NoxesiumClientHandshaker {
                 // Go through all packets for this entry point and determine if they are lazy but enabled
                 for (var packetCollection : clientEntrypoint.getPacketCollections()) {
                     for (var packetType : packetCollection.getPackets()) {
-                        if (!packetType.lazy) continue;
+                        if (!packetType.isLazy()) continue;
                         if (packetType.hasListeners()) {
                             enabledLazyPackets.add(packetType.id());
                         }
