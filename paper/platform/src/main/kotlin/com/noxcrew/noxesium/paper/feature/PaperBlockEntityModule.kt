@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.paper.feature
 
 import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.paper.NoxesiumPaper
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerJoinEvent
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerAddedToWorldEvent
 import com.noxcrew.packet.PacketHandler
 import com.noxcrew.packet.PacketListener
 import com.noxcrew.packet.sendPacket
@@ -38,7 +38,7 @@ public class PaperBlockEntityModule : ListeningNoxesiumFeature(), PacketListener
      * to this player.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public fun onFinishHandshake(e: NoxesiumPlayerJoinEvent) {
+    public fun onFinishHandshake(e: NoxesiumPlayerAddedToWorldEvent) {
         e.player.sentChunks.forEach { chunk ->
             val nmsChunk = (chunk as CraftChunk).getHandle(ChunkStatus.FULL) ?: return@forEach
             nmsChunk.blockEntities.values.forEach { blockEntity ->

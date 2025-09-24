@@ -99,7 +99,13 @@ public abstract class NoxesiumClientHandshaker {
         // Whenever the handshake is interrupted.
         HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL.addListener(this, (reference, packet, ignored3) -> {
             // End the handshake without sending a packet about it!
-            reference.uninitialize(NoxesiumErrorReason.SERVER_CANCELLED);
+            NoxesiumApi.getLogger().error("Server cancelled handshake for reason '{}'", packet.reason());
+            reference.uninitialize(NoxesiumErrorReason.SERVER_ERROR);
+
+            // Do not attempt to re-handshake if there are simply no matching entrypoints!
+            if (packet.reason() == NoxesiumErrorReason.NO_MATCHING_ENTRYPOINTS) {
+                handshakeCooldown = -1;
+            }
         });
     }
 
@@ -442,7 +448,7 @@ public abstract class NoxesiumClientHandshaker {
                 // trigger if the server re-registers.
             }
 
-            case SERVER_CANCELLED -> {
+            case SERVER_ERROR -> {
                 // If the server cancelled the handshake, don't send a packet back, but do try again!
                 reattemptHandshakeLater();
             }

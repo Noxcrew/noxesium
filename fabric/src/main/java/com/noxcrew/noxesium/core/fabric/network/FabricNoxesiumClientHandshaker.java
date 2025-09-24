@@ -11,6 +11,7 @@ import com.noxcrew.noxesium.api.network.handshake.NoxesiumClientHandshaker;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
@@ -118,6 +119,11 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         FabricLoader.getInstance().getAllMods().forEach(modContainer -> {
             // Ignore mods that are marked as hidden!
             if (modsToHide.contains(modContainer.getMetadata().getId())) return;
+
+            // Don't include fabric api mods for brevity, do include built-ins so it shares minecraft and java version
+            if (Objects.equals(
+                    modContainer.getMetadata().getContact().get("homepage").orElse(null), "https://fabricmc.net"))
+                return;
 
             mods.add(new ModInfo(
                     modContainer.getMetadata().getId(),

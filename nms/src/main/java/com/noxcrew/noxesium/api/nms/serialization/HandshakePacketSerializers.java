@@ -80,7 +80,10 @@ public class HandshakePacketSerializers {
                 StreamCodec.unit(new ClientboundHandshakeTransferredPacket()));
         registerSerializer(
                 HandshakePackets.CLIENTBOUND_HANDSHAKE_CANCEL,
-                StreamCodec.unit(new ClientboundHandshakeCancelPacket()));
+                StreamCodec.composite(
+                        NoxesiumStreamCodecs.forEnum(NoxesiumErrorReason.class),
+                        ClientboundHandshakeCancelPacket::reason,
+                        ClientboundHandshakeCancelPacket::new));
         registerSerializer(
                 HandshakePackets.CLIENTBOUND_REGISTRY_IDS_UPDATE,
                 StreamCodec.composite(

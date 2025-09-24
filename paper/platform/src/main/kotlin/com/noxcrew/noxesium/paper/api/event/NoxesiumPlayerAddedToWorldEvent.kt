@@ -6,11 +6,11 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.player.PlayerEvent
 
 /**
- * Emitted by Noxesium when [player] is both a Noxesium player and in the PLAY phase.
- * This can occur either when the player joins after handshaking was completed during
- * the configuration phase, or if handshaking completes late during the play phase.
+ * Emitted by Noxesium when [player] is a Noxesium player and added to the world, this
+ * can be after a handshake finished while in the world or if the player was already
+ * handshook and just entered the world.
  */
-public class NoxesiumPlayerJoinEvent(
+public class NoxesiumPlayerAddedToWorldEvent(
     player: Player,
     /** The Noxesium player which stores information provided by this client. */
     public val noxesiumPlayer: NoxesiumServerPlayer,

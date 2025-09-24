@@ -18,8 +18,7 @@ public class NoxesiumReferences {
      * The namespace under which all packets are registered.
      * Appended by a global API version equal to the major version of Noxesium.
      */
-    // TODO Remove the alpha tag to restore the correct namespace!
-    public static final String PACKET_NAMESPACE = NAMESPACE + "-v3-alpha5";
+    public static final String PACKET_NAMESPACE = NAMESPACE + "-v3";
 
     /**
      * The identifier used by the common entrypoint.

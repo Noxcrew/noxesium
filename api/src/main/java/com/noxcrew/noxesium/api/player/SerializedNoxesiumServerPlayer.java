@@ -16,4 +16,5 @@ public record SerializedNoxesiumServerPlayer(
         ClientSettings settings,
         Set<String> enabledLazyPackets,
         Map<String, String> mods,
-        Map<String, Set<Integer>> knownIds) {}
+        Map<String, Set<Integer>> knownIds,
+        Map<String, Integer> knownHashes) {}

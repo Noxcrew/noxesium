@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentChangedEvent
 import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentsClearEvent
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerJoinEvent
+import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerAddedToWorldEvent
 import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
 import com.noxcrew.noxesium.paper.feature.hasNoxesiumComponent
@@ -120,7 +120,7 @@ public class PaperQibModule : ListeningNoxesiumFeature() {
 
     /** Clean up behaviors when a player registers with Noxesium. */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public fun onPlayerRegistered(e: NoxesiumPlayerJoinEvent) {
+    public fun onPlayerRegistered(e: NoxesiumPlayerAddedToWorldEvent) {
         players.remove(e.player)
     }
 

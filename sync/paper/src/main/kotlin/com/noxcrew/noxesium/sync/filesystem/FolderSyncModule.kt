@@ -82,7 +82,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
         // Double-check that this player has the required permissions! This avoids clients from faking their way
         // into synchronization sessions the server didn't request.
         val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) as? PaperNoxesiumServerPlayer ?: return
-        val bukkitPlayer = player.player.bukkitEntity
+        val bukkitPlayer = player.player?.bukkitEntity ?: return
         if (!bukkitPlayer.hasPermission(PERMISSION_NODE)) return
         val folder = syncableFolders[packet.id] ?: return
 

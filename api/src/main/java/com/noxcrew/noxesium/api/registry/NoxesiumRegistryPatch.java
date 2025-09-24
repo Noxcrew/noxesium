@@ -59,4 +59,17 @@ public class NoxesiumRegistryPatch {
     public String toString() {
         return Objects.toString(data);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NoxesiumRegistryPatch that)) return false;
+        return Objects.equals(registry, that.registry)
+                && Objects.equals(data, that.data)
+                && Objects.equals(keys, that.keys);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(registry, data, keys);
+    }
 }

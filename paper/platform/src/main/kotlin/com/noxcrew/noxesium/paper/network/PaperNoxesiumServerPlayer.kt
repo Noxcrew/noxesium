@@ -12,10 +12,9 @@ import java.io.ByteArrayOutputStream
 
 /** A variant of a Noxesium player that holds a reference to a server player. */
 public class PaperNoxesiumServerPlayer(
-    /** The wrapped player instance. */
-    public val player: ServerPlayer,
+    initialPlayer: ServerPlayer,
     serializedPlayer: SerializedNoxesiumServerPlayer? = null,
-) : NoxesiumServerPlayer(player.uuid, player.gameProfile.name, player.`adventure$displayName`, serializedPlayer) {
+) : NoxesiumServerPlayer(initialPlayer.uuid, initialPlayer.gameProfile.name, initialPlayer.`adventure$displayName`, serializedPlayer) {
     // Start out by having all handshake channels as known by the client
     private val _registeredPluginChannels = HandshakePackets.INSTANCE.pluginChannelIdentifiers.toMutableSet()
     private var pendingPluginChannels = mutableSetOf<String>()
@@ -23,9 +22,12 @@ public class PaperNoxesiumServerPlayer(
     /** The current connection type of this player. */
     public var connectionType: ConnectionProtocolType = ConnectionProtocolType.NONE
 
+    /** The wrapped player instance. */
+    public var player: ServerPlayer? = initialPlayer
+
     /** Returns whether this player is still connected. */
     public val isConnected: Boolean
-        get() = player.bukkitEntity.isConnected
+        get() = player?.bukkitEntity?.isConnected == true
 
     /** All plugin channels registered with this player. */
     public val registeredPluginChannels: Collection<String>
@@ -49,7 +51,7 @@ public class PaperNoxesiumServerPlayer(
         if (pendingPluginChannels.isNotEmpty()) {
             val newChannels = pendingPluginChannels
             pendingPluginChannels = mutableSetOf()
-            player.sendPluginChannels(newChannels)
+            player?.sendPluginChannels(newChannels)
             _registeredPluginChannels += newChannels
         }
     }

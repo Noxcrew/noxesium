@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.network.handshake.clientbound;
 
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 
 /**
@@ -8,4 +9,4 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
  *
  * @see NoxesiumEntrypoint for more information
  */
-public record ClientboundHandshakeCancelPacket() implements NoxesiumPacket {}
+public record ClientboundHandshakeCancelPacket(NoxesiumErrorReason reason) implements NoxesiumPacket {}

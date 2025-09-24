@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -53,6 +54,7 @@ public class NoxesiumServerPlayer {
     private final SimpleMutableNoxesiumComponentHolder components =
             new SimpleMutableNoxesiumComponentHolder(NoxesiumRegistries.GAME_COMPONENTS);
     private final List<Integer> pendingRegistrySyncs = new ArrayList<>();
+    private final Map<NoxesiumRegistry<?>, Integer> registryHashes = new HashMap<>();
     private final Map<Integer, IdChangeSet> sentIndices = new HashMap<>();
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
     private final Set<Key> capabilities = new HashSet<>();
@@ -79,6 +81,7 @@ public class NoxesiumServerPlayer {
 
     private int lastSoundId = 0;
     private boolean dirty = false;
+    private long lastPacket;
 
     public NoxesiumServerPlayer(
             @NotNull final UUID uniqueId,
@@ -108,6 +111,10 @@ public class NoxesiumServerPlayer {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.knownIndices.put(registry, entry.getValue());
             }
+            for (var entry : serializedPlayer.knownHashes().entrySet()) {
+                var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
+                this.registryHashes.put(registry, entry.getValue());
+            }
         } else {
             this.isTransferred = false;
         }
@@ -122,12 +129,17 @@ public class NoxesiumServerPlayer {
         for (var entry : knownIndices.entrySet()) {
             copiedKnownIndices.put(entry.getKey().id().asString(), entry.getValue());
         }
+        var copiedHashes = new HashMap<String, Integer>();
+        for (var entry : registryHashes.entrySet()) {
+            copiedHashes.put(entry.getKey().id().asString(), entry.getValue());
+        }
         return new SerializedNoxesiumServerPlayer(
                 supportedEntrypoints,
                 settings,
                 enabledLazyPackets.stream().map(Key::asString).collect(Collectors.toSet()),
                 mods,
-                copiedKnownIndices);
+                copiedKnownIndices,
+                copiedHashes);
     }
 
     /**
@@ -286,6 +298,20 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Returns when a packet was last received from this player.
+     */
+    public long getLastPacketReceiveTime() {
+        return lastPacket;
+    }
+
+    /**
+     * Lists when the last packet was received.
+     */
+    public void markPacketReceived() {
+        lastPacket = System.currentTimeMillis();
+    }
+
+    /**
      * Returns the last received settings defined by this client.
      */
     @Nullable
@@ -311,6 +337,30 @@ public class NoxesiumServerPlayer {
         var id = registry.getIdForKey(key);
         if (!knownIndices.containsKey(registry)) return false;
         return knownIndices.get(registry).contains(id);
+    }
+
+    /**
+     * Returns if this client already knows the contents of the given registry
+     * to equal the given hash.
+     */
+    public boolean isRegistrySynchronized(NoxesiumRegistry<?> registry, int hash) {
+        var currentHash = registryHashes.get(registry);
+        if (Objects.equals(currentHash, hash)) {
+            return true;
+        }
+        registryHashes.put(registry, hash);
+        dirty = true;
+        return false;
+    }
+
+    /**
+     * Marks the given registry as dynamic, that is its contents are changing
+     * and need to be re-synced after a transfer.
+     */
+    public void markRegistryDynamic(NoxesiumRegistry<?> registry) {
+        if (registryHashes.remove(registry) != null) {
+            dirty = true;
+        }
     }
 
     /**
