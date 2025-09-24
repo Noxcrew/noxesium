@@ -87,6 +87,18 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     public abstract ConnectionProtocolType getMinecraftProtocol();
 
     /**
+     * Returns the currently bound protocol.
+     */
+    public ConnectionProtocolType getBoundProtocol() {
+        // If the active protocol is different from what we last bound against the receivers
+        // have been automatically destroyed as the addon has been destroyed.
+        if (getMinecraftProtocol() != boundProtocol) {
+            boundProtocol = ConnectionProtocolType.NONE;
+        }
+        return boundProtocol;
+    }
+
+    /**
      * Handles the current protocol changing to the given protocol type.
      */
     public void setConfiguredProtocol(ConnectionProtocolType protocolType) {
@@ -98,15 +110,9 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
         // of the current protocol type
         var activeProtocol = getMinecraftProtocol();
 
-        // If the active protocol is different from what we last bound against the receivers
-        // have been automatically destroyed as the addon has been destroyed.
-        if (activeProtocol != boundProtocol) {
-            boundProtocol = ConnectionProtocolType.NONE;
-        }
-
         if (protocolType == ConnectionProtocolType.NONE) {
             // Only unbind if it's currently bound to PLAY!
-            if (boundProtocol == ConnectionProtocolType.PLAY) {
+            if (getBoundProtocol() == ConnectionProtocolType.PLAY) {
                 getPacketTypes().values().forEach(it -> it.unbind(boundProtocol));
             }
         } else {
@@ -114,7 +120,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
             // Otherwise, we have already bound and we can ignore it.
 
             // Also, only bind to the play protocol!
-            if (boundProtocol == ConnectionProtocolType.NONE && activeProtocol == ConnectionProtocolType.PLAY) {
+            if (getBoundProtocol() == ConnectionProtocolType.NONE && activeProtocol == ConnectionProtocolType.PLAY) {
                 getPacketTypes().values().forEach(it -> it.bind(boundProtocol));
 
                 // Store what protocol we bound against
@@ -126,7 +132,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     @Override
     public void register(NoxesiumPayloadGroup payloadGroup, @Nullable NoxesiumEntrypoint entrypoint) {
         super.register(payloadGroup, entrypoint);
-        if (boundProtocol == ConnectionProtocolType.PLAY) {
+        if (getBoundProtocol() == ConnectionProtocolType.PLAY) {
             for (var payloadType : payloadGroup.getPayloadTypes()) {
                 payloadType.bind(boundProtocol);
             }
@@ -136,7 +142,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
     @Override
     public void unregister(NoxesiumPayloadGroup payloadGroup) {
         super.unregister(payloadGroup);
-        if (boundProtocol == ConnectionProtocolType.PLAY) {
+        if (getBoundProtocol() == ConnectionProtocolType.PLAY) {
             for (var payloadType : payloadGroup.getPayloadTypes()) {
                 payloadType.unbind(boundProtocol);
             }

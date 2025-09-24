@@ -233,13 +233,12 @@ public abstract class NoxesiumServerHandshaker {
                 .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
+            player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
             if (!player.sendPacket(acknowledgePacket)) {
                 NoxesiumApi.getLogger()
                         .error("Failed to send handshake acknowledgement packet, destroying connection!");
                 destroy(player.getUniqueId(), NoxesiumErrorReason.SERVER_ERROR);
-                return;
             }
-            player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
         } else {
             // The client hasn't sent that it can receive the acknowledgment packet yet, so
             // we put the packet in a pending list and wait for it.

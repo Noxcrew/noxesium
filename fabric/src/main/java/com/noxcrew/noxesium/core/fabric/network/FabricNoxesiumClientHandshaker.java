@@ -29,7 +29,11 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
      * The channel used by the handshake packet.
      */
     private static final ResourceLocation HANDSHAKE_CHANNEL =
-            ResourceLocation.parse(HandshakePackets.SERVERBOUND_HANDSHAKE.id().asString());
+            ResourceLocation.parse(HandshakePackets.SERVERBOUND_HANDSHAKE
+                    .getPayloadTypes()
+                    .getFirst()
+                    .id()
+                    .asString());
 
     /**
      * Registers the initializer.

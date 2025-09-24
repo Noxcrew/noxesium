@@ -81,7 +81,7 @@ public class NoxesiumServerPlayer {
 
     private int lastSoundId = 0;
     private boolean dirty = false;
-    private long lastPacket;
+    private long lastPacket = System.currentTimeMillis();
 
     public NoxesiumServerPlayer(
             @NotNull final UUID uniqueId,
@@ -198,7 +198,7 @@ public class NoxesiumServerPlayer {
     /**
      * Sets the current handshake state.
      */
-    public void setHandshakeState(HandshakeState state) {
+    public void setHandshakeState(@NotNull HandshakeState state) {
         this.handshakeState = state;
     }
 
@@ -429,9 +429,12 @@ public class NoxesiumServerPlayer {
             if (entrypoint instanceof NoxesiumEntrypoint nmsEntrypoint) {
                 var channels = nmsEntrypoint.getPacketCollections().stream()
                         .flatMap(it -> it.getPackets().stream())
+                        .flatMap(it -> it.getPayloadTypes().stream())
                         .map(it -> it.id().toString())
                         .toList();
-                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) return false;
+                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -441,6 +444,9 @@ public class NoxesiumServerPlayer {
      * Sends the given packet, automatically detects the type of the packet based on the registered packets.
      */
     public boolean sendPacket(@NotNull NoxesiumPacket packet) {
+        // Do not send packets if there is no handshake!
+        if (getHandshakeState() == HandshakeState.NONE) return false;
+
         // Check if they can receive this packet
         var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
         if (type == null) return false;

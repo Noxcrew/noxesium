@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.mixin;
 
+import com.noxcrew.noxesium.api.network.ConnectionProtocolType;
 import com.noxcrew.noxesium.api.network.NoxesiumErrorReason;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,5 +23,8 @@ public class ConnectionTerminationMixin {
         if (handshaker != null) {
             handshaker.uninitialize(NoxesiumErrorReason.DISCONNECT);
         }
+
+        // Un-set the current protocol!
+        NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.NONE);
     }
 }

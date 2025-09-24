@@ -151,9 +151,7 @@ public class NoxesiumPayloadGroup {
                 // Ignore handlers that want a different payload type
                 var clazz = pair.getLeft();
                 // TODO Support converters!
-                if (!clazz.isInstance(payload)) {
-                    continue;
-                }
+                if (!clazz.isInstance(payload)) continue;
 
                 acceptAny(pair.getRight(), obj, context, payload);
             }

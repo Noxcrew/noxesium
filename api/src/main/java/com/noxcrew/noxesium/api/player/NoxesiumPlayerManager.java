@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.player;
 
 import com.google.common.base.Preconditions;
+import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +52,10 @@ public class NoxesiumPlayerManager {
      * Removes data stored for the given player.
      */
     public void unregisterPlayer(UUID uniqueId) {
-        players.remove(uniqueId);
+        var player = players.remove(uniqueId);
+        if (player != null) {
+            player.setHandshakeState(HandshakeState.NONE);
+        }
     }
 
     /**

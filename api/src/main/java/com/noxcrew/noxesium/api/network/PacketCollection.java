@@ -112,10 +112,10 @@ public final class PacketCollection {
         if (registered) return;
         registered = true;
         for (var group : packets.values()) {
-            NoxesiumNetworking.getInstance().register(group, entrypoint);
             for (var type : group.getPayloadTypes()) {
                 type.register(entrypoint);
             }
+            NoxesiumNetworking.getInstance().register(group, entrypoint);
         }
     }
 
