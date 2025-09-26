@@ -351,8 +351,8 @@ public class PacketApi(
 
                                 if (firstOutput.javaClass == type) {
                                     // Update the packet, continue to the next index
-                                    index++
                                     packets[index] = firstOutput
+                                    index++
                                     continue
                                 }
                             }
