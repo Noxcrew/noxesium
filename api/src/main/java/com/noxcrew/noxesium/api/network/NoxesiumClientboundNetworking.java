@@ -42,11 +42,6 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     }
 
     /**
-     * Returns the collection of channels registered for the given player.
-     */
-    public abstract Collection<String> getRegisteredChannels(@NotNull NoxesiumServerPlayer player);
-
-    /**
      * Checks if the connected player can receive any packets of the given group the given class belongs to,
      * when the starting point is of the given class.
      *

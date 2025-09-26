@@ -105,6 +105,6 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
         // Ignore if we are not in the handshaking state.
         var handshaker = NoxesiumMod.getInstance().getHandshaker();
         if (handshaker == null || handshaker.getHandshakeState() == HandshakeState.NONE) return;
-        send(new ServerboundLazyPacketsPacket(Set.of(payloadGroup.id())));
+        send(new ServerboundLazyPacketsPacket(Set.of(payloadGroup.groupId())));
     }
 }

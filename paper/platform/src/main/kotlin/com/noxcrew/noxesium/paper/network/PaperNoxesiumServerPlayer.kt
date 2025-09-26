@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.paper.network
 
 import com.noxcrew.noxesium.api.network.ConnectionProtocolType
-import com.noxcrew.noxesium.api.network.handshake.HandshakePackets
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
@@ -15,8 +14,6 @@ public class PaperNoxesiumServerPlayer(
     initialPlayer: ServerPlayer,
     serializedPlayer: SerializedNoxesiumServerPlayer? = null,
 ) : NoxesiumServerPlayer(initialPlayer.uuid, initialPlayer.gameProfile.name, initialPlayer.`adventure$displayName`, serializedPlayer) {
-    // Start out by having all handshake channels as known by the client
-    private val _registeredPluginChannels = HandshakePackets.INSTANCE.pluginChannelIdentifiers.toMutableSet()
     private var pendingPluginChannels = mutableSetOf<String>()
 
     /** The current connection type of this player. */
@@ -29,15 +26,11 @@ public class PaperNoxesiumServerPlayer(
     public val isConnected: Boolean
         get() = player?.bukkitEntity?.isConnected == true
 
-    /** All plugin channels registered with this player. */
-    public val registeredPluginChannels: Collection<String>
-        get() = _registeredPluginChannels
+    /** Sends this user new plugin channels. */
+    public fun sendPluginChannels(vararg channels: String): Unit = sendPluginChannels(channels.toSet())
 
-    /** Registers a new plugin channel. */
-    public fun registerPluginChannels(vararg channels: String): Unit = registerPluginChannels(channels.toSet())
-
-    /** Registers a new plugin channel. */
-    public fun registerPluginChannels(channels: Collection<String>) {
+    /** Sends this user new plugin channels. */
+    public fun sendPluginChannels(channels: Collection<String>) {
         pendingPluginChannels += channels
     }
 
@@ -52,7 +45,7 @@ public class PaperNoxesiumServerPlayer(
             val newChannels = pendingPluginChannels
             pendingPluginChannels = mutableSetOf()
             player?.sendPluginChannels(newChannels)
-            _registeredPluginChannels += newChannels
+            addRegisteredPluginChannels(newChannels)
         }
     }
 }

@@ -48,7 +48,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
      * Returns whether the given lazy packet type should be sent.
      */
     public boolean shouldSendLazy(NoxesiumPayloadGroup group) {
-        return !group.isLazy() || shouldSendLazy(group.id());
+        return !group.isLazy() || shouldSendLazy(group.groupId());
     }
 
     /**

@@ -209,7 +209,7 @@ public abstract class NoxesiumClientHandshaker {
                     for (var packetType : packetCollection.getPackets()) {
                         if (!packetType.isLazy()) continue;
                         if (packetType.hasListeners()) {
-                            enabledLazyPackets.add(packetType.id());
+                            enabledLazyPackets.add(packetType.groupId());
                         }
                     }
                 }

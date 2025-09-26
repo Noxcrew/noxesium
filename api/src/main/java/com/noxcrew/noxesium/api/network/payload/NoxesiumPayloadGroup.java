@@ -66,6 +66,7 @@ public class NoxesiumPayloadGroup {
             new HashMap<>();
     private final Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> oldToNew =
             new HashMap<>();
+    private final List<String> channelIds = new ArrayList<>();
     private final boolean clientToServer;
     private boolean lazy = false;
 
@@ -92,7 +93,7 @@ public class NoxesiumPayloadGroup {
     /**
      * Returns the id of this payload group.
      */
-    public Key id() {
+    public Key groupId() {
         return id;
     }
 
@@ -101,6 +102,13 @@ public class NoxesiumPayloadGroup {
      */
     public boolean isLazy() {
         return lazy;
+    }
+
+    /**
+     * Returns the raw strings of all ids in this group.
+     */
+    public List<String> getChannelIds() {
+        return channelIds;
     }
 
     /**
@@ -208,6 +216,7 @@ public class NoxesiumPayloadGroup {
                         clazz,
                         clientToServer);
         payloadTypes.add(newPayload);
+        channelIds.add(newPayload.id().asString());
         packetCollection.addPluginChannelIdentifier(newPayload.id().toString());
         return newPayload;
     }

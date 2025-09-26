@@ -175,6 +175,9 @@ public abstract class NoxesiumServerHandshaker {
             return;
         }
 
+        // Move out of none so we can send packets first!
+        player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
+
         // Send the transfer packet to the client so it clears data
         if (!player.sendPacket(new ClientboundHandshakeTransferredPacket())) {
             NoxesiumApi.getLogger().error("Failed to send handshake transfer packet, destroying connection!");
@@ -260,7 +263,7 @@ public abstract class NoxesiumServerHandshaker {
                     for (var packetType : packetCollection.getPackets()) {
                         if (!packetType.isLazy()) continue;
                         if (packetType.hasListeners()) {
-                            lazyPacketsEnabled.add(packetType.id());
+                            lazyPacketsEnabled.add(packetType.groupId());
                         }
                     }
                 }
@@ -467,8 +470,7 @@ public abstract class NoxesiumServerHandshaker {
      */
     protected void onChannelRegistered(@Nullable NoxesiumServerPlayer player, @NotNull String channel) {
         if (player == null) return;
-        if (channel.equals(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.id().toString())) {
+        if (HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.getChannelIds().contains(channel)) {
             // Delay by a tick so the other handshake channels are also registered!
             runDelayed(() -> {
                 if (!isConnected(player)) return;
@@ -478,11 +480,12 @@ public abstract class NoxesiumServerHandshaker {
                 // definitely can!
                 var packet = pendingPackets.remove(player.getUniqueId());
                 if (packet == null) return;
-                player.sendPacket(packet);
                 player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);
+                player.sendPacket(packet);
             });
-        } else if (channel.equals(
-                HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED.id().toString())) {
+        } else if (HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED
+                .getChannelIds()
+                .contains(channel)) {
             // Delay by a tick so the other handshake channels are also registered!
             runDelayed(() -> {
                 if (!isConnected(player)) return;

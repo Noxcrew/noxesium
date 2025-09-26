@@ -84,6 +84,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             }
 
             val noxesiumPlayer = PaperNoxesiumServerPlayer(player, serializedPlayer = getStoredData(playerId))
+            noxesiumPlayer.addRegisteredPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
             reference.handleHandshake(noxesiumPlayer, packet!!)
         }
     }
@@ -237,7 +238,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
         // Register all plugin channels with this user for the newly authenticated protocols
         val entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id) ?: return
-        (player as? PaperNoxesiumServerPlayer)?.registerPluginChannels(
+        (player as? PaperNoxesiumServerPlayer)?.sendPluginChannels(
             entrypoint
                 .packetCollections
                 .flatMap { it.pluginChannelIdentifiers },
@@ -291,19 +292,19 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
      * Reads the stored data for the given [playerId] from some custom implemented database
      * like a Redis to store player data between different servers on a network.
      */
-    protected open fun getStoredData(playerId: UUID): SerializedNoxesiumServerPlayer? = null
+    public open fun getStoredData(playerId: UUID): SerializedNoxesiumServerPlayer? = null
 
     /**
      * Stores the data for [player] in some external database so it is present when the player
      * connects to a different server within a network.
      */
-    protected open fun storeData(player: NoxesiumServerPlayer) {
+    public open fun storeData(player: NoxesiumServerPlayer) {
     }
 
     /**
      * Indicates that stored data for [playerId] should be deleted.
      */
-    protected open fun removeStoredData(playerId: UUID) {
+    public open fun removeStoredData(playerId: UUID) {
     }
 
     /** Runs the given [function] delayed on the main thread. */

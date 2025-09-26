@@ -59,6 +59,7 @@ public class NoxesiumServerPlayer {
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
     private final Set<Key> capabilities = new HashSet<>();
     private final Set<Key> enabledLazyPackets = new HashSet<>();
+    private final Set<String> registeredPluginChannels = new HashSet<>();
     private final boolean isTransferred;
 
     @NotNull
@@ -115,6 +116,7 @@ public class NoxesiumServerPlayer {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.registryHashes.put(registry, entry.getValue());
             }
+            this.registeredPluginChannels.addAll(serializedPlayer.registeredPluginChannels());
         } else {
             this.isTransferred = false;
         }
@@ -139,7 +141,8 @@ public class NoxesiumServerPlayer {
                 enabledLazyPackets.stream().map(Key::asString).collect(Collectors.toSet()),
                 mods,
                 copiedKnownIndices,
-                copiedHashes);
+                copiedHashes,
+                registeredPluginChannels);
     }
 
     /**
@@ -164,6 +167,14 @@ public class NoxesiumServerPlayer {
     @NotNull
     public Component getDisplayName() {
         return displayName;
+    }
+
+    /**
+     * Returns the collection of all registered plugin channels.
+     */
+    @NotNull
+    public Collection<String> getRegisteredPluginChannels() {
+        return registeredPluginChannels;
     }
 
     /**
@@ -215,6 +226,14 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Adds a list of channels to the registered plugin channels.
+     */
+    public void addRegisteredPluginChannels(Collection<String> newChannels) {
+        registeredPluginChannels.addAll(newChannels);
+        dirty = true;
+    }
+
+    /**
      * Returns a mapping of all mods installed on this client
      * by mod id to their version.
      * These are as reported by the client and may be falsified.
@@ -239,7 +258,7 @@ public class NoxesiumServerPlayer {
      * Returns whether this player wants to receive the given lazy packet type.
      */
     public boolean shouldSendLazyPacket(NoxesiumPayloadGroup group) {
-        return !group.isLazy() || shouldSendLazyPacket(group.id());
+        return !group.isLazy() || shouldSendLazyPacket(group.groupId());
     }
 
     /**
@@ -417,7 +436,6 @@ public class NoxesiumServerPlayer {
         if (!pendingRegistrySyncs.isEmpty()) return false;
 
         // Check if every entrypoint has at least one channel registered
-        var registeredChannels = NoxesiumClientboundNetworking.getInstance().getRegisteredChannels(this);
         for (var protocol : supportedEntrypoints) {
             var entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id());
 
@@ -432,7 +450,7 @@ public class NoxesiumServerPlayer {
                         .flatMap(it -> it.getPayloadTypes().stream())
                         .map(it -> it.id().toString())
                         .toList();
-                if (!channels.isEmpty() && channels.stream().noneMatch(registeredChannels::contains)) {
+                if (!channels.isEmpty() && channels.stream().noneMatch(registeredPluginChannels::contains)) {
                     return false;
                 }
             }

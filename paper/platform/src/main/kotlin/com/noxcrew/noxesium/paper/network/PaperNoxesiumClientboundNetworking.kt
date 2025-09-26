@@ -36,9 +36,6 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
     /** Returns the payload type for the given channel. */
     public fun getPayloadType(channel: String): NoxesiumPayloadType<*>? = payloadTypes[channel]
 
-    override fun getRegisteredChannels(player: NoxesiumServerPlayer): Collection<String> =
-        (player as PaperNoxesiumServerPlayer).registeredPluginChannels
-
     override fun register(payloadGroup: NoxesiumPayloadGroup?, entrypoint: NoxesiumEntrypoint?) {
         super.register(payloadGroup, entrypoint)
         payloadGroup?.payloadTypes?.forEach {
@@ -110,7 +107,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
 
     override fun markLazyActive(payloadGroup: NoxesiumPayloadGroup) {
         // Inform all authenticated players directly about the newly un-lazy packet
-        val packet = ClientboundLazyPacketsPacket(setOf(payloadGroup.id()))
+        val packet = ClientboundLazyPacketsPacket(setOf(payloadGroup.groupId()))
         NoxesiumPlayerManager.getInstance().allPlayers.forEach {
             it.sendPacket(packet)
         }

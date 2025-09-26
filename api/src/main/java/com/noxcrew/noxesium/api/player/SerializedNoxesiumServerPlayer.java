@@ -17,4 +17,5 @@ public record SerializedNoxesiumServerPlayer(
         Set<String> enabledLazyPackets,
         Map<String, String> mods,
         Map<String, Set<Integer>> knownIds,
-        Map<String, Integer> knownHashes) {}
+        Map<String, Integer> knownHashes,
+        Set<String> registeredPluginChannels) {}
