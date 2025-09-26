@@ -38,23 +38,7 @@ jobs:
                 name: noxesium-artifacts
                 path: "**/build/libs/*.jar"
 
-            - name: Determine Status
-              run: |
-                  if [ "$(./gradlew properties | awk '/^mod_version:/ { print $2; }' | grep '\-SNAPSHOT')" ]; then
-                    echo "STATUS=snapshot" >> $GITHUB_ENV
-                  else
-                    echo "STATUS=release" >> $GITHUB_ENV
-                  fi
-
-            - name: Publish Snapshot
-              if: "${{ env.STATUS != 'release' && github.event_name == 'push' }}"
-              run: ./gradlew publish
-              env:
-                  NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
-                  NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
-
-            - name: Publish Release
-              if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+            - name: Publish
               run: ./gradlew publish
               env:
                   NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
