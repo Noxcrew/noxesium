@@ -11,7 +11,6 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -131,15 +130,5 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundOpenLinkPacket::url,
                         ClientboundOpenLinkPacket::new));
-        registerSerializer(
-                ClientboundOpenLinkV2Packet.class,
-                StreamCodec.composite(
-                        ByteBufCodecs.optional(NoxesiumPlatform.getInstance().getComponentStreamCodec()),
-                        ClientboundOpenLinkV2Packet::text,
-                        ByteBufCodecs.STRING_UTF8,
-                        ClientboundOpenLinkV2Packet::url,
-                        ByteBufCodecs.STRING_UTF8,
-                        ClientboundOpenLinkV2Packet::test,
-                        ClientboundOpenLinkV2Packet::new));
     }
 }

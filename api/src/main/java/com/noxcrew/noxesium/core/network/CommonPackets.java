@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -42,11 +41,6 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_update_entity_components").add(ClientboundUpdateEntityComponentsPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_UPDATE_GAME_COMPONENTS =
             client(INSTANCE, "clientbound_update_game_components").add(ClientboundUpdateGameComponentsPacket.class);
-    public static final NoxesiumPayloadGroup CLIENT_OPEN_LINK = client(INSTANCE, "clientbound_open_link")
-            .chain(ClientboundOpenLinkPacket.class)
-            .add(
-                    ClientboundOpenLinkV2Packet.class,
-                    (it) -> new ClientboundOpenLinkPacket(it.text(), it.url()),
-                    (it) -> new ClientboundOpenLinkV2Packet(it.text(), it.url(), ""))
-            .group();
+    public static final NoxesiumPayloadGroup CLIENT_OPEN_LINK =
+            client(INSTANCE, "clientbound_open_link").add(ClientboundOpenLinkPacket.class);
 }

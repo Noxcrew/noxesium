@@ -16,7 +16,7 @@ import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -502,7 +502,7 @@ public class NoxesiumServerPlayer {
      * the given text message.
      */
     public void openLink(String url, @Nullable Component text) {
-        sendPacket(new ClientboundOpenLinkV2Packet(Optional.ofNullable(text), url, ""));
+        sendPacket(new ClientboundOpenLinkPacket(Optional.ofNullable(text), url));
     }
 
     /**
