@@ -4,13 +4,6 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.PacketCollection;
-import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.function.TriConsumer;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +15,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import net.kyori.adventure.key.Key;
+import org.apache.commons.lang3.function.TriConsumer;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines a group of payload types which share the same versioned
@@ -139,7 +138,8 @@ public class NoxesiumPayloadGroup {
     @Nullable
     public NoxesiumPacket convertIntoSupported(
             NoxesiumPayloadType<?> type, NoxesiumPacket packet, Function<NoxesiumPayloadType<?>, Boolean> condition) {
-        // Send packets across as the oldest version the client supports! Don't make packets more modern on the server-side,
+        // Send packets across as the oldest version the client supports! Don't make packets more modern on the
+        // server-side,
         // client handlers can transform packets to newer/older types.
         return searchForVersion(type, packet, condition, newToOld);
     }
@@ -321,7 +321,11 @@ public class NoxesiumPayloadGroup {
      * Converts the given packet into its last form in the given map.
      */
     @Nullable
-    private NoxesiumPacket searchForVersion(NoxesiumPayloadType<?> type, Object packet, Function<NoxesiumPayloadType<?>, Boolean> condition, Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> map) {
+    private NoxesiumPacket searchForVersion(
+            NoxesiumPayloadType<?> type,
+            Object packet,
+            Function<NoxesiumPayloadType<?>, Boolean> condition,
+            Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> map) {
         var selected = new HashSet<Function<?, ?>>();
 
         // First we figure out a valid list of converters that gets us to a valid packet!

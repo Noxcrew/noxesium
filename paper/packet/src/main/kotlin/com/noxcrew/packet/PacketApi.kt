@@ -425,7 +425,7 @@ public class PacketApi(
                             Player::class.java.isAssignableFrom(method.parameterTypes[0]) ||
                                 NmsPlayer::class.java.isAssignableFrom(method.parameterTypes[0]) ||
                                 PlayerCommonConnection::class.java.isAssignableFrom(method.parameterTypes[0])
-                            ) &&
+                        ) &&
                         Packet::class.java.isAssignableFrom(method.parameterTypes[1]) &&
                         // Allow you to return one or multiple packets
                         (
@@ -433,7 +433,7 @@ public class PacketApi(
                                 List::class.java.isAssignableFrom(
                                     method.returnType,
                                 )
-                            ),
+                        ),
                 ) {
                     "PacketHandler $method on $clazz doesn't match the PacketHandlerFunction interface (2 parameters, player and packet, returns packet or list of packets)"
                 }
