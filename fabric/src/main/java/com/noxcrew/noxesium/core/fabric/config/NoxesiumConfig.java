@@ -39,10 +39,6 @@ public class NoxesiumConfig {
     public double mapPosition = -1.0;
     private Map<GuiElement, Double> scales;
 
-    // Legacy value, merged into scales!
-    @Deprecated
-    public double mapUiSize = 0.8;
-
     /**
      * Returns the scales map.
      */
@@ -50,11 +46,10 @@ public class NoxesiumConfig {
         if (scales == null) {
             scales = new HashMap<>();
 
-            // Legacy load old settings!
+            // Legacy load old position setting!
             if (mapUiLocation.isBottom()) {
                 mapPosition = 1.0;
             }
-            scales.put(GuiElement.MAP, mapUiSize);
         }
         return scales;
     }

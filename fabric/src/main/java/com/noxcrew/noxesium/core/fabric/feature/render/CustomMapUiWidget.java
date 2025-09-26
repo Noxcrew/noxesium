@@ -89,10 +89,10 @@ public class CustomMapUiWidget {
         var setting = NoxesiumMod.getInstance().getConfig().mapUiLocation;
         var flipped = setting.isFlipped();
 
-        var padding = 10f;
+        var padding = 15f;
         var border = 7;
         var size = 128;
-        var scale = (float) config.getScale(GuiElement.MAP);
+        var scale = (float) config.getScale(GuiElement.MAP) * 1.5f;
         var scaledHeight = ((float) size) * scale;
         var offset = (float) ((config.mapPosition + 1f) * (graphics.guiHeight() - (2 * padding) - scaledHeight) / 2.0);
 
