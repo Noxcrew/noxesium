@@ -239,9 +239,8 @@ public class PacketApi(
         pendingTypes += input.javaClass
 
         // Loop through all entries in the list with one type at a time
-        // until we've handled all packets
-        var madeChanges = false
-        do {
+        // until we've processed all types
+        while (pendingTypes.isNotEmpty()) {
             // Determine the type we're checking for in this iteration!
             val type = pendingTypes.removeFirst()
             checkedTypes += type
@@ -282,7 +281,6 @@ public class PacketApi(
                                 pendingTypes += nestedType
                             }
                         }
-                        madeChanges = true
                     } else {
                         index++
                     }
@@ -398,7 +396,7 @@ public class PacketApi(
                     }
                 }
             }
-        } while (madeChanges)
+        }
         return packets
     }
 
