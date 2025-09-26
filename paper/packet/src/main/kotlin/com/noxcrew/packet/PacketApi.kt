@@ -23,6 +23,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.Plugin
 import org.slf4j.LoggerFactory
+import java.util.LinkedList
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantReadWriteLock
@@ -121,7 +122,12 @@ private class PacketHandlerWithPriority<R, T : Packet<*>>(
 /** A function that unregisters a packet handler. */
 public typealias PacketHandlerUnregisterer = () -> Unit
 
-/** Provides the basis for a packet listening, modification, and cancellation API. */
+/**
+ * Provides the basis for a packet listening, modification, and cancellation API.
+ *
+ * Packet handlers can transform packet types into others, however packet types are only
+ * processed at most once to avoid infinite nesting.
+ */
 public class PacketApi(
     /** The unique key to use for the packet handler. */
     public val key: String,
@@ -219,73 +225,90 @@ public class PacketApi(
         return packetHandlers.containsKey(packet.javaClass)
     }
 
-    /** Calls all handlers on the given [packet], returning the manipulated packet. */
-    internal fun handlePacket(connection: Connection, packet: Packet<*>): List<Packet<*>> {
+    /** Calls all handlers on the given [input], returning the manipulated packet. */
+    internal fun handlePacket(connection: Connection, input: Packet<*>): List<Packet<*>> {
         // Early-exit if this type has no handlers!
-        if (!hasHandlers(packet)) return listOf(packet)
+        if (!hasHandlers(input)) return listOf(input)
 
-        println("input: $packet")
-
-        val baseType = packet.javaClass
-        val finalPackets = mutableListOf<Packet<*>>()
-        var pendingPackets = LinkedHashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
+        val packets = LinkedList<Packet<*>>()
+        val pendingTypes = LinkedList<Class<*>>()
         val checkedTypes = mutableSetOf<Class<*>>()
 
-        // Only ensure ordered if we require it!
-        var requireOrder = false
+        // Start the list out as having only the current packet
+        packets += input
+        pendingTypes += input.javaClass
 
-        // Queue up the initial packet
-        pendingPackets[baseType] = mutableListOf(packet)
+        // Loop through all entries in the list with one type at a time
+        // until we've handled all packets
+        var madeChanges = false
+        do {
+            // Determine the type we're checking for in this iteration!
+            val type = pendingTypes.removeFirst()
+            checkedTypes += type
 
-        // Iterate across all packets to be processed in a BFS.
-        while (pendingPackets.isNotEmpty()) {
-            val currentPackets = pendingPackets
-            val typesCheckedThisLayer = mutableListOf<Class<*>>()
+            if (type == ClientboundBundlePacket::class.java) {
+                // If the type is a bundle packet, unpack it!
+                var index = 0
+                while (index < packets.size) {
+                    val packet = packets[index]
 
-            // Use a linked hash map so order is maintained!
-            pendingPackets = LinkedHashMap()
+                    if (packet is ClientboundBundlePacket) {
+                        // Start by removing the bundle itself
+                        packets.removeAt(index)
 
-            while (currentPackets.isNotEmpty()) {
-                val (type, activePackets) = currentPackets.pollFirstEntry() ?: break
+                        // Add the new packets
+                        var insertIndex = index
+                        for (nested in packet.subPackets()) {
+                            // Ignore null packets
+                            if (nested == null) continue
 
-                // If this packet type has already been checked, it's finished!
-                if (type in checkedTypes) {
-                    finalPackets += activePackets
+                            // Add the packet back to the original list but relative to the index of the bundle
+                            packets.add(insertIndex++, nested)
 
-                    // If we got here there were two handlers creating each other's type, this would
-                    // cause infinite packet copies to be made, this should not happen!
-                    logger.warn("Skipping packet handling of packet type $type due to nested handlers")
-                    continue
-                }
+                            // Ignore nested bundle packets as those are already handled by
+                            // the iterator continuing down the list!
+                            if (nested is ClientboundBundlePacket) continue
 
-                // If it's a bundle, unpack into the next group of packets!
-                if (type == ClientboundBundlePacket::class.java) {
-                    // Require order from here on out! We cannot put the bundle back together in a different
-                    // order without causing issues, so we ensure we strictly follow order from here on out.
-                    requireOrder = true
+                            // Queue up to check this type if it has handlers and is not already checked!
+                            val nestedType = nested.javaClass
+                            if (hasHandlers(nested)) {
+                                if (nestedType in checkedTypes) {
+                                    // If we got here there were two handlers creating each other's type, this would
+                                    // cause infinite packet copies to be made, this should not happen!
+                                    logger.warn("Skipping packet handling of packet type $nestedType due to nested handlers")
+                                    continue
+                                }
 
-                    for (bundlePacket in activePackets) {
-                        for (packet in (bundlePacket as? ClientboundBundlePacket ?: continue).subPackets()) {
-                            if (packet != null) {
-                                pendingPackets.getOrPut(packet.javaClass) { mutableListOf() } += packet
+                                pendingTypes += nestedType
                             }
                         }
+                        madeChanges = true
+                    } else {
+                        index++
                     }
-                    continue
                 }
-
-                // Go through all packet handlers of this type of packet
-                var packetList = activePackets
+            } else {
+                // Otherwise, run each packet handler across the list! This supports handlers spliting
+                // packets into two of the same type properly as we won't run the same handler many times
+                // on the same packets.
                 packetHandlers[type]?.read { handlers ->
                     for (handlerWithPriority in handlers) {
-                        val iteratorPackets = packetList
-                        packetList = mutableListOf()
+                        // Automatically increment indices as we never want to process the same
+                        // packet twice!
+                        var index = 0
+                        while (index < packets.size) {
+                            val packet = packets[index]
 
-                        for (iteratorPacket in iteratorPackets) {
+                            // Ignore packets not of the type being handled!
+                            if (!type.isInstance(packet)) {
+                                index++
+                                continue
+                            }
+
+                            // Call the packet handler on this packet in the list
                             val output =
                                 try {
-                                    // If there is no active packet anymore, stop running these handlers!
-                                    handlerWithPriority.handle(connection, iteratorPacket)
+                                    handlerWithPriority.handle(connection, packet)
                                 } catch (e: Exception) {
                                     logger.error(
                                         "Error handling packet ${packet.javaClass.simpleName}, kicking player!",
@@ -309,45 +332,74 @@ public class PacketApi(
                                     continue
                                 }
 
-                            // Look through the output packets and add them to the correct lists
-                            for (packet in output) {
-                                // Filter out null packets!
-                                if (packet == null) continue
+                            // Perform faster checks that don't require re-insertion if the output is a singular
+                            // packet of the same type or null.
+                            if (output.size == 1) {
+                                val firstOutput = output[0]
+                                if (firstOutput === packet) {
+                                    // Proceed to the next index as normal, this handler was only
+                                    // listening and changes nothing!
+                                    index++
+                                    continue
+                                }
 
-                                val newType = packet.javaClass
-                                if (newType == type) {
-                                    // The type is the same, continue iterating with it!
-                                    packetList += packet
-                                } else {
-                                    // If we are not required to keep a bundle packet ordered
-                                    // we skip processing of any packets that do not need it.
-                                    if (!requireOrder && !hasHandlers(packet)) {
-                                        finalPackets += packet
+                                if (firstOutput == null) {
+                                    // Remove the packet but check the same index again as it has shifted
+                                    packets.removeAt(index)
+                                    continue
+                                }
+
+                                if (firstOutput.javaClass == type) {
+                                    // Update the packet, continue to the next index
+                                    index++
+                                    packets[index] = firstOutput
+                                    continue
+                                }
+                            }
+
+                            // Remove the packet itself and insert the new ones
+                            // at the same index.
+                            packets.removeAt(index)
+
+                            // Add the new packets
+                            var insertIndex = index
+                            for (nested in output) {
+                                // Ignore null packets
+                                if (nested == null) continue
+
+                                // If we insert anything at the index itself we continue to the next element!
+                                // If the type is the same we don't want to end up in a loop, if the type is different
+                                // we're not checking for it anyway so we don't care in this loop.
+                                if (insertIndex == index) {
+                                    index++
+                                }
+
+                                // Add the packet back to the original list but relative to the index of the packet
+                                packets.add(insertIndex++, nested)
+
+                                // Ignore nested same packets as those are already handled by
+                                // the iterator continuing down the list!
+                                if (type.isInstance(nested)) continue
+
+                                // Queue up to check this type if it has handlers and is not already checked!
+                                val nestedType = nested.javaClass
+                                if (hasHandlers(nested)) {
+                                    if (nestedType in checkedTypes) {
+                                        // If we got here there were two handlers creating each other's type, this would
+                                        // cause infinite packet copies to be made, this should not happen!
+                                        logger.warn("Skipping packet handling of packet type $nestedType due to nested handlers")
                                         continue
                                     }
 
-                                    // If the type has changed, iterate over this on the next layer!
-                                    pendingPackets.getOrPut(newType) { mutableListOf() } += packet
+                                    pendingTypes += nestedType
                                 }
                             }
                         }
                     }
                 }
-
-                // We got through the handlers nicely, these packets are finished!
-                finalPackets += packetList
             }
-
-            // Only allow each packet type to be checked once per layer,
-            // this means if we have a bundle of the same packet we run the
-            // handler on each of those packets separately, but if that causes
-            // another nested bundle packet of the same type we no longer call
-            // listeners. This avoids infinite growth of the space to check.
-            checkedTypes += typesCheckedThisLayer
-        }
-
-        println("output: $finalPackets")
-        return finalPackets
+        } while (madeChanges)
+        return packets
     }
 
     /**
@@ -373,7 +425,7 @@ public class PacketApi(
                             Player::class.java.isAssignableFrom(method.parameterTypes[0]) ||
                                 NmsPlayer::class.java.isAssignableFrom(method.parameterTypes[0]) ||
                                 PlayerCommonConnection::class.java.isAssignableFrom(method.parameterTypes[0])
-                        ) &&
+                            ) &&
                         Packet::class.java.isAssignableFrom(method.parameterTypes[1]) &&
                         // Allow you to return one or multiple packets
                         (
@@ -381,7 +433,7 @@ public class PacketApi(
                                 List::class.java.isAssignableFrom(
                                     method.returnType,
                                 )
-                        ),
+                            ),
                 ) {
                     "PacketHandler $method on $clazz doesn't match the PacketHandlerFunction interface (2 parameters, player and packet, returns packet or list of packets)"
                 }
