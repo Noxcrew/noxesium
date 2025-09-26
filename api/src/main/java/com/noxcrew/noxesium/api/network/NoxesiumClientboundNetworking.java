@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
