@@ -4,23 +4,56 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.PacketCollection;
+import net.kyori.adventure.key.Key;
+import org.apache.commons.lang3.function.TriConsumer;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.function.TriConsumer;
-import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Defines a group of payload types which share the same versioned
  * channel ids.
  */
 public class NoxesiumPayloadGroup {
+    /**
+     * Stores data for an ongoing chain of convertable packets.
+     *
+     * @param group    The group this chain belongs to.
+     * @param oldClazz The last packet's class.
+     * @param oldType  The last packet's type.
+     * @param <P>      The type of the last packet.
+     */
+    public record NoxesiumPayloadGroupChain<P extends NoxesiumPacket>(
+            NoxesiumPayloadGroup group, Class<P> oldClazz, NoxesiumPayloadType<P> oldType) {
+        /**
+         * Adds a new packet to this chain.
+         *
+         * @param clazz    The class of type T.
+         * @param newToOld A function that converts type T to P.
+         * @param oldToNew A function that converts type P to T.
+         * @param <T>      The type of packet.
+         */
+        public <T extends NoxesiumPacket> NoxesiumPayloadGroupChain<T> add(
+                Class<T> clazz, Function<T, P> newToOld, Function<P, T> oldToNew) {
+            var newType = group.addType(clazz);
+            group.addConverter(oldClazz, oldType, clazz, newType, newToOld, oldToNew);
+            return new NoxesiumPayloadGroupChain<>(group, clazz, newType);
+        }
+    }
+
     @NotNull
     private final List<NoxesiumPayloadType<?>> payloadTypes = new ArrayList<>();
 
@@ -30,6 +63,10 @@ public class NoxesiumPayloadGroup {
     @NotNull
     private final Key id;
 
+    private final Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> newToOld =
+            new HashMap<>();
+    private final Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> oldToNew =
+            new HashMap<>();
     private final boolean clientToServer;
     private boolean lazy = false;
 
@@ -92,12 +129,77 @@ public class NoxesiumPayloadGroup {
     }
 
     /**
+     * Converts the given packet into the first version that the given condition supports.
+     *
+     * @param type      The type of the packet.
+     * @param packet    The actual packet instance.
+     * @param condition A condition that checks if a type is valid.
+     * @return The converted packet of a valid type.
+     */
+    @Nullable
+    public NoxesiumPacket convertIntoSupported(
+            NoxesiumPayloadType<?> type, NoxesiumPacket packet, Function<NoxesiumPayloadType<?>, Boolean> condition) {
+        // Send packets across as the oldest version the client supports! Don't make packets more modern on the server-side,
+        // client handlers can transform packets to newer/older types.
+        return searchForVersion(type, packet, condition, newToOld);
+    }
+
+    /**
+     * Checks if this type or any it can convert into pass the given predicate.
+     *
+     * @param type      The type to check.
+     * @param condition A condition that checks for the result.
+     * @return The result from any condition.
+     */
+    public boolean checkAnySupports(NoxesiumPayloadType<?> type, Function<NoxesiumPayloadType<?>, Boolean> condition) {
+        // First we figure out a valid list of converters that gets us to a valid packet!
+        var currentType = type;
+        while (!condition.apply(currentType)) {
+            var pair = newToOld.get(currentType.clazz);
+            if (pair == null) return false;
+            currentType = pair.getKey();
+        }
+        return true;
+    }
+
+    /**
+     * Applies a converter to two unknown packets.
+     */
+    private <T, P> NoxesiumPacket applyConverter(Function<T, P> converter, Object packet) {
+        return (NoxesiumPacket) converter.apply((T) packet);
+    }
+
+    /**
      * Adds a new packet to this group.
      *
      * @param clazz The class of type T.
      * @param <T>   The type of packet.
      */
     public <T extends NoxesiumPacket> NoxesiumPayloadGroup add(Class<T> clazz) {
+        addType(clazz);
+        return this;
+    }
+
+    /**
+     * Adds a new packet that is the start of a chain of backwards compatible
+     * packets.
+     *
+     * @param clazz The class of type T.
+     * @param <T>   The type of packet.
+     */
+    public <T extends NoxesiumPacket> NoxesiumPayloadGroupChain<T> chain(Class<T> clazz) {
+        var type = addType(clazz);
+        return new NoxesiumPayloadGroupChain<>(this, clazz, type);
+    }
+
+    /**
+     * Registers a new payload type.
+     *
+     * @param clazz The class of type T.
+     * @param <T>   The type of packet.
+     * @return The newly created payload type.
+     */
+    private <T extends NoxesiumPacket> NoxesiumPayloadType<T> addType(Class<T> clazz) {
         // Append p0, p1, etc. for the different protocol types.
         var newPayload = NoxesiumNetworking.getInstance()
                 .createPayloadType(
@@ -107,24 +209,25 @@ public class NoxesiumPayloadGroup {
                         clientToServer);
         payloadTypes.add(newPayload);
         packetCollection.addPluginChannelIdentifier(newPayload.id().toString());
-        return this;
+        return newPayload;
     }
 
     /**
      * Registers a new packet converter to this group which adds support
      * for converting between packet types to support multiple packet types
-     * on the same packet listeners.
-     *
-     * @param previousClazz The class of type P.
-     * @param newClass      The class of type T.
-     * @param converter     A function that converts type P to T.
-     * @param <T>           The type of the last packet.
-     * @param <P>           The type of the new packet.
+     * on the same packet listeners. This requires a converter to create an
+     * older packet type, we always send the newest packet type available but
+     * downgrade to an older type if required by an older client/server.
      */
-    public <P extends NoxesiumPacket, T extends NoxesiumPacket> NoxesiumPayloadGroup converter(
-            Class<P> previousClazz, Class<T> newClass, Function<P, T> converter) {
-        // TODO Implement converters
-        return this;
+    private <P extends NoxesiumPacket, T extends NoxesiumPacket> void addConverter(
+            Class<P> oldClass,
+            NoxesiumPayloadType<P> oldType,
+            Class<T> newClass,
+            NoxesiumPayloadType<T> newType,
+            Function<T, P> newToOld,
+            Function<P, T> oldToNew) {
+        this.newToOld.put(newClass, Pair.of(newType, newToOld));
+        this.oldToNew.put(oldClass, Pair.of(oldType, oldToNew));
     }
 
     /**
@@ -140,6 +243,14 @@ public class NoxesiumPayloadGroup {
      */
     public void handle(@NotNull UUID context, @NotNull Object payload) {
         try {
+            // Start by determining the type of the payload
+            var type = NoxesiumNetworking.getInstance().getPacketTypes().get(payload.getClass());
+            if (type == null) return;
+
+            // Cache converted types if multiple listeners need them
+            var types = new HashMap<Class<?>, Optional<Object>>();
+            types.put(payload.getClass(), Optional.of(payload));
+
             var iterator = listeners.iterator();
             while (iterator.hasNext()) {
                 var pair = iterator.next();
@@ -151,12 +262,21 @@ public class NoxesiumPayloadGroup {
                     continue;
                 }
 
-                // Ignore handlers that want a different payload type
+                // Try to cast the payload into the type this handler is attempting to receive
                 var clazz = pair.getLeft();
-                // TODO Support converters!
-                if (!clazz.isInstance(payload)) continue;
+                var relevantPayload = types.computeIfAbsent(clazz, (target) -> {
+                    // Try to modernize this packet to any newer types we know about that we might be listening for!
+                    var newest = searchForVersion(type, payload, (it) -> it.clazz.equals(target), oldToNew);
+                    if (newest != null) return Optional.of(newest);
 
-                acceptAny(pair.getRight(), obj, context, payload);
+                    // Failing that, try to make it older to see if we are still listening to outdated packets?
+                    var oldest = searchForVersion(type, payload, (it) -> it.clazz.equals(target), newToOld);
+                    if (oldest != null) return Optional.of(oldest);
+
+                    return Optional.empty();
+                });
+                if (relevantPayload.isEmpty()) continue;
+                acceptAny(pair.getRight(), obj, context, relevantPayload.get());
             }
         } catch (Throwable x) {
             NoxesiumApi.getLogger().error("Caught exception while handling packet", x);
@@ -195,5 +315,34 @@ public class NoxesiumPayloadGroup {
     @Override
     public String toString() {
         return id.toString();
+    }
+
+    /**
+     * Converts the given packet into its last form in the given map.
+     */
+    @Nullable
+    private NoxesiumPacket searchForVersion(NoxesiumPayloadType<?> type, Object packet, Function<NoxesiumPayloadType<?>, Boolean> condition, Map<Class<? extends NoxesiumPacket>, Pair<NoxesiumPayloadType<?>, Function<?, ?>>> map) {
+        var selected = new HashSet<Function<?, ?>>();
+
+        // First we figure out a valid list of converters that gets us to a valid packet!
+        var currentType = type;
+        while (!condition.apply(currentType)) {
+            var pair = map.get(currentType.clazz);
+            if (pair == null) {
+                // If this payload type is not valid, and we cannot convert it into anything, give up!
+                return null;
+            }
+
+            // Perform this conversion later and update the current type
+            selected.add(pair.getValue());
+            currentType = pair.getKey();
+        }
+
+        // Then we apply the found converters
+        var currentPacket = packet;
+        for (var converter : selected) {
+            currentPacket = applyConverter(converter, currentPacket);
+        }
+        return (NoxesiumPacket) currentPacket;
     }
 }

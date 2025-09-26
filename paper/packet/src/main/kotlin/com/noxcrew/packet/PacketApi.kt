@@ -224,6 +224,8 @@ public class PacketApi(
         // Early-exit if this type has no handlers!
         if (!hasHandlers(packet)) return listOf(packet)
 
+        println("input: $packet")
+
         val baseType = packet.javaClass
         val finalPackets = mutableListOf<Packet<*>>()
         var pendingPackets = LinkedHashMap<Class<in Packet<*>>, MutableList<Packet<*>>>()
@@ -343,6 +345,8 @@ public class PacketApi(
             // listeners. This avoids infinite growth of the space to check.
             checkedTypes += typesCheckedThisLayer
         }
+
+        println("output: $finalPackets")
         return finalPackets
     }
 

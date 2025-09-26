@@ -47,22 +47,24 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     public abstract Collection<String> getRegisteredChannels(@NotNull NoxesiumServerPlayer player);
 
     /**
-     * Checks if the connected player can receive any packets of the given group.
+     * Checks if the connected player can receive any packets of the given group the given class belongs to,
+     * when the starting point is of the given class.
      *
-     * @param group The packet group
+     * @param clazz The packet class.
      * @return Whether the connected player can receive the packet
      */
-    public boolean canReceive(@NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadGroup group) {
-        for (var type : group.getPayloadTypes()) {
-            if (canReceive(player, type)) {
-                return true;
-            }
+    public <T extends NoxesiumPacket> boolean canReceive(
+            @NotNull NoxesiumServerPlayer player, @NotNull Class<T> clazz) {
+        var type = getPacketTypes().get(clazz);
+        if (type != null) {
+            // Check if any type within the group is supported!
+            return type.getGroup().checkAnySupports(type, (it) -> canReceive(player, it));
         }
         return false;
     }
 
     /**
-     * Checks if the connected player can receive packets of the given type.
+     * Checks if the connected player can receive packets of the specific given type.
      *
      * @param type The packet type
      * @return Whether the connected player can receive the packet

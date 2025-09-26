@@ -155,7 +155,7 @@ public abstract class NoxesiumServerHandshaker {
         NoxesiumPlayerManager.getInstance().registerPlayer(player.getUniqueId(), player);
 
         if (NoxesiumClientboundNetworking.getInstance()
-                .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_TRANSFERRED)) {
+                .canReceive(player, ClientboundHandshakeTransferredPacket.class)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             completeTransfer(player);
@@ -230,7 +230,7 @@ public abstract class NoxesiumServerHandshaker {
         // Determine the response based on the current state
         var acknowledgePacket = new ClientboundHandshakeAcknowledgePacket(entrypoints);
         if (NoxesiumClientboundNetworking.getInstance()
-                .canReceive(player, HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE)) {
+                .canReceive(player, ClientboundHandshakeAcknowledgePacket.class)) {
             // The client has already indicated it can receive the acknowledgment packet,
             // send it immediately!
             player.setHandshakeState(HandshakeState.AWAITING_RESPONSE);

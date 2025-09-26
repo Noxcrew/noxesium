@@ -43,10 +43,10 @@ public class CommonPackets {
     public static final NoxesiumPayloadGroup CLIENT_UPDATE_GAME_COMPONENTS =
             client(INSTANCE, "clientbound_update_game_components").add(ClientboundUpdateGameComponentsPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_OPEN_LINK = client(INSTANCE, "clientbound_open_link")
-            .add(ClientboundOpenLinkPacket.class)
-            .add(ClientboundOpenLinkV2Packet.class)
-            .converter(
-                    ClientboundOpenLinkPacket.class,
+            .chain(ClientboundOpenLinkPacket.class)
+            .add(
                     ClientboundOpenLinkV2Packet.class,
-                    (old) -> new ClientboundOpenLinkV2Packet(old.text(), old.url(), ""));
+                    (it) -> new ClientboundOpenLinkPacket(it.text(), it.url()),
+                    (it) -> new ClientboundOpenLinkV2Packet(it.text(), it.url(), ""))
+            .group();
 }

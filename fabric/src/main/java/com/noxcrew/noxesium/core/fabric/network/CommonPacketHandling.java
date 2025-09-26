@@ -16,6 +16,7 @@ import com.noxcrew.noxesium.core.network.CommonPackets;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
@@ -131,7 +132,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
                 });
 
         CommonPackets.CLIENT_OPEN_LINK.addListener(
-                this, ClientboundOpenLinkV2Packet.class, (reference, packet, ignored3) -> {
+                this, ClientboundOpenLinkPacket.class, (reference, packet, ignored3) -> {
                     if (!reference.isRegistered()) return;
                     try {
                         var uri = Util.parseAndValidateUntrustedUri(packet.url());
@@ -148,8 +149,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
                                         Component.text(uri.toString())));
 
                         // Title is empty since we don't use it because we override the whole message instead to allow
-                        // for
-                        // multiple lines
+                        // for multiple lines
                         var screen = new ConfirmLinkScreen(
                                 (result) -> {
                                     if (result) Util.getPlatform().openUri(uri);

@@ -17,6 +17,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.client.setting.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkV2Packet;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -452,14 +453,17 @@ public class NoxesiumServerPlayer {
         if (type == null) return false;
 
         // Check if the client can receive this type before we queue the packet
-        if (!NoxesiumClientboundNetworking.getInstance().canReceive(this, type.getGroup())) return false;
+        var instance = NoxesiumClientboundNetworking.getInstance();
+        var transformedPacket =
+                type.getGroup().convertIntoSupported(type, packet, (it) -> instance.canReceive(this, it));
+        if (transformedPacket == null) return false;
 
         // If this packet updates some registry we halt it until we're done updating registries!
         if (isAwaitingRegistries() && packet instanceof NoxesiumRegistryDependentPacket) {
-            pendingPackets.add(packet);
+            pendingPackets.add(transformedPacket);
             return true;
         }
-        type.sendClientboundAny(this, packet);
+        type.sendClientboundAny(this, transformedPacket);
         return true;
     }
 
@@ -499,7 +503,7 @@ public class NoxesiumServerPlayer {
      * the given text message.
      */
     public void openLink(String url, @Nullable Component text) {
-        sendPacket(new ClientboundOpenLinkPacket(Optional.ofNullable(text), url));
+        sendPacket(new ClientboundOpenLinkV2Packet(Optional.ofNullable(text), url, ""));
     }
 
     /**
