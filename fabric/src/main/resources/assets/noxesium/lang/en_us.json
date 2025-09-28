@@ -66,6 +66,7 @@
   "noxesium.options.hotbar_scale.tooltip": "Changes the size of the hotbar relative to the GUI scale.",
 
   "noxesium.options.reset_scales": "Reset All Scales",
+  "noxesium.options.reset_positions": "Reset All Position",
 
   "noxesium.options.enum.default": "Ask server",
   "noxesium.options.enum.true": "Always",

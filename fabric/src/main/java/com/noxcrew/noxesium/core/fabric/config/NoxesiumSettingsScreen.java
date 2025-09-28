@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.config;
 import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
 
 import java.util.HashSet;
+import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.GuiGraphics;
@@ -119,27 +120,43 @@ public class NoxesiumSettingsScreen extends Screen {
         return option.createButton(Minecraft.getInstance().options);
     }
 
+    /**
+     * Creates a new widget for the given option.
+     */
+    public static AbstractWidget createWidget(
+            OptionInstance<?> option, Set<OptionInstance.OptionInstanceSliderButton<?>> set) {
+        var widget = (OptionInstance.OptionInstanceSliderButton<?>) createWidget(option);
+        set.add(widget);
+        return widget;
+    }
+
     class GuiTab extends GridLayoutTab {
         GuiTab() {
             super(Component.translatable("noxesium.options.header.gui_options"));
 
             var rowHelper = layout.columnSpacing(3).rowSpacing(3).createRowHelper(2);
 
-            rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition()));
+            var positionWidgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
+            var widgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
+
+            rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition(), positionWidgets));
+            rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition(), positionWidgets));
+            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition(), positionWidgets));
             rowHelper.addChild(createWidget(VanillaOptions.mapUiLocation()));
 
-            var widgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
             for (var scalar : NoxesiumOptions.guiScales().values()) {
-                var widget = (OptionInstance.OptionInstanceSliderButton<?>) createWidget(scalar);
-                widgets.add(widget);
-                rowHelper.addChild(widget);
+                rowHelper.addChild(createWidget(scalar, widgets));
             }
 
             rowHelper.addChild(Button.builder(
                             Component.translatable("noxesium.options.reset_scales"),
                             button -> widgets.forEach(it -> it.setValue(0.495)))
+                    .bounds(0, 0, 150, 20)
+                    .build());
+
+            rowHelper.addChild(Button.builder(
+                            Component.translatable("noxesium.options.reset_positions"),
+                            button -> positionWidgets.forEach(it -> it.setValue(0.5)))
                     .bounds(0, 0, 150, 20)
                     .build());
         }
