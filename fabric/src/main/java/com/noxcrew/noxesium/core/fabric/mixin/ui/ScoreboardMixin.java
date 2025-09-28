@@ -20,8 +20,14 @@ public class ScoreboardMixin {
     public void wrapScoreboardRender(GuiGraphics guiGraphics, Objective objective, Operation<Void> original) {
         var config = NoxesiumMod.getInstance().getConfig();
         ((GuiGraphicsScalingExtension) guiGraphics).noxesium$whileRescaled(GuiElement.SCOREBOARD, () -> {
+            // Determine the position based on the height so it always fits on-screen!
+            var lineCount =
+                    objective.getScoreboard().listPlayerScores(objective).size();
+            if (lineCount > 15) lineCount = 15;
+            var height = lineCount * 9 + 9;
+            var scaledHeight = ((float) height) * config.getScale(GuiElement.SCOREBOARD);
             guiGraphics.pose().translate(0, (float)
-                    (-config.scoreboardPosition * ((double) guiGraphics.guiHeight()) / 2.0));
+                    (-config.scoreboardPosition * ((float) guiGraphics.guiHeight() - scaledHeight) / 2f));
             original.call(guiGraphics, objective);
         });
     }
