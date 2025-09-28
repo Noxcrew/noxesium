@@ -97,7 +97,7 @@ public class CustomMapUiWidget {
         var offset = (float) ((config.mapPosition + 1f) * (graphics.guiHeight() - (2 * padding) - scaledHeight) / 2.0);
 
         if ((arm == HumanoidArm.RIGHT) != flipped) {
-            pose.translate(graphics.guiWidth() - (size * scale), offset);
+            pose.translate(graphics.guiWidth() - (2 * padding) - scaledHeight, offset);
         } else {
             pose.translate(0f, offset);
         }
