@@ -29,7 +29,7 @@ public class SpatialDebuggingRenderer implements DebugRenderer.SimpleDebugRender
 
         Profiler.get().push("noxesium-debug");
         var color = new Color(255, 214, 31);
-        var vertexconsumer = multiBufferSource.getBuffer(RenderType.debugLineStrip(2.0));
+        var vertexconsumer = multiBufferSource.getBuffer(RenderType.lines());
         poseStack.pushPose();
         poseStack.translate(-cameraX, -cameraY, -cameraZ);
         for (var model : models) {
