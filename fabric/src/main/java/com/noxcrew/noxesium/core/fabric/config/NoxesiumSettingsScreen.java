@@ -137,11 +137,12 @@ public class NoxesiumSettingsScreen extends Screen {
             var rowHelper = layout.columnSpacing(3).rowSpacing(3).createRowHelper(2);
 
             var positionWidgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
+            var zeroPositionWidgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
             var widgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
 
             rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition(), positionWidgets));
             rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition(), positionWidgets));
-            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition(), positionWidgets));
+            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition(), zeroPositionWidgets));
             rowHelper.addChild(createWidget(VanillaOptions.mapUiLocation()));
 
             for (var scalar : NoxesiumOptions.guiScales().values()) {
@@ -156,7 +157,10 @@ public class NoxesiumSettingsScreen extends Screen {
 
             rowHelper.addChild(Button.builder(
                             Component.translatable("noxesium.options.reset_positions"),
-                            button -> positionWidgets.forEach(it -> it.setValue(0.5)))
+                            button -> {
+                                positionWidgets.forEach(it -> it.setValue(0.5));
+                                zeroPositionWidgets.forEach(it -> it.setValue(0.0));
+                            })
                     .bounds(0, 0, 150, 20)
                     .build());
         }
