@@ -16,15 +16,25 @@ public class QibBehaviorModule extends NoxesiumFeature {
 
     public QibBehaviorModule() {
         ClientTickEvents.END_CLIENT_TICK.register((ignored) -> {
-            // Ignore unless registered!
-            if (!isRegistered()) return;
-
-            // If there are no qib behaviors set, do nothing!
-            if (NoxesiumRegistries.QIB_EFFECTS.isEmpty()) return;
+            // Ignore unless registered and there being qibs!
+            if (!isRegistered() || NoxesiumRegistries.QIB_EFFECTS.isEmpty()) {
+                // Destroy the manager instance!
+                qibCollisionManager = null;
+                return;
+            }
 
             // Perform checks in between the last and next bounding box
             var player = Minecraft.getInstance().player;
-            if (player == null) return;
+            if (player == null) {
+                // Destroy the manager as the player is gone!
+                qibCollisionManager = null;
+                return;
+            }
+
+            // Check that the player reference is valid
+            if (qibCollisionManager != null && qibCollisionManager.getPlayer() != player) {
+                qibCollisionManager = null;
+            }
 
             // Tick the collision manager
             if (qibCollisionManager == null) {
