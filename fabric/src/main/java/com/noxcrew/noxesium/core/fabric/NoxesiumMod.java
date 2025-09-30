@@ -37,11 +37,6 @@ public class NoxesiumMod implements ClientModInitializer {
     private CustomServerCreativeItems customCreativeItems;
 
     /**
-     * If enabled settings are not overridden. This should be true while rendering the settings menu.
-     */
-    public boolean disableSettingOverrides = false;
-
-    /**
      * Whether Iris is being used. If true we don't allow the graphics setting to be changed to Fabulous! as
      * to not break Iris.
      */

@@ -155,12 +155,10 @@ public class NoxesiumSettingsScreen extends Screen {
                     .bounds(0, 0, 150, 20)
                     .build());
 
-            rowHelper.addChild(Button.builder(
-                            Component.translatable("noxesium.options.reset_positions"),
-                            button -> {
-                                positionWidgets.forEach(it -> it.setValue(0.5));
-                                zeroPositionWidgets.forEach(it -> it.setValue(0.0));
-                            })
+            rowHelper.addChild(Button.builder(Component.translatable("noxesium.options.reset_positions"), button -> {
+                        positionWidgets.forEach(it -> it.setValue(0.5));
+                        zeroPositionWidgets.forEach(it -> it.setValue(0.0));
+                    })
                     .bounds(0, 0, 150, 20)
                     .build());
         }

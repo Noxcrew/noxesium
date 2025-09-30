@@ -47,9 +47,6 @@ public abstract class OptionInstanceMixin<T> {
         var options = Minecraft.getInstance().options;
         if (options == null) return original;
 
-        // Ignore if we're in a nested settings menu override
-        if (NoxesiumMod.getInstance().disableSettingOverrides) return original;
-
         if (((Object) (this)) == options.prioritizeChunkUpdates()
                 && GameComponents.getInstance()
                         .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {

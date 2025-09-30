@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "com.noxcrew.noxesium.core.fabric.NoxesiumMixinPlugin",
   "client": [
-    "SodiumDeferChunkUpdatesMixin",
-    "SodiumSettingOverrideMixin"
+    "SodiumDeferChunkUpdatesMixin"
   ],
   "injectors": {
     "defaultRequire": 1
