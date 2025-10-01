@@ -2,7 +2,6 @@ package com.noxcrew.noxesium.paper.component
 
 import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder
-import com.noxcrew.noxesium.api.component.NoxesiumComponentType
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
@@ -21,10 +20,6 @@ public class PaperEntityManager public constructor() : NoxesiumEntityManager<Ent
     override fun hasComponents(entity: Entity): Boolean = entity.bukkitEntity.persistentDataContainer.hasAnyNoxesiumComponent()
 
     override fun loadComponentHolder(entity: Entity): MutableNoxesiumComponentHolder = EntityComponentHolder(entity).apply {
-        fun <T> setAny(componentType: NoxesiumComponentType<T>, value: Any?) {
-            `noxesium$setComponent`(componentType, value as T?)
-        }
-
         // Go through the data stored in the Bukkit data container and load it onto the holder
         val craft = entity.bukkitEntity.persistentDataContainer as CraftPersistentDataContainer
         val tag = craft.getTag(NoxesiumReferences.COMPONENT_NAMESPACE) as? CompoundTag ?: return@apply
@@ -34,11 +29,8 @@ public class PaperEntityManager public constructor() : NoxesiumEntityManager<Ent
             val result = codec.serializers().codec.decode(NbtOps.INSTANCE, value)
             if (result.hasResultOrPartial()) {
                 val raw = result.resultOrPartial()?.getOrNull()?.first ?: return@forEach
-                setAny(component, raw)
+                setInternalComponent(component, raw)
             }
         }
-
-        // Ensure no modifications are sent in the first tick!
-        clearModifications()
     }
 }

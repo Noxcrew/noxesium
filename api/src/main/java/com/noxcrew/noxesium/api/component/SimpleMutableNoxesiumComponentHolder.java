@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
  * Provides a basic implementation of a mutable component holder.
  */
 public class SimpleMutableNoxesiumComponentHolder implements MutableNoxesiumComponentHolder {
-    private final Map<NoxesiumComponentType<?>, Object> values = new HashMap<>();
-    private Set<NoxesiumComponentType<?>> modified = new HashSet<>();
-    private final NoxesiumRegistry<NoxesiumComponentType<?>> registry;
+    protected final Map<NoxesiumComponentType<?>, Object> values = new HashMap<>();
+    protected final Set<NoxesiumComponentType<?>> modified = new HashSet<>();
+    protected final NoxesiumRegistry<NoxesiumComponentType<?>> registry;
 
     public SimpleMutableNoxesiumComponentHolder(final NoxesiumRegistry<NoxesiumComponentType<?>> registry) {
         this.registry = registry;

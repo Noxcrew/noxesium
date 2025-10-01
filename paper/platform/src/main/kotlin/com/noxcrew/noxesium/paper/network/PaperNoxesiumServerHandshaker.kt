@@ -248,7 +248,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
     }
 
     override fun isConnected(player: NoxesiumServerPlayer): Boolean =
-        super.isConnected(player) && !(player as PaperNoxesiumServerPlayer).isConnected
+        super.isConnected(player) && (player as PaperNoxesiumServerPlayer).isConnected
 
     override fun runDelayed(runnable: Runnable) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(NoxesiumPaper.plugin, runnable)
