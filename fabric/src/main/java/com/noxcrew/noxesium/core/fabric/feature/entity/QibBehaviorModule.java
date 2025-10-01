@@ -11,7 +11,9 @@ import net.minecraft.client.Minecraft;
  */
 public class QibBehaviorModule extends NoxesiumFeature {
 
-    private final ClientSpatialInteractionEntityTree spatialTree = new ClientSpatialInteractionEntityTree();
+    /** The shared spatial tree with all qibs. */
+    public static final ClientSpatialInteractionEntityTree SPATIAL_TREE = new ClientSpatialInteractionEntityTree();
+
     private QibCollisionManager qibCollisionManager;
 
     public QibBehaviorModule() {
@@ -38,17 +40,16 @@ public class QibBehaviorModule extends NoxesiumFeature {
 
             // Tick the collision manager
             if (qibCollisionManager == null) {
-                qibCollisionManager = new ClientQibCollisionManager(player, spatialTree);
+                qibCollisionManager = new ClientQibCollisionManager(player, SPATIAL_TREE);
             }
             qibCollisionManager.tick();
         });
     }
 
-    /**
-     * Returns the spatial tree.
-     */
-    public ClientSpatialInteractionEntityTree getSpatialTree() {
-        return spatialTree;
+    @Override
+    public void onTransfer() {
+        // Clear the spatial tree whenever we switch servers!
+        SPATIAL_TREE.clear();
     }
 
     /**

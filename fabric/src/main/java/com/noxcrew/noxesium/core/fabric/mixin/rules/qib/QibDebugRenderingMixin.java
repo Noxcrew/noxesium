@@ -1,7 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.render.CustomRenderTypes;
@@ -82,10 +81,7 @@ public class QibDebugRenderingMixin {
             }
 
             // Draw a name tag based on the state of this entity in the spatial tree
-            var state = NoxesiumApi.getInstance()
-                    .getFeatureOptional(QibBehaviorModule.class)
-                    .map(it -> it.getSpatialTree().getSpatialTreeState(entity))
-                    .orElse(null);
+            var state = QibBehaviorModule.SPATIAL_TREE.getSpatialTreeState(entity);
             if (state != null) {
                 double distance = entityRenderDispatcher.distanceToSqr(entity);
                 if (distance <= 4096.0) {

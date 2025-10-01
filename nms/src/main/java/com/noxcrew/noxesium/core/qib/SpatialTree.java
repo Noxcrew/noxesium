@@ -67,6 +67,7 @@ public abstract class SpatialTree {
             var newStaticEntities = new HashSet<>(staticEntities);
             var addedEntities = new HashSet<>(pendingEntities.keySet());
             var removingEntities = new HashSet<>(removedEntities);
+            removingEntities.removeAll(addedEntities);
 
             // Unset rebuilding as we are currently performing it
             needsRebuilding.set(false);
@@ -91,6 +92,7 @@ public abstract class SpatialTree {
             staticModel = newModel;
             staticEntities = newStaticEntities;
             pendingEntities.keySet().removeAll(addedEntities);
+            removedEntities.removeAll(addedEntities);
             removedEntities.removeAll(removingEntities);
         } finally {
             rebuilding.set(false);
@@ -149,15 +151,8 @@ public abstract class SpatialTree {
             return;
         }
 
-        // Undo the removal if it's queued up and then ensure it's re-added to the model,
-        // or add it if's not already in the model itself. If it's already in the model then
-        // we trigger a rebuild below to update the position.
-        if (removedEntities.remove(entity.getId()) || !staticEntities.contains(entity.getId())) {
-            pendingEntities.put(entity.getId(), getHitbox(entity));
-        }
-
-        // Always queue up a change regardless if we edited the model as the
-        // entity moving needs to trigger a rebuild!
+        removedEntities.add(entity.getId());
+        pendingEntities.put(entity.getId(), getHitbox(entity));
         needsRebuilding.set(true);
     }
 
@@ -165,20 +160,18 @@ public abstract class SpatialTree {
      * Removes a given [entity] from the tree.
      */
     public void remove(Interaction entity) {
-        // Remove the actor if it's currently pending (it may currently be in the process
-        // of being added to the model) or in the model and needs removal
-        if (pendingEntities.remove(entity.getId()) != null || staticEntities.contains(entity.getId())) {
-            removedEntities.add(entity.getId());
-            needsRebuilding.set(true);
-        }
+        pendingEntities.remove(entity.getId());
+        removedEntities.add(entity.getId());
+        needsRebuilding.set(true);
     }
 
     /**
      * Clears all stored information.
      */
     public void clear() {
-        pendingEntities.clear();
+        removedEntities.addAll(pendingEntities.keySet());
         removedEntities.addAll(staticEntities);
+        pendingEntities.clear();
         needsRebuilding.set(true);
     }
 }

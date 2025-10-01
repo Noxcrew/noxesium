@@ -97,9 +97,7 @@ public class NoxesiumMod implements ClientModInitializer {
             public void run() {
                 while (true) {
                     try {
-                        NoxesiumApi.getInstance()
-                                .getFeatureOptional(QibBehaviorModule.class)
-                                .ifPresent(it -> it.getSpatialTree().rebuild());
+                        QibBehaviorModule.SPATIAL_TREE.rebuild();
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
