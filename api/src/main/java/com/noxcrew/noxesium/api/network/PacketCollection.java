@@ -78,16 +78,16 @@ public final class PacketCollection {
     }
 
     /**
-     * Registers a new plugin channel identifier.
+     * Registers a new plugin channel identifier for a serverbound packet.
      */
     public void addPluginChannelIdentifier(String pluginChannelId) {
         pluginChannels.add(pluginChannelId);
     }
 
     /**
-     * Returns all plugin channel identifiers in this collection.
+     * Returns all serverbound plugin channel identifiers in this collection.
      */
-    public Collection<String> getPluginChannelIdentifiers() {
+    public Collection<String> getServerboundPluginChannelIdentifiers() {
         return pluginChannels;
     }
 

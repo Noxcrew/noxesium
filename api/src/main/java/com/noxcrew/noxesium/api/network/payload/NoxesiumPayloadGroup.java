@@ -217,7 +217,9 @@ public class NoxesiumPayloadGroup {
                         clientToServer);
         payloadTypes.add(newPayload);
         channelIds.add(newPayload.id().asString());
-        packetCollection.addPluginChannelIdentifier(newPayload.id().toString());
+        if (clientToServer) {
+            packetCollection.addPluginChannelIdentifier(newPayload.id().toString());
+        }
         return newPayload;
     }
 

@@ -18,4 +18,5 @@ public record SerializedNoxesiumServerPlayer(
         Map<String, String> mods,
         Map<String, Set<Integer>> knownIds,
         Map<String, Integer> knownHashes,
-        Set<String> registeredPluginChannels) {}
+        Set<String> clientRegisteredPluginChannels,
+        Set<String> serverRegisteredPluginChannels) {}

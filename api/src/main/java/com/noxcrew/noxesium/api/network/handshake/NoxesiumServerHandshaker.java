@@ -470,6 +470,10 @@ public abstract class NoxesiumServerHandshaker {
      */
     protected void onChannelRegistered(@Nullable NoxesiumServerPlayer player, @NotNull String channel) {
         if (player == null) return;
+
+        // Store that this player can now send this channel
+        player.addClientRegisteredPluginChannels(Set.of(channel));
+
         if (HandshakePackets.CLIENTBOUND_HANDSHAKE_ACKNOWLEDGE.getChannelIds().contains(channel)) {
             // Delay by a tick so the other handshake channels are also registered!
             runDelayed(() -> {

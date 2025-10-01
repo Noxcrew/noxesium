@@ -84,7 +84,8 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
             }
 
             val noxesiumPlayer = PaperNoxesiumServerPlayer(player, serializedPlayer = getStoredData(playerId))
-            noxesiumPlayer.addRegisteredPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
+            noxesiumPlayer.addClientRegisteredPluginChannels(player.bukkitEntity.listeningPluginChannels)
+            noxesiumPlayer.addServerRegisteredPluginChannels(HandshakePackets.INSTANCE.serverboundPluginChannelIdentifiers)
             reference.handleHandshake(noxesiumPlayer, packet!!)
         }
     }
@@ -136,7 +137,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         }
 
         // If the player is new, inform them they can authenticate!
-        player.sendPluginChannels(HandshakePackets.INSTANCE.pluginChannelIdentifiers)
+        player.sendPluginChannels(HandshakePackets.INSTANCE.serverboundPluginChannelIdentifiers)
     }
 
     /** When the player quits, unassign their player data as they may be moving into the configuration phase. */
@@ -179,7 +180,8 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
                     ?: playerUUID.toString()
 
             val noxesiumPlayer = NoxesiumPlayerManager.getInstance().getPlayer(playerUUID) as? PaperNoxesiumServerPlayer
-            val knownChannels = noxesiumPlayer?.registeredPluginChannels ?: HandshakePackets.INSTANCE.pluginChannelIdentifiers
+            val knownChannels =
+                noxesiumPlayer?.serverRegisteredPluginChannels ?: HandshakePackets.INSTANCE.serverboundPluginChannelIdentifiers
             val channel = payload.id.toString()
             if (channel !in knownChannels) {
                 NoxesiumPaper.plugin.logger.log(
@@ -241,7 +243,7 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
         (player as? PaperNoxesiumServerPlayer)?.sendPluginChannels(
             entrypoint
                 .packetCollections
-                .flatMap { it.pluginChannelIdentifiers },
+                .flatMap { it.serverboundPluginChannelIdentifiers },
         )
     }
 

@@ -45,7 +45,7 @@ public class PaperNoxesiumServerPlayer(
             val newChannels = pendingPluginChannels
             pendingPluginChannels = mutableSetOf()
             player?.sendPluginChannels(newChannels)
-            addRegisteredPluginChannels(newChannels)
+            addServerRegisteredPluginChannels(newChannels)
         }
     }
 }

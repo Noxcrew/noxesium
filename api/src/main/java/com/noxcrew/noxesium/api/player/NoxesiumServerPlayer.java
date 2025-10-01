@@ -59,7 +59,8 @@ public class NoxesiumServerPlayer {
     private final Map<NoxesiumRegistry<?>, Set<Integer>> knownIndices = new HashMap<>();
     private final Set<Key> capabilities = new HashSet<>();
     private final Set<Key> enabledLazyPackets = new HashSet<>();
-    private final Set<String> registeredPluginChannels = new HashSet<>();
+    private final Set<String> clientRegisteredPluginChannels = new HashSet<>();
+    private final Set<String> serverRegisteredPluginChannels = new HashSet<>();
     private final boolean isTransferred;
 
     @NotNull
@@ -116,7 +117,8 @@ public class NoxesiumServerPlayer {
                 var registry = NoxesiumRegistries.REGISTRIES_BY_ID.get(Key.key(entry.getKey()));
                 this.registryHashes.put(registry, entry.getValue());
             }
-            this.registeredPluginChannels.addAll(serializedPlayer.registeredPluginChannels());
+            this.clientRegisteredPluginChannels.addAll(serializedPlayer.clientRegisteredPluginChannels());
+            this.serverRegisteredPluginChannels.addAll(serializedPlayer.serverRegisteredPluginChannels());
         } else {
             this.isTransferred = false;
         }
@@ -142,7 +144,8 @@ public class NoxesiumServerPlayer {
                 mods,
                 copiedKnownIndices,
                 copiedHashes,
-                registeredPluginChannels);
+                clientRegisteredPluginChannels,
+                serverRegisteredPluginChannels);
     }
 
     /**
@@ -170,11 +173,21 @@ public class NoxesiumServerPlayer {
     }
 
     /**
-     * Returns the collection of all registered plugin channels.
+     * Returns the collection of all plugin channels the client has told the server about.
+     * These are clientbound channels the server can send.
      */
     @NotNull
-    public Collection<String> getRegisteredPluginChannels() {
-        return registeredPluginChannels;
+    public Collection<String> getClientRegisteredPluginChannels() {
+        return clientRegisteredPluginChannels;
+    }
+
+    /**
+     * Returns the collection of all plugin channels the server has told the client about.
+     * These are serverbound channels the client can send.
+     */
+    @NotNull
+    public Collection<String> getServerRegisteredPluginChannels() {
+        return serverRegisteredPluginChannels;
     }
 
     /**
@@ -226,10 +239,18 @@ public class NoxesiumServerPlayer {
     }
 
     /**
-     * Adds a list of channels to the registered plugin channels.
+     * Adds a list of channels to the client registered plugin channels.
      */
-    public void addRegisteredPluginChannels(Collection<String> newChannels) {
-        registeredPluginChannels.addAll(newChannels);
+    public void addClientRegisteredPluginChannels(Collection<String> newChannels) {
+        clientRegisteredPluginChannels.addAll(newChannels);
+        dirty = true;
+    }
+
+    /**
+     * Adds a list of channels to the server registered plugin channels.
+     */
+    public void addServerRegisteredPluginChannels(Collection<String> newChannels) {
+        serverRegisteredPluginChannels.addAll(newChannels);
         dirty = true;
     }
 
@@ -443,16 +464,27 @@ public class NoxesiumServerPlayer {
             if (entrypoint == null) return false;
 
             // Check for all channels in this entrypoint's collection if none of them are registered
-            // we still need to wait!
+            // we still need to wait! Check at least one serverbound and one clientbound.
             if (entrypoint instanceof NoxesiumEntrypoint nmsEntrypoint) {
-                var channels = nmsEntrypoint.getPacketCollections().stream()
+                var serverboundChannels = nmsEntrypoint.getPacketCollections().stream()
                         .flatMap(it -> it.getPackets().stream())
                         .flatMap(it -> it.getPayloadTypes().stream())
+                        .filter(it -> it.clientToServer)
                         .map(it -> it.id().toString())
                         .toList();
-                if (!channels.isEmpty() && channels.stream().noneMatch(registeredPluginChannels::contains)) {
+                var clientboundChannels = nmsEntrypoint.getPacketCollections().stream()
+                        .flatMap(it -> it.getPackets().stream())
+                        .flatMap(it -> it.getPayloadTypes().stream())
+                        .filter(it -> !it.clientToServer)
+                        .map(it -> it.id().toString())
+                        .toList();
+
+                if (!serverboundChannels.isEmpty()
+                        && serverboundChannels.stream().noneMatch(serverRegisteredPluginChannels::contains))
                     return false;
-                }
+                if (!clientboundChannels.isEmpty()
+                        && clientboundChannels.stream().noneMatch(clientRegisteredPluginChannels::contains))
+                    return false;
             }
         }
         return true;

@@ -66,7 +66,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         // Prevent sending if the client does not know of this channel!
         val noxesiumPlayer = (player as PaperNoxesiumServerPlayer)
         if (!noxesiumPlayer.isConnected) return false
-        if (type.id().toString() !in noxesiumPlayer.registeredPluginChannels) return false
+        if (type.id().toString() !in noxesiumPlayer.clientRegisteredPluginChannels) return false
         return super.canReceive(player, type)
     }
 
