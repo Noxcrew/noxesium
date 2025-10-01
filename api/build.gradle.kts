@@ -10,4 +10,5 @@ dependencies {
     api(libs.guava)
     api(libs.apache.commons)
     api(libs.joml)
+    api(libs.prtree)
 }

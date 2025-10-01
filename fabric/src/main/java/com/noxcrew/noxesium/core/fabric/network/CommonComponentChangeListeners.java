@@ -36,7 +36,13 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             if (entity instanceof Interaction interaction) {
                 NoxesiumApi.getInstance()
                         .getFeatureOptional(QibBehaviorModule.class)
-                        .ifPresent(module -> module.getSpatialTree().update(interaction));
+                        .ifPresent(module -> {
+                            if (context.newValue() == null) {
+                                module.getSpatialTree().remove(interaction);
+                            } else {
+                                module.getSpatialTree().update(interaction);
+                            }
+                        });
             }
         });
 
