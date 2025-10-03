@@ -55,6 +55,7 @@ public class FolderSyncSystem extends NoxesiumFeature {
     @Override
     public void onTransfer() {
         super.onTransfer();
+        activeFolders.values().forEach(ParentFileSystemWatcher::close);
         activeFolders.clear();
     }
 

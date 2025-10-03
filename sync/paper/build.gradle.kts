@@ -16,5 +16,5 @@ dependencies {
     api(project(":paper:paper-platform"))
 
     // Add universal charset for detecting encodings
-    implementation(libs.juniversalchardet)
+    api(libs.juniversalchardet)
 }
