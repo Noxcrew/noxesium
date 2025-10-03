@@ -30,7 +30,11 @@ dependencies {
     localRuntime(libs.devlogin)
 
     // Add universal charset for detecting encodings
-    implementation(libs.juniversalchardet)
+    fun includeLibrary(target: Any) {
+        include(target)
+        api(target)
+    }
+    includeLibrary(libs.juniversalchardet)
 
     // Add tiny filled dialogs for the file picker
     val lwjglVersion = "3.3.2"
