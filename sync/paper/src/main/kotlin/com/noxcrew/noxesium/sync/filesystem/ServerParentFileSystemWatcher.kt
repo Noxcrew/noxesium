@@ -4,8 +4,10 @@ import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.event.NoxesiumSyncCompletedEvent
 import com.noxcrew.noxesium.sync.network.SyncedPart
-import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestFilePacket
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundFileSystemPacket
+import io.netty.buffer.ByteBufUtil
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -19,6 +21,7 @@ public class ServerParentFileSystemWatcher(
     folder: Path,
 ) : ParentFileSystemWatcher(folder) {
     private val _watchers = mutableMapOf<NoxesiumServerPlayer, Int>()
+    private val pendingFileSystem = mutableMapOf<NoxesiumServerPlayer, MutableList<ServerboundFileSystemPacket>>()
     private var syncCompleted = false
     private var eventCooldown = 0
 
@@ -26,22 +29,85 @@ public class ServerParentFileSystemWatcher(
     public val watchers: Map<NoxesiumServerPlayer, Int>
         get() = _watchers
 
-    /** Handles the initialization of this file system for [player] based on them knowing about [files]. */
-    public fun initialize(player: NoxesiumServerPlayer, syncId: Int, files: Map<String, Long>): Int? {
+    /** Submits a part of the file system of [player]. */
+    public fun submitFileSystem(packet: ServerboundFileSystemPacket, player: NoxesiumServerPlayer) {
+        // The list of pending packets in the file system
+        val pendingList = pendingFileSystem.computeIfAbsent(player) { mutableListOf() }
+        pendingList += packet
+        if (pendingList.size < packet.total) return
+
         // Determine which files are present on the server-side
-        val result = mutableMapOf<String, Long>()
+        val result = mutableMapOf<Array<String>, Map<String, Long>>()
         parentWatcher.compileContents(result)
 
-        // Mark down that this user has started watching
-        val oldId = _watchers.put(player, syncId)
+        // Flatten the results into bare paths
+        val flattenedResult = mutableMapOf<String, Long>()
+        for (path in result.keys) {
+            for ((fileName, time) in result.getValue(path)) {
+                flattenedResult[
+                    if (path.isEmpty()) {
+                        fileName
+                    } else {
+                        path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
+                            FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
+                    },
+                ] = time
+            }
+        }
 
         // Inform the client about any files the server is missing or that are not updated
-        val requestedFiles = files.entries.filter { it.key !in result || it.value > result.getOrDefault(it.key, 0) }.map { it.key }
-        val filesToSend = result.keys.minus(files.keys)
-        player.sendPacket(ClientboundEstablishSyncPacket(syncId, requestedFiles))
+        val files = mutableMapOf<String, Long>()
+        for (partial in pendingList) {
+            for ((path, contents) in partial.contents) {
+                for ((fileName, time) in contents) {
+                    files[
+                        if (path.isEmpty()) {
+                            fileName
+                        } else {
+                            path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
+                                FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
+                        },
+                    ] = time
+                }
+            }
+        }
+
+        val requestedFiles =
+            files.entries
+                .filter {
+                    it.key !in flattenedResult || it.value > (flattenedResult.getOrDefault(
+                        it.key,
+                        0,
+                    ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET)
+                }
+                .map { it.key }
+        val filesToSend = flattenedResult.keys.minus(files.keys)
+        if (requestedFiles.isNotEmpty()) {
+            var pendingBytes = 0L
+            val pendingFiles = mutableListOf<String>()
+            for (file in requestedFiles) {
+                pendingFiles += file
+                pendingBytes += ByteBufUtil.utf8MaxBytes(file)
+
+                if (pendingBytes >= FileSystemWatcher.MAX_FILE_SIZE) {
+                    player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
+                    pendingFiles.clear()
+                    pendingBytes = 0
+                }
+            }
+            if (pendingFiles.isNotEmpty()) {
+                player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
+            }
+        }
         filesToSend.forEach {
             updateFile(listOf(player), it)
         }
+    }
+
+    /** Handles the initialization of this file system for [player]. */
+    public fun initialize(player: NoxesiumServerPlayer, syncId: Int): Int? {
+        // Mark down that this user has started watching
+        val oldId = _watchers.put(player, syncId)
 
         // Inform the player that they've started synchronizing
         (player as? PaperNoxesiumServerPlayer)?.player?.bukkitEntity?.sendMessage(

@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.network.SyncPackets
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundFileSystemPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket
 import org.bukkit.Bukkit
@@ -65,6 +66,10 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
             if (!reference.isRegistered) return@addListener
             reference.acceptFile(playerId, packet)
         }
+        SyncPackets.SERVERBOUND_FILE_SYSTEM.addListener(this, ServerboundFileSystemPacket::class.java) { reference, packet, playerId ->
+            if (!reference.isRegistered) return@addListener
+            reference.submitFileSystem(playerId, packet)
+        }
 
         // Tick polling on all active sessions
         Bukkit.getScheduler().scheduleSyncRepeatingTask(
@@ -88,7 +93,7 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
 
         // Create a new session if necessary and add the player to it
         val session = sessions.computeIfAbsent(packet.id) { ServerParentFileSystemWatcher(it, folder) }
-        val oldId = session.initialize(player, packet.syncId(), packet.files())
+        val oldId = session.initialize(player, packet.syncId())
         val watchers = watchersById.computeIfAbsent(player) { mutableMapOf() }
         oldId?.also { watchers -= it }
         watchers[packet.syncId()] = session
@@ -99,6 +104,13 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
         val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) ?: return
         val watcher = watchersById[player]?.get(packet.syncId()) ?: return
         watcher.acceptFile(packet.syncId, packet.part)
+    }
+
+    /** Accepts information about the client's file system state. */
+    private fun submitFileSystem(playerId: UUID, packet: ServerboundFileSystemPacket) {
+        val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) ?: return
+        val watcher = watchersById[player]?.get(packet.syncId()) ?: return
+        watcher.submitFileSystem(packet, player)
     }
 
     /** Registers a new folder to be syncable. */

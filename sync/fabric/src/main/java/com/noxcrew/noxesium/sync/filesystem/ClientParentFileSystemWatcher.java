@@ -2,10 +2,17 @@ package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.sync.network.SyncedPart;
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundFileSystemPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
+import io.netty.buffer.ByteBufUtil;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.network.VarLong;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,12 +51,49 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
      */
     public void initialize() {
         // First we gather a full description of the file system on this side
-        var result = new HashMap<String, Long>();
+        var result = new HashMap<String[], Map<String, Long>>();
         parentWatcher.compileContents(result);
 
-        // Send the full description to the server with a request to start receiving
-        // information on any changes made to this folder.
-        NoxesiumServerboundNetworking.send(new ServerboundRequestSyncPacket(folderId, syncId, result));
+        // Inform the server we would like to start synchronizing
+        NoxesiumServerboundNetworking.send(new ServerboundRequestSyncPacket(folderId, syncId));
+
+        // Split up the file system into chunks that are not too big
+        var currentSize = 0L;
+        var partial = new HashMap<List<String>, Map<String, Long>>();
+        var totalParts = 0;
+        var finished = new HashSet<Map<List<String>, Map<String, Long>>>();
+        for (var key : result.keySet()) {
+            var list = Arrays.asList(key);
+            currentSize += ByteBufUtil.utf8MaxBytes(list.toString());
+
+            var contents = result.get(key);
+            for (var entry : contents.entrySet()) {
+                partial.computeIfAbsent(list, (it) -> new HashMap<>()).put(entry.getKey(), entry.getValue());
+                currentSize += ByteBufUtil.utf8MaxBytes(entry.getKey());
+                currentSize += VarLong.getByteSize(entry.getValue());
+
+                // Split up the data if it's too long!
+                if (currentSize >= ParentFileSystemWatcher.MAX_PACKET_SIZE) {
+                    totalParts++;
+                    finished.add(partial);
+                    currentSize = 0;
+                    currentSize += ByteBufUtil.utf8MaxBytes(list.toString());
+                    partial = new HashMap<>();
+                }
+            }
+        }
+
+        // Add what remains!
+        if (!partial.isEmpty()) {
+            totalParts++;
+            finished.add(partial);
+        }
+
+        // Send all parts together now that we know the total amount!
+        var index = 0;
+        for (var map : finished) {
+            NoxesiumServerboundNetworking.send(new ServerboundFileSystemPacket(syncId, index++, totalParts, map));
+        }
     }
 
     @Override

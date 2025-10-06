@@ -2,11 +2,13 @@ package com.noxcrew.noxesium.sync.network;
 
 import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
-import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestFilePacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
+import com.noxcrew.noxesium.sync.network.serverbound.ServerboundFileSystemPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -38,13 +40,13 @@ public class SyncPacketSerializers {
                         ClientboundRequestSyncPacket::id,
                         ClientboundRequestSyncPacket::new));
         registerSerializer(
-                ClientboundEstablishSyncPacket.class,
+                ClientboundRequestFilePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.VAR_INT,
-                        ClientboundEstablishSyncPacket::syncId,
+                        ClientboundRequestFilePacket::syncId,
                         ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8),
-                        ClientboundEstablishSyncPacket::requestedFiles,
-                        ClientboundEstablishSyncPacket::new));
+                        ClientboundRequestFilePacket::requestedFiles,
+                        ClientboundRequestFilePacket::new));
         registerSerializer(
                 ClientboundSyncFilePacket.class,
                 StreamCodec.composite(
@@ -60,9 +62,22 @@ public class SyncPacketSerializers {
                         ServerboundRequestSyncPacket::id,
                         ByteBufCodecs.VAR_INT,
                         ServerboundRequestSyncPacket::syncId,
-                        ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG),
-                        ServerboundRequestSyncPacket::files,
                         ServerboundRequestSyncPacket::new));
+        registerSerializer(
+                ServerboundFileSystemPacket.class,
+                StreamCodec.composite(
+                        ByteBufCodecs.VAR_INT,
+                        ServerboundFileSystemPacket::syncId,
+                        ByteBufCodecs.VAR_INT,
+                        ServerboundFileSystemPacket::part,
+                        ByteBufCodecs.VAR_INT,
+                        ServerboundFileSystemPacket::total,
+                        ByteBufCodecs.map(
+                                HashMap::new,
+                                ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8),
+                                ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_LONG)),
+                        ServerboundFileSystemPacket::contents,
+                        ServerboundFileSystemPacket::new));
         registerSerializer(
                 ServerboundSyncFilePacket.class,
                 StreamCodec.composite(

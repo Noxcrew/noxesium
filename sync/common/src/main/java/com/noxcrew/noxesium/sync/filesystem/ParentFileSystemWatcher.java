@@ -2,6 +2,11 @@ package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.sync.network.SyncedPart;
+import net.minecraft.Util;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.mozilla.universalchardet.UniversalDetector;
+
 import java.io.Closeable;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -14,10 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.Util;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  * The parent element to a tree of file system watchers.
@@ -30,7 +31,7 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      * Vanilla normally allows up to 8MB but specifically
      * custom payloads are limited at 32kb.
      */
-    private static final int MAX_PACKET_SIZE = 31767;
+    public static final int MAX_PACKET_SIZE = 31767;
 
     /**
      * The area checked for a \0 byte to determine if a file
@@ -38,7 +39,7 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      *
      * <a href="https://stackoverflow.com/questions/76457826/how-does-text-auto-work-how-does-git-determine-if-something-is-a-text-file">Relevant</a>
      */
-    private static final int BINARY_CHECK_AREA = 8000;
+    public static final int BINARY_CHECK_AREA = 8000;
 
     @NotNull
     private final WatchService watchService;
@@ -217,7 +218,8 @@ public abstract class ParentFileSystemWatcher implements Closeable {
     /**
      * Hook called when a file is updated in this folder.
      */
-    protected void onFileUpdated() {}
+    protected void onFileUpdated() {
+    }
 
     /**
      * Returns the watch service to use.

@@ -8,6 +8,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchKey;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -22,12 +23,18 @@ public class FileSystemWatcher implements Closeable {
     /**
      * The separator char used when communicating about the files between operating systems.
      */
-    private static final char UNIVERSAL_SEPARTOR_CHAR = '/';
+    public static final char UNIVERSAL_SEPARTOR_CHAR = '/';
 
     /**
      * All files above 64MB are ignored.
      */
-    private static final long MAX_FILE_SIZE = 64000000;
+    public static final long MAX_FILE_SIZE = 64000000;
+
+    /**
+     * The inaccuracy accepted in timestamps between the client and server. Only used when comparing
+     * between sides as we assume there is a possible difference in synchronization.
+     */
+    public static final long IGNORED_MODIFY_OFFSET = 1000;
 
     @NotNull
     private final Path folder;
@@ -98,17 +105,19 @@ public class FileSystemWatcher implements Closeable {
     /**
      * Adds contents of this folder to the given resulting map.
      */
-    public void compileContents(Map<String, Long> result) {
+    public void compileContents(Map<String[], Map<String, Long>> result) {
         try {
             Files.list(folder)
                     .filter(it -> !Files.isDirectory(it))
                     .filter(it -> getSize(it) <= MAX_FILE_SIZE)
                     .forEach(file -> {
                         try {
-                            result.put(
-                                    getRelative(file.getFileName().toString()),
-                                    Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
-                                            .toMillis());
+                            var stem = path.split(Character.toString(UNIVERSAL_SEPARTOR_CHAR));
+                            result.computeIfAbsent(stem, (it) -> new HashMap<>())
+                                    .put(
+                                            file.getFileName().toString(),
+                                            Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
+                                                    .toMillis());
                         } catch (Exception x) {
                             NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", file, x);
                         }

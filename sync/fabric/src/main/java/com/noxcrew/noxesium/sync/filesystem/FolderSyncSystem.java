@@ -5,7 +5,7 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
-import com.noxcrew.noxesium.sync.network.clientbound.ClientboundEstablishSyncPacket;
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestFilePacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundRequestSyncPacket;
 import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket;
 import java.nio.file.Files;
@@ -34,10 +34,10 @@ public class FolderSyncSystem extends NoxesiumFeature {
                     // so random servers cannot start a request unless the client has already allowed it.
                     reference.startSync(packet.id());
                 });
-        SyncPackets.CLIENTBOUND_ESTABLISH_SYNC.addListener(
-                this, ClientboundEstablishSyncPacket.class, (reference, packet, ignored) -> {
+        SyncPackets.CLIENTBOUND_REQUEST_FILE.addListener(
+                this, ClientboundRequestFilePacket.class, (reference, packet, ignored) -> {
                     if (!reference.isRegistered()) return;
-                    reference.establishSync(packet);
+                    reference.requestFile(packet);
                 });
         SyncPackets.CLIENTBOUND_SYNC_FILE.addListener(
                 this, ClientboundSyncFilePacket.class, (reference, packet, ignored) -> {
@@ -154,9 +154,9 @@ public class FolderSyncSystem extends NoxesiumFeature {
     }
 
     /**
-     * Handles a synchronization being established.
+     * Handles a set of files being requested.
      */
-    private void establishSync(ClientboundEstablishSyncPacket packet) {
+    private void requestFile(ClientboundRequestFilePacket packet) {
         var sync = watchersById.get(packet.syncId());
         if (sync == null) return;
         for (var file : packet.requestedFiles()) {
