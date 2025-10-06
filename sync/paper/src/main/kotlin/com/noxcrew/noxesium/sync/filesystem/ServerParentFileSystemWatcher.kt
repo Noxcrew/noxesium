@@ -72,15 +72,17 @@ public class ServerParentFileSystemWatcher(
             }
         }
 
+        // Compare the files on both sides and send off requests to sort out these differences
         val requestedFiles =
             files.entries
                 .filter {
-                    it.key !in flattenedResult || it.value > (
-                        flattenedResult.getOrDefault(
-                            it.key,
-                            0,
-                        ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET
-                    )
+                    it.key !in flattenedResult ||
+                        it.value > (
+                            flattenedResult.getOrDefault(
+                                it.key,
+                                0,
+                            ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET
+                        )
                 }.map { it.key }
         val filesToSend = flattenedResult.keys.minus(files.keys)
         if (requestedFiles.isNotEmpty()) {
