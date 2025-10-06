@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.network.VarLong;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +30,7 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
     private final String folderId;
 
     private final int syncId;
+    private final AtomicBoolean pendingInitialization = new AtomicBoolean(false);
 
     public ClientParentFileSystemWatcher(@NotNull Path folder, @NotNull String folderId) {
         super(folder);
@@ -37,25 +39,15 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
     }
 
     /**
-     * Returns the synchronization id of this watcher, used by the
-     * client and server to communicate about this specific instance
-     * of a folder being synchronized.
+     * Asynchronously tick, which waits for initialization to start before
+     * doing file system loading.
      */
-    public int getSynchronizationId() {
-        return syncId;
-    }
+    public void tickAsync() {
+        if (!pendingInitialization.compareAndSet(true, false)) return;
 
-    /**
-     * Initializes this watcher, starting by synchronizing the current file tree
-     * with the server so it's known what has to be synchronized.
-     */
-    public void initialize() {
         // First we gather a full description of the file system on this side
         var result = new HashMap<String[], Map<String, Long>>();
         parentWatcher.compileContents(result);
-
-        // Inform the server we would like to start synchronizing
-        NoxesiumServerboundNetworking.send(new ServerboundRequestSyncPacket(folderId, syncId));
 
         // Split up the file system into chunks that are not too big
         var currentSize = 0L;
@@ -94,6 +86,25 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
         for (var map : finished) {
             NoxesiumServerboundNetworking.send(new ServerboundFileSystemPacket(syncId, index++, totalParts, map));
         }
+    }
+
+    /**
+     * Returns the synchronization id of this watcher, used by the
+     * client and server to communicate about this specific instance
+     * of a folder being synchronized.
+     */
+    public int getSynchronizationId() {
+        return syncId;
+    }
+
+    /**
+     * Initializes this watcher, starting by synchronizing the current file tree
+     * with the server so it's known what has to be synchronized.
+     */
+    public void initialize() {
+        // Inform the server we would like to start synchronizing, then queue up the file system sync!
+        NoxesiumServerboundNetworking.send(new ServerboundRequestSyncPacket(folderId, syncId));
+        pendingInitialization.set(true);
     }
 
     @Override

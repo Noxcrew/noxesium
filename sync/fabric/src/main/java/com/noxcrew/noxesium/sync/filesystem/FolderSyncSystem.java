@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.sync.NoxesiumSyncConfig;
 import com.noxcrew.noxesium.sync.menu.NoxesiumFolderSyncScreen;
 import com.noxcrew.noxesium.sync.network.SyncPackets;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Adds the folder syncing system.
  */
-public class FolderSyncSystem extends NoxesiumFeature {
+public class FolderSyncSystem extends NoxesiumFeature implements BackgroundTaskFeature {
     private final Map<String, ClientParentFileSystemWatcher> activeFolders = new HashMap<>();
     private final Map<Integer, ClientParentFileSystemWatcher> watchersById = new HashMap<>();
 
@@ -50,6 +51,13 @@ public class FolderSyncSystem extends NoxesiumFeature {
             if (!isRegistered()) return;
             activeFolders.values().forEach(ParentFileSystemWatcher::poll);
         });
+    }
+
+    @Override
+    public void runAsync() {
+        for (var watcher : activeFolders.values()) {
+            watcher.tickAsync();
+        }
     }
 
     @Override

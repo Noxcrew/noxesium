@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.sync.filesystem;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.sync.network.SyncedPart;
 import java.io.Closeable;
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -167,7 +168,9 @@ public abstract class ParentFileSystemWatcher implements Closeable {
     public void acceptFile(int syncId, SyncedPart part) {
         // A total of 0 means the file is being deleted!
         if (part.total() == 0) {
-            var file = parentWatcher.getFolder().resolve(part.path());
+            var file = parentWatcher
+                    .getFolder()
+                    .resolve(part.path().replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             try {
                 Files.deleteIfExists(file);
                 onFileUpdated();
@@ -202,7 +205,9 @@ public abstract class ParentFileSystemWatcher implements Closeable {
             }
 
             // Write the file to the file system
-            var file = parentWatcher.getFolder().resolve(part.path());
+            var file = parentWatcher
+                    .getFolder()
+                    .resolve(part.path().replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             try {
                 // Mark down the soonest time that we accept changes from!
                 lastEditTimes.put(part.path(), System.currentTimeMillis() + 500);

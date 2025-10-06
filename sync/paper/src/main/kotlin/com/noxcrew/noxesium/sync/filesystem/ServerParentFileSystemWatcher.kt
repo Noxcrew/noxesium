@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.sync.filesystem
 
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
+import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.event.NoxesiumSyncCompletedEvent
 import com.noxcrew.noxesium.sync.network.SyncedPart
@@ -36,75 +37,82 @@ public class ServerParentFileSystemWatcher(
         pendingList += packet
         if (pendingList.size < packet.total) return
 
-        // Determine which files are present on the server-side
-        val result = mutableMapOf<Array<String>, Map<String, Long>>()
-        parentWatcher.compileContents(result)
+        // Clear the pending list and then start a new async task
+        pendingFileSystem -= player
+        Bukkit.getScheduler().runTaskAsynchronously(
+            NoxesiumPaper.plugin,
+            Runnable {
+                // Determine which files are present on the server-side
+                val result = mutableMapOf<Array<String>, Map<String, Long>>()
+                parentWatcher.compileContents(result)
 
-        // Flatten the results into bare paths
-        val flattenedResult = mutableMapOf<String, Long>()
-        for (path in result.keys) {
-            for ((fileName, time) in result.getValue(path)) {
-                flattenedResult[
-                    if (path.isEmpty()) {
-                        fileName
-                    } else {
-                        path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
-                            FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
-                    },
-                ] = time
-            }
-        }
-
-        // Inform the client about any files the server is missing or that are not updated
-        val files = mutableMapOf<String, Long>()
-        for (partial in pendingList) {
-            for ((path, contents) in partial.contents) {
-                for ((fileName, time) in contents) {
-                    files[
-                        if (path.isEmpty()) {
-                            fileName
-                        } else {
-                            path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
-                                FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
-                        },
-                    ] = time
+                // Flatten the results into bare paths
+                val flattenedResult = mutableMapOf<String, Long>()
+                for (path in result.keys) {
+                    for ((fileName, time) in result.getValue(path)) {
+                        flattenedResult[
+                            if (path.isEmpty()) {
+                                fileName
+                            } else {
+                                path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
+                                    FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
+                            },
+                        ] = time
+                    }
                 }
-            }
-        }
 
-        // Compare the files on both sides and send off requests to sort out these differences
-        val requestedFiles =
-            files.entries
-                .filter {
-                    it.key !in flattenedResult ||
-                        it.value > (
-                            flattenedResult.getOrDefault(
-                                it.key,
-                                0,
-                            ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET
-                        )
-                }.map { it.key }
-        val filesToSend = flattenedResult.keys.minus(files.keys)
-        if (requestedFiles.isNotEmpty()) {
-            var pendingBytes = 0L
-            val pendingFiles = mutableListOf<String>()
-            for (file in requestedFiles) {
-                pendingFiles += file
-                pendingBytes += ByteBufUtil.utf8MaxBytes(file)
-
-                if (pendingBytes >= FileSystemWatcher.MAX_FILE_SIZE) {
-                    player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
-                    pendingFiles.clear()
-                    pendingBytes = 0
+                // Inform the client about any files the server is missing or that are not updated
+                val files = mutableMapOf<String, Long>()
+                for (partial in pendingList) {
+                    for ((path, contents) in partial.contents) {
+                        for ((fileName, time) in contents) {
+                            files[
+                                if (path.isEmpty()) {
+                                    fileName
+                                } else {
+                                    path.joinToString(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR.toString()) +
+                                        FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR + fileName
+                                },
+                            ] = time
+                        }
+                    }
                 }
-            }
-            if (pendingFiles.isNotEmpty()) {
-                player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
-            }
-        }
-        filesToSend.forEach {
-            updateFile(listOf(player), it)
-        }
+
+                // Compare the files on both sides and send off requests to sort out these differences
+                val requestedFiles =
+                    files.entries
+                        .filter {
+                            it.key !in flattenedResult ||
+                                it.value > (
+                                    flattenedResult.getOrDefault(
+                                        it.key,
+                                        0,
+                                    ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET
+                                )
+                        }.map { it.key }
+                val filesToSend = flattenedResult.keys.minus(files.keys)
+                if (requestedFiles.isNotEmpty()) {
+                    var pendingBytes = 0L
+                    val pendingFiles = mutableListOf<String>()
+                    for (file in requestedFiles) {
+                        pendingFiles += file
+                        pendingBytes += ByteBufUtil.utf8MaxBytes(file)
+
+                        if (pendingBytes >= FileSystemWatcher.MAX_FILE_SIZE) {
+                            player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
+                            pendingFiles.clear()
+                            pendingBytes = 0
+                        }
+                    }
+                    if (pendingFiles.isNotEmpty()) {
+                        player.sendPacket(ClientboundRequestFilePacket(packet.syncId, pendingFiles))
+                    }
+                }
+                filesToSend.forEach {
+                    updateFile(listOf(player), it)
+                }
+            },
+        )
     }
 
     /** Handles the initialization of this file system for [player]. */

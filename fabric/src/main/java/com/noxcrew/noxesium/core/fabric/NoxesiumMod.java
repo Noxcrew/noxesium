@@ -11,6 +11,7 @@ import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.HashSet;
 import java.util.Set;
@@ -98,6 +99,11 @@ public class NoxesiumMod implements ClientModInitializer {
                 while (true) {
                     try {
                         QibBehaviorModule.SPATIAL_TREE.rebuild();
+                        NoxesiumApi.getInstance().getAllFeatures().forEach(feature -> {
+                            if (feature instanceof BackgroundTaskFeature backgroundTaskFeature) {
+                                backgroundTaskFeature.runAsync();
+                            }
+                        });
                         Thread.sleep(20);
                     } catch (InterruptedException ex) {
                         return;
