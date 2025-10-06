@@ -211,6 +211,9 @@ public abstract class ParentFileSystemWatcher implements Closeable {
             try {
                 // Mark down the soonest time that we accept changes from!
                 lastEditTimes.put(part.path(), System.currentTimeMillis() + 500);
+                if (file.getParent() != null) {
+                    Files.createDirectories(file.getParent());
+                }
                 Files.write(file, combined);
                 onFileUpdated();
             } catch (Exception e) {
