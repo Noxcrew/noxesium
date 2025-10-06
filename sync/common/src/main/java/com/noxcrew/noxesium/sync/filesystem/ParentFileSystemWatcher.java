@@ -2,11 +2,6 @@ package com.noxcrew.noxesium.sync.filesystem;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.sync.network.SyncedPart;
-import net.minecraft.Util;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.mozilla.universalchardet.UniversalDetector;
-
 import java.io.Closeable;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -19,6 +14,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.Util;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.mozilla.universalchardet.UniversalDetector;
 
 /**
  * The parent element to a tree of file system watchers.
@@ -218,8 +217,7 @@ public abstract class ParentFileSystemWatcher implements Closeable {
     /**
      * Hook called when a file is updated in this folder.
      */
-    protected void onFileUpdated() {
-    }
+    protected void onFileUpdated() {}
 
     /**
      * Returns the watch service to use.

@@ -75,12 +75,13 @@ public class ServerParentFileSystemWatcher(
         val requestedFiles =
             files.entries
                 .filter {
-                    it.key !in flattenedResult || it.value > (flattenedResult.getOrDefault(
-                        it.key,
-                        0,
-                    ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET)
-                }
-                .map { it.key }
+                    it.key !in flattenedResult || it.value > (
+                        flattenedResult.getOrDefault(
+                            it.key,
+                            0,
+                        ) + FileSystemWatcher.IGNORED_MODIFY_OFFSET
+                    )
+                }.map { it.key }
         val filesToSend = flattenedResult.keys.minus(files.keys)
         if (requestedFiles.isNotEmpty()) {
             var pendingBytes = 0L
