@@ -81,7 +81,9 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      */
     public void handleModify(String path) {
         try {
-            var filePath = parentWatcher.getFolder().resolve(path);
+            var filePath = parentWatcher
+                    .getFolder()
+                    .resolve(path.replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             var lastEditTime = Files.getLastModifiedTime(filePath, LinkOption.NOFOLLOW_LINKS)
                     .toMillis();
 
@@ -210,11 +212,17 @@ public abstract class ParentFileSystemWatcher implements Closeable {
                     .resolve(part.path().replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             try {
                 // Mark down the soonest time that we accept changes from!
-                lastEditTimes.put(part.path(), System.currentTimeMillis() + 500);
                 if (file.getParent() != null) {
                     Files.createDirectories(file.getParent());
                 }
                 Files.write(file, combined);
+                lastEditTimes.put(
+                        part.path(),
+                        Math.max(
+                                        System.currentTimeMillis(),
+                                        Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
+                                                .toMillis())
+                                + 500);
                 onFileUpdated();
             } catch (Exception e) {
                 NoxesiumApi.getLogger().error("Failed to write contents of {}", part.path(), e);

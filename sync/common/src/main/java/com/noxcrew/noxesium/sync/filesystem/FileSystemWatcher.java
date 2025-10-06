@@ -162,6 +162,16 @@ public class FileSystemWatcher implements Closeable {
                             parent.handleModify(filePath);
                         }
                     } else if (Objects.equals(event.kind(), StandardWatchEventKinds.ENTRY_DELETE)) {
+                        // Treat deletions of files that still exist as modifications!
+                        if (Files.exists(file)) {
+                            if (!isDirectory) {
+                                // Ignore any files being changed that exceed the size limit!
+                                if (getSize(file) > MAX_FILE_SIZE) continue;
+                                parent.handleModify(filePath);
+                            }
+                            continue;
+                        }
+
                         if (isDirectory) {
                             var watcher = directories.remove(fileName);
                             if (watcher != null) {
