@@ -33,6 +33,7 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
             case "SetVelocity" -> context.deserialize(data, QibEffect.SetVelocity.class);
             case "SetVelocityYawPitch" -> context.deserialize(data, QibEffect.SetVelocityYawPitch.class);
             case "ModifyVelocity" -> context.deserialize(data, QibEffect.ModifyVelocity.class);
+            case "StopGliding" -> context.deserialize(data, QibEffect.StopGliding.class);
             default -> throw new JsonParseException(
                     "Invalid input type " + object.getAsJsonPrimitive("type").getAsString());
         };

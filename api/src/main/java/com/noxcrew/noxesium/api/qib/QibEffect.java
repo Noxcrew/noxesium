@@ -111,4 +111,9 @@ public sealed interface QibEffect {
      */
     public record ModifyVelocity(double x, QibOperation xOp, double y, QibOperation yOp, double z, QibOperation zOp)
             implements QibEffect {}
+
+    /**
+     * Makes the player exit gliding.
+     */
+    public record StopGliding() implements QibEffect {}
 }

@@ -297,6 +297,9 @@ public abstract class QibCollisionManager {
                         modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
                 player.hurtMarked = true;
             }
+            case QibEffect.StopGliding stopGliding -> {
+                player.stopFallFlying();
+            }
             default -> throw new IllegalStateException("Unexpected value: " + effect);
         }
     }
