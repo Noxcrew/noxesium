@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.key.Key;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
@@ -18,6 +19,8 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 /**
  * Assists in executing the behaviors for qibs for a specific entity.
@@ -265,6 +268,7 @@ public abstract class QibCollisionManager {
             }
             case QibEffect.SetVelocity setVelocity -> {
                 player.setDeltaMovement(setVelocity.x(), setVelocity.y(), setVelocity.z());
+                player.hasImpulse = true;
             }
             case QibEffect.SetVelocityYawPitch setVelocityYawPitch -> {
                 var yawRad = Math.toRadians(
@@ -288,6 +292,7 @@ public abstract class QibCollisionManager {
                                 z * setVelocityYawPitch.strength(),
                                 -setVelocityYawPitch.limit(),
                                 setVelocityYawPitch.limit()));
+                player.hasImpulse = true;
             }
             case QibEffect.ModifyVelocity modifyVelocity -> {
                 var current = player.getDeltaMovement();
@@ -295,7 +300,17 @@ public abstract class QibCollisionManager {
                         modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
                         modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
                         modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
-                player.hurtMarked = true;
+                player.hasImpulse = true;
+            }
+            case QibEffect.ApplyImpulse applyImpulse -> {
+                var current = player.getDeltaMovement();
+                var angle = player.getLookAngle().toVector3f();
+                var modifiedAngle = applyLocalCoordinatesToRotation(rotation(angle), applyImpulse.direction());
+                player.setDeltaMovement(
+                        current.x + modifiedAngle.x * applyImpulse.scale().x,
+                        current.y + modifiedAngle.y * applyImpulse.scale().y,
+                        current.z + modifiedAngle.z * applyImpulse.scale().z);
+                player.hasImpulse = true;
             }
             case QibEffect.StopGliding stopGliding -> {
                 player.stopFallFlying();
@@ -308,4 +323,34 @@ public abstract class QibCollisionManager {
      * A generic hook called when a qib of a certain type is triggered.
      */
     protected void onQibTriggered(Key behavior, ServerboundQibTriggeredPacket.Type type, int entityId) {}
+
+    // TODO Replace with Vec3's local methods in 1.21.11!
+
+    /**
+     * Returns the rotation of the given input vector.
+     */
+    private Vector2f rotation(Vector3f vector) {
+        return new Vector2f(
+                (float) Math.atan2(-vector.x, vector.z) * (180.0F / (float) Math.PI),
+                (float) Math.asin(-vector.y / vector.length()) * (180.0F / (float) Math.PI));
+    }
+
+    /**
+     * Applies an offset relative to the rotation of the vector.
+     */
+    private Vector3f applyLocalCoordinatesToRotation(Vector2f rotation, Vector3f vector) {
+        float f = Mth.cos((rotation.y + 90.0F) * (float) (Math.PI / 180.0));
+        float g = Mth.sin((rotation.y + 90.0F) * (float) (Math.PI / 180.0));
+        float h = Mth.cos(-rotation.x * (float) (Math.PI / 180.0));
+        float i = Mth.sin(-rotation.x * (float) (Math.PI / 180.0));
+        float j = Mth.cos((-rotation.x + 90.0F) * (float) (Math.PI / 180.0));
+        float k = Mth.sin((-rotation.x + 90.0F) * (float) (Math.PI / 180.0));
+        Vector3f vec32 = new Vector3f(f * h, i, g * h);
+        Vector3f vec33 = new Vector3f(f * j, k, g * j);
+        Vector3f vec34 = vec32.cross(vec33).mul(-1f);
+        float d = vec32.x * vector.z + vec33.x * vector.y + vec34.x * vector.x;
+        float e = vec32.y * vector.z + vec33.y * vector.y + vec34.y * vector.x;
+        float l = vec32.z * vector.z + vec33.z * vector.y + vec34.z * vector.x;
+        return new Vector3f(d, e, l);
+    }
 }

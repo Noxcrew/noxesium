@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.Unit;
 import com.noxcrew.noxesium.core.feature.item.HoverSound;
 import com.noxcrew.noxesium.core.feature.item.Hoverable;
+import net.kyori.adventure.key.Key;
 
 /**
  * Stores all common Noxesium item component types.
@@ -30,6 +31,13 @@ public class CommonItemComponentTypes {
      * Customises the slot hover rendering for this item slot.
      */
     public static NoxesiumComponentType<Hoverable> HOVERABLE = register("hoverable", Hoverable.class);
+
+    /**
+     * Allows defining a qib behavior to trigger when interacting with this item.
+     * You can find more information about the qib system in the qib package. This has to be
+     * an identifier present in the qib behavior registry!
+     */
+    public static NoxesiumComponentType<Key> QIB_BEHAVIOR = register("qib_behavior", Key.class);
 
     /**
      * Registers a new component type to the registry.

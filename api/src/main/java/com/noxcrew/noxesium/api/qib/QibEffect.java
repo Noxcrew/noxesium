@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.api.qib;
 
 import java.util.List;
+import org.joml.Vector3f;
 
 /**
  * Defines an effect a qib can create.
@@ -116,4 +117,10 @@ public sealed interface QibEffect {
      * Makes the player exit gliding.
      */
     public record StopGliding() implements QibEffect {}
+
+    /**
+     * Applies an impulse relative to the look angle of the player. Similar
+     * to the enchantment effect for this.
+     */
+    public record ApplyImpulse(Vector3f direction, Vector3f scale) implements QibEffect {}
 }

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.qib;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 /**
  * Defines the behavior of a qib. Qib stands for nothing, it's a silly word I made
@@ -32,6 +33,7 @@ public record QibDefinition(
      * A GSON implementation that can serialize QibDefinition objects.
      */
     public static final Gson QIB_GSON = new GsonBuilder()
+            .registerTypeAdapter(Vector3f.class, new VectorSerializer())
             .registerTypeAdapter(QibEffect.class, new QibEffectSerializer())
             .create();
 }
