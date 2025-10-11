@@ -8,7 +8,7 @@
 
   "noxesium.options.screen.noxesium": "Noxesium Settings",
   "noxesium.options.header.gui_options": "GUI Settings",
-  "noxesium.options.header.developer_options": "Developer Setitngs",
+  "noxesium.options.header.developer_options": "Developer Settings",
 
   "noxesium.options.game_time_overlay.name": "Game Time Overlay",
   "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
