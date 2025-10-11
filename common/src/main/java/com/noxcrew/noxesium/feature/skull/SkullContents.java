@@ -7,6 +7,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -17,11 +21,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A custom chat component that renders a player's face at its location. The
@@ -64,7 +63,7 @@ public class SkullContents extends TranslatableContents {
             int advance,
             int ascent,
             float scale) {
-        super("", null, new Object[]{});
+        super("", null, new Object[] {});
         this.uuid = uuid;
         this.texture = texture;
         this.grayscale = grayscale;
@@ -76,7 +75,7 @@ public class SkullContents extends TranslatableContents {
 
     public SkullContents(
             Optional<UUID> uuid, Optional<String> textureIn, boolean grayscale, int advance, int ascent, float scale) {
-        super("", null, new Object[]{});
+        super("", null, new Object[] {});
         CompletableFuture<String> texture = new CompletableFuture<>();
         if (textureIn.isPresent()) {
             texture.complete(textureIn.get());

@@ -2,7 +2,7 @@
 # Plugins
 shadow = "9.0.0-beta4"
 spotless = "7.0.0.BETA4"
-loom = "1.10-SNAPSHOT"
+loom = "1.11-SNAPSHOT"
 moddev = "2.0.73"
 paperweight = "2.0.0-beta.17"
 
@@ -28,8 +28,8 @@ fabric-loader = "0.16.14"
 fabric-api = "0.128.1+1.21.7"
 
 # Mods
-sodium-fabric = "mc1.21.6-0.6.13-fabric"
-sodium-neoforge = "mc1.21.4-0.6.3-neoforge"
+sodium-fabric = "mc1.21.8-0.7.2-fabric"
+sodium-neoforge = "mc1.21.8-0.7.2-neoforge"
 modmenu = "15.0.0-beta.3"
 
 [plugins]

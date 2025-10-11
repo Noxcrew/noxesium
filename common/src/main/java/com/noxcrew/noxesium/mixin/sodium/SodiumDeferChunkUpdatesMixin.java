@@ -1,7 +1,10 @@
 package com.noxcrew.noxesium.mixin.sodium;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
+import net.caffeinemc.mods.sodium.client.gui.SodiumGameOptions;
+import net.caffeinemc.mods.sodium.client.render.chunk.DeferMode;
 import net.caffeinemc.mods.sodium.client.render.chunk.RenderSectionManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -14,11 +17,18 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = RenderSectionManager.class, remap = false)
 public class SodiumDeferChunkUpdatesMixin {
 
-    @ModifyReturnValue(method = "allowImportantRebuilds", at = @At("RETURN"))
-    private static boolean overrideDeferChunkUpdates(boolean original) {
+    @WrapOperation(
+            method = "createTerrainRenderList",
+            at =
+                    @At(
+                            value = "FIELD",
+                            target =
+                                    "Lnet/caffeinemc/mods/sodium/client/gui/SodiumGameOptions$PerformanceSettings;chunkBuildDeferMode:Lnet/caffeinemc/mods/sodium/client/render/chunk/DeferMode;"))
+    private static DeferMode overrideDeferChunkUpdates(
+            SodiumGameOptions.PerformanceSettings instance, Operation<DeferMode> original) {
         if (ServerRules.DISABLE_DEFERRED_CHUNK_UPDATES.getValue()) {
-            return true;
+            return DeferMode.ZERO_FRAMES;
         }
-        return original;
+        return original.call(instance);
     }
 }
