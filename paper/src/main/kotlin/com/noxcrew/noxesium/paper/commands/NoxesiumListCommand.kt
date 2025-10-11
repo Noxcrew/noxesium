@@ -70,14 +70,7 @@ public class NoxesiumListCommand(
                             add(
                                 Component.translatable(
                                     SkullStringFormatter.write(
-                                        SkullStringFormatter.SkullInfo(
-                                            false,
-                                            player.uniqueId.toString(),
-                                            false,
-                                            0,
-                                            0,
-                                            1f,
-                                        ),
+                                        SkullStringFormatter.SkullInfo(player.uniqueId),
                                     ),
                                     // Show as empty for non-Noxesium clients
                                     "",

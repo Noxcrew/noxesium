@@ -3,7 +3,7 @@
 shadow = "9.0.0-beta4"
 spotless = "7.0.0.BETA4"
 loom = "1.11-SNAPSHOT"
-moddev = "2.0.73"
+moddev = "2.0.115"
 paperweight = "2.0.0-beta.17"
 
 # Mixins
@@ -23,14 +23,14 @@ prtree = "1.5"
 caffeine = "3.1.8"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "1.21.7"
-fabric-loader = "0.16.14"
-fabric-api = "0.128.1+1.21.7"
+minecraft = "1.21.10"
+fabric-loader = "0.17.3"
+fabric-api = "0.135.0+1.21.10"
 
 # Mods
-sodium-fabric = "mc1.21.8-0.7.2-fabric"
+sodium-fabric = "mc1.21.10-0.7.2-fabric"
 sodium-neoforge = "mc1.21.8-0.7.2-neoforge"
-modmenu = "15.0.0-beta.3"
+modmenu = "16.0.0-rc.1"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

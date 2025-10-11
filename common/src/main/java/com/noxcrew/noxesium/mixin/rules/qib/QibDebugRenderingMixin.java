@@ -1,32 +1,13 @@
 package com.noxcrew.noxesium.mixin.rules.qib;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.CustomRenderTypes;
-import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
-import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
-import java.awt.Color;
-import java.util.Random;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderDispatcher.class)
 public class QibDebugRenderingMixin {
 
-    @Inject(
+    // TODO Re-implement with new 1.21.9 rendering!
+    /*@Inject(
             method =
                     "render(Lnet/minecraft/world/entity/Entity;DDDFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/client/renderer/entity/EntityRenderer;)V",
             at = @At("TAIL"))
@@ -104,5 +85,5 @@ public class QibDebugRenderingMixin {
 
             poseStack.popPose();
         }
-    }
+    }*/
 }

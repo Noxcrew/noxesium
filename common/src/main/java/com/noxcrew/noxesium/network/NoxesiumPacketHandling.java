@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityDataModule;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
-import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
@@ -34,9 +33,6 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
             var flags = packet.flags();
             if (hasFlag(flags, 0)) {
                 NoxesiumMod.getInstance().getModule(ServerRuleModule.class).clearAll();
-            }
-            if (hasFlag(flags, 1)) {
-                NoxesiumMod.getInstance().getModule(SkullFontModule.class).resetCaches();
             }
         });
 
@@ -117,7 +113,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
         });
 
         NoxesiumPackets.CLIENT_CHANGE_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
-            Entity entity = context.player().clientLevel.getEntity(packet.entityId());
+            Entity entity = context.player().level().getEntity(packet.entityId());
             if (entity != null) {
                 var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);
                 var indices = packet.indices();
@@ -137,7 +133,7 @@ public class NoxesiumPacketHandling implements NoxesiumModule {
         });
 
         NoxesiumPackets.CLIENT_RESET_EXTRA_ENTITY_DATA.addListener(this, (reference, packet, context) -> {
-            Entity entity = context.player().clientLevel.getEntity(packet.entityId());
+            Entity entity = context.player().level().getEntity(packet.entityId());
             if (entity != null) {
                 var provider = NoxesiumMod.getInstance().getModule(ExtraEntityDataModule.class);
                 for (var index : packet.indices()) {

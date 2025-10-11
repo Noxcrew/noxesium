@@ -4,10 +4,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import java.awt.Color;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.GuardianRenderer;
 import net.minecraft.client.renderer.entity.state.GuardianRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Guardian;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,13 +70,13 @@ public class GuardianBeamColorRendererMixin {
      */
     @Inject(
             method =
-                    "render(Lnet/minecraft/client/renderer/entity/state/GuardianRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+                    "submit(Lnet/minecraft/client/renderer/entity/state/GuardianRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
             at = @At("HEAD"))
     private void prepareColor(
             GuardianRenderState guardianRenderState,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int i,
+            PoseStack p_433393_,
+            SubmitNodeCollector p_433420_,
+            CameraRenderState p_451043_,
             CallbackInfo ci) {
         noxesium$beamColor = guardianRenderState.noxesium$getBeamColor();
         noxesium$beamColorFade = guardianRenderState.noxesium$getBeamColorFade();
@@ -93,6 +94,8 @@ public class GuardianBeamColorRendererMixin {
                             target =
                                     "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(IIII)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
     private static VertexConsumer overrideColor(VertexConsumer vertexConsumer, int r, int g, int b, int a) {
+        // TODO This does not work as this code runs inside a custom geometry method!
+
         if (noxesium$beamColor != null) {
             if (noxesium$beamColorFade != null) {
                 var ind = noxesium$index;

@@ -4,12 +4,14 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.NoxesiumModule;
+import com.noxcrew.noxesium.api.NoxesiumReferences;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -17,6 +19,8 @@ import org.lwjgl.glfw.GLFW;
  */
 public class TeamGlowHotkeys implements NoxesiumModule {
 
+    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(
+            ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "team_glow"));
     private static final Map<ChatFormatting, Pair<String, Integer>> GLOW_TEAMS = Map.of(
             ChatFormatting.RED, Pair.of("red", GLFW.GLFW_KEY_KP_7),
             ChatFormatting.GOLD, Pair.of("orange", GLFW.GLFW_KEY_KP_8),
@@ -33,9 +37,6 @@ public class TeamGlowHotkeys implements NoxesiumModule {
     private final List<ChatFormatting> glowingTeams = new ArrayList<>();
 
     public TeamGlowHotkeys() {
-        // Optionally disable the glowing settings if the config is in use
-        if (!NoxesiumMod.getInstance().getConfig().showGlowingSettings) return;
-
         for (var team : GLOW_TEAMS.entrySet()) {
             register(
                     "key.noxesium.glow." + team.getValue().getFirst(),
@@ -61,15 +62,6 @@ public class TeamGlowHotkeys implements NoxesiumModule {
         return glowingTeams;
     }
 
-    /**
-     * Returns the id of the keybind category used for custom keybinds.
-     *
-     * @return the keybind category id
-     */
-    public String getKeybindCategory() {
-        return "category.noxesium";
-    }
-
     @Override
     public void onStartup() {
         // Set up an end of tick listener to go through each keybind and check for their usage
@@ -91,7 +83,7 @@ public class TeamGlowHotkeys implements NoxesiumModule {
      * Registers a new key binding with the given handler.
      */
     private void register(String translationKey, int code, Runnable handler) {
-        var key = new KeyMapping(translationKey, InputConstants.Type.KEYSYM, code, getKeybindCategory());
+        var key = new KeyMapping(translationKey, InputConstants.Type.KEYSYM, code, KEYBIND_CATEGORY);
         NoxesiumMod.getPlatform().registerKeyBinding(key);
         keybinds.put(key, handler);
     }

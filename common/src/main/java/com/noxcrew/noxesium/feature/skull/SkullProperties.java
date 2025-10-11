@@ -7,11 +7,10 @@ import java.util.UUID;
  */
 public record SkullProperties(UUID uuid, String texture, boolean grayscale, float scale, int advance, int ascent) {
 
-    public SkullProperties(SkullContents contents) {
-        // Only include a texture if there is no uuid available.
+    public SkullProperties(SkullSprite contents) {
         this(
                 contents.getUuid(),
-                contents.getUuid() == null ? contents.getTexture() : null,
+                contents.getTexture(),
                 contents.isGrayscale(),
                 contents.getScale(),
                 contents.getAdvance(),

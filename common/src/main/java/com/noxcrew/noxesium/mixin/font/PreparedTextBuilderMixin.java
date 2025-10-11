@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.noxcrew.noxesium.api.protocol.OffsetStringFormatter;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.network.chat.Style;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,7 @@ public class PreparedTextBuilderMixin {
     float x;
 
     @WrapOperation(
-            method = "accept",
+            method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;)Z",
             at =
                     @At(
                             value = "FIELD",
@@ -39,8 +40,10 @@ public class PreparedTextBuilderMixin {
         return original.call(instance);
     }
 
-    @Inject(method = "accept", at = @At("TAIL"))
-    public void fixXValue(int ignored1, Style style, int ignored2, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(
+            method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;)Z",
+            at = @At("TAIL"))
+    public void fixXValue(int ignoredX, Style style, BakedGlyph glyph, CallbackInfoReturnable<Boolean> cir) {
         // The last line is this.x += advance which calls the getX() redirect which adds the offset,
         // so we need to reduce it by the offset to compensate.
         var offset = OffsetStringFormatter.parseX(style.getInsertion());
@@ -50,7 +53,7 @@ public class PreparedTextBuilderMixin {
     }
 
     @WrapOperation(
-            method = "accept",
+            method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;)Z",
             at =
                     @At(
                             value = "FIELD",

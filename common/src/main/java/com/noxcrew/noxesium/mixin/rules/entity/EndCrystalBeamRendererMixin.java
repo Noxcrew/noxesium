@@ -1,10 +1,5 @@
 package com.noxcrew.noxesium.mixin.rules.entity;
 
-import static com.noxcrew.noxesium.feature.entity.EndCrystalRenderHolder.noxesium$endCrystalBeamColor;
-import static com.noxcrew.noxesium.feature.entity.EndCrystalRenderHolder.noxesium$endCrystalBeamColorFade;
-import static com.noxcrew.noxesium.feature.entity.EndCrystalRenderHolder.noxesium$index;
-
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -35,14 +30,16 @@ public class EndCrystalBeamRendererMixin {
     /**
      * Override the vertex color used when drawing.
      */
-    @Redirect(
-            method = "renderCrystalBeams",
+    /*@Redirect(
+            method = "lambda$submitCrystalBeams$1",
             at =
                     @At(
                             value = "INVOKE",
                             target =
                                     "Lcom/mojang/blaze3d/vertex/VertexConsumer;setColor(I)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
     private static VertexConsumer overrideColor(VertexConsumer vertexConsumer, int i) {
+        // TODO This does not work as this code runs inside a custom geometry method!
+
         if (noxesium$endCrystalBeamColor != null) {
             if (noxesium$endCrystalBeamColorFade != null) {
                 var ind = noxesium$index;
@@ -62,5 +59,5 @@ public class EndCrystalBeamRendererMixin {
             vertexConsumer.setColor(i);
         }
         return vertexConsumer;
-    }
+    }*/
 }

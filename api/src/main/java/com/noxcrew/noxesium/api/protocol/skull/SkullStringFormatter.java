@@ -18,11 +18,14 @@ public class SkullStringFormatter {
         } else {
             stringBuilder.append("%nox_uuid%");
         }
-        stringBuilder.append(info.value).append(",");
-        stringBuilder.append(info.grayscale).append(",");
-        stringBuilder.append(info.advance).append(",");
-        stringBuilder.append(info.ascent).append(",");
-        stringBuilder.append(info.scale);
+        stringBuilder.append(info.value);
+        stringBuilder.append(",").append(info.grayscale);
+        stringBuilder.append(",").append(info.advance);
+        stringBuilder.append(",").append(info.ascent);
+        stringBuilder.append(",").append(info.scale);
+        if (!info.hat) {
+            stringBuilder.append(",").append(false);
+        }
         return stringBuilder.toString();
     }
 
@@ -30,7 +33,7 @@ public class SkullStringFormatter {
      * Parses the given input string into skull info.
      * @throws IllegalArgumentException If the string is invalid
      */
-    public static SkullInfo parse(String input) throws IllegalArgumentException, NumberFormatException {
+    public static SkullInfo parse(String input) throws IllegalArgumentException {
         boolean raw = false;
         String[] values;
         if (input.startsWith("%nox_uuid%")) {
@@ -46,7 +49,11 @@ public class SkullStringFormatter {
         var advance = Integer.parseInt(values[2]);
         var ascent = Integer.parseInt(values[3]);
         var scale = Float.parseFloat(values[4]);
-        return new SkullInfo(raw, values[0], grayscale, advance, ascent, scale);
+        var hat = true;
+        if (values.length >= 6) {
+            hat = Boolean.parseBoolean(values[5]);
+        }
+        return new SkullInfo(raw, values[0], grayscale, advance, ascent, scale, hat);
     }
 
     /**
@@ -58,15 +65,17 @@ public class SkullStringFormatter {
      * @param advance The advance to give to the glyph.
      * @param ascent The ascent to give to the glyph.
      * @param scale The scale of the glyph.
+     * @param hat Whether to include a hat.
      */
-    public record SkullInfo(boolean raw, String value, boolean grayscale, int advance, int ascent, float scale) {
+    public record SkullInfo(
+            boolean raw, String value, boolean grayscale, int advance, int ascent, float scale, boolean hat) {
 
         public SkullInfo(String texture) {
-            this(true, texture, false, 0, 0, 1f);
+            this(true, texture, false, 0, 0, 1f, true);
         }
 
         public SkullInfo(UUID uuid) {
-            this(false, uuid.toString(), false, 0, 0, 1f);
+            this(false, uuid.toString(), false, 0, 0, 1f, true);
         }
     }
 }

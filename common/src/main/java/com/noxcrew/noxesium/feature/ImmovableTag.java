@@ -24,9 +24,8 @@ public class ImmovableTag {
     public static boolean isImmovable(@Nullable ItemStack itemStack) {
         if (itemStack == null) return false;
         final CustomData data = itemStack.get(DataComponents.CUSTOM_DATA);
-        if (data == null) return false;
-        final CompoundTag tag = data.getUnsafe();
-        if (tag == null) return false;
+        if (data == null || data.isEmpty()) return false;
+        final CompoundTag tag = data.copyTag();
 
         // If the immovable tag is directly in the tag we count it as immovable!
         if (tag.contains(IMMOVABLE_TAG)) return true;

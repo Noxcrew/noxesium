@@ -28,8 +28,9 @@ public class GlowingHotkeyOverrideMixin {
                 &&
                 // Check that the team color is in the glowing teams list
                 NoxesiumMod.getInstance()
-                        .getModule(TeamGlowHotkeys.class)
-                        .getGlowingTeams()
-                        .contains(entity.getTeam().getColor());
+                        .getOptionalModule(TeamGlowHotkeys.class)
+                        .map(it ->
+                                it.getGlowingTeams().contains(entity.getTeam().getColor()))
+                        .orElse(true);
     }
 }

@@ -13,7 +13,6 @@ import com.noxcrew.noxesium.feature.entity.SpatialDebuggingRenderer;
 import com.noxcrew.noxesium.feature.entity.SpatialInteractionEntityTree;
 import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import com.noxcrew.noxesium.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.network.NoxesiumPacketHandling;
 import com.noxcrew.noxesium.network.NoxesiumPackets;
@@ -22,6 +21,7 @@ import com.noxcrew.noxesium.network.serverbound.ServerboundClientSettingsPacket;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -80,9 +80,10 @@ public class NoxesiumMod {
 
         // Register all default modules
         instance.registerModule(new ServerRuleModule());
-        instance.registerModule(new SkullFontModule());
         instance.registerModule(new NoxesiumSoundModule());
-        instance.registerModule(new TeamGlowHotkeys());
+        if (NoxesiumMod.getInstance().getConfig().showGlowingSettings) {
+            instance.registerModule(new TeamGlowHotkeys());
+        }
         instance.registerModule(new NoxesiumPacketHandling());
         instance.registerModule(new ExtraEntityDataModule());
         instance.registerModule(new QibBehaviorModule());
@@ -139,6 +140,13 @@ public class NoxesiumMod {
         for (var group : NoxesiumPackets.getRegisteredGroups()) {
             module.onGroupRegistered(group);
         }
+    }
+
+    /**
+     * Returns the module of type [T] if one is registered as an optional.
+     */
+    public <T extends NoxesiumModule> Optional<T> getOptionalModule(Class<T> clazz) {
+        return Optional.ofNullable((T) modules.get(clazz));
     }
 
     /**

@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.mixin.ui;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.api.util.DebugOption;
 import com.noxcrew.noxesium.config.NoxesiumSettingsScreen;
@@ -11,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
@@ -57,11 +59,11 @@ public abstract class CustomDebugHotkeysMixin {
     }
 
     @ModifyReturnValue(method = "handleDebugKeys", at = @At("TAIL"))
-    public boolean openSettingsMenu(boolean original, int keyCode) {
+    public boolean openSettingsMenu(boolean original, @Local(argsOnly = true) KeyEvent event) {
         if (this.debugCrashKeyTime > 0L && this.debugCrashKeyTime < Util.getMillis() - 100L) {
             return original;
         }
-        if (keyCode == InputConstants.KEY_W) {
+        if (event.key() == InputConstants.KEY_W) {
             Minecraft.getInstance().setScreen(new NoxesiumSettingsScreen(null));
             return true;
         }
@@ -69,9 +71,9 @@ public abstract class CustomDebugHotkeysMixin {
     }
 
     @Inject(method = "handleDebugKeys", at = @At("HEAD"), cancellable = true)
-    private void interceptDebugKey(int keyCode, CallbackInfoReturnable<Boolean> cir) {
+    private void interceptDebugKey(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(event.key())) {
             if (minecraft != null) {
                 minecraft
                         .gui
@@ -116,9 +118,9 @@ public abstract class CustomDebugHotkeysMixin {
     }
 
     @Inject(method = "handleChunkDebugKeys", at = @At("HEAD"), cancellable = true)
-    private void onHandleChunkDebugKeys(int keyCode, CallbackInfoReturnable<Boolean> cir) {
+    private void onHandleChunkDebugKeys(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (ServerRules.RESTRICT_DEBUG_OPTIONS != null
-                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(keyCode)) {
+                && ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(event.key())) {
             if (minecraft != null) {
                 minecraft
                         .gui

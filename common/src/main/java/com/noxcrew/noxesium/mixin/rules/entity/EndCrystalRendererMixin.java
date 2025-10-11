@@ -4,9 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.feature.entity.EndCrystalRenderHolder;
 import com.noxcrew.noxesium.feature.entity.ExtraEntityData;
 import java.awt.Color;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EndCrystalRenderer;
 import net.minecraft.client.renderer.entity.state.EndCrystalRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,13 +25,13 @@ public class EndCrystalRendererMixin {
      */
     @Inject(
             method =
-                    "render(Lnet/minecraft/client/renderer/entity/state/EndCrystalRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+                    "submit(Lnet/minecraft/client/renderer/entity/state/EndCrystalRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
             at = @At("HEAD"))
     private void prepareColor(
             EndCrystalRenderState endCrystalRenderState,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int i,
+            PoseStack p_435546_,
+            SubmitNodeCollector p_434595_,
+            CameraRenderState p_451464_,
             CallbackInfo ci) {
         EndCrystalRenderHolder.noxesium$endCrystalBeamColor = endCrystalRenderState.noxesium$getBeamColor();
         EndCrystalRenderHolder.noxesium$endCrystalBeamColorFade = endCrystalRenderState.noxesium$getBeamColorFade();

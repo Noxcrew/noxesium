@@ -16,10 +16,7 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
 
     @Override
     protected void addOptions() {
-        this.list.addSmall(
-                NoxesiumOptions.fpsOverlay(),
-                NoxesiumOptions.gameTimeOverlay(),
-                NoxesiumOptions.playerGlowingKeybinds());
+        this.list.addSmall(NoxesiumOptions.gameTimeOverlay(), NoxesiumOptions.playerGlowingKeybinds());
         this.list.addSmall(
                 NoxesiumOptions.dumpIncomingPackets(),
                 NoxesiumOptions.dumpOutgoingPackets(),

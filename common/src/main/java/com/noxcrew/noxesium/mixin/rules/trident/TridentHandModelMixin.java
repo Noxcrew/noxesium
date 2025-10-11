@@ -7,7 +7,7 @@ import com.noxcrew.noxesium.feature.rule.ServerRules;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,12 +33,12 @@ public abstract class TridentHandModelMixin {
 
     @Shadow
     public abstract void renderItem(
-            LivingEntity livingEntity,
-            ItemStack itemStack,
-            ItemDisplayContext itemDisplayContext,
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            int i);
+            LivingEntity p_270072_,
+            ItemStack p_270793_,
+            ItemDisplayContext p_270837_,
+            PoseStack p_270974_,
+            SubmitNodeCollector p_439656_,
+            int p_270103_);
 
     @Redirect(
             method = "tick()V",
@@ -61,14 +61,13 @@ public abstract class TridentHandModelMixin {
             ItemStack p_109377_,
             float p_109378_,
             PoseStack p_109379_,
-            MultiBufferSource p_109380_,
+            SubmitNodeCollector p_439736_,
             int p_109381_,
             CallbackInfo ci) {
         if (!ServerRules.ENABLE_SMOOTHER_CLIENT_TRIDENT.getValue()) return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
-        // the trident
-        // because during that time the hand height rapidly changes.
+        // the trident because during that time the hand height rapidly changes.
         if (p_109372_.isScoping()) return;
         if (!p_109372_.isAutoSpinAttack()) return;
 
@@ -100,7 +99,7 @@ public abstract class TridentHandModelMixin {
                 p_109377_,
                 flag3 ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
                 p_109379_,
-                p_109380_,
+                p_439736_,
                 p_109381_);
         ci.cancel();
     }
