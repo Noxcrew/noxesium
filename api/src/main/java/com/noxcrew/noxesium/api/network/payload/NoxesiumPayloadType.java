@@ -101,10 +101,11 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     public void unbind(ConnectionProtocolType protocolType) {}
 
     /**
-     * Sends the given [payload] as the type of this payload.
+     * Creates a platform-specific payload object for this packet from the given [payload].
      */
-    public void sendClientboundAny(NoxesiumServerPlayer player, Object payload) {
-        NoxesiumClientboundNetworking.getInstance().send(player, this, (T) payload);
+    @Nullable
+    public Object createClientboundAny(NoxesiumServerPlayer player, Object payload) {
+        return NoxesiumClientboundNetworking.getInstance().create(player, this, (T) payload);
     }
 
     /**

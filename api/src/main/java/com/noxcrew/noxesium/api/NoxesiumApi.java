@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class NoxesiumApi {
     private static final NoxesiumApi INSTANCE = new NoxesiumApi();
     private static final Logger logger = LoggerFactory.getLogger("Noxesium");
 
-    private final Map<Class<? extends NoxesiumFeature>, NoxesiumFeature> features = new HashMap<>();
+    private final Map<Class<? extends NoxesiumFeature>, NoxesiumFeature> features = new ConcurrentHashMap<>();
     private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
     private final Set<PacketCollection> packets = new HashSet<>();
     private final List<NoxesiumEntrypoint> activeEntrypoints = new ArrayList<>();

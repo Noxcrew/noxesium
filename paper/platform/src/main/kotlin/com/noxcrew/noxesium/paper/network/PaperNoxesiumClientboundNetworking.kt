@@ -23,15 +23,6 @@ import net.minecraft.resources.ResourceLocation
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
     private val payloadTypes = mutableMapOf<String, NoxesiumPayloadType<*>>()
-    public var capturedPacket: ClientboundCustomPayloadPacket? = null
-
-    /**
-     * Enables packet capture which will set [capturedPacket] to the next
-     * packet instead of sending it to the client. This may come in useful if you are
-     * doing some extremely cursed bundling of packets on entity initialization.
-     * Not saying I am doing exactly that and thus need this feature.
-     */
-    public var capturePackets: Boolean = false
 
     /** Returns the payload type for the given channel. */
     public fun getPayloadType(channel: String): NoxesiumPayloadType<*>? = payloadTypes[channel]
@@ -70,13 +61,16 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         return super.canReceive(player, type)
     }
 
-    override fun <T : NoxesiumPacket> send(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<T>, payload: T) {
+    override fun <T : NoxesiumPacket> create(
+        player: NoxesiumServerPlayer,
+        type: NoxesiumPayloadType<T>,
+        payload: T,
+    ): ClientboundCustomPayloadPacket? {
         // Force serialization of the packet to happen right here so we can set the target player
         // for the stream codecs! Do not defer this to happen later in the netty thread. We do this just so
-        // we can apply the ViaVersion codecs defined above, serializing on a separate thread is fine
+        // we can apply the custom transforming ViaVersion codecs, serializing on a separate thread is fine
         // for any other implementations that do not need such a technique.
-        val player = (player as PaperNoxesiumServerPlayer).player ?: return
-        (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = player
+        val player = (player as PaperNoxesiumServerPlayer).player ?: return null
 
         // We have to do this custom so we can re-use the byte buf otherwise it gets padded with 0's!
         val buffer = RegistryFriendlyByteBuf(Unpooled.buffer(), player.registryAccess())
@@ -87,22 +81,31 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
                     .getSerializer(type.clazz.getAnnotation(JsonSerializedPacket::class.java).value)
             buffer.writeUtf(serializer.encode(payload, type.clazz))
         } else {
-            // Use the stream codec of this payload type to encode it into the buffer
+            // Determine which serializer to use!
             val serializer = PacketSerializerRegistry.getSerializers(type.clazz)
-            serializer.encode(buffer, payload)
+
+            // Ensure we do not share access to the current target player with other threads!
+            val platform = (NoxesiumPlatform.getInstance() as? PaperPlatform)
+            synchronized(platform?.currentTargetPlayer ?: Any()) {
+                try {
+                    // Use the stream codec of this payload type to encode it into the buffer
+                    platform?.currentTargetPlayer = player
+                    serializer.encode(buffer, payload)
+                } finally {
+                    platform?.currentTargetPlayer = null
+                }
+            }
         }
-        (NoxesiumPlatform.getInstance() as? PaperPlatform)?.currentTargetPlayer = null
 
         // Copy only the used bytes otherwise we send lingering empty data which crashes clients
         val out = ByteArray(buffer.readableBytes())
         System.arraycopy(buffer.array(), 0, out, 0, buffer.readableBytes())
-        val packet = ClientboundCustomPayloadPacket(DiscardedPayload(ResourceLocation.parse(type.id().asString()), out))
-        if (capturePackets) {
-            capturedPacket = packet
-            capturePackets = false
-        } else {
-            player.sendPayload(packet)
-        }
+        return ClientboundCustomPayloadPacket(DiscardedPayload(ResourceLocation.parse(type.id().asString()), out))
+    }
+
+    override fun <T : NoxesiumPacket?> send(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<T?>, payload: Any) {
+        val player = (player as PaperNoxesiumServerPlayer).player ?: return
+        player.sendPayload(payload as? ClientboundCustomPayloadPacket ?: return)
     }
 
     override fun markLazyActive(payloadGroup: NoxesiumPayloadGroup) {

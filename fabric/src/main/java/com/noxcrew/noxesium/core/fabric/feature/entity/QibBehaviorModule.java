@@ -2,15 +2,19 @@ package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.qib.QibCollisionManager;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Interaction;
 
 /**
  * Applies qib behaviors whenever players clip interaction entities.
  */
-public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTaskFeature  {
+public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTaskFeature {
 
     private final ClientSpatialInteractionEntityTree spatialTree = new ClientSpatialInteractionEntityTree();
     private QibCollisionManager qibCollisionManager;
@@ -48,6 +52,51 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
     @Override
     public void runAsync() {
         spatialTree.rebuild();
+    }
+
+    @Override
+    public void onRegister() {
+        refresh();
+    }
+
+    @Override
+    public void onTransfer() {
+        refresh();
+    }
+
+    /**
+     * Refreshes the spatial tree, adding any entities to it that are in the world but not
+     * in the tree.
+     */
+    public void refresh() {
+        spatialTree.clear();
+
+        var oldAddedEntities = spatialTree.getPendingEntities().size();
+        var oldRemovingEntities = spatialTree.getRemovedEntities().size();
+
+        // Go through the level and detect all entities that already have qib data somehow!
+        var level = Minecraft.getInstance().level;
+        if (level == null) return;
+        for (var entity : level.getEntities().getAll()) {
+            if (entity instanceof Interaction interaction
+                    && interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
+                spatialTree.update(interaction);
+                System.out.println("loaded pre-existing entity with data");
+            }
+        }
+
+        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
+            if (Minecraft.getInstance().player != null) {
+                Minecraft.getInstance()
+                        .getChatListener()
+                        .handleSystemMessage(
+                                Component.literal("§eRefreshed spatial model, before: §f[A"
+                                        + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[A"
+                                        + spatialTree.getPendingEntities().size() + ", R"
+                                        + spatialTree.getRemovedEntities().size() + "]"),
+                                false);
+            }
+        }
     }
 
     /**

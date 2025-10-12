@@ -383,6 +383,9 @@ public abstract class NoxesiumClientHandshaker {
         // Clear out any data that the previous server set which the
         // new server does not know about.
         resetLocalCaches();
+
+        // Log that we are performing a transfer
+        NoxesiumApi.getLogger().info("Performing transfer at server request, clearing client caches");
     }
 
     /**

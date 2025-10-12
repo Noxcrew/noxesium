@@ -75,9 +75,15 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     }
 
     /**
-     * Sends this packet to the currently connected server, if possible. Returns whether the packet
-     * was successfully sent or not.
+     * Creates this packet for the currently connected server, using a platform specific type.
+     */
+    @Nullable
+    public abstract <T extends NoxesiumPacket> Object create(
+            @NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
+
+    /**
+     * Sends this platform specific packet to the currently connected server, if possible.
      */
     public abstract <T extends NoxesiumPacket> void send(
-            @NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<T> type, @NotNull T payload);
+            @NotNull NoxesiumServerPlayer player, @NotNull NoxesiumPayloadType<T> type, @NotNull Object payload);
 }

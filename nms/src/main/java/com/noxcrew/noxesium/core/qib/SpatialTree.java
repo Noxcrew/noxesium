@@ -34,6 +34,28 @@ public abstract class SpatialTree {
     }
 
     /**
+     * Returns all static entity ids in the model.
+     */
+    public HashSet<Integer> getStaticEntities() {
+        return staticEntities;
+    }
+
+    /**
+     * Returns all pending entity ids for the model.
+     */
+    public Map<Integer, AABB> getPendingEntities() {
+        return pendingEntities;
+    }
+
+    /**
+     * Returns all entity ids still in the static list but
+     * about to be removed.
+     */
+    public Set<Integer> getRemovedEntities() {
+        return removedEntities;
+    }
+
+    /**
      * Returns the entity with the given id.
      */
     @Nullable

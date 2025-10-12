@@ -6,7 +6,6 @@ import com.noxcrew.noxesium.api.NoxesiumSide;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
-import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;

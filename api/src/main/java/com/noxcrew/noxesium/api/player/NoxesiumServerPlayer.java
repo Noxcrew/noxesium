@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
+import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
@@ -491,20 +492,40 @@ public class NoxesiumServerPlayer {
     }
 
     /**
+     * Transforms the given packet into a valid type if possible.
+     */
+    @Nullable
+    private NoxesiumPacket transformPacket(@Nullable NoxesiumPayloadType<?> type, @NotNull NoxesiumPacket packet) {
+        // Do not send packets if there is no handshake!
+        if (getHandshakeState() == HandshakeState.NONE) return null;
+
+        // Require that the type exists!
+        if (type == null) return null;
+
+        // Check if the client can receive this type
+        var instance = NoxesiumClientboundNetworking.getInstance();
+        return type.getGroup().convertIntoSupported(type, packet, (it) -> instance.canReceive(this, it));
+    }
+
+    /**
+     * Creates the platform specific packet class for the given packet. Can be used if the sent
+     * packet is desired to be customised. If the packet requires registries to be fixed, care
+     * should be taken to not send this until registration synchronization has finished!
+     */
+    @Nullable
+    public Object createPacket(@NotNull NoxesiumPacket packet) {
+        var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
+        var transformedPacket = transformPacket(type, packet);
+        if (transformedPacket == null) return null;
+        return type.createClientboundAny(this, transformedPacket);
+    }
+
+    /**
      * Sends the given packet, automatically detects the type of the packet based on the registered packets.
      */
     public boolean sendPacket(@NotNull NoxesiumPacket packet) {
-        // Do not send packets if there is no handshake!
-        if (getHandshakeState() == HandshakeState.NONE) return false;
-
-        // Check if they can receive this packet
         var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
-        if (type == null) return false;
-
-        // Check if the client can receive this type before we queue the packet
-        var instance = NoxesiumClientboundNetworking.getInstance();
-        var transformedPacket =
-                type.getGroup().convertIntoSupported(type, packet, (it) -> instance.canReceive(this, it));
+        var transformedPacket = transformPacket(type, packet);
         if (transformedPacket == null) return false;
 
         // If this packet updates some registry we halt it until we're done updating registries!
@@ -512,7 +533,11 @@ public class NoxesiumServerPlayer {
             pendingPackets.add(transformedPacket);
             return true;
         }
-        type.sendClientboundAny(this, transformedPacket);
+
+        // Create the platform specific object and immediately send it
+        var platformPayload = type.createClientboundAny(this, transformedPacket);
+        if (platformPayload == null) return false;
+        NoxesiumClientboundNetworking.getInstance().send(this, type, platformPayload);
         return true;
     }
 

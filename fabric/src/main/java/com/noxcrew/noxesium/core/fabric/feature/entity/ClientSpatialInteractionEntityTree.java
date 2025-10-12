@@ -51,9 +51,9 @@ public class ClientSpatialInteractionEntityTree extends SpatialTree {
                 Minecraft.getInstance()
                         .getChatListener()
                         .handleSystemMessage(
-                                Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", "
-                                        + oldAddedEntities + ", " + oldRemovingEntities + "]§e, after: §f["
-                                        + staticEntities.size() + ", " + pendingEntities.size() + ", "
+                                Component.literal("§eRebuilt spatial model, before: §f[S" + oldStaticEntities + ", A"
+                                        + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[S"
+                                        + staticEntities.size() + ", A" + pendingEntities.size() + ", R"
                                         + removedEntities.size() + "]"),
                                 false);
             }
