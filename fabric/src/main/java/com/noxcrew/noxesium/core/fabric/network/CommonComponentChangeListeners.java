@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.client.DebugOption;
 import com.noxcrew.noxesium.api.component.ComponentChangeContext;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
@@ -33,11 +34,15 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             // Update an entity's membership in the spatial container when changing their qib behavior
             var entity = context.receiver();
             if (entity instanceof Interaction interaction) {
-                if (context.newValue() == null) {
-                    QibBehaviorModule.SPATIAL_TREE.remove(interaction);
-                } else {
-                    QibBehaviorModule.SPATIAL_TREE.update(interaction);
-                }
+                NoxesiumApi.getInstance()
+                        .getFeatureOptional(QibBehaviorModule.class)
+                        .ifPresent(module -> {
+                            if (context.newValue() == null) {
+                                module.getSpatialTree().remove(interaction);
+                            } else {
+                                module.getSpatialTree().update(interaction);
+                            }
+                        });
             }
         });
 

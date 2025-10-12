@@ -98,7 +98,6 @@ public class NoxesiumMod implements ClientModInitializer {
             public void run() {
                 while (true) {
                     try {
-                        QibBehaviorModule.SPATIAL_TREE.rebuild();
                         NoxesiumApi.getInstance().getAllFeatures().forEach(feature -> {
                             if (feature instanceof BackgroundTaskFeature backgroundTaskFeature) {
                                 backgroundTaskFeature.runAsync();

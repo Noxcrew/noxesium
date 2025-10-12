@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.qib.QibCollisionManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
@@ -9,11 +10,9 @@ import net.minecraft.client.Minecraft;
 /**
  * Applies qib behaviors whenever players clip interaction entities.
  */
-public class QibBehaviorModule extends NoxesiumFeature {
+public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTaskFeature  {
 
-    /** The shared spatial tree with all qibs. */
-    public static final ClientSpatialInteractionEntityTree SPATIAL_TREE = new ClientSpatialInteractionEntityTree();
-
+    private final ClientSpatialInteractionEntityTree spatialTree = new ClientSpatialInteractionEntityTree();
     private QibCollisionManager qibCollisionManager;
 
     public QibBehaviorModule() {
@@ -40,16 +39,22 @@ public class QibBehaviorModule extends NoxesiumFeature {
 
             // Tick the collision manager
             if (qibCollisionManager == null) {
-                qibCollisionManager = new ClientQibCollisionManager(player, SPATIAL_TREE);
+                qibCollisionManager = new ClientQibCollisionManager(player, spatialTree);
             }
             qibCollisionManager.tick();
         });
     }
 
     @Override
-    public void onTransfer() {
-        // Clear the spatial tree whenever we switch servers!
-        SPATIAL_TREE.clear();
+    public void runAsync() {
+        spatialTree.rebuild();
+    }
+
+    /**
+     * Returns the spatial tree.
+     */
+    public ClientSpatialInteractionEntityTree getSpatialTree() {
+        return spatialTree;
     }
 
     /**

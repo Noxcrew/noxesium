@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import java.awt.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,12 +21,18 @@ public class SpatialDebuggingRenderer implements DebugRenderer.SimpleDebugRender
         // Don't show this view when rendering hitboxes!
         if (Minecraft.getInstance().getEntityRenderDispatcher().shouldRenderHitBoxes()) return;
 
+        var models = NoxesiumApi.getInstance()
+                .getFeatureOptional(QibBehaviorModule.class)
+                .map(module -> module.getSpatialTree().getModelContents())
+                .orElse(null);
+        if (models == null) return;
+
         Profiler.get().push("noxesium-debug");
         var color = new Color(255, 214, 31);
         var vertexconsumer = multiBufferSource.getBuffer(RenderType.lines());
         poseStack.pushPose();
         poseStack.translate(-cameraX, -cameraY, -cameraZ);
-        for (var model : QibBehaviorModule.SPATIAL_TREE.getModelContents()) {
+        for (var model : models) {
             ShapeRenderer.renderLineBox(
                     poseStack,
                     vertexconsumer,

@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.qib;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.minecraft.world.entity.Entity;
@@ -29,7 +30,9 @@ public abstract class SpatialEntityMixin {
                 &&
                 // Ignore if we're already at the exact same position!
                 !aABB.equals(getBoundingBox())) {
-            QibBehaviorModule.SPATIAL_TREE.update(interaction);
+            NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .ifPresent(it -> it.getSpatialTree().update(interaction));
         }
     }
 
@@ -39,7 +42,9 @@ public abstract class SpatialEntityMixin {
                 &&
                 // Ignore non-qib entities!
                 interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
-            QibBehaviorModule.SPATIAL_TREE.remove(interaction);
+            NoxesiumApi.getInstance()
+                    .getFeatureOptional(QibBehaviorModule.class)
+                    .ifPresent(it -> it.getSpatialTree().remove(interaction));
         }
     }
 }
