@@ -81,7 +81,6 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
             if (entity instanceof Interaction interaction
                     && interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
                 spatialTree.update(interaction);
-                System.out.println("loaded pre-existing entity with data");
             }
         }
 
