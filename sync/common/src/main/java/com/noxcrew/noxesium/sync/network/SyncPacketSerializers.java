@@ -29,6 +29,8 @@ public class SyncPacketSerializers {
                 SyncedPart::part,
                 ByteBufCodecs.VAR_INT,
                 SyncedPart::total,
+                ByteBufCodecs.VAR_LONG,
+                SyncedPart::modifyTime,
                 ByteBufCodecs.BYTE_ARRAY,
                 SyncedPart::content,
                 SyncedPart::new);

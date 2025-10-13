@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.WatchService;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +74,8 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      * Marks a file as present with a last modified time.
      */
     public void markPresent(String path, long lastModifiedTime) {
-        lastEditTimes.put(path, lastModifiedTime);
+        // Never exceed the current time!
+        lastEditTimes.put(path, Math.min(System.currentTimeMillis(), lastModifiedTime));
     }
 
     /**
@@ -84,8 +86,10 @@ public abstract class ParentFileSystemWatcher implements Closeable {
             var filePath = parentWatcher
                     .getFolder()
                     .resolve(path.replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
-            var lastEditTime = Files.getLastModifiedTime(filePath, LinkOption.NOFOLLOW_LINKS)
-                    .toMillis();
+            var lastEditTime = Math.min(
+                    System.currentTimeMillis(),
+                    Files.getLastModifiedTime(filePath, LinkOption.NOFOLLOW_LINKS)
+                            .toMillis());
 
             // Ignore changes if they do not exceed the last known edit time
             if (lastEditTimes.getOrDefault(path, 0L) >= lastEditTime) return;
@@ -106,8 +110,11 @@ public abstract class ParentFileSystemWatcher implements Closeable {
     /**
      * Handles the removal of the file at the given path.
      */
-    public void handleRemoval(String path) {
-        lastEditTimes.remove(path);
+    public boolean handleRemoval(String path) {
+        if (lastEditTimes.containsKey(path)) {
+            return System.currentTimeMillis() > lastEditTimes.get(path);
+        }
+        return false;
     }
 
     /**
@@ -115,8 +122,13 @@ public abstract class ParentFileSystemWatcher implements Closeable {
      */
     public List<SyncedPart> collectParts(String path) {
         var file = parentWatcher.getFolder().resolve(path);
+        var modifyTime = 0L;
         try {
             if (Files.exists(file)) {
+                // Store the modification time
+                modifyTime = Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
+                        .toMillis();
+
                 var allBytes = Files.readAllBytes(file);
                 if (Util.getPlatform() == Util.OS.WINDOWS) {
                     var checkArea = Math.min(allBytes.length, BINARY_CHECK_AREA);
@@ -133,12 +145,13 @@ public abstract class ParentFileSystemWatcher implements Closeable {
                         var encoding = UniversalDetector.detectCharset(file);
                         return split(
                                 path,
+                                modifyTime,
                                 new String(allBytes, encoding)
                                         .replace("\r\n", "\n")
                                         .getBytes(encoding));
                     }
                 }
-                return split(path, allBytes);
+                return split(path, modifyTime, allBytes);
             }
         } catch (Exception e) {
             NoxesiumApi.getLogger().error("Failed to read contents of {}", path, e);
@@ -149,7 +162,7 @@ public abstract class ParentFileSystemWatcher implements Closeable {
     /**
      * Splits the given content into segments.
      */
-    public List<SyncedPart> split(String path, byte[] contents) {
+    public List<SyncedPart> split(String path, long modifyTime, byte[] contents) {
         var size = contents.length;
         var parts = ((size - 1) / MAX_PACKET_SIZE) + 1;
         var list = new ArrayList<SyncedPart>();
@@ -159,7 +172,7 @@ public abstract class ParentFileSystemWatcher implements Closeable {
             var length = end - start;
             var array = new byte[length];
             System.arraycopy(contents, start, array, 0, length);
-            list.add(new SyncedPart(path, index, parts, array));
+            list.add(new SyncedPart(path, index, parts, modifyTime, array));
         }
         return list;
     }
@@ -174,6 +187,9 @@ public abstract class ParentFileSystemWatcher implements Closeable {
                     .getFolder()
                     .resolve(part.path().replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             try {
+                // Ignore edits to this file for the next 500ms!
+                lastEditTimes.put(part.path(), System.currentTimeMillis() + 500);
+
                 Files.deleteIfExists(file);
                 onFileUpdated();
             } catch (Exception e) {
@@ -211,18 +227,18 @@ public abstract class ParentFileSystemWatcher implements Closeable {
                     .getFolder()
                     .resolve(part.path().replace(FileSystemWatcher.UNIVERSAL_SEPARTOR_CHAR, File.separatorChar));
             try {
+                // Store the edit time for this file
+                lastEditTimes.put(part.path(), System.currentTimeMillis() + 500);
+
                 // Mark down the soonest time that we accept changes from!
                 if (file.getParent() != null) {
                     Files.createDirectories(file.getParent());
                 }
                 Files.write(file, combined);
-                lastEditTimes.put(
-                        part.path(),
-                        Math.max(
-                                        System.currentTimeMillis(),
-                                        Files.getLastModifiedTime(file, LinkOption.NOFOLLOW_LINKS)
-                                                .toMillis())
-                                + 500);
+
+                // Ensure the last modified time matches the server! Otherwise, we end up sending
+                // the file back and forth!
+                Files.setLastModifiedTime(file, FileTime.fromMillis(part.modifyTime()));
                 onFileUpdated();
             } catch (Exception e) {
                 NoxesiumApi.getLogger().error("Failed to write contents of {}", part.path(), e);

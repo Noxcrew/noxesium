@@ -116,9 +116,12 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
     }
 
     @Override
-    public void handleRemoval(String path) {
-        super.handleRemoval(path);
-        NoxesiumServerboundNetworking.send(
-                new ServerboundSyncFilePacket(syncId, new SyncedPart(path, 0, 0, new byte[0])));
+    public boolean handleRemoval(String path) {
+        if (super.handleRemoval(path)) {
+            NoxesiumServerboundNetworking.send(
+                    new ServerboundSyncFilePacket(syncId, new SyncedPart(path, 0, 0, 0, new byte[0])));
+            return true;
+        }
+        return false;
     }
 }

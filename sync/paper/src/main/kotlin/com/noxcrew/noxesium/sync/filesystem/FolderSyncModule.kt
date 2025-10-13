@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.network.SyncPackets
+import com.noxcrew.noxesium.sync.network.clientbound.ClientboundSyncFilePacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundFileSystemPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundRequestSyncPacket
 import com.noxcrew.noxesium.sync.network.serverbound.ServerboundSyncFilePacket
@@ -104,6 +105,15 @@ public class FolderSyncModule : ListeningNoxesiumFeature() {
         val player = NoxesiumPlayerManager.getInstance().getPlayer(playerId) ?: return
         val watcher = watchersById[player]?.get(packet.syncId()) ?: return
         watcher.acceptFile(packet.syncId, packet.part)
+
+        // Redirect to all other clients!
+        watchersById.entries.forEach { (otherPlayer, watchers) ->
+            if (playerId == otherPlayer) return@forEach
+            watchers.entries.forEach inner@{ (syncId, otherWatcher) ->
+                if (watcher.folderId != otherWatcher.folderId) return@inner
+                otherPlayer.sendPacket(ClientboundSyncFilePacket(syncId, packet.part))
+            }
+        }
     }
 
     /** Accepts information about the client's file system state. */

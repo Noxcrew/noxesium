@@ -25,6 +25,7 @@ public class NoxesiumSyncSettingsScreen extends Screen {
     private final FolderSyncSystem folderSyncSystem;
     private final Map<String, MultiLineEditBox> editBoxes = new HashMap<>();
     private final NoxesiumSyncConfig config = NoxesiumSyncConfig.load();
+    private final LinearLayout contents = LinearLayout.vertical().spacing(8);
     private String serverId;
 
     public NoxesiumSyncSettingsScreen(Screen lastScreen) {
@@ -53,6 +54,7 @@ public class NoxesiumSyncSettingsScreen extends Screen {
     }
 
     protected void addContents() {
+        this.layout.addToContents(contents);
         for (var key : config.syncableFolders.get(serverId).keySet()) {
             addEntry(key);
         }
@@ -77,9 +79,9 @@ public class NoxesiumSyncSettingsScreen extends Screen {
                 .bounds(0, 0, 50, 17)
                 .build();
 
-        var verticalLayout = this.layout.addToContents(LinearLayout.vertical().spacing(4));
+        var verticalLayout = contents.addChild(LinearLayout.vertical().spacing(3));
         verticalLayout.addChild(header);
-        var horizontalLayout = verticalLayout.addChild(LinearLayout.horizontal().spacing(4));
+        var horizontalLayout = verticalLayout.addChild(LinearLayout.horizontal().spacing(3));
         horizontalLayout.addChild(editBox);
         horizontalLayout.addChild(button);
     }

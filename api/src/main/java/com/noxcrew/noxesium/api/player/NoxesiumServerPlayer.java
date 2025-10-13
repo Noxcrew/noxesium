@@ -43,6 +43,15 @@ import org.joml.Vector3f;
  * server-side API.
  */
 public class NoxesiumServerPlayer {
+    /**
+     * The minimum amount of channels that needs to be registered on both sides. This is a threshold to ensure
+     * that the server & client have communicated on these channels at least once, which likely means they are all
+     * synchronized. We cannot check for specific entrypoints as not all versions may include packets.
+     *
+     * This threshold should always be met by base Noxesium itself!
+     */
+    public static final int MINIMUM_PLUGIN_CHANNELS = 5;
+
     @NotNull
     private final UUID uniqueId;
 
@@ -447,22 +456,16 @@ public class NoxesiumServerPlayer {
     }
 
     /**
-     * Returns if the handshake has been completed and informs
-     * the client if it is.
+     * Returns the amount of channels that are available from all valid entrypoints.
      */
-    public boolean isHandshakeCompleted() {
-        // We can only complete the handshake if we are awaiting registries!
-        if (handshakeState != HandshakeState.AWAITING_REGISTRIES) return false;
-
-        // If we are waiting some registry sync to complete we cannot complete the handshake
-        if (!pendingRegistrySyncs.isEmpty()) return false;
-
-        // Check if every entrypoint has at least one channel registered
+    public int getAvailableChannels() {
+        int availableClientChannels = 0;
+        int availableServerChannels = 0;
         for (var protocol : supportedEntrypoints) {
             var entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id());
 
             // This should never occur but just in case we just prevent the handshake from completing!
-            if (entrypoint == null) return false;
+            if (entrypoint == null) continue;
 
             // Check for all channels in this entrypoint's collection if none of them are registered
             // we still need to wait! Check at least one serverbound and one clientbound.
@@ -480,15 +483,32 @@ public class NoxesiumServerPlayer {
                         .map(it -> it.id().toString())
                         .toList();
 
-                if (!serverboundChannels.isEmpty()
-                        && serverboundChannels.stream().noneMatch(serverRegisteredPluginChannels::contains))
-                    return false;
-                if (!clientboundChannels.isEmpty()
-                        && clientboundChannels.stream().noneMatch(clientRegisteredPluginChannels::contains))
-                    return false;
+                for (var channel : serverboundChannels) {
+                    if (!serverRegisteredPluginChannels.contains(channel)) continue;
+                    availableServerChannels++;
+                }
+                for (var channel : clientboundChannels) {
+                    if (!clientRegisteredPluginChannels.contains(channel)) continue;
+                    availableClientChannels++;
+                }
             }
         }
-        return true;
+        return Math.min(availableClientChannels, availableServerChannels);
+    }
+
+    /**
+     * Returns if the handshake has been completed and informs
+     * the client if it is.
+     */
+    public boolean isHandshakeCompleted() {
+        // We can only complete the handshake if we are awaiting registries!
+        if (handshakeState != HandshakeState.AWAITING_REGISTRIES) return false;
+
+        // If we are waiting some registry sync to complete we cannot complete the handshake
+        if (!pendingRegistrySyncs.isEmpty()) return false;
+
+        // Ensure that we have at least a few channels registered (likely all as they are always batched)
+        return getAvailableChannels() >= MINIMUM_PLUGIN_CHANNELS;
     }
 
     /**

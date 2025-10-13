@@ -18,7 +18,8 @@ import java.nio.file.Path
  * Implements the server-side of the file system watcher.
  */
 public class ServerParentFileSystemWatcher(
-    private val folderId: String,
+    /** The id of this folder. */
+    public val folderId: String,
     folder: Path,
 ) : ParentFileSystemWatcher(folder) {
     private val _watchers = mutableMapOf<NoxesiumServerPlayer, Int>()
@@ -91,6 +92,7 @@ public class ServerParentFileSystemWatcher(
                                 )
                         }.map { it.key }
                 val filesToSend = flattenedResult.keys.minus(files.keys)
+
                 if (requestedFiles.isNotEmpty()) {
                     var pendingBytes = 0L
                     val pendingFiles = mutableListOf<String>()
@@ -171,19 +173,22 @@ public class ServerParentFileSystemWatcher(
         updateFile(watchers.keys, path)
     }
 
-    override fun handleRemoval(path: String) {
-        super.handleRemoval(path)
-        watchers.forEach { (player, syncId) ->
-            player.sendPacket(
-                ClientboundSyncFilePacket(
-                    syncId,
-                    // An part with 0 total means a deletion of the file!
-                    SyncedPart(
-                        path, 0, 0, ByteArray(0),
+    override fun handleRemoval(path: String): Boolean {
+        if (super.handleRemoval(path)) {
+            watchers.forEach { (player, syncId) ->
+                player.sendPacket(
+                    ClientboundSyncFilePacket(
+                        syncId,
+                        // An part with 0 total means a deletion of the file!
+                        SyncedPart(
+                            path, 0, 0, 0, ByteArray(0),
+                        ),
                     ),
-                ),
-            )
+                )
+            }
+            return true
         }
+        return false
     }
 
     override fun onFileUpdated() {

@@ -107,12 +107,12 @@ public class FileSystemWatcher implements Closeable {
      */
     public void compileContents(Map<String[], Map<String, Long>> result) {
         try {
+            var stem = path.isBlank() ? new String[0] : path.split(Character.toString(UNIVERSAL_SEPARTOR_CHAR));
             Files.list(folder)
                     .filter(it -> !Files.isDirectory(it))
                     .filter(it -> getSize(it) <= MAX_FILE_SIZE)
                     .forEach(file -> {
                         try {
-                            var stem = path.split(Character.toString(UNIVERSAL_SEPARTOR_CHAR));
                             result.computeIfAbsent(stem, (it) -> new HashMap<>())
                                     .put(
                                             file.getFileName().toString(),
@@ -175,6 +175,7 @@ public class FileSystemWatcher implements Closeable {
                         if (isDirectory) {
                             var watcher = directories.remove(fileName);
                             if (watcher != null) {
+                                watcher.markDeleted();
                                 watcher.close();
                             }
                         } else {
@@ -191,25 +192,43 @@ public class FileSystemWatcher implements Closeable {
         directories.values().forEach(FileSystemWatcher::poll);
     }
 
-    @Override
-    public void close() {
+    /**
+     * Marks this folder as deleted.
+     */
+    public void markDeleted() {
         // Trigger deletion for everything inside this folder!
         try {
             Files.list(folder)
                     .filter(it -> !Files.isDirectory(it))
                     .filter(it -> getSize(it) <= MAX_FILE_SIZE)
-                    .forEach(directory -> {
+                    .forEach(file -> {
                         try {
-                            parent.handleRemoval(
-                                    getRelative(directory.getFileName().toString()));
+                            // If this file exists, it's not gone!
+                            if (Files.exists(file)) return;
+
+                            var fileName = file.getFileName().toString();
+                            var filePath = getRelative(fileName);
+
+                            if (Files.isDirectory(file)) {
+                                var watcher = directories.remove(fileName);
+                                if (watcher != null) {
+                                    watcher.markDeleted();
+                                    watcher.close();
+                                }
+                            } else {
+                                parent.handleRemoval(filePath);
+                            }
                         } catch (Exception x) {
-                            NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", directory, x);
+                            NoxesiumApi.getLogger().error("Failed to determine last modified time of {}", file, x);
                         }
                     });
         } catch (Exception x) {
             NoxesiumApi.getLogger().error("Failed to compile file descriptions", x);
         }
+    }
 
+    @Override
+    public void close() {
         this.watchKey.cancel();
         this.directories.values().forEach(FileSystemWatcher::close);
     }

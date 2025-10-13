@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.CommonComponents;
@@ -95,6 +96,8 @@ public class FolderSyncSystem extends NoxesiumFeature implements BackgroundTaskF
             return null;
         }
 
+        // Ignore if there are no changes!
+        if (Objects.equals(storedFolders.get(folderId), path)) return nioPath;
         storedFolders.put(folderId, path);
 
         // If the folder is already being watched, create a new watcher!

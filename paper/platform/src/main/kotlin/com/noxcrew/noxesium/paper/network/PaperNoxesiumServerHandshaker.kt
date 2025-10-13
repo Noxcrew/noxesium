@@ -108,6 +108,17 @@ public open class PaperNoxesiumServerHandshaker : NoxesiumServerHandshaker(), Li
 
                 // End handshaking if the last packet received was 10 seconds ago
                 if (it.handshakeState != HandshakeState.COMPLETE && (System.currentTimeMillis() - it.lastPacketReceiveTime >= 10000)) {
+                    NoxesiumApi.getLogger().info(
+                        "Timing out Noxesium handshake for client ${it.username}, ${
+                            when {
+                                it.handshakeState != HandshakeState.AWAITING_REGISTRIES -> "not awaiting registries"
+                                it.isAwaitingRegistries -> "awaiting registries"
+                                it.availableChannels < NoxesiumServerPlayer.MINIMUM_PLUGIN_CHANNELS ->
+                                    "only ${it.availableChannels} channels registered"
+                                else -> "unknown reason"
+                            }
+                        }"
+                    )
                     destroy(it.uniqueId, NoxesiumErrorReason.TIMEOUT)
                 }
             }
