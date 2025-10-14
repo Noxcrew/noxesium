@@ -75,8 +75,8 @@ public class ClientParentFileSystemWatcher extends ParentFileSystemWatcher {
             }
         }
 
-        // Add what remains!
-        if (!partial.isEmpty()) {
+        // Add what remains! Ensure there is always at least one entry!
+        if (!partial.isEmpty() || finished.isEmpty()) {
             totalParts++;
             finished.add(partial);
         }
