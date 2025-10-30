@@ -84,6 +84,9 @@ public class CommonGameComponentTypes {
 
     /**
      * If set, enables the ability to pre-charge riptide tridents.
+     *
+     * Not supported on the default Paper implementation, requires changing the Minecraft source
+     * code to allow using the trident on the server when outside water!
      */
     public static NoxesiumComponentType<Unit> RIPTIDE_PRE_CHARGING = register("riptide_pre_charging", Unit.class);
 
