@@ -10,6 +10,7 @@ import com.noxcrew.noxesium.api.network.ModInfo;
 import com.noxcrew.noxesium.api.network.NoxesiumClientboundNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.NoxesiumRegistryDependentPacket;
+import com.noxcrew.noxesium.api.network.handshake.HandshakePackets;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
@@ -461,6 +462,29 @@ public class NoxesiumServerPlayer {
     public int getAvailableChannels() {
         int availableClientChannels = 0;
         int availableServerChannels = 0;
+
+        // Start by checking if the handshake packets are registered
+        var serverboundHandshakeChannels = HandshakePackets.INSTANCE.getPackets().stream()
+                .flatMap(it -> it.getPayloadTypes().stream())
+                .filter(it -> it.clientToServer)
+                .map(it -> it.id().toString())
+                .toList();
+        var clientboundHandshakeChannels = HandshakePackets.INSTANCE.getPackets().stream()
+                .flatMap(it -> it.getPayloadTypes().stream())
+                .filter(it -> !it.clientToServer)
+                .map(it -> it.id().toString())
+                .toList();
+
+        for (var channel : serverboundHandshakeChannels) {
+            if (!serverRegisteredPluginChannels.contains(channel)) continue;
+            availableServerChannels++;
+        }
+        for (var channel : clientboundHandshakeChannels) {
+            if (!clientRegisteredPluginChannels.contains(channel)) continue;
+            availableClientChannels++;
+        }
+
+        // Then check for all supported protocols!
         for (var protocol : supportedEntrypoints) {
             var entrypoint = NoxesiumApi.getInstance().getEntrypoint(protocol.id());
 
