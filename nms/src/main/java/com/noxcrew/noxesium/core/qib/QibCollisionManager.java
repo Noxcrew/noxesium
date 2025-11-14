@@ -62,9 +62,6 @@ public abstract class QibCollisionManager {
         var diffZ = to.z - from.z;
         var differenceLengthSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
 
-        // Don't check collisions if the distance is negligible!
-        if (differenceLengthSquared <= 0.001) return;
-
         // If there's more than 0.5 between the two targets we do intermediate steps
         // to ensure we collide with everything!
         Set<Entity> entities = null;
