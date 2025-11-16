@@ -24,7 +24,7 @@ public abstract class DisguisedSkullTranslatableContentsMixin {
      * @author Aeltumn
      * @reason Allow defining a DisguisedSkullContents object.
      */
-    @Inject(method = "create", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "create", at = @At("RETURN"), cancellable = true)
     private static void createSkullContents(
             String string,
             Optional<String> optional,
@@ -33,8 +33,8 @@ public abstract class DisguisedSkullTranslatableContentsMixin {
         // We allow custom servers to use a custom translate component since it renders as the fallback if the value is
         // not found.
         if (string.startsWith("%nox_uuid%") || string.startsWith("%nox_raw%")) {
-            var info = SkullStringFormatter.parse(string);
             try {
+                var info = SkullStringFormatter.parse(string);
                 UUID uuid = null;
                 String texture = null;
                 if (info.raw()) {
@@ -48,14 +48,17 @@ public abstract class DisguisedSkullTranslatableContentsMixin {
                     } catch (Exception ignored) {
                     }
                 }
-                cir.setReturnValue(new FakeTranslationContents(new SkullSprite(
-                        Optional.ofNullable(uuid),
-                        Optional.ofNullable(texture),
-                        info.grayscale(),
-                        info.advance(),
-                        info.ascent(),
-                        info.scale(),
-                        info.hat())));
+                cir.setReturnValue(new FakeTranslationContents(
+                        new SkullSprite(
+                                Optional.ofNullable(uuid),
+                                Optional.ofNullable(texture),
+                                info.grayscale(),
+                                info.advance(),
+                                info.ascent(),
+                                info.scale(),
+                                info.hat()),
+                        // Use the regular return value for serialization!
+                        cir.getReturnValue()));
             } catch (Exception ignored) {
             }
         }

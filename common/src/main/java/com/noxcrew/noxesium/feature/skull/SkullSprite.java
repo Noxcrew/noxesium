@@ -13,6 +13,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.api.protocol.skull.SkullStringFormatter;
+import java.awt.Color;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,7 +56,7 @@ public class SkullSprite implements ObjectInfo {
                     return new SingleSpriteSource(new BakedGlyph() {
                         @Override
                         public GlyphInfo info() {
-                            return GlyphInfo.simple(9 + sprite.getAdvance());
+                            return GlyphInfo.simple(8 * sprite.getScale() + sprite.getAdvance() + 1);
                         }
 
                         @Override
@@ -272,6 +273,12 @@ public class SkullSprite implements ObjectInfo {
             float f1 = p_443341_ + this.right();
             float f2 = p_443360_ + this.top();
             float f3 = p_443360_ + this.bottom();
+            if (sprite.grayscale) {
+                var awtColor = new Color(color, true);
+                var gray = (int) Math.round(
+                        0.2989 * awtColor.getRed() + 0.5870 * awtColor.getGreen() + 0.1140 * awtColor.getBlue());
+                color = new Color(gray, gray, gray, awtColor.getAlpha()).getRGB();
+            }
             renderQuad(matrix, vertexConsumer, p_443287_, f, f1, f2, f3, p_443552_, color, 8.0F, 8.0F, 8, 8, 64, 64);
             if (sprite.hasHat()) {
                 renderQuad(
@@ -343,7 +350,7 @@ public class SkullSprite implements ObjectInfo {
 
         @Override
         public float right() {
-            return left() + sprite.getScale() / 8.0F;
+            return left() + 8.0F * sprite.getScale();
         }
 
         @Override
@@ -353,7 +360,7 @@ public class SkullSprite implements ObjectInfo {
 
         @Override
         public float bottom() {
-            return top() + sprite.getScale() / 8.0f;
+            return top() + 8.0F * sprite.getScale();
         }
     }
 }
