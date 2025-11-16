@@ -31,9 +31,6 @@ jobs:
             - name: Gradle Build
               run: ./gradlew build
 
-            - name: Clean Up NeoForge Artifacts
-              run: rm neoforge/build/libs/*-sources.jar
-
             - name: Clean Up Fabric Artifacts
               run: rm fabric/build/libs/*-sources.jar
 
@@ -51,15 +48,8 @@ jobs:
                     echo "STATUS=release" >> $GITHUB_ENV
                   fi
 
-            - name: Publish Snapshot
-              if: "${{ env.STATUS != 'release' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}"
-              run: ./gradlew publish
-              env:
-                  NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
-                  NOXCREW_MAVEN_PUBLIC_PASSWORD: ${{ secrets.NOXCREW_MAVEN_PUBLIC_PASSWORD }}
-
             - name: Publish Release
-              if: "${{ env.STATUS == 'release' && github.event_name == 'release' }}"
+              if: "${{ env.STATUS == 'release' && github.event_name == 'push' }}"
               run: ./gradlew publish
               env:
                   NOXCREW_MAVEN_PUBLIC_USERNAME: ${{ secrets.NOXCREW_MAVEN_PUBLIC_USERNAME }}
