@@ -5,6 +5,8 @@ import java.util.UUID;
 /**
  * Assists in formatting strings such that they are correct strings
  * to turn into skulls for Noxesium clients.
+ * <p>
+ * `grayscale` is no longer supported due to rendering changes in vanilla.
  */
 public class SkullStringFormatter {
 
@@ -61,7 +63,7 @@ public class SkullStringFormatter {
      *
      * @param raw If `true` the value is a raw texture, otherwise it's a uuid.
      * @param value The data of this skull.
-     * @param grayscale Whether to draw the skull as grayscale.
+     * @param grayscale No longer supported!
      * @param advance The advance to give to the glyph.
      * @param ascent The ascent to give to the glyph.
      * @param scale The scale of the glyph.
