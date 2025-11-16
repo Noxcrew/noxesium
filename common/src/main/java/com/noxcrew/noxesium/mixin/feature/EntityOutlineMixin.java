@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.mixin.feature;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.world.entity.Entity;
@@ -25,7 +26,7 @@ public abstract class EntityOutlineMixin {
                             target = "Lnet/minecraft/client/renderer/entity/state/EntityRenderState;isInvisible:Z",
                             opcode = Opcodes.GETFIELD))
     private <S extends EntityRenderState> boolean render(S instance) {
-        if (NoxesiumMod.getInstance().getConfig().showCullingBoxes) {
+        if (NoxesiumMod.getInstance().getConfig().showCullingBoxes && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getPermissionLevel() >= 2) {
             return false;
         }
         return instance.isInvisible;
@@ -40,7 +41,7 @@ public abstract class EntityOutlineMixin {
                             target =
                                     "Lnet/minecraft/world/entity/Entity;getBoundingBox()Lnet/minecraft/world/phys/AABB;"))
     private <T extends Entity> AABB getBoundingBox(T instance) {
-        if (NoxesiumMod.getInstance().getConfig().showCullingBoxes) {
+        if (NoxesiumMod.getInstance().getConfig().showCullingBoxes && Minecraft.getInstance().player != null && Minecraft.getInstance().player.getPermissionLevel() >= 2) {
             return getBoundingBoxForCulling(instance);
         }
         return instance.getBoundingBox();
