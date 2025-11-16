@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.config;
 
+import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
@@ -16,13 +18,18 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
 
     @Override
     protected void addOptions() {
-        this.list.addSmall(NoxesiumOptions.gameTimeOverlay(), NoxesiumOptions.playerGlowingKeybinds());
-        this.list.addSmall(
-                NoxesiumOptions.dumpIncomingPackets(),
-                NoxesiumOptions.dumpOutgoingPackets(),
-                NoxesiumOptions.qibSystemDebugVisuals(),
-                NoxesiumOptions.debugScoreboardTeams(),
-                NoxesiumOptions.extendedPacketLogging(),
-                NoxesiumOptions.showCullingBoxes());
+        var options = new ArrayList<OptionInstance<?>>();
+        options.add(NoxesiumOptions.gameTimeOverlay());
+        options.add(NoxesiumOptions.playerGlowingKeybinds());
+        options.add(NoxesiumOptions.dumpIncomingPackets());
+        options.add(NoxesiumOptions.dumpOutgoingPackets());
+        options.add(NoxesiumOptions.qibSystemDebugVisuals());
+        options.add(NoxesiumOptions.debugScoreboardTeams());
+        options.add(NoxesiumOptions.extendedPacketLogging());
+        if (Minecraft.getInstance().player == null
+                || Minecraft.getInstance().player.getPermissionLevel() >= 2) {
+            options.add(NoxesiumOptions.showCullingBoxes());
+        }
+        this.list.addSmall(options.toArray(new OptionInstance[0]));
     }
 }
