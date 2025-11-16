@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -37,6 +39,7 @@ public class NoxesiumMod {
 
     private final NoxesiumConfig config;
     private final Logger logger = LoggerFactory.getLogger("Noxesium");
+    private final Queue<Runnable> mainThreadTasks = new ConcurrentLinkedQueue();
 
     /**
      * All modules known to Noxesium that have been registered.
@@ -74,6 +77,9 @@ public class NoxesiumMod {
         instance = this;
         platform = platformHook;
         config = NoxesiumConfig.load();
+
+        // Register a main thread hook
+        platformHook.registerTickEventHandler(this::runMainThreadTasks);
 
         // Register all universal messaging channels
         NoxesiumPackets.registerPackets("universal");
@@ -126,6 +132,23 @@ public class NoxesiumMod {
      */
     public NoxesiumConfig getConfig() {
         return config;
+    }
+
+    /**
+     * Runs runnable on the main thread.
+     */
+    public void ensureMain(Runnable runnable) {
+        mainThreadTasks.add(runnable);
+    }
+
+    /**
+     * Runs pending main thread tasks.
+     */
+    public void runMainThreadTasks() {
+        Runnable task;
+        while ((task = mainThreadTasks.poll()) != null) {
+            task.run();
+        }
     }
 
     /**

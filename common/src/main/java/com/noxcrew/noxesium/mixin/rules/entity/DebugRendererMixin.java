@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.mixin.rules.entity;
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.feature.entity.SpatialDebuggingRenderer;
 import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,7 +25,9 @@ public class DebugRendererMixin {
 
     @Inject(method = "refreshRendererList", at = @At("RETURN"))
     public void render(CallbackInfo ci) {
-        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
+        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
+                && Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.getPermissionLevel() >= 2) {
             opaqueRenderers.add(noxesium$spatialDebugRenderer);
         }
     }

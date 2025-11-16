@@ -21,3 +21,6 @@ accessible field net/minecraft/client/renderer/RenderPipelines TEXT_SNIPPET Lcom
 accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 
 accessible class net/minecraft/client/gui/font/FontManager$CachedFontProvider
+
+accessible field net/minecraft/client/renderer/entity/GuardianRenderer BEAM_RENDER_TYPE Lnet/minecraft/client/renderer/RenderType;
+accessible field net/minecraft/client/renderer/entity/EnderDragonRenderer BEAM Lnet/minecraft/client/renderer/RenderType;

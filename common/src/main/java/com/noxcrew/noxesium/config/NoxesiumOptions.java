@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.config;
 
 import com.noxcrew.noxesium.NoxesiumMod;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
@@ -45,6 +46,9 @@ public class NoxesiumOptions {
             (newValue) -> {
                 NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
+
+                // Ensure the renderer turns on if it wasn't already!
+                Minecraft.getInstance().debugEntries.rebuildCurrentList();
             });
 
     private static final OptionInstance<Boolean> extendedPacketLogging = OptionInstance.createBoolean(

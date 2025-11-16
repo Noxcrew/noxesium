@@ -23,11 +23,11 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         options.add(NoxesiumOptions.playerGlowingKeybinds());
         options.add(NoxesiumOptions.dumpIncomingPackets());
         options.add(NoxesiumOptions.dumpOutgoingPackets());
-        options.add(NoxesiumOptions.qibSystemDebugVisuals());
         options.add(NoxesiumOptions.debugScoreboardTeams());
         options.add(NoxesiumOptions.extendedPacketLogging());
         if (Minecraft.getInstance().player == null
                 || Minecraft.getInstance().player.getPermissionLevel() >= 2) {
+            options.add(NoxesiumOptions.qibSystemDebugVisuals());
             options.add(NoxesiumOptions.showCullingBoxes());
         }
         this.list.addSmall(options.toArray(new OptionInstance[0]));

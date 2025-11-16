@@ -21,23 +21,25 @@ public interface ServerboundNoxesiumPacket extends NoxesiumPacket {
         // We assume the server indicates which packets it wishes to receive, otherwise we do not send anything.
         if (NoxesiumPackets.canSend(noxesiumType())) {
             if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets) {
-                Minecraft.getInstance()
-                        .player
-                        .displayClientMessage(
-                                Component.empty()
-                                        .append(Component.literal("[NOXESIUM] ")
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(true)
-                                                        .withColor(ChatFormatting.RED)))
-                                        .append(Component.literal("[OUTGOING] ")
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(true)
-                                                        .withColor(ChatFormatting.AQUA)))
-                                        .append(Component.literal(toString())
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(false)
-                                                        .withColor(ChatFormatting.WHITE))),
-                                false);
+                NoxesiumMod.getInstance().ensureMain(() -> {
+                    Minecraft.getInstance()
+                            .player
+                            .displayClientMessage(
+                                    Component.empty()
+                                            .append(Component.literal("[NOXESIUM] ")
+                                                    .withStyle(Style.EMPTY
+                                                            .withBold(true)
+                                                            .withColor(ChatFormatting.RED)))
+                                            .append(Component.literal("[OUTGOING] ")
+                                                    .withStyle(Style.EMPTY
+                                                            .withBold(true)
+                                                            .withColor(ChatFormatting.AQUA)))
+                                            .append(Component.literal(toString())
+                                                    .withStyle(Style.EMPTY
+                                                            .withBold(false)
+                                                            .withColor(ChatFormatting.WHITE))),
+                                    false);
+                });
             }
             NoxesiumMod.getPlatform().sendPacket(this);
             return true;

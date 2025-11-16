@@ -3,8 +3,7 @@ package com.noxcrew.noxesium.feature.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.NoxesiumModule;
 import java.awt.Color;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import java.util.Random;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShapeRenderer;
@@ -27,29 +26,37 @@ public class SpatialDebuggingRenderer implements NoxesiumModule, DebugRenderer.S
             double cameraZ,
             DebugValueAccess debugValueAccess,
             Frustum frustum) {
-        // Don't show this view when rendering hitboxes!
-        if (Minecraft.getInstance().debugEntries.isCurrentlyEnabled(DebugScreenEntries.ENTITY_HITBOXES)) return;
-
-        // Don't show when reduced info is being shown!
-        if (Minecraft.getInstance().showOnlyReducedInfo()) return;
-
         Profiler.get().push("noxesium-debug");
+
+        // First render line boxes at render offset
         var models = SpatialInteractionEntityTree.getModelContents();
-        var color = new Color(255, 214, 31);
-        var vertexconsumer = multiBufferSource.getBuffer(RenderType.debugLineStrip(2.0));
+        var vertexconsumer = multiBufferSource.getBuffer(RenderType.lines());
         poseStack.pushPose();
         poseStack.translate(-cameraX, -cameraY, -cameraZ);
-        for (var model : models) {
+        for (var pair : models) {
+            var seededRandom = new Random(pair.getFirst().hashCode());
+            var color = new Color(seededRandom.nextInt());
             ShapeRenderer.renderLineBox(
                     poseStack.last(),
                     vertexconsumer,
-                    model,
+                    pair.getSecond(),
                     color.getRed() / 255f,
                     color.getGreen() / 255f,
                     color.getBlue() / 255f,
                     1.0F);
         }
         poseStack.popPose();
+
+        // Render floating texts afterwards as they don't need to be offset
+        for (var pair : models) {
+            // Skip if there is no text!
+            if (pair.getFirst().isBlank()) continue;
+
+            var center = pair.getSecond().getCenter();
+            DebugRenderer.renderFloatingText(
+                    poseStack, multiBufferSource, pair.getFirst(), center.x, center.y, center.z, -1);
+        }
+
         Profiler.get().pop();
     }
 }

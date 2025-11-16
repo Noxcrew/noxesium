@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.feature.entity;
 
+import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.NoxesiumMod;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.Nullable;
 import org.khelekore.prtree.PRTree;
 import org.khelekore.prtree.SimpleMBR;
 
@@ -28,7 +28,7 @@ public class SpatialInteractionEntityTree {
     private static final AtomicBoolean needsRebuilding = new AtomicBoolean();
 
     private static HashSet<Integer> staticEntities = new HashSet<>();
-    private static HashSet<AABB> modelContents = new HashSet<>();
+    private static HashSet<Pair<String, AABB>> modelContents = new HashSet<>();
     private static PRTree<Entity> staticModel = new PRTree<>(new EntityMBRConverter(), DEFAULT_BRANCHING_FACTOR);
 
     static {
@@ -38,25 +38,8 @@ public class SpatialInteractionEntityTree {
     /**
      * Returns the contents of the model, if debugging is active.
      */
-    public static Set<AABB> getModelContents() {
+    public static Set<Pair<String, AABB>> getModelContents() {
         return modelContents;
-    }
-
-    /**
-     * Returns the state of [entity] in this tree.
-     */
-    @Nullable
-    public static String getSpatialTreeState(Entity entity) {
-        if (pendingEntities.containsKey(entity.getId())) {
-            return "pending";
-        }
-        if (removedEntities.contains(entity.getId())) {
-            return "removed";
-        }
-        if (staticEntities.contains(entity.getId())) {
-            return "static";
-        }
-        return null;
     }
 
     /**
@@ -104,21 +87,26 @@ public class SpatialInteractionEntityTree {
 
             if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
                 if (Minecraft.getInstance().player != null) {
-                    Minecraft.getInstance()
-                            .getChatListener()
-                            .handleSystemMessage(
-                                    Component.literal("§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", "
-                                            + addedEntities.size() + ", " + removingEntities.size() + "]§e, after: §f["
-                                            + staticEntities.size() + ", " + pendingEntities.size() + ", "
-                                            + removedEntities.size() + "]"),
-                                    false);
+                    NoxesiumMod.getInstance().ensureMain(() -> {
+                        Minecraft.getInstance()
+                                .getChatListener()
+                                .handleSystemMessage(
+                                        Component.literal(
+                                                "§eRebuilt spatial model, before: §f[" + oldStaticEntities + ", "
+                                                        + addedEntities.size() + ", " + removingEntities.size()
+                                                        + "]§e, after: §f["
+                                                        + staticEntities.size() + ", " + pendingEntities.size() + ", "
+                                                        + removedEntities.size() + "]"),
+                                        false);
+                    });
                 }
 
-                var newContents = new HashSet<AABB>();
+                var newContents = new HashSet<Pair<String, AABB>>();
                 for (var entity : newStaticEntities) {
                     var fetched = world.getEntity(entity);
                     if (fetched == null) continue;
-                    newContents.add(fetched.getBoundingBox());
+                    var type = fetched.noxesium$getExtraData(ExtraEntityData.QIB_BEHAVIOR);
+                    newContents.add(Pair.of(type, fetched.getBoundingBox()));
                 }
                 modelContents = newContents;
             }
