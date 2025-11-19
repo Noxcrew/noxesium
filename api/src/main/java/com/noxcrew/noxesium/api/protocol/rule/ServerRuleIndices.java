@@ -68,10 +68,7 @@ public class ServerRuleIndices {
      */
     public static final int QIB_BEHAVIORS = 13;
 
-    /**
-     * Allows the server to override the graphics mode used by the client.
-     */
-    public static final int OVERRIDE_GRAPHICS_MODE = 14;
+    // Id 14 has been removed.
 
     /**
      * Enables Noxesium patches to the trident which make it entirely client-sided

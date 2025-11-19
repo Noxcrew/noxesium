@@ -1,8 +1,9 @@
 package com.noxcrew.noxesium.mixin.rules.entity;
 
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -22,8 +23,8 @@ public class EndCrystalBeamRendererMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/renderer/RenderType;entitySmoothCutout(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/RenderType;"))
-    private static RenderType determineRenderType(ResourceLocation resourceLocation) {
-        return RenderType.entityTranslucent(resourceLocation, true);
+                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySmoothCutout(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
+    private static RenderType determineRenderType(Identifier Identifier) {
+        return RenderTypes.entityTranslucent(Identifier);
     }
 }

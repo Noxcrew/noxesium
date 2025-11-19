@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.feature.sounds;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 
@@ -12,7 +12,7 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
     private final Entity entity;
 
     public EntityNoxesiumSoundInstance(
-            ResourceLocation sound,
+            Identifier sound,
             SoundSource soundSource,
             Entity entity,
             float volume,

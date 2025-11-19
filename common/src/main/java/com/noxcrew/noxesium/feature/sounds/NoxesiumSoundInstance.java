@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.mixin.sound.ChannelExt;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +20,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     private VolumeInterpolation volumeInterpolation;
 
     public NoxesiumSoundInstance(
-            ResourceLocation sound,
+            Identifier sound,
             SoundSource soundSource,
             Vec3 initialPosition,
             float volume,

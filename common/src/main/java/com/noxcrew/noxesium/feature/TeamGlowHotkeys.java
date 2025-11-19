@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -19,8 +19,8 @@ import org.lwjgl.glfw.GLFW;
  */
 public class TeamGlowHotkeys implements NoxesiumModule {
 
-    private static final KeyMapping.Category KEYBIND_CATEGORY = KeyMapping.Category.register(
-            ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "team_glow"));
+    private static final KeyMapping.Category KEYBIND_CATEGORY =
+            KeyMapping.Category.register(Identifier.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "team_glow"));
     private static final Map<ChatFormatting, Pair<String, Integer>> GLOW_TEAMS = Map.of(
             ChatFormatting.RED, Pair.of("red", GLFW.GLFW_KEY_KP_7),
             ChatFormatting.GOLD, Pair.of("orange", GLFW.GLFW_KEY_KP_8),

@@ -4,10 +4,8 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.NoxesiumMod;
-import com.noxcrew.noxesium.feature.rule.ServerRuleModule;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
 import java.util.function.Consumer;
-import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
@@ -44,21 +42,9 @@ public abstract class OptionInstanceMixin<T> {
         var options = Minecraft.getInstance().options;
         if (options == null) return original;
 
-        // Ignore if we're in a nested settings menu override
-        if (ServerRuleModule.noxesium$disableSettingOverrides) return original;
-
         if (((Object) (this)) == options.prioritizeChunkUpdates()
                 && ServerRules.DISABLE_DEFERRED_CHUNK_UPDATES.getValue()) {
             return (T) PrioritizeChunkUpdates.NEARBY;
-        }
-        if (((Object) (this)) == options.graphicsMode()
-                && ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().isPresent()) {
-            var graphics = (T) ServerRules.OVERRIDE_GRAPHICS_MODE.getValue().get();
-            if (ServerRuleModule.noxesium$isUsingIris && graphics == GraphicsStatus.FABULOUS) {
-                // Don't use fabulous graphics when using Iris!
-                return original;
-            }
-            return graphics;
         }
         return original;
     }

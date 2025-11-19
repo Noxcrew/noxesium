@@ -8,7 +8,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
@@ -21,9 +21,9 @@ import org.joml.Matrix3x2fStack;
  */
 public class CustomMapUiWidget {
 
-    public static final ResourceLocation MAP_BACKGROUND = ResourceLocation.withDefaultNamespace("map/map_background");
-    public static final ResourceLocation MAP_BACKGROUND_CHECKERBOARD =
-            ResourceLocation.withDefaultNamespace("map/map_background_checkerboard");
+    public static final Identifier MAP_BACKGROUND = Identifier.withDefaultNamespace("map/map_background");
+    public static final Identifier MAP_BACKGROUND_CHECKERBOARD =
+            Identifier.withDefaultNamespace("map/map_background_checkerboard");
 
     private static final MapRenderState mapRenderState = new MapRenderState();
 

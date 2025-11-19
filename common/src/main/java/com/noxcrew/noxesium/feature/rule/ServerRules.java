@@ -2,10 +2,10 @@ package com.noxcrew.noxesium.feature.rule;
 
 import com.noxcrew.noxesium.NoxesiumMod;
 import com.noxcrew.noxesium.api.protocol.rule.ServerRuleIndices;
+import com.noxcrew.noxesium.config.GraphicsStatus;
 import com.noxcrew.noxesium.feature.rule.impl.*;
 import java.util.Collections;
 import java.util.Optional;
-import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
@@ -82,17 +82,6 @@ public class ServerRules {
             register(new QibBehaviorServerRule(ServerRuleIndices.QIB_BEHAVIORS));
 
     /**
-     * Allows the server to override the graphics mode used by the client.
-     */
-    public static OptionalEnumServerRule<GraphicsStatus> OVERRIDE_GRAPHICS_MODE = register(new OptionalEnumServerRule<>(
-            ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, GraphicsStatus.class, Optional.empty(), () -> {
-                // We need to call this whenever we change the display type.
-                if (Minecraft.getInstance().levelRenderer != null) {
-                    Minecraft.getInstance().levelRenderer.allChanged();
-                }
-            }));
-
-    /**
      * Enables a custom smoother riptide trident implementation. Requires server-side adjustments.
      */
     public static ClientServerRule<Boolean> ENABLE_SMOOTHER_CLIENT_TRIDENT =
@@ -135,6 +124,7 @@ public class ServerRules {
         // throw errors on old servers.
         register(new BooleanServerRule(7, false));
         register(new BooleanServerRule(9, false));
+        register(new OptionalEnumServerRule<>(14, GraphicsStatus.class, Optional.empty(), () -> {}));
     }
 
     /**

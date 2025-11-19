@@ -98,7 +98,7 @@ public class NoxesiumMod {
         // Trigger registration of all server and entity rules and shaders
         Object ignored = ServerRules.DISABLE_SPIN_ATTACK_COLLISIONS;
         ignored = ExtraEntityData.DISABLE_BUBBLES;
-        ignored = CustomRenderTypes.linesNoDepth();
+        ignored = CustomRenderTypes.textBackgroundSeeThroughWithDepth();
 
         // Run rebuilds on a separate thread to not destroy fps unnecessarily.
         var backgroundTaskThread = new Thread("Noxesium Background Task Thread") {

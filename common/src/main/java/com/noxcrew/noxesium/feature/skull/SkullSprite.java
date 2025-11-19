@@ -25,7 +25,7 @@ import net.minecraft.client.gui.font.SingleSpriteSource;
 import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
@@ -59,7 +59,7 @@ public class SkullSprite implements ObjectInfo {
                         }
 
                         @Override
-                        public TextRenderable createGlyph(
+                        public TextRenderable.Styled createGlyph(
                                 float x,
                                 float y,
                                 int color,
@@ -67,7 +67,7 @@ public class SkullSprite implements ObjectInfo {
                                 Style style,
                                 float f,
                                 float shadowOffset) {
-                            return new SpriteInstance(sprite, x, y, color, shadowColor, shadowOffset);
+                            return new SpriteInstance(sprite, x, y, color, shadowColor, shadowOffset, style);
                         }
                     });
                 }
@@ -257,7 +257,8 @@ public class SkullSprite implements ObjectInfo {
                 new SkullSprite(Optional.empty(), Optional.of(texture), grayscale, advance, ascent, scale, hat)));
     }
 
-    private record SpriteInstance(SkullSprite sprite, float x, float y, int color, int shadowColor, float shadowOffset)
+    private record SpriteInstance(
+            SkullSprite sprite, float x, float y, int color, int shadowColor, float shadowOffset, Style style)
             implements PlainTextRenderable {
         @Override
         public void renderSprite(

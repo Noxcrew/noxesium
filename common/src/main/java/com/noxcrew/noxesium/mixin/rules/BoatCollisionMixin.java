@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.mixin.rules;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.noxcrew.noxesium.feature.rule.ServerRules;
-import net.minecraft.world.entity.vehicle.AbstractBoat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 

@@ -6,6 +6,7 @@ import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.OptionsSubScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 
 /**
  * The custom settings screen used by Noxesium which opens when clicking on Noxesium in Mod Menu or by pressing F3+Y.
@@ -26,7 +27,7 @@ public class NoxesiumSettingsScreen extends OptionsSubScreen {
         options.add(NoxesiumOptions.debugScoreboardTeams());
         options.add(NoxesiumOptions.extendedPacketLogging());
         if (Minecraft.getInstance().player == null
-                || Minecraft.getInstance().player.getPermissionLevel() >= 2) {
+                || Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
             options.add(NoxesiumOptions.qibSystemDebugVisuals());
             options.add(NoxesiumOptions.showCullingBoxes());
         }

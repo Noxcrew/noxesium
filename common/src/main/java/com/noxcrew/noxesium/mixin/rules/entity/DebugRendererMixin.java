@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.feature.entity.SpatialDebuggingRenderer;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.server.permissions.Permissions;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,17 +19,17 @@ public class DebugRendererMixin {
 
     @Shadow
     @Final
-    private List<DebugRenderer.SimpleDebugRenderer> opaqueRenderers;
+    private List<DebugRenderer.SimpleDebugRenderer> renderers;
 
     @Unique
-    private DebugRenderer.SimpleDebugRenderer noxesium$spatialDebugRenderer = new SpatialDebuggingRenderer();
+    private final DebugRenderer.SimpleDebugRenderer noxesium$spatialDebugRenderer = new SpatialDebuggingRenderer();
 
     @Inject(method = "refreshRendererList", at = @At("RETURN"))
     public void render(CallbackInfo ci) {
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
                 && Minecraft.getInstance().player != null
-                && Minecraft.getInstance().player.getPermissionLevel() >= 2) {
-            opaqueRenderers.add(noxesium$spatialDebugRenderer);
+                && Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+            renderers.add(noxesium$spatialDebugRenderer);
         }
     }
 }

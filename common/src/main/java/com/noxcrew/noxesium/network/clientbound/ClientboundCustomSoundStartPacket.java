@@ -6,7 +6,7 @@ import com.noxcrew.noxesium.network.NoxesiumPayloadType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 
@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public record ClientboundCustomSoundStartPacket(
         int id,
-        ResourceLocation sound,
+        Identifier sound,
         SoundSource source,
         boolean looping,
         boolean attenuation,
@@ -42,7 +42,7 @@ public record ClientboundCustomSoundStartPacket(
         this(
                 buf,
                 buf.readVarInt(),
-                buf.readResourceLocation(),
+                buf.readIdentifier(),
                 buf.readEnum(SoundSource.class),
                 buf.readBoolean(),
                 buf.readBoolean(),
@@ -55,7 +55,7 @@ public record ClientboundCustomSoundStartPacket(
     private ClientboundCustomSoundStartPacket(
             RegistryFriendlyByteBuf buf,
             int id,
-            ResourceLocation sound,
+            Identifier sound,
             SoundSource source,
             boolean looping,
             boolean attenuation,
@@ -81,7 +81,7 @@ public record ClientboundCustomSoundStartPacket(
     private ClientboundCustomSoundStartPacket(
             RegistryFriendlyByteBuf buf,
             int id,
-            ResourceLocation sound,
+            Identifier sound,
             SoundSource source,
             boolean looping,
             boolean attenuation,
@@ -108,7 +108,7 @@ public record ClientboundCustomSoundStartPacket(
 
     private void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(id);
-        buf.writeResourceLocation(sound);
+        buf.writeIdentifier(sound);
         buf.writeEnum(source);
         buf.writeBoolean(looping);
         buf.writeBoolean(attenuation);

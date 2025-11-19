@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.mixin.feature;
 
 import com.noxcrew.noxesium.feature.CustomRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.DisplayRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -23,7 +23,7 @@ public abstract class FixTextDisplayTransparencyMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/renderer/RenderType;textBackground()Lnet/minecraft/client/renderer/RenderType;"))
+                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;textBackground()Lnet/minecraft/client/renderer/rendertype/RenderType;"))
     public RenderType determineRenderType() {
         return CustomRenderTypes.textBackgroundSeeThroughWithDepth();
     }

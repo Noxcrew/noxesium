@@ -31,7 +31,7 @@ import java.util.Set;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Defines all different packet types used by Noxesium. Noxesium uses the approach of serializing all incoming plugin channel
@@ -120,7 +120,7 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(
-                new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
+                new CustomPacketPayload.Type<T>(Identifier.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         NoxesiumMod.getPlatform().registerPacket(type, codec, false);
         clientboundPackets.put(id, Pair.of(group, type));
 
@@ -158,7 +158,7 @@ public class NoxesiumPackets {
         Preconditions.checkArgument(!clientboundPackets.containsKey(id));
         Preconditions.checkArgument(!serverboundPackets.containsKey(id));
         var type = new NoxesiumPayloadType<>(
-                new CustomPacketPayload.Type<T>(ResourceLocation.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
+                new CustomPacketPayload.Type<T>(Identifier.fromNamespaceAndPath(PACKET_NAMESPACE, id)));
         NoxesiumMod.getPlatform().registerPacket(type, codec, true);
         serverboundPackets.put(type.id().toString(), group);
         return type;

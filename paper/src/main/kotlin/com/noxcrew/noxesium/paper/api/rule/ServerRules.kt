@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.qib.QibDefinition
 import com.noxcrew.noxesium.paper.api.NoxesiumManager
 import com.noxcrew.noxesium.paper.api.RuleFunction
 import org.bukkit.inventory.ItemStack
-import java.util.Optional
 
 /** Stores all known server rules supported by Noxesium. */
 public class ServerRules(
@@ -71,12 +70,6 @@ public class ServerRules(
      */
     public val qibBehaviors: RuleFunction<Map<String, QibDefinition>> =
         register(ServerRuleIndices.QIB_BEHAVIORS, 9, ::QibBehaviorServerRule)
-
-    /**
-     * Allows the server to override the graphics mode used by the client.
-     */
-    public val overrideGraphicsMode: RuleFunction<Optional<GraphicsType>> =
-        register(ServerRuleIndices.OVERRIDE_GRAPHICS_MODE, 8, ::OptionalEnumServerRule)
 
     /**
      * Enables a custom smoother riptide trident implementation. Requires server-side adjustments.

@@ -8,7 +8,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -30,7 +30,7 @@ public class ItemStackServerRule extends ClientServerRule<ItemStack> {
         if (count <= 0) {
             return ItemStack.EMPTY;
         } else {
-            var item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(buffer.readUtf()));
+            var item = BuiltInRegistries.ITEM.get(Identifier.parse(buffer.readUtf()));
             if (item.isEmpty()) {
                 return ItemStack.EMPTY;
             } else {
@@ -51,12 +51,12 @@ public class ItemStackServerRule extends ClientServerRule<ItemStack> {
         }
         var builder = DataComponentPatch.builder();
         for (int i = 0; i < components; i++) {
-            var type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(ResourceLocation.parse(buffer.readUtf()));
+            var type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(Identifier.parse(buffer.readUtf()));
             if (type.isEmpty()) return builder.build(); // If any component is unknown we have to stop parsing!
             decodeComponent(buffer, type.get().value(), builder);
         }
         for (int i = 0; i < emptyComponents; i++) {
-            var type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(ResourceLocation.parse(buffer.readUtf()));
+            var type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(Identifier.parse(buffer.readUtf()));
             if (type.isEmpty()) break; // If any component is unknown we have to stop parsing!
             builder.remove(type.get().value());
         }
@@ -73,7 +73,7 @@ public class ItemStackServerRule extends ClientServerRule<ItemStack> {
             buffer.writeVarInt(item.getCount());
             buffer.writeUtf(item.getItemHolder()
                     .unwrapKey()
-                    .map(it -> it.location().toString())
+                    .map(it -> it.identifier().toString())
                     .orElse("unknown"));
 
             var components = new ArrayList<Map.Entry<DataComponentType<?>, Optional<?>>>();

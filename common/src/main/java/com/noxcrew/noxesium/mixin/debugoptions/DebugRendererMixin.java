@@ -8,7 +8,7 @@ import java.util.Objects;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryList;
 import net.minecraft.client.renderer.debug.DebugRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -21,12 +21,17 @@ public class DebugRendererMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/gui/components/debug/DebugScreenEntryList;isCurrentlyEnabled(Lnet/minecraft/resources/ResourceLocation;)Z"))
-    private boolean restrictChunkBorderRendering(
-            DebugScreenEntryList instance, ResourceLocation id, Operation<Boolean> original) {
+                                    "Lnet/minecraft/client/gui/components/debug/DebugScreenEntryList;isCurrentlyEnabled(Lnet/minecraft/resources/Identifier;)Z"))
+    private boolean restrictDebugRendering(DebugScreenEntryList instance, Identifier id, Operation<Boolean> original) {
         if (!original.call(instance, id)) return false;
-        return !Objects.equals(id, DebugScreenEntries.CHUNK_BORDERS)
-                || ServerRules.RESTRICT_DEBUG_OPTIONS == null
-                || !ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.CHUNK_BOUNDARIES.getKeyCode());
+        if (ServerRules.RESTRICT_DEBUG_OPTIONS == null) return true;
+
+        if (Objects.equals(id, DebugScreenEntries.CHUNK_BORDERS)) {
+            return !ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.CHUNK_BOUNDARIES.getKeyCode());
+        }
+        if (Objects.equals(id, DebugScreenEntries.ENTITY_HITBOXES)) {
+            return !ServerRules.RESTRICT_DEBUG_OPTIONS.getValue().contains(DebugOption.SHOW_HITBOXES.getKeyCode());
+        }
+        return true;
     }
 }

@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.function.TriConsumer;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -40,7 +40,7 @@ public class NoxesiumPayloadType<T extends NoxesiumPacket> {
     /**
      * Returns the id of this payload type.
      */
-    public ResourceLocation id() {
+    public Identifier id() {
         return type.id();
     }
 

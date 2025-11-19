@@ -11,7 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
@@ -211,8 +211,8 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
                     player.level()
                             .playLocalSound(
                                     player,
-                                    SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(
-                                            "noxesium", "trident.ready_indicator")),
+                                    SoundEvent.createVariableRangeEvent(
+                                            Identifier.fromNamespaceAndPath("noxesium", "trident.ready_indicator")),
                                     SoundSource.PLAYERS,
                                     1f,
                                     1f);
