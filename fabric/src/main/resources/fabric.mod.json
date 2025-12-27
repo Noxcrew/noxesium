@@ -52,13 +52,13 @@
   "depends": {
     "fabric": "*",
     "fabricloader": ">=0.18.1",
-    "fabric-api": ">=0.139.3",
+    "fabric-api": ">=0.140.0",
     "minecraft": ">=1.21.11"
   },
   "suggests": {
-    "sodium": ">=0.7.0"
+    "sodium": ">=0.8.0"
   },
   "breaks": {
-    "sodium": "<0.7.0"
+    "sodium": "<0.8.0"
   }
 }
