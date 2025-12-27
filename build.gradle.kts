@@ -1,19 +1,10 @@
-import java.io.ByteArrayOutputStream
 import org.gradle.jvm.tasks.Jar
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-fun getGitCommit(): String {
-    val stdout = ByteArrayOutputStream()
-    exec {
-        commandLine("git", "rev-parse", "--short", "HEAD")
-        standardOutput = stdout
-    }
-    return stdout.toString().trim()
-}
+import noxesium.GitCommitIdValueSource
 
 plugins {
     id("noxesium.publishing") apply false
@@ -31,7 +22,11 @@ val javaVersion: Int = 21
 
 allprojects {
     group = "com.noxcrew.noxesium"
-    version = "${property("mod_version")}+${getGitCommit()}"
+
+    val gitCommitId = providers.of(GitCommitIdValueSource::class.java) {
+        parameters.rootDirectory.set(rootProject.projectDir)
+    }.get()
+    version = "${property("mod_version")}+${gitCommitId}"
 
     repositories {
         maven("https://repo.papermc.io/repository/maven-public/")
