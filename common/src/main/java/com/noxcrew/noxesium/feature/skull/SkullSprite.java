@@ -339,7 +339,7 @@ public class SkullSprite implements ObjectInfo {
 
         @Override
         public float left() {
-            return 0.0F;
+            return x();
         }
 
         @Override
@@ -349,7 +349,7 @@ public class SkullSprite implements ObjectInfo {
 
         @Override
         public float top() {
-            return (float) sprite.getAscent();
+            return y() + (float) sprite.getAscent();
         }
 
         @Override
