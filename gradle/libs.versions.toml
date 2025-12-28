@@ -1,11 +1,11 @@
 [versions]
 # Plugins
-shadow = "9.0.0-beta4"
-spotless = "7.0.0.BETA4"
-loom = "1.11-SNAPSHOT"
-moddev = "2.0.73"
-paperweight = "2.0.0-beta.18"
-run-paper = "2.3.1"
+shadow = "9.2.2"
+spotless = "8.1.0"
+loom = "1.14-SNAPSHOT"
+moddev = "2.0.134"
+paperweight = "2.0.0-beta.19"
+run-paper = "3.0.2"
 
 # Tooling
 kotlin-coroutines = "1.10.2"
@@ -25,13 +25,13 @@ joml = "1.10.8"
 juniversalchardet = "2.5.0"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "1.21.8"
-fabric-loader = "0.17.2"
-fabric-api = "0.131.0+1.21.8"
+minecraft = "1.21.11"
+fabric-loader = "0.18.1"
+fabric-api = "0.140.0+1.21.11"
 
 # Mods
-sodium = "mc1.21.8-0.7.0-fabric"
-modmenu = "15.0.0-beta.3"
+sodium = "mc1.21.11-0.8.2-fabric"
+modmenu = "17.0.0-beta.1"
 devlogin = "0.1.0.5"
 
 # Paper
