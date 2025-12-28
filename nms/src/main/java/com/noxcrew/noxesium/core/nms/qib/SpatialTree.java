@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.qib;
+package com.noxcrew.noxesium.core.nms.qib;
 
 import java.util.HashSet;
 import java.util.Map;

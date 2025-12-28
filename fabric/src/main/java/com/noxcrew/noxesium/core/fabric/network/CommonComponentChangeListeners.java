@@ -12,7 +12,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.mixin.rules.mouse.MouseHandlerExt;
-import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes;
+import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.BiConsumer;

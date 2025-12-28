@@ -3,11 +3,14 @@ package com.noxcrew.noxesium.core.fabric.mixin.feature;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
-import net.minecraft.client.renderer.MultiBufferSource;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
+import net.minecraft.client.renderer.blockentity.state.BeaconRenderState;
+import net.minecraft.world.level.block.entity.BeaconBeamOwner;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -18,32 +21,35 @@ import org.spongepowered.asm.mixin.injection.At;
 public class BeaconRendererMixin {
 
     @WrapOperation(
-            method = "render",
+            method = "extract",
             at =
                     @At(
-                            value = "INVOKE",
+                            value = "FIELD",
                             target =
-                                    "Lnet/minecraft/client/renderer/blockentity/BeaconRenderer;renderBeaconBeam(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;FFJIII)V"))
-    private void render(
-            PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
-            float partialTicks,
-            float width,
-            long gameTime,
-            int y,
-            int height,
-            int color,
+                                    "Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;sections:Ljava/util/List;",
+                            opcode = Opcodes.PUTFIELD))
+    private static <T extends BlockEntity & BeaconBeamOwner> void extract(
+            BeaconRenderState instance,
+            List<BeaconRenderState.Section> value,
             Operation<Void> original,
-            @Local(argsOnly = true) BlockEntity blockEntity) {
+            @Local(argsOnly = true) T blockEntity) {
         var override = blockEntity.noxesium$getComponent(CommonBlockEntityComponentTypes.BEACON_BEAM_HEIGHT);
         if (override != null) {
-            // Determine the maximum value this section can have
-            var limit = Math.max(override + 1 - y, 0);
-            height = Math.min(height, limit);
-
-            // Don't render invisible sections!
-            if (height == 0) return;
+            // Modify the section list to ignore any sections above the height of the beacon beam
+            var y = 0;
+            var sections = new ArrayList<BeaconRenderState.Section>();
+            for (var section : blockEntity.getBeamSections()) {
+                var limit = Math.max(override + 1 - y, 0);
+                var height = Math.min(section.getHeight(), limit);
+                if (height > 0) {
+                    var state = new BeaconRenderState.Section(section.getColor(), section.getHeight());
+                    sections.add(state);
+                    y += height;
+                }
+            }
+            original.call(instance, sections);
+        } else {
+            original.call(instance, value);
         }
-        original.call(poseStack, multiBufferSource, partialTicks, width, gameTime, y, height, color);
     }
 }

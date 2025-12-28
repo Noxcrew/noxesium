@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.core.util;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
+import com.noxcrew.noxesium.api.feature.sprite.CustomSkullSprite;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager;
 import java.util.ArrayList;
@@ -65,8 +66,7 @@ public class NoxesiumListCommand {
             }
 
             // Show as empty for non-Noxesium clients
-            components.add(Component.translatable(
-                            SkullStringFormatter.write(new SkullStringFormatter.SkullInfo(player.uuid())), "")
+            components.add(Component.translatable(new CustomSkullSprite(player.uuid()).serialize(), "")
                     .hoverEvent(hoverEvent));
             components.add(player.displayName().color(NamedTextColor.AQUA).hoverEvent(hoverEvent));
             if (index != players.size() - 1) {

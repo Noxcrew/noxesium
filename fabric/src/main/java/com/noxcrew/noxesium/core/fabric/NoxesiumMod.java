@@ -3,6 +3,8 @@ package com.noxcrew.noxesium.core.fabric;
 import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumSide;
+import com.noxcrew.noxesium.api.feature.sprite.CustomSkullSprite;
+import com.noxcrew.noxesium.api.feature.sprite.CustomSpriteRegistry;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
@@ -85,6 +87,9 @@ public class NoxesiumMod implements ClientModInitializer {
         // Log how many entrypoints were successfully loaded
         logger.info("Loaded {} Noxesium entrypoints", api.getAllEntrypoints().size());
 
+        // Register supported custom sprite types
+        CustomSpriteRegistry.register("skull", CustomSkullSprite::deserialize);
+
         // Set up the initializer
         handshaker = new FabricNoxesiumClientHandshaker();
         handshaker.register();
@@ -139,6 +144,13 @@ public class NoxesiumMod implements ClientModInitializer {
     @Nullable
     public FabricNoxesiumClientHandshaker getHandshaker() {
         return handshaker;
+    }
+
+    /**
+     * Returns the custom creative tab.
+     */
+    public CustomServerCreativeItems getCustomCreativeItems() {
+        return customCreativeItems;
     }
 
     /**

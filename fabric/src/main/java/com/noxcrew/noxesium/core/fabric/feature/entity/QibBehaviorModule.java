@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
-import com.noxcrew.noxesium.core.qib.QibCollisionManager;
+import com.noxcrew.noxesium.core.nms.qib.QibCollisionManager;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;

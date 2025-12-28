@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.fabric.feature.skull;
+package com.noxcrew.noxesium.core.fabric.feature.font;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -12,8 +12,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.noxcrew.noxesium.core.util.SkullStringFormatter;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -28,11 +26,8 @@ import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.ObjectContents;
 import net.minecraft.network.chat.contents.objects.ObjectInfo;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -80,7 +75,6 @@ public class SkullSprite implements ObjectInfo {
                     Codec.STRING
                             .optionalFieldOf("texture")
                             .forGetter((skull) -> Optional.ofNullable(skull.getTexture())),
-                    Codec.BOOL.optionalFieldOf("grayscale", false).forGetter(SkullSprite::isGrayscale),
                     Codec.INT.optionalFieldOf("advance", 0).forGetter(SkullSprite::getAdvance),
                     Codec.INT.optionalFieldOf("ascent", 0).forGetter(SkullSprite::getAscent),
                     Codec.FLOAT.optionalFieldOf("scale", 1f).forGetter(SkullSprite::getScale),
@@ -103,20 +97,13 @@ public class SkullSprite implements ObjectInfo {
     private final String texture;
 
     private final Supplier<PlayerSkinRenderCache.RenderInfo> skin;
-    private final boolean grayscale;
     private final int advance;
     private final int ascent;
     private final float scale;
     private final boolean hat;
 
     public SkullSprite(
-            Optional<UUID> uuid,
-            Optional<String> texture,
-            boolean grayscale,
-            int advance,
-            int ascent,
-            float scale,
-            boolean hat) {
+            Optional<UUID> uuid, Optional<String> texture, int advance, int ascent, float scale, boolean hat) {
         ResolvableProfile profile = null;
         if (texture.isPresent()) {
             var gameProfile = new GameProfile(UUID.randomUUID(), "");
@@ -139,7 +126,6 @@ public class SkullSprite implements ObjectInfo {
 
         this.uuid = uuid.orElse(null);
         this.texture = texture.orElse(null);
-        this.grayscale = grayscale;
         this.advance = advance;
         this.ascent = ascent;
         this.scale = scale;
@@ -154,10 +140,6 @@ public class SkullSprite implements ObjectInfo {
     @Nullable
     public String getTexture() {
         return texture;
-    }
-
-    public boolean isGrayscale() {
-        return grayscale;
     }
 
     public int getAdvance() {
@@ -177,29 +159,6 @@ public class SkullSprite implements ObjectInfo {
     }
 
     @Override
-    public String toString() {
-        return "skull{texture='" + texture + "', grayscale='" + grayscale + "', advance='" + advance + "', ascent='"
-                + ascent + "', scale='" + scale + "'}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SkullSprite that)) return false;
-        if (!super.equals(o)) return false;
-        return grayscale == that.grayscale
-                && advance == that.advance
-                && ascent == that.ascent
-                && Float.compare(that.scale, scale) == 0
-                && Objects.equals(uuid, that.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), uuid, grayscale, advance, ascent, scale);
-    }
-
-    @Override
     public FontDescription fontDescription() {
         return new SkullFontDescription(this);
     }
@@ -213,48 +172,6 @@ public class SkullSprite implements ObjectInfo {
     @Override
     public MapCodec<SkullSprite> codec() {
         return MAP_CODEC;
-    }
-
-    /**
-     * Creates a new skull component out of the given info.
-     */
-    public static Component create(SkullStringFormatter.SkullInfo info) {
-        if (info.raw()) {
-            return create(info.value(), info.grayscale(), info.advance(), info.ascent(), info.scale());
-        } else {
-            return create(UUID.fromString(info.value()), info.grayscale(), info.advance(), info.ascent(), info.scale());
-        }
-    }
-
-    /**
-     * Creates a new skull component for the player with the given uuid.
-     */
-    public static Component create(UUID uuid, boolean grayscale, int advance, int ascent, float scale) {
-        return create(uuid, grayscale, advance, ascent, scale, true);
-    }
-
-    /**
-     * Creates a new skull component for the player with the given uuid.
-     */
-    public static Component create(UUID uuid, boolean grayscale, int advance, int ascent, float scale, boolean hat) {
-        return MutableComponent.create(new ObjectContents(
-                new SkullSprite(Optional.of(uuid), Optional.empty(), grayscale, advance, ascent, scale, hat)));
-    }
-
-    /**
-     * Creates a new skull component using the given texture.
-     */
-    public static Component create(String texture, boolean grayscale, int advance, int ascent, float scale) {
-        return create(texture, grayscale, advance, ascent, scale, true);
-    }
-
-    /**
-     * Creates a new skull component using the given texture.
-     */
-    public static Component create(
-            String texture, boolean grayscale, int advance, int ascent, float scale, boolean hat) {
-        return MutableComponent.create(new ObjectContents(
-                new SkullSprite(Optional.empty(), Optional.of(texture), grayscale, advance, ascent, scale, hat)));
     }
 
     private record SpriteInstance(

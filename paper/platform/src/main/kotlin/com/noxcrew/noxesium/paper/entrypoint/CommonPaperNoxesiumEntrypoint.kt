@@ -7,12 +7,12 @@ import com.noxcrew.noxesium.api.network.PacketCollection
 import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers
 import com.noxcrew.noxesium.api.registry.RegistryCollection
 import com.noxcrew.noxesium.core.network.CommonPackets
+import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes
 import com.noxcrew.noxesium.core.nms.serialization.CommonBlockEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonEntityComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonGameComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonItemComponentSerializers
 import com.noxcrew.noxesium.core.nms.serialization.CommonPacketSerializers
-import com.noxcrew.noxesium.core.nms.serialization.NmsGameComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes

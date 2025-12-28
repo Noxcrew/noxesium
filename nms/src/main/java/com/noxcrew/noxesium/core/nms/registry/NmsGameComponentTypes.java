@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.nms.serialization;
+package com.noxcrew.noxesium.core.nms.registry;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;

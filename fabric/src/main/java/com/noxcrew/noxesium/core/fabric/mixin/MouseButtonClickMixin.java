@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
+import net.minecraft.client.input.MouseButtonInfo;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +26,8 @@ public class MouseButtonClickMixin {
             at =
                     @At(
                             value = "INVOKE",
-                            target = "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(JIDD)V"))
+                            target =
+                                    "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(Lcom/mojang/blaze3d/platform/Window;IDD)V"))
     private void onReleaseMouse(CallbackInfo ci) {
         if (!NoxesiumServerboundNetworking.getInstance().shouldSendLazy(CommonPackets.SERVER_MOUSE_BUTTON_CLICK))
             return;
@@ -38,8 +40,8 @@ public class MouseButtonClickMixin {
         }
     }
 
-    @Inject(method = "onPress", at = @At("HEAD"))
-    private void onPress(long window, int buttonId, int action, int mods, CallbackInfo ci) {
+    @Inject(method = "onButton", at = @At("HEAD"))
+    private void onButton(long window, MouseButtonInfo info, int action, CallbackInfo ci) {
         var client = Minecraft.getInstance();
         var player = client.player;
         if (player == null) return;
@@ -48,6 +50,7 @@ public class MouseButtonClickMixin {
 
         // Check that the action and button is valid
         if (action != 0 && action != 1) return;
+        var buttonId = info.button();
         if (buttonId < 0 || buttonId > 2) return;
 
         // Determine which button this id refers to

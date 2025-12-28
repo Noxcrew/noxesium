@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.component;
 
 import com.mojang.serialization.MapCodec;
-import com.noxcrew.noxesium.core.fabric.feature.skull.SkullSprite;
+import com.noxcrew.noxesium.core.fabric.feature.font.SkullSprite;
 import net.minecraft.network.chat.contents.objects.ObjectInfo;
 import net.minecraft.network.chat.contents.objects.ObjectInfos;
 import net.minecraft.util.ExtraCodecs;

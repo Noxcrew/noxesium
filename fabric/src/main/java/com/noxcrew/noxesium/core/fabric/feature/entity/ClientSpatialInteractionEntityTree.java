@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.feature.entity;
 
 import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
-import com.noxcrew.noxesium.core.qib.SpatialTree;
+import com.noxcrew.noxesium.core.nms.qib.SpatialTree;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import java.util.HashSet;
 import java.util.Set;

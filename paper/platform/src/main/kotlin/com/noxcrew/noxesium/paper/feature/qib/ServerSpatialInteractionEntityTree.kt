@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.paper.feature.qib
 
-import com.noxcrew.noxesium.core.qib.SpatialTree
+import com.noxcrew.noxesium.core.nms.qib.SpatialTree
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
 import net.minecraft.server.level.ServerLevel

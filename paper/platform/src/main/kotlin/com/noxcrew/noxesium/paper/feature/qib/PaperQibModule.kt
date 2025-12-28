@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.paper.feature.qib
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
-import com.noxcrew.noxesium.core.qib.QibCollisionManager
+import com.noxcrew.noxesium.core.nms.qib.QibCollisionManager
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.NoxesiumPaper
 import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentChangedEvent

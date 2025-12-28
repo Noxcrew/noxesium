@@ -18,7 +18,7 @@ import net.kyori.adventure.key.Key
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket
 import net.minecraft.network.protocol.common.custom.DiscardedPayload
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 
 /** Implements clientbound networking for Paper. */
 public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking() {
@@ -100,7 +100,7 @@ public class PaperNoxesiumClientboundNetworking : NoxesiumClientboundNetworking(
         // Copy only the used bytes otherwise we send lingering empty data which crashes clients
         val out = ByteArray(buffer.readableBytes())
         System.arraycopy(buffer.array(), 0, out, 0, buffer.readableBytes())
-        return ClientboundCustomPayloadPacket(DiscardedPayload(ResourceLocation.parse(type.id().asString()), out))
+        return ClientboundCustomPayloadPacket(DiscardedPayload(Identifier.parse(type.id().asString()), out))
     }
 
     override fun <T : NoxesiumPacket?> send(player: NoxesiumServerPlayer, type: NoxesiumPayloadType<T?>, payload: Any) {

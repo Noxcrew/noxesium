@@ -10,7 +10,6 @@ import com.mojang.brigadier.context.CommandContext
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
-import com.noxcrew.noxesium.api.util.GraphicsMode
 import com.noxcrew.noxesium.api.util.Unit
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
@@ -496,7 +495,7 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                     )
                                 }
 
-                        java.lang.Integer::class.java.isAssignableFrom(type.clazz) ->
+                        Integer::class.java.isAssignableFrom(type.clazz) ->
                             Commands
                                 .argument("value", IntegerArgumentType.integer())
                                 .executes { ctx ->
@@ -562,11 +561,6 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                         CraftItemStack.unwrap(ctx.getArgument("value", org.bukkit.inventory.ItemStack::class.java)),
                                     )
                                 }
-
-                        GraphicsMode::class.java.isAssignableFrom(type.clazz) -> {
-                            forEnum(GraphicsMode::class.java)
-                            continue
-                        }
 
                         Unit::class.java.isAssignableFrom(type.clazz) -> {
                             // Units are special and have no more parameters!

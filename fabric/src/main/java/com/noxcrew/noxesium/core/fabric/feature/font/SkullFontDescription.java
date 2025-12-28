@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.fabric.feature.skull;
+package com.noxcrew.noxesium.core.fabric.feature.font;
 
 import net.minecraft.network.chat.FontDescription;
 

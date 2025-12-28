@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.paper.feature.qib
 
 import com.noxcrew.noxesium.api.qib.QibEffect
-import com.noxcrew.noxesium.core.qib.QibCollisionManager
-import com.noxcrew.noxesium.core.qib.SpatialTree
+import com.noxcrew.noxesium.core.nms.qib.QibCollisionManager
+import com.noxcrew.noxesium.core.nms.qib.SpatialTree
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
 import net.kyori.adventure.key.Key
@@ -11,11 +11,12 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ClientboundExplodePacket
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.random.WeightedList
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -33,7 +34,7 @@ public class ServerQibCollisionManager(player: Player, spatialTree: SpatialTree)
                     ClientboundSoundEntityPacket(
                         Holder.Direct(
                             SoundEvent.createVariableRangeEvent(
-                                ResourceLocation.fromNamespaceAndPath(effect.namespace, effect.path),
+                                Identifier.fromNamespaceAndPath(effect.namespace, effect.path),
                             ),
                         ),
                         SoundSource.PLAYERS,
@@ -48,7 +49,7 @@ public class ServerQibCollisionManager(player: Player, spatialTree: SpatialTree)
             is QibEffect.GivePotionEffect -> {
                 val type =
                     BuiltInRegistries.MOB_EFFECT
-                        .get(ResourceLocation.fromNamespaceAndPath(effect.namespace, effect.path))
+                        .get(Identifier.fromNamespaceAndPath(effect.namespace, effect.path))
                         .orElse(null)
                 player.addEffect(
                     MobEffectInstance(
@@ -65,7 +66,7 @@ public class ServerQibCollisionManager(player: Player, spatialTree: SpatialTree)
             is QibEffect.RemovePotionEffect -> {
                 player.removeEffect(
                     BuiltInRegistries.MOB_EFFECT
-                        .get(ResourceLocation.fromNamespaceAndPath(effect.namespace, effect.path))
+                        .get(Identifier.fromNamespaceAndPath(effect.namespace, effect.path))
                         .orElse(null),
                 )
             }
@@ -79,9 +80,12 @@ public class ServerQibCollisionManager(player: Player, spatialTree: SpatialTree)
                 (player as? ServerPlayer)?.connection?.send(
                     ClientboundExplodePacket(
                         Vec3(0.0, -Double.MAX_VALUE, 0.0),
+                        0f,
+                        0,
                         Optional.of(Vec3(effect.x, effect.y, effect.z)),
                         ParticleTypes.EXPLOSION,
                         SoundEvents.GENERIC_EXPLODE,
+                        WeightedList.of(),
                     ),
                 )
             }

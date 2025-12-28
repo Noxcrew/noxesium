@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.fabric.feature.skull;
+package com.noxcrew.noxesium.core.fabric.feature.font;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -7,17 +7,18 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.chat.contents.objects.ObjectInfo;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Hides a fake skull sprite under a translation contents.
+ * Hides a fake object sprite under a translation contents.
  */
-public class FakeTranslationContents extends TranslatableContents {
+public class DisguisedSpriteTranslationContents extends TranslatableContents {
     private static final String PLACEHOLDER = Character.toString('\ufffc');
-    private final SkullSprite sprite;
+    private final ObjectInfo sprite;
 
-    public FakeTranslationContents(SkullSprite sprite, TranslatableContents serialized) {
+    public DisguisedSpriteTranslationContents(ObjectInfo sprite, TranslatableContents serialized) {
         // Ensure that the serialized object is still the same!
         super(serialized.getKey(), serialized.getFallback(), serialized.getArgs());
         this.sprite = sprite;
@@ -42,7 +43,7 @@ public class FakeTranslationContents extends TranslatableContents {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof FakeTranslationContents that)) return false;
+        if (!(o instanceof DisguisedSpriteTranslationContents that)) return false;
         if (!super.equals(o)) return false;
         return Objects.equals(sprite, that.sprite);
     }
