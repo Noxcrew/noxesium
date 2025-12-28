@@ -27,3 +27,5 @@ accessible field net/minecraft/client/gui/font/FontManager fontSets Ljava/util/M
 accessible method net/minecraft/client/gui/components/AbstractSliderButton setValue (D)V
 
 accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+
+accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
