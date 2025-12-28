@@ -67,7 +67,7 @@ public abstract class TridentHandModelMixin {
             int p_109381_,
             CallbackInfo ci) {
         if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
+                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
         // the trident because during that time the hand height rapidly changes.

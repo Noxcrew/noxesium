@@ -41,7 +41,7 @@ public class CommonGameComponentSerializers {
                 NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.SHOW_MAP_IN_UI, Codec.BOOL, ByteBufCodecs.BOOL);
         register(
-                CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT,
+                CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS,
                 NoxesiumCodecs.UNIT,
                 NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.RIPTIDE_COYOTE_TIME, Codec.INT, ByteBufCodecs.VAR_INT);

@@ -16,10 +16,7 @@ public class AttackableMixin {
 
     @WrapOperation(
             method = "cannotAttack",
-            at =
-            @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/Entity;isAttackable()Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isAttackable()Z"))
     public boolean redirectRenderHitbox(Entity instance, Operation<Boolean> original) {
         return instance.noxesium$getOptionalComponent(CommonEntityComponentTypes.ATTACKABLE)
                 .orElseGet(() -> original.call(instance));

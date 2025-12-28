@@ -167,7 +167,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     @Inject(method = "isAutoSpinAttack", at = @At(value = "HEAD"), cancellable = true)
     private void isAutoSpinAttack(CallbackInfoReturnable<Boolean> cir) {
         if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
+                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
         if (((Object) this) != Minecraft.getInstance().player) return;
         cir.setReturnValue(this.autoSpinAttackTicks > 0);
     }
@@ -178,7 +178,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     @Inject(method = "baseTick", at = @At(value = "TAIL"))
     private void onTick(CallbackInfo ci) {
         if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
+                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
 
         var entity = (LivingEntity) ((Object) this);
         if (entity instanceof Player player) {

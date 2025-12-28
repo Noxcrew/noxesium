@@ -32,7 +32,7 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
             val player = Bukkit.getPlayer(playerId) ?: return@addListener
 
             // Ignore non-smooth client tridents from lying about the tridents!
-            if (!player.hasNoxesiumComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return@addListener
+            if (!player.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return@addListener
 
             val bukkitStack = player.inventory.getItem(packet.slot) ?: return@addListener
             val nmsStack = CraftItemStack.unwrap(bukkitStack) ?: return@addListener
@@ -76,7 +76,7 @@ public class SmoothTrident : ListeningNoxesiumFeature() {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public fun onRiptideEvent(e: PlayerRiptideEvent) {
         if (ignoreCancellation) return
-        if (e.player.hasNoxesiumComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) {
+        if (e.player.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) {
             e.isCancelled = true
         }
     }

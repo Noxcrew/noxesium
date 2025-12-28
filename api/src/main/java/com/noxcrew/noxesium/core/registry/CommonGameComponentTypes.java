@@ -65,18 +65,21 @@ public class CommonGameComponentTypes {
     public static NoxesiumComponentType<Boolean> SHOW_MAP_IN_UI = register("show_map_in_ui", Boolean.class);
 
     /**
-     * If set, enables a custom smoother riptide trident implementation. Requires server-side adjustments.
+     * If set, enables client authoritative riptide tridents. Requires server-side code which is available
+     * in the provided Paper implementation.
      */
-    public static NoxesiumComponentType<Unit> ENABLE_SMOOTHER_CLIENT_TRIDENT =
-            register("enable_smoother_client_trident", Unit.class);
+    public static NoxesiumComponentType<Unit> CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS =
+            register("enable_client_riptide_trident", Unit.class);
 
     /**
-     * Sets the amount of ticks the riptide has coyote time for.
+     * Sets the amount of ticks the client authoritative riptide tridents have coyote time for.
+     * This allows players to release the trident even after leaving the water for a few ticks
+     * which makes it feel smoother when on the water surface.
      */
     public static NoxesiumComponentType<Integer> RIPTIDE_COYOTE_TIME = register("riptide_coyote_time", Integer.class);
 
     /**
-     * If set, enables the ability to pre-charge riptide tridents.
+     * If set, enables the ability to pre-charge client authoritative riptide tridents.
      * <p>
      * Not supported on the default Paper implementation, requires changing the Minecraft source
      * code to allow using the trident on the server when outside water!
@@ -101,6 +104,22 @@ public class CommonGameComponentTypes {
      */
     public static NoxesiumComponentType<Map<GuiElement, GuiConstraints>> GUI_CONSTRAINTS =
             register("gui_constraints", Map.class);
+
+    /**
+     * If set, enables client authoritative elytra usage. Requires server-side code which is available
+     * in the provided Paper implementation.
+     * <p>
+     * This will make the server unable to control elytra states.
+     */
+    public static NoxesiumComponentType<Unit> CLIENT_AUTHORITATIVE_ELYTRA =
+            register("enable_client_elytra", Unit.class);
+
+    /**
+     * Sets the amount of ticks the client authoritative elytra has coyote time for.
+     * This allows players to hop around with the elytra which is possible in vanilla
+     * on higher ping.
+     */
+    public static NoxesiumComponentType<Integer> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Integer.class);
 
     /**
      * Registers a new component type to the registry.

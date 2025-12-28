@@ -33,7 +33,7 @@ public abstract class TridentItemMixin {
     public boolean isInWaterOrRain(Player player, Operation<Boolean> original) {
         if (original.call(player)) return true;
         if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return false;
+                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return false;
         if (player != Minecraft.getInstance().player) return false;
 
         // Only for the local player do we check if they have coyote time currently!
@@ -71,7 +71,8 @@ public abstract class TridentItemMixin {
             @Local(argsOnly = true) LivingEntity livingEntity,
             @Local(argsOnly = true) int i) {
         var player = Minecraft.getInstance().player;
-        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)
+        if (!GameComponents.getInstance()
+                        .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)
                 || entity != player
                 || player == null) {
             original.call(instance, ignored, entity, soundEvent, soundSource, volume, pitch);
