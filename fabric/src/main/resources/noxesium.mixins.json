@@ -91,5 +91,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "rules.entity.AttackableMixin"
   ]
 }

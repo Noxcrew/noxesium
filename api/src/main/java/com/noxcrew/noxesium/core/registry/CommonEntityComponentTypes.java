@@ -55,6 +55,15 @@ public class CommonEntityComponentTypes {
     public static NoxesiumComponentType<Color> HITBOX_COLOR = register("hitbox_color", Color.class);
 
     /**
+     * Defines whether this entity is attackable. If not attackable the entity cannot
+     * be hit at all, no particles are created, no sprint slowdown, etc.
+     *
+     * Players in spectator mode cannot attack at all, and in vanilla only e.g. non-redirectable arrows
+     * and item entities are marked as unattackable.
+     */
+    public static NoxesiumComponentType<Boolean> ATTACKABLE = register("attackable", Boolean.class);
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <T> NoxesiumComponentType<T> register(String key, Class<T> clazz) {

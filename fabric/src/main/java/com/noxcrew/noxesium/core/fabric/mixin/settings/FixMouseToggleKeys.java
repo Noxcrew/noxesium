@@ -17,10 +17,10 @@ public abstract class FixMouseToggleKeys {
     @WrapOperation(
             method = "shouldRestoreStateOnScreenClosed",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lcom/mojang/blaze3d/platform/InputConstants$Key;getType()Lcom/mojang/blaze3d/platform/InputConstants$Type;"))
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lcom/mojang/blaze3d/platform/InputConstants$Key;getType()Lcom/mojang/blaze3d/platform/InputConstants$Type;"))
     public InputConstants.Type onResetToggleKeys(InputConstants.Key instance, Operation<InputConstants.Type> original) {
         return InputConstants.Type.KEYSYM;
     }

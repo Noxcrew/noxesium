@@ -33,6 +33,7 @@ public class CommonEntityComponentSerializers {
         register(CommonEntityComponentTypes.GLOW_COLOR, NoxesiumCodecs.COLOR_ARGB, NoxesiumStreamCodecs.COLOR_ARGB);
         register(CommonEntityComponentTypes.HITBOX_OVERRIDE, ExtraCodecs.VECTOR3F, ByteBufCodecs.VECTOR3F);
         register(CommonEntityComponentTypes.HITBOX_COLOR, NoxesiumCodecs.COLOR_ARGB, NoxesiumStreamCodecs.COLOR_ARGB);
+        register(CommonEntityComponentTypes.ATTACKABLE, Codec.BOOL, ByteBufCodecs.BOOL);
     }
 
     /**
