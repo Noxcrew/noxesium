@@ -70,16 +70,6 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> playerGlowingKeybinds = OptionInstance.createBoolean(
-            "noxesium.options.enable_glowing_keybinds.name",
-            OptionInstance.cachedConstantTooltip(
-                    Component.translatable("noxesium.options.enable_glowing_keybinds.tooltip")),
-            NoxesiumMod.getInstance().getConfig().showGlowingSettings,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().showGlowingSettings = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            });
-
     private static final OptionInstance<Boolean> debugScoreboardTeams = OptionInstance.createBoolean(
             "noxesium.options.debug_scoreboard_teams.name",
             OptionInstance.cachedConstantTooltip(

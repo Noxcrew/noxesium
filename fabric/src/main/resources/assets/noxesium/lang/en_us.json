@@ -79,19 +79,5 @@
 
   "itemGroup.noxesium.server_items": "Custom Blocks",
 
-  "category.noxesium": "Noxesium",
-
-  "key.noxesium.glow.red": "Toggle Red Highlighting (Spectators)",
-  "key.noxesium.glow.orange": "Toggle Orange Highlighting (Spectators)",
-  "key.noxesium.glow.yellow": "Toggle Yellow Highlighting (Spectators)",
-  "key.noxesium.glow.lime": "Toggle Lime Highlighting (Spectators)",
-  "key.noxesium.glow.green": "Toggle Green Highlighting (Spectators)",
-  "key.noxesium.glow.cyan": "Toggle Cyan Highlighting (Spectators)",
-  "key.noxesium.glow.aqua": "Toggle Aqua Highlighting (Spectators)",
-  "key.noxesium.glow.blue": "Toggle Blue Highlighting (Spectators)",
-  "key.noxesium.glow.purple": "Toggle Purple Highlighting (Spectators)",
-  "key.noxesium.glow.pink": "Toggle Pink Highlighting (Spectators)",
-
-  "key.noxesium.glow.all": "Enable All Highlights (Spectators)",
-  "key.noxesium.glow.none": "Disable All Highlights (Spectators)"
+  "category.noxesium": "Noxesium"
 }

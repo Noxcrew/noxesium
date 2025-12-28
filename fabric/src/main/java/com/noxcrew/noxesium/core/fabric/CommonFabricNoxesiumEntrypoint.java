@@ -37,7 +37,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint {
 
-    private TeamGlowHotkeys teamGlowHotkeys;
     private QibBehaviorModule qibBehaviorModule;
     private CommonPacketHandling commonPacketHandling;
     private CommonComponentChangeListeners commonComponentChangeListeners;
@@ -54,7 +53,6 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
     @Override
     public void initialize() {
-        teamGlowHotkeys = new TeamGlowHotkeys();
         qibBehaviorModule = new QibBehaviorModule();
         commonPacketHandling = new CommonPacketHandling();
         commonComponentChangeListeners = new CommonComponentChangeListeners();
@@ -86,7 +84,6 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
         features.add(commonComponentChangeListeners);
         features.add(commonPacketHandling);
         features.add(qibBehaviorModule);
-        features.add(teamGlowHotkeys);
         return features;
     }
 

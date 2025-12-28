@@ -27,7 +27,6 @@ public class NoxesiumConfig {
     public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableQibSystemDebugging = false;
-    public boolean showGlowingSettings = false;
     public boolean dumpIncomingPackets = false;
     public boolean dumpOutgoingPackets = false;
     public boolean printPacketExceptions = false;
