@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.fabric.mixin.font;
+package com.noxcrew.noxesium.core.fabric.mixin.feature.component;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
