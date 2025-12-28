@@ -15,8 +15,8 @@ public class ServerEntityMBRConverter() : MBRConverter<Entity> {
         // Read from the hitbox override if applicable
         entity.getNoxesiumComponent(CommonEntityComponentTypes.HITBOX_OVERRIDE)?.also { override ->
             val position = entity.position()
-            val halfX = override.x / 2f
-            val halfZ = override.z / 2f
+            val halfX = override.x() / 2f
+            val halfZ = override.z() / 2f
             return if (i == 0) {
                 position.x - halfX
             } else if (i == 1) {
@@ -40,12 +40,12 @@ public class ServerEntityMBRConverter() : MBRConverter<Entity> {
         // Read from the hitbox override if applicable
         entity.getNoxesiumComponent(CommonEntityComponentTypes.HITBOX_OVERRIDE)?.also { override ->
             val position = entity.position()
-            val halfX = override.x / 2f
-            val halfZ = override.z / 2f
+            val halfX = override.x() / 2f
+            val halfZ = override.z() / 2f
             return if (i == 0) {
                 position.x + halfX
             } else if (i == 1) {
-                position.y + override.z
+                position.y + override.y()
             } else {
                 position.z + halfZ
             }

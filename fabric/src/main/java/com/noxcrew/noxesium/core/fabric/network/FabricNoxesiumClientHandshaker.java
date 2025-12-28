@@ -19,7 +19,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Manages initialization of the Noxesium handshake protocol.
@@ -28,12 +28,11 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
     /**
      * The channel used by the handshake packet.
      */
-    private static final ResourceLocation HANDSHAKE_CHANNEL =
-            ResourceLocation.parse(HandshakePackets.SERVERBOUND_HANDSHAKE
-                    .getPayloadTypes()
-                    .getFirst()
-                    .id()
-                    .asString());
+    private static final Identifier HANDSHAKE_CHANNEL = Identifier.parse(HandshakePackets.SERVERBOUND_HANDSHAKE
+            .getPayloadTypes()
+            .getFirst()
+            .id()
+            .asString());
 
     /**
      * Registers the initializer.

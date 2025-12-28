@@ -1,9 +1,12 @@
 package com.noxcrew.noxesium.core.fabric.feature.entity;
 
+import com.mojang.datafixers.util.Pair;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.qib.SpatialTree;
+import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import java.util.HashSet;
 import java.util.Set;
+import net.kyori.adventure.key.Key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -14,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * Stores a spatial tree with the locations of all interaction entities.
  */
 public class ClientSpatialInteractionEntityTree extends SpatialTree {
-    private HashSet<AABB> modelContents = new HashSet<>();
+    private HashSet<Pair<Key, AABB>> modelContents = new HashSet<>();
 
     public ClientSpatialInteractionEntityTree() {
         super(new EntityMBRConverter());
@@ -24,7 +27,7 @@ public class ClientSpatialInteractionEntityTree extends SpatialTree {
     /**
      * Returns the contents of the model, if debugging is active.
      */
-    public Set<AABB> getModelContents() {
+    public Set<Pair<Key, AABB>> getModelContents() {
         return modelContents;
     }
 
@@ -48,21 +51,22 @@ public class ClientSpatialInteractionEntityTree extends SpatialTree {
 
         if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
             if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance()
-                        .getChatListener()
-                        .handleSystemMessage(
-                                Component.literal("§eRebuilt spatial model, before: §f[S" + oldStaticEntities + ", A"
-                                        + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[S"
-                                        + staticEntities.size() + ", A" + pendingEntities.size() + ", R"
-                                        + removedEntities.size() + "]"),
-                                false);
+                var message = Component.literal("§eRebuilt spatial model, before: §f[S" + oldStaticEntities + ", A"
+                        + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[S"
+                        + staticEntities.size() + ", A" + pendingEntities.size() + ", R"
+                        + removedEntities.size() + "]");
+                NoxesiumMod.getInstance().ensureMain(() -> {
+                    Minecraft.getInstance().getChatListener().handleSystemMessage(message, false);
+                });
             }
 
-            var newContents = new HashSet<AABB>();
+            var newContents = new HashSet<Pair<Key, AABB>>();
             for (var entity : staticEntities) {
                 var fetched = world.getEntity(entity);
                 if (fetched == null) continue;
-                newContents.add(fetched.getBoundingBox());
+                var type = fetched.noxesium$getComponent(CommonEntityComponentTypes.QIB_BEHAVIOR);
+                if (type == null) continue;
+                newContents.add(Pair.of(type, fetched.getBoundingBox()));
             }
             modelContents = newContents;
         }

@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -70,8 +70,8 @@ public abstract class HoverSoundMixin {
 
     @Unique
     private void noxesium$playSound(HoverSound.Sound sound) {
-        var soundEvent = BuiltInRegistries.SOUND_EVENT.get(
-                ResourceLocation.parse(sound.sound().asString()));
+        var soundEvent =
+                BuiltInRegistries.SOUND_EVENT.get(Identifier.parse(sound.sound().asString()));
         if (soundEvent.isEmpty()) return;
         var pitch = sound.pitchMax() <= sound.pitchMin()
                 ? Math.max(sound.pitchMin(), sound.pitchMax())

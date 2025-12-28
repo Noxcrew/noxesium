@@ -10,7 +10,6 @@ import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
-import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,10 +39,6 @@ public class CommonGameComponentSerializers {
                 NoxesiumCodecs.UNIT,
                 NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.SHOW_MAP_IN_UI, Codec.BOOL, ByteBufCodecs.BOOL);
-        register(
-                CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE,
-                NoxesiumCodecs.forEnum(GraphicsMode.class),
-                NoxesiumStreamCodecs.forEnum(GraphicsMode.class));
         register(
                 CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT,
                 NoxesiumCodecs.UNIT,

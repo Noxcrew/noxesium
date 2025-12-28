@@ -8,9 +8,9 @@ import net.kyori.adventure.sound.Sound;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 
@@ -25,14 +25,14 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     public NoxesiumSoundInstance(
             Key sound,
             Sound.Source soundSource,
-            Vector3f initialPosition,
+            Vector3fc initialPosition,
             float volume,
             float pitch,
             float offset,
             boolean looping,
             boolean attenuation) {
         super(
-                SoundEvent.createVariableRangeEvent(ResourceLocation.parse(sound.asString())),
+                SoundEvent.createVariableRangeEvent(Identifier.parse(sound.asString())),
                 GameEnums.SOUND_SOURCE.toMinecraft(soundSource),
                 SoundInstance.createUnseededRandom());
         this.x = initialPosition.x();

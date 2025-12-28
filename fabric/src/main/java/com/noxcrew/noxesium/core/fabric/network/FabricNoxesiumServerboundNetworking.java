@@ -21,7 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -49,12 +49,12 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
     public <T extends NoxesiumPacket> boolean canSend(@NotNull NoxesiumPayloadType<T> type) {
         // Check if the server is willing to receive this packet and if we have registered this packet
         // on the client in the registry! (the entrypoint is active)
-        var resourceLocation = ResourceLocation.parse(type.id().asString());
+        var identifier = Identifier.parse(type.id().asString());
         try {
             return getMinecraftProtocol() == ConnectionProtocolType.PLAY
-                    && ClientPlayNetworking.canSend(resourceLocation)
+                    && ClientPlayNetworking.canSend(identifier)
                     && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
-                                    .get(resourceLocation)
+                                    .get(identifier)
                             != null;
         } catch (Exception e) {
             NoxesiumApi.getLogger().error("Failed to determine if packet of type '{}' can be sent", type);
@@ -65,20 +65,25 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
     @Override
     public <T extends NoxesiumPacket> void send(@NotNull NoxesiumPayloadType<T> type, T payload) {
         if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets && Minecraft.getInstance().player != null) {
-            Minecraft.getInstance()
-                    .player
-                    .displayClientMessage(
-                            Component.empty()
-                                    .append(Component.literal("[NOXESIUM] ")
-                                            .withStyle(
-                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
-                                    .append(Component.literal("[OUTGOING] ")
-                                            .withStyle(
-                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.AQUA)))
-                                    .append(Component.literal(payload.toString())
-                                            .withStyle(
-                                                    Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))),
-                            false);
+            NoxesiumMod.getInstance().ensureMain(() -> {
+                Minecraft.getInstance()
+                        .player
+                        .displayClientMessage(
+                                Component.empty()
+                                        .append(Component.literal("[NOXESIUM] ")
+                                                .withStyle(Style.EMPTY
+                                                        .withBold(true)
+                                                        .withColor(ChatFormatting.RED)))
+                                        .append(Component.literal("[OUTGOING] ")
+                                                .withStyle(Style.EMPTY
+                                                        .withBold(true)
+                                                        .withColor(ChatFormatting.AQUA)))
+                                        .append(Component.literal(payload.toString())
+                                                .withStyle(Style.EMPTY
+                                                        .withBold(false)
+                                                        .withColor(ChatFormatting.WHITE))),
+                                false);
+            });
         }
         if (type instanceof FabricPayloadType) {
             var fabricPayload = new NoxesiumPayload<>((FabricPayloadType<? super T>) type, payload);

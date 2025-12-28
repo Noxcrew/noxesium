@@ -38,7 +38,8 @@ public class ItemStackMixin implements NoxesiumComponentHolder {
             var itemStack = (ItemStack) (Object) this;
             var customData = itemStack.get(DataComponents.CUSTOM_DATA);
             if (customData == null) return;
-            var noxesiumData = customData.getUnsafe().getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
+            var tag = customData.copyTag();
+            var noxesiumData = tag.getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
             if (noxesiumData.isPresent()) {
                 for (var entry : noxesiumData.get().entrySet()) {
                     var key = entry.getKey();

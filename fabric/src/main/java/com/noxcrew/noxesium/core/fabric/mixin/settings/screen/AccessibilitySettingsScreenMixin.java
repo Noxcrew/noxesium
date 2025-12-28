@@ -1,6 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.mixin.settings.screen;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.noxcrew.noxesium.api.client.GuiElement;
+import com.noxcrew.noxesium.core.fabric.config.NoxesiumOptions;
 import com.noxcrew.noxesium.core.fabric.config.VanillaOptions;
 import java.util.List;
 import net.minecraft.client.OptionInstance;
@@ -17,10 +19,10 @@ public abstract class AccessibilitySettingsScreenMixin {
     @ModifyReturnValue(method = "options", at = @At("TAIL"))
     private static OptionInstance<?>[] changeOptions(OptionInstance<?>[] original) {
         var newOptions = List.of(
-                VanillaOptions.resetToggleKeys(),
-                VanillaOptions.renderMapsAsUi(),
-                VanillaOptions.mapUiSize(),
-                VanillaOptions.mapUiLocation());
+                VanillaOptions.RESET_TOGGLE_KEYS,
+                VanillaOptions.RENDER_MAPS_AS_UI,
+                NoxesiumOptions.GUI_SCALES.get(GuiElement.MAP),
+                VanillaOptions.MAP_UI_LOCATION);
         var newArray = new OptionInstance<?>[original.length + newOptions.size()];
         System.arraycopy(original, 0, newArray, 0, original.length);
         for (int i = newOptions.size(); i > 0; i--) {

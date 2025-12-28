@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import java.util.Optional;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 /**
  * Sent by a server to start a Noxesium custom sound. If a sound with the same id
@@ -27,6 +27,6 @@ public record ClientboundCustomSoundStartPacket(
         boolean looping,
         boolean attenuation,
         boolean ignoreIfPlaying,
-        Optional<Vector3f> position,
+        Optional<Vector3fc> position,
         Optional<Integer> entityId)
         implements NoxesiumPacket {}

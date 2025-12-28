@@ -15,7 +15,7 @@ import net.kyori.adventure.key.Key;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
 
     public FabricPayloadType(NoxesiumPayloadGroup group, Key id, Class<T> clazz, boolean clientToServer) {
         super(group, id, clazz, clientToServer);
-        this.type = new CustomPacketPayload.Type<>(ResourceLocation.parse(id.asString()));
+        this.type = new CustomPacketPayload.Type<>(Identifier.parse(id.asString()));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
     /**
      * Unregisters the packet with the given id from the given registry.
      */
-    private static void unregisterPacket(PayloadTypeRegistry<?> registry, ResourceLocation id) {
+    private static void unregisterPacket(PayloadTypeRegistry<?> registry, Identifier id) {
         ((PayloadTypeRegistryExt) registry).getPacketTypes().remove(id);
     }
 }

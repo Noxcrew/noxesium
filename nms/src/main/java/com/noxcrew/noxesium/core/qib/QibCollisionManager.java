@@ -265,7 +265,7 @@ public abstract class QibCollisionManager {
             }
             case QibEffect.SetVelocity setVelocity -> {
                 player.setDeltaMovement(setVelocity.x(), setVelocity.y(), setVelocity.z());
-                player.hasImpulse = true;
+                player.needsSync = true;
             }
             case QibEffect.SetVelocityYawPitch setVelocityYawPitch -> {
                 var yawRad = Math.toRadians(
@@ -289,7 +289,7 @@ public abstract class QibCollisionManager {
                                 z * setVelocityYawPitch.strength(),
                                 -setVelocityYawPitch.limit(),
                                 setVelocityYawPitch.limit()));
-                player.hasImpulse = true;
+                player.needsSync = true;
             }
             case QibEffect.ModifyVelocity modifyVelocity -> {
                 var current = player.getDeltaMovement();
@@ -297,7 +297,7 @@ public abstract class QibCollisionManager {
                         modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
                         modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
                         modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
-                player.hasImpulse = true;
+                player.needsSync = true;
             }
             case QibEffect.ApplyImpulse applyImpulse -> {
                 var current = player.getDeltaMovement();
@@ -307,7 +307,7 @@ public abstract class QibCollisionManager {
                         current.x + modifiedAngle.x * applyImpulse.scale().x,
                         current.y + modifiedAngle.y * applyImpulse.scale().y,
                         current.z + modifiedAngle.z * applyImpulse.scale().z);
-                player.hasImpulse = true;
+                player.needsSync = true;
             }
             case QibEffect.StopGliding stopGliding -> {
                 player.stopFallFlying();

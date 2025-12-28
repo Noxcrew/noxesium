@@ -9,8 +9,8 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceList;
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
-import net.minecraft.client.resources.model.AtlasIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.AtlasIds;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -29,7 +29,7 @@ public class AddMapSpritesToAtlas {
     private static SpriteSourceList buildSpriteList(
             List<SpriteSource> sources,
             Operation<SpriteSourceList> original,
-            @Local(argsOnly = true) ResourceLocation atlas) {
+            @Local(argsOnly = true) Identifier atlas) {
         // Ignore atlases that are not the GUI one
         if (atlas != AtlasIds.GUI) {
             return original.call(sources);

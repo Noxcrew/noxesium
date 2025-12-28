@@ -22,14 +22,14 @@ public class ServerSpatialInteractionEntityTree(
     override fun getHitbox(entity: Entity): AABB {
         entity.getNoxesiumComponent(CommonEntityComponentTypes.HITBOX_OVERRIDE)?.also { override ->
             val position = entity.position()
-            val halfX = override.x / 2f
-            val halfZ = override.z / 2f
+            val halfX = override.x() / 2f
+            val halfZ = override.z() / 2f
             return AABB(
                 position.x - halfX,
                 position.y,
                 position.z - halfZ,
                 position.x + halfX,
-                position.y + override.z,
+                position.y + override.y(),
                 position.z + halfZ,
             )
         }

@@ -5,12 +5,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.registry.GameComponents;
-import com.noxcrew.noxesium.api.util.GraphicsMode;
-import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.Consumer;
-import net.minecraft.client.GraphicsStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
@@ -51,18 +48,6 @@ public abstract class OptionInstanceMixin<T> {
                 && GameComponents.getInstance()
                         .noxesium$hasComponent(CommonGameComponentTypes.DISABLE_DEFERRED_CHUNK_UPDATES)) {
             return (T) PrioritizeChunkUpdates.NEARBY;
-        }
-        if (((Object) (this)) == options.graphicsMode()) {
-            var graphics =
-                    GameComponents.getInstance().noxesium$getComponent(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE);
-            if (graphics != null && (!NoxesiumMod.getInstance().isUsingIris || graphics != GraphicsMode.FABULOUS)) {
-                return (T)
-                        switch (graphics) {
-                            case FAST -> GraphicsStatus.FAST;
-                            case FANCY -> GraphicsMode.FANCY;
-                            case FABULOUS -> GraphicsMode.FABULOUS;
-                        };
-            }
         }
         return original;
     }

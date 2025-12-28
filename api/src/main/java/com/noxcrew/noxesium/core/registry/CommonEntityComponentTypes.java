@@ -7,7 +7,7 @@ import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.awt.Color;
 import net.kyori.adventure.key.Key;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 /**
  * Stores all common Noxesium entity component types.
@@ -47,7 +47,7 @@ public class CommonEntityComponentTypes {
     /**
      * Defines a hitbox to use for this entity to override the regular hitbox.
      */
-    public static NoxesiumComponentType<Vector3f> HITBOX_OVERRIDE = register("hitbox_override", Vector3f.class);
+    public static NoxesiumComponentType<Vector3fc> HITBOX_OVERRIDE = register("hitbox_override", Vector3fc.class);
 
     /**
      * Defines a color to use for the hitbox rendering.

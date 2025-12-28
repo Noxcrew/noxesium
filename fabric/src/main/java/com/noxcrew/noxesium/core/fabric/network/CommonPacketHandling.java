@@ -23,10 +23,10 @@ import java.util.List;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.util.Util;
 
 /**
  * Registers default listeners for all base packets.

@@ -15,14 +15,14 @@ public class HitboxHelper {
     public static AABB getBoundingBox(Entity entity, Vec3 position) {
         var override = entity.noxesium$getComponent(CommonEntityComponentTypes.HITBOX_OVERRIDE);
         if (override != null) {
-            var halfX = override.x / 2;
-            var halfZ = override.z / 2;
+            var halfX = override.x() / 2;
+            var halfZ = override.z() / 2;
             return new AABB(
                     position.x - halfX,
                     position.y,
                     position.z - halfZ,
                     position.x + halfX,
-                    position.y + override.y,
+                    position.y + override.y(),
                     position.z + halfZ);
         }
         return null;

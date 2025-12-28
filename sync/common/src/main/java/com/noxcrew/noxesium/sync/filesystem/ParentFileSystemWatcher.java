@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.mozilla.universalchardet.UniversalDetector;

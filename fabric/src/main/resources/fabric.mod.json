@@ -62,14 +62,14 @@
   ],
   "depends": {
     "fabric": "*",
-    "fabricloader": ">=0.16.14",
-    "fabric-api": ">=0.128.1",
-    "minecraft": ">=1.21.7"
+    "fabricloader": ">=0.18.1",
+    "fabric-api": ">=0.140.0",
+    "minecraft": ">=1.21.11"
   },
   "suggests": {
-    "sodium": ">=0.7.0"
+    "sodium": ">=0.8.0"
   },
   "breaks": {
-    "sodium": "<0.7.0"
+    "sodium": "<0.8.0"
   }
 }

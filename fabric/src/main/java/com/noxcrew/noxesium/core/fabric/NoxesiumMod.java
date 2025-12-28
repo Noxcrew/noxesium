@@ -7,13 +7,14 @@ import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
-import com.noxcrew.noxesium.core.fabric.feature.skull.SkullFontModule;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import java.util.HashSet;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -33,14 +34,7 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     private final NoxesiumConfig config;
-    private SkullFontModule skullFontModule;
     private CustomServerCreativeItems customCreativeItems;
-
-    /**
-     * Whether Iris is being used. If true we don't allow the graphics setting to be changed to Fabulous! as
-     * to not break Iris.
-     */
-    public boolean isUsingIris = false;
 
     /**
      * Whether the creative tab has changed.
@@ -59,6 +53,11 @@ public class NoxesiumMod implements ClientModInitializer {
     private FabricNoxesiumClientHandshaker handshaker;
 
     /**
+     * All pending tasks to run on the main thread.
+     */
+    private final Queue<Runnable> mainThreadTasks = new ConcurrentLinkedQueue();
+
+    /**
      * Creates a new NoxesiumMod instance.
      */
     public NoxesiumMod() {
@@ -71,8 +70,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        // Initialize after the client is ready
-        skullFontModule = new SkullFontModule();
+        // Initialize creative tab when the client is ready
         customCreativeItems = new CustomServerCreativeItems();
 
         // Go through all entrypoints and register them
@@ -114,13 +112,16 @@ public class NoxesiumMod implements ClientModInitializer {
         backgroundTaskThread.setDaemon(true);
         backgroundTaskThread.start();
 
-        // Determine if Iris is present or not
-        isUsingIris = FabricLoader.getInstance().isModLoaded("iris");
-
-        // Clear the packet list every tick
         ClientTickEvents.END_CLIENT_TICK.register((ignored2) -> {
+            // Clear the packet list every tick
             if (!sentButtonClicks.isEmpty()) {
                 sentButtonClicks.clear();
+            }
+
+            // Run main thread tasks
+            Runnable task;
+            while ((task = mainThreadTasks.poll()) != null) {
+                task.run();
             }
         });
     }
@@ -141,9 +142,9 @@ public class NoxesiumMod implements ClientModInitializer {
     }
 
     /**
-     * Returns the skull font module.
+     * Runs runnable on the main thread.
      */
-    public SkullFontModule getSkullFontModule() {
-        return skullFontModule;
+    public void ensureMain(Runnable runnable) {
+        mainThreadTasks.add(runnable);
     }
 }

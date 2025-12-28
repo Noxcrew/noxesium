@@ -5,6 +5,7 @@ import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;
 
@@ -13,16 +14,7 @@ import net.minecraft.network.chat.Component;
  */
 public class NoxesiumOptions {
 
-    private static final OptionInstance<Boolean> fpsOverlay = OptionInstance.createBoolean(
-            "noxesium.options.fps_overlay.name",
-            OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.fps_overlay.tooltip")),
-            NoxesiumMod.getInstance().getConfig().showFpsOverlay,
-            (newValue) -> {
-                NoxesiumMod.getInstance().getConfig().showFpsOverlay = newValue;
-                NoxesiumMod.getInstance().getConfig().save();
-            });
-
-    private static final OptionInstance<Boolean> gameTimeOverlay = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> GAME_TIME_OVERLAY = OptionInstance.createBoolean(
             "noxesium.options.game_time_overlay.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.game_time_overlay.tooltip")),
             NoxesiumMod.getInstance().getConfig().showGameTimeOverlay,
@@ -31,7 +23,7 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> dumpIncomingPackets = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> DUMP_INCOMING_PACKETS = OptionInstance.createBoolean(
             "noxesium.options.dump_incoming_packets.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.dump_incoming_packets.tooltip")),
@@ -41,7 +33,7 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> dumpOutgoingPackets = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> DUMP_OUTGOING_PACKETS = OptionInstance.createBoolean(
             "noxesium.options.dump_outgoing_packets.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.dump_outgoing_packets.tooltip")),
@@ -51,16 +43,19 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> qibSystemDebugVisuals = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> QIB_SYSTEM_VISUAL_DEBUG = OptionInstance.createBoolean(
             "noxesium.options.qib_debug_visuals.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.qib_debug_visuals.tooltip")),
             NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging,
             (newValue) -> {
                 NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging = newValue;
                 NoxesiumMod.getInstance().getConfig().save();
+
+                // Ensure the renderer turns on if it wasn't already!
+                Minecraft.getInstance().debugEntries.rebuildCurrentList();
             });
 
-    private static final OptionInstance<Boolean> extendedPacketLogging = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> EXTENDED_PACKET_LOGGING = OptionInstance.createBoolean(
             "noxesium.options.extended_packet_logging.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.extended_packet_logging.tooltip")),
@@ -70,7 +65,7 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> debugScoreboardTeams = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> DEBUG_SCOREBOARD_TEAMS = OptionInstance.createBoolean(
             "noxesium.options.debug_scoreboard_teams.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.debug_scoreboard_teams.tooltip")),
@@ -80,7 +75,7 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Boolean> showCullingBoxes = OptionInstance.createBoolean(
+    public static final OptionInstance<Boolean> SHOW_CULLING_HITBOXES = OptionInstance.createBoolean(
             "noxesium.options.show_culling_boxes.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.show_culling_boxes.tooltip")),
             NoxesiumMod.getInstance().getConfig().showCullingBoxes,
@@ -89,11 +84,11 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Double> bossBarPosition = new OptionInstance<>(
+    public static final OptionInstance<Double> BOSS_BAR_POSITION = new OptionInstance<>(
             "noxesium.options.boss_bar_position.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.boss_bar_position.tooltip")),
             NoxesiumOptions::valueLabel,
-            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
+            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0), true),
             Codec.doubleRange(-1.0, 1.0),
             NoxesiumMod.getInstance().getConfig().bossBarPosition,
             (newValue) -> {
@@ -101,12 +96,12 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Double> scoreboardPosition = new OptionInstance<>(
+    public static final OptionInstance<Double> SCOREBOARD_POSITION = new OptionInstance<>(
             "noxesium.options.scoreboard_position.name",
             OptionInstance.cachedConstantTooltip(
                     Component.translatable("noxesium.options.scoreboard_position.tooltip")),
             NoxesiumOptions::valueLabel,
-            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
+            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0), true),
             Codec.doubleRange(-1.0, 1.0),
             NoxesiumMod.getInstance().getConfig().scoreboardPosition,
             (newValue) -> {
@@ -114,11 +109,11 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final OptionInstance<Double> mapPosition = new OptionInstance<>(
+    public static final OptionInstance<Double> MAP_POSITION = new OptionInstance<>(
             "noxesium.options.map_position.name",
             OptionInstance.cachedConstantTooltip(Component.translatable("noxesium.options.map_position.tooltip")),
             NoxesiumOptions::valueLabel,
-            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
+            new OptionInstance.IntRange(-100, 100).xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0), true),
             Codec.doubleRange(-1.0, 1.0),
             NoxesiumMod.getInstance().getConfig().mapPosition,
             (newValue) -> {
@@ -126,11 +121,11 @@ public class NoxesiumOptions {
                 NoxesiumMod.getInstance().getConfig().save();
             });
 
-    private static final Map<GuiElement, OptionInstance<Double>> guiScales = new LinkedHashMap<>();
+    public static final Map<GuiElement, OptionInstance<Double>> GUI_SCALES = new LinkedHashMap<>();
 
     static {
         for (var guiElement : GuiElement.values()) {
-            guiScales.put(
+            GUI_SCALES.put(
                     guiElement,
                     new OptionInstance<>(
                             "noxesium.options." + guiElement.name().toLowerCase() + "_scale.name",
@@ -138,7 +133,7 @@ public class NoxesiumOptions {
                                     "noxesium.options." + guiElement.name().toLowerCase() + "_scale.tooltip")),
                             NoxesiumOptions::percentageLabel,
                             new OptionInstance.IntRange(1, 200)
-                                    .xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0)),
+                                    .xmap(it -> (double) it / 100.0, it -> (int) (it * 100.0), true),
                             Codec.doubleRange(0.01, 2.0),
                             NoxesiumMod.getInstance().getConfig().getScales().getOrDefault(guiElement, 1.0),
                             (newValue) -> {
@@ -149,58 +144,6 @@ public class NoxesiumOptions {
                                 NoxesiumMod.getInstance().getConfig().save();
                             }));
         }
-    }
-
-    public static OptionInstance<Boolean> fpsOverlay() {
-        return fpsOverlay;
-    }
-
-    public static OptionInstance<Boolean> gameTimeOverlay() {
-        return gameTimeOverlay;
-    }
-
-    public static OptionInstance<Boolean> dumpIncomingPackets() {
-        return dumpIncomingPackets;
-    }
-
-    public static OptionInstance<Boolean> dumpOutgoingPackets() {
-        return dumpOutgoingPackets;
-    }
-
-    public static OptionInstance<Boolean> qibSystemDebugVisuals() {
-        return qibSystemDebugVisuals;
-    }
-
-    public static OptionInstance<Boolean> extendedPacketLogging() {
-        return extendedPacketLogging;
-    }
-
-    public static OptionInstance<Boolean> playerGlowingKeybinds() {
-        return playerGlowingKeybinds;
-    }
-
-    public static OptionInstance<Boolean> debugScoreboardTeams() {
-        return debugScoreboardTeams;
-    }
-
-    public static OptionInstance<Boolean> showCullingBoxes() {
-        return showCullingBoxes;
-    }
-
-    public static OptionInstance<Double> bossBarPosition() {
-        return bossBarPosition;
-    }
-
-    public static OptionInstance<Double> scoreboardPosition() {
-        return scoreboardPosition;
-    }
-
-    public static OptionInstance<Double> mapPosition() {
-        return mapPosition;
-    }
-
-    public static Map<GuiElement, OptionInstance<Double>> guiScales() {
-        return guiScales;
     }
 
     private static Component percentageLabel(Component component, double value) {

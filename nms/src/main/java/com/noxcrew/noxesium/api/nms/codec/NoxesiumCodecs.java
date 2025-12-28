@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.nms.codec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.noxcrew.noxesium.api.qib.QibDefinition;
@@ -20,7 +21,7 @@ import net.minecraft.util.ExtraCodecs;
  */
 public class NoxesiumCodecs {
 
-    public static final Codec<Unit> UNIT = Codec.unit(Unit.INSTANCE);
+    public static final Codec<Unit> UNIT = MapCodec.unitCodec(Unit.INSTANCE);
 
     public static final Codec<List<Integer>> INT_LIST = Codec.INT_STREAM.comapFlatMap(
             stream -> DataResult.success(stream.boxed().toList()),

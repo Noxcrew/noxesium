@@ -9,7 +9,6 @@ import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
-import com.noxcrew.noxesium.core.fabric.feature.misc.TeamGlowHotkeys;
 import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
 import com.noxcrew.noxesium.core.fabric.network.CommonComponentChangeListeners;
 import com.noxcrew.noxesium.core.fabric.network.CommonPacketHandling;

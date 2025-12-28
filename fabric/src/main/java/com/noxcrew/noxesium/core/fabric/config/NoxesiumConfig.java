@@ -24,7 +24,6 @@ public class NoxesiumConfig {
 
     public boolean resetToggleKeys = false;
     public BooleanOrDefault renderMapsInUi = BooleanOrDefault.DEFAULT;
-    public boolean showFpsOverlay = false;
     public boolean showGameTimeOverlay = false;
     public boolean enableQibSystemDebugging = false;
     public boolean dumpIncomingPackets = false;

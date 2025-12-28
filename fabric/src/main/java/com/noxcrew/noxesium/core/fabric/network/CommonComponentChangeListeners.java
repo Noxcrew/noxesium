@@ -61,12 +61,6 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
                 Minecraft.getInstance().getMusicManager().stopPlaying();
             }
         });
-        listenGame(CommonGameComponentTypes.OVERRIDE_GRAPHICS_MODE, (ignored, context) -> {
-            // We need to call this whenever we change the display type.
-            if (Minecraft.getInstance().levelRenderer != null) {
-                Minecraft.getInstance().levelRenderer.allChanged();
-            }
-        });
         listenGame(CommonGameComponentTypes.RESTRICT_DEBUG_OPTIONS, (ignored, context) -> {
             // Save any existing options before we override them.
             if (Minecraft.getInstance().options != null) {

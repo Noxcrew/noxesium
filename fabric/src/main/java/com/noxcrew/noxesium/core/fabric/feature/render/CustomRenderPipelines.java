@@ -26,13 +26,4 @@ public class CustomRenderPipelines {
                     .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                     .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS)
                     .build());
-
-    /**
-     * Can be used to draw lines that have no depth sorting.
-     */
-    public static final RenderPipeline LINES_NO_DEPTH = register(RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
-            .withLocation("pipeline/lines")
-            .withDepthWrite(true)
-            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-            .build());
 }

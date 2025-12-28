@@ -62,23 +62,6 @@ public abstract class SpatialTree {
     public abstract Entity getEntity(int entityId);
 
     /**
-     * Returns the state of [entity] in this tree.
-     */
-    @Nullable
-    public String getSpatialTreeState(Entity entity) {
-        if (pendingEntities.containsKey(entity.getId())) {
-            return "pending";
-        }
-        if (removedEntities.contains(entity.getId())) {
-            return "removed";
-        }
-        if (staticEntities.contains(entity.getId())) {
-            return "static";
-        }
-        return null;
-    }
-
-    /**
      * Rebuilds the model if applicable.
      */
     public void rebuild() {

@@ -10,7 +10,7 @@ import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +39,7 @@ public abstract class TridentHandModelMixin {
             ItemStack itemStack,
             ItemDisplayContext itemDisplayContext,
             PoseStack poseStack,
-            MultiBufferSource multiBufferSource,
+            SubmitNodeCollector multiBufferSource,
             int i);
 
     @WrapOperation(
@@ -63,15 +63,14 @@ public abstract class TridentHandModelMixin {
             ItemStack p_109377_,
             float p_109378_,
             PoseStack p_109379_,
-            MultiBufferSource p_109380_,
+            SubmitNodeCollector p_109380_,
             int p_109381_,
             CallbackInfo ci) {
         if (!GameComponents.getInstance()
                 .noxesium$hasComponent(CommonGameComponentTypes.ENABLE_SMOOTHER_CLIENT_TRIDENT)) return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
-        // the trident
-        // because during that time the hand height rapidly changes.
+        // the trident because during that time the hand height rapidly changes.
         if (p_109372_.isScoping()) return;
         if (!p_109372_.isAutoSpinAttack()) return;
 

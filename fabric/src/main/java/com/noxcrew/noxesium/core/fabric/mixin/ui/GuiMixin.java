@@ -49,8 +49,7 @@ public abstract class GuiMixin {
 
         // Check that we have something to show
         if (this.getDebugOverlay().showDebugScreen()
-                || (!NoxesiumMod.getInstance().getConfig().showFpsOverlay
-                        && !NoxesiumMod.getInstance().getConfig().showGameTimeOverlay)) return;
+                || !NoxesiumMod.getInstance().getConfig().showGameTimeOverlay) return;
 
         var font = minecraft.font;
         var lineOffset = font.lineHeight + 5;
@@ -58,9 +57,6 @@ public abstract class GuiMixin {
 
         // Determine which lines to show
         var text = new ArrayList<Component>();
-        if (NoxesiumMod.getInstance().getConfig().showFpsOverlay) {
-            text.add(Component.translatable("debug.fps_overlay", minecraft.getFps()));
-        }
         if (NoxesiumMod.getInstance().getConfig().showGameTimeOverlay) {
             var gameTimeInt = minecraft.level == null ? 0L : minecraft.level.getGameTime();
             var gameTimeShader = ((float) (gameTimeInt % 24000L)

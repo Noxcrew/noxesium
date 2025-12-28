@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -140,12 +141,12 @@ public class NoxesiumSettingsScreen extends Screen {
             var zeroPositionWidgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
             var widgets = new HashSet<OptionInstance.OptionInstanceSliderButton<?>>();
 
-            rowHelper.addChild(createWidget(NoxesiumOptions.bossBarPosition(), positionWidgets));
-            rowHelper.addChild(createWidget(NoxesiumOptions.scoreboardPosition(), positionWidgets));
-            rowHelper.addChild(createWidget(NoxesiumOptions.mapPosition(), zeroPositionWidgets));
-            rowHelper.addChild(createWidget(VanillaOptions.mapUiLocation()));
+            rowHelper.addChild(createWidget(NoxesiumOptions.BOSS_BAR_POSITION, positionWidgets));
+            rowHelper.addChild(createWidget(NoxesiumOptions.SCOREBOARD_POSITION, positionWidgets));
+            rowHelper.addChild(createWidget(NoxesiumOptions.MAP_POSITION, zeroPositionWidgets));
+            rowHelper.addChild(createWidget(VanillaOptions.MAP_UI_LOCATION));
 
-            for (var scalar : NoxesiumOptions.guiScales().values()) {
+            for (var scalar : NoxesiumOptions.GUI_SCALES.values()) {
                 rowHelper.addChild(createWidget(scalar, widgets));
             }
 
@@ -169,17 +170,17 @@ public class NoxesiumSettingsScreen extends Screen {
             super(Component.translatable("noxesium.options.header.developer_options"));
 
             var rowHelper = layout.columnSpacing(3).rowSpacing(3).createRowHelper(2);
+            rowHelper.addChild(createWidget(NoxesiumOptions.GAME_TIME_OVERLAY));
+            rowHelper.addChild(createWidget(NoxesiumOptions.DUMP_INCOMING_PACKETS));
+            rowHelper.addChild(createWidget(NoxesiumOptions.DUMP_OUTGOING_PACKETS));
+            rowHelper.addChild(createWidget(NoxesiumOptions.DEBUG_SCOREBOARD_TEAMS));
+            rowHelper.addChild(createWidget(NoxesiumOptions.EXTENDED_PACKET_LOGGING));
 
-            rowHelper.addChild(createWidget(NoxesiumOptions.fpsOverlay()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.gameTimeOverlay()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.playerGlowingKeybinds()));
-
-            rowHelper.addChild(createWidget(NoxesiumOptions.dumpIncomingPackets()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.dumpOutgoingPackets()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.qibSystemDebugVisuals()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.debugScoreboardTeams()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.extendedPacketLogging()));
-            rowHelper.addChild(createWidget(NoxesiumOptions.showCullingBoxes()));
+            if (Minecraft.getInstance().player == null
+                    || Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+                rowHelper.addChild(createWidget(NoxesiumOptions.QIB_SYSTEM_VISUAL_DEBUG));
+                rowHelper.addChild(createWidget(NoxesiumOptions.SHOW_CULLING_HITBOXES));
+            }
 
             addToDeveloperTab(rowHelper);
         }

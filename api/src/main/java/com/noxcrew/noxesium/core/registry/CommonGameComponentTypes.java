@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.client.GuiElement;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
-import com.noxcrew.noxesium.api.util.GraphicsMode;
 import com.noxcrew.noxesium.api.util.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.util.List;
@@ -66,12 +65,6 @@ public class CommonGameComponentTypes {
     public static NoxesiumComponentType<Boolean> SHOW_MAP_IN_UI = register("show_map_in_ui", Boolean.class);
 
     /**
-     * Allows the server to override the graphics mode used by the client.
-     */
-    public static NoxesiumComponentType<GraphicsMode> OVERRIDE_GRAPHICS_MODE =
-            register("override_graphics_mode", GraphicsMode.class);
-
-    /**
      * If set, enables a custom smoother riptide trident implementation. Requires server-side adjustments.
      */
     public static NoxesiumComponentType<Unit> ENABLE_SMOOTHER_CLIENT_TRIDENT =
@@ -84,7 +77,7 @@ public class CommonGameComponentTypes {
 
     /**
      * If set, enables the ability to pre-charge riptide tridents.
-     *
+     * <p>
      * Not supported on the default Paper implementation, requires changing the Minecraft source
      * code to allow using the trident on the server when outside water!
      */

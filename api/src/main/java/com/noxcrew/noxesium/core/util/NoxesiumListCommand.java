@@ -64,11 +64,9 @@ public class NoxesiumListCommand {
                 hoverEvent = HoverEvent.showText(Component.join(JoinConfiguration.newlines(), text));
             }
 
+            // Show as empty for non-Noxesium clients
             components.add(Component.translatable(
-                            SkullStringFormatter.write(new SkullStringFormatter.SkullInfo(
-                                    false, player.uuid().toString(), false, 0, 0, 1f)),
-                            // Show as empty for non-Noxesium clients
-                            "")
+                            SkullStringFormatter.write(new SkullStringFormatter.SkullInfo(player.uuid())), "")
                     .hoverEvent(hoverEvent));
             components.add(player.displayName().color(NamedTextColor.AQUA).hoverEvent(hoverEvent));
             if (index != players.size() - 1) {

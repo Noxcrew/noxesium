@@ -10,8 +10,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -25,7 +25,7 @@ public class CustomServerCreativeItems {
 
     private static final ResourceKey<CreativeModeTab> CREATIVE_TAB = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
-            ResourceLocation.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
+            Identifier.fromNamespaceAndPath(NoxesiumReferences.NAMESPACE, "server_items"));
 
     public CustomServerCreativeItems() {
         Registry.register(

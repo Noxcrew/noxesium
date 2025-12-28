@@ -34,7 +34,8 @@ public class NoxesiumComponentHelper {
         if (codec == null) return null;
         var customData = componentHolder.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return null;
-        var noxesiumData = customData.getUnsafe().getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
+        var tag = customData.copyTag();
+        var noxesiumData = tag.getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
         if (noxesiumData.isEmpty()) return null;
         var value = noxesiumData.get().get(type.id().asString());
         if (value == null) return null;
@@ -54,7 +55,8 @@ public class NoxesiumComponentHelper {
     public static <T> boolean hasNoxesiumComponent(DataComponentHolder componentHolder, NoxesiumComponentType<T> type) {
         var customData = componentHolder.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return false;
-        var noxesiumData = customData.getUnsafe().getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
+        var tag = customData.copyTag();
+        var noxesiumData = tag.getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
         return noxesiumData
                 .map(compoundTag -> compoundTag.contains(type.id().asString()))
                 .orElse(false);
@@ -73,11 +75,10 @@ public class NoxesiumComponentHelper {
         if (value == null) {
             var customData = componentHolder.get(DataComponents.CUSTOM_DATA);
             if (customData == null) return;
-            var noxesiumDataOptional = customData.getUnsafe().getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
+            var tag = customData.copyTag();
+            var noxesiumDataOptional = tag.getCompound(NoxesiumReferences.COMPONENT_NAMESPACE);
             if (noxesiumDataOptional.isEmpty()) return;
             if (!noxesiumDataOptional.get().contains(type.id().asString())) return;
-
-            var tag = customData.getUnsafe().copy();
             var noxesiumData =
                     tag.getCompound(NoxesiumReferences.COMPONENT_NAMESPACE).get();
             noxesiumData.remove(type.id().asString());
@@ -99,7 +100,7 @@ public class NoxesiumComponentHelper {
             var encoded = result.resultOrPartial().orElse(null);
             if (encoded == null) return;
             var customData = componentHolder.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-            var tag = customData.getUnsafe().copy();
+            var tag = customData.copyTag();
             var noxesiumData = tag.getCompoundOrEmpty(NoxesiumReferences.COMPONENT_NAMESPACE);
             noxesiumData.put(type.id().asString(), encoded);
             tag.put(NoxesiumReferences.COMPONENT_NAMESPACE, noxesiumData);

@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.core.qib.SpatialTree;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.kyori.adventure.key.Key;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -47,14 +47,14 @@ public class ClientQibCollisionManager extends QibCollisionManager {
                         .playLocalSound(
                                 player,
                                 SoundEvent.createVariableRangeEvent(
-                                        ResourceLocation.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
+                                        Identifier.fromNamespaceAndPath(playSound.namespace(), playSound.path())),
                                 SoundSource.PLAYERS,
                                 playSound.volume(),
                                 playSound.pitch());
             }
             case QibEffect.GivePotionEffect giveEffect -> {
                 var type = BuiltInRegistries.MOB_EFFECT
-                        .get(ResourceLocation.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path()))
+                        .get(Identifier.fromNamespaceAndPath(giveEffect.namespace(), giveEffect.path()))
                         .orElse(null);
                 player.noxesium$addClientsidePotionEffect(new MobEffectInstance(
                         type,
@@ -66,7 +66,7 @@ public class ClientQibCollisionManager extends QibCollisionManager {
             }
             case QibEffect.RemovePotionEffect removeEffect -> {
                 player.noxesium$removeClientsidePotionEffect(BuiltInRegistries.MOB_EFFECT
-                        .get(ResourceLocation.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path()))
+                        .get(Identifier.fromNamespaceAndPath(removeEffect.namespace(), removeEffect.path()))
                         .orElse(null));
             }
             case QibEffect.RemoveAllPotionEffects ignored -> {

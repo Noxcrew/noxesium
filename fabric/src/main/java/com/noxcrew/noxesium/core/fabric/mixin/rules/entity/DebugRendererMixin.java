@@ -1,12 +1,14 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.entity.SpatialDebuggingRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.culling.Frustum;
+import java.util.List;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.server.permissions.Permissions;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,20 +17,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DebugRenderer.class)
 public class DebugRendererMixin {
 
-    @Unique
-    private DebugRenderer.SimpleDebugRenderer noxesium$spatialDebugRenderer = new SpatialDebuggingRenderer();
+    @Shadow
+    @Final
+    private List<DebugRenderer.SimpleDebugRenderer> renderers;
 
-    @Inject(method = "render", at = @At("RETURN"))
-    public void render(
-            PoseStack poseStack,
-            Frustum frustum,
-            MultiBufferSource.BufferSource bufferSource,
-            double cameraX,
-            double cameraY,
-            double cameraZ,
-            CallbackInfo ci) {
-        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
-            noxesium$spatialDebugRenderer.render(poseStack, bufferSource, cameraX, cameraY, cameraZ);
+    @Unique
+    private final DebugRenderer.SimpleDebugRenderer noxesium$spatialDebugRenderer = new SpatialDebuggingRenderer();
+
+    @Inject(method = "refreshRendererList", at = @At("RETURN"))
+    public void render(CallbackInfo ci) {
+        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging
+                && Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+            renderers.add(noxesium$spatialDebugRenderer);
         }
     }
 }
