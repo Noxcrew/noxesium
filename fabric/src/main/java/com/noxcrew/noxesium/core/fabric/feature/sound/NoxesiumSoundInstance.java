@@ -85,11 +85,11 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     }
 
     /**
-     * Applies the start offset to a given audio channel
+     * Applies the start offset to a given audio channel, ignoring the given bufferd time.
      */
-    public void applyStartOffset(ChannelAccess.ChannelHandle channelHandle) {
+    public void applyStartOffset(ChannelAccess.ChannelHandle channelHandle, int bufferedSeconds) {
         channelHandle.execute(channel -> {
-            AL10.alSourcef(((ChannelExt) channel).getSource(), AL11.AL_SEC_OFFSET, this.startOffset);
+            AL10.alSourcef(((ChannelExt) channel).getSource(), AL11.AL_SEC_OFFSET, this.startOffset - bufferedSeconds);
         });
     }
 }
