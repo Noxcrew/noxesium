@@ -1,5 +1,7 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
+
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
@@ -20,8 +22,6 @@ import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 /**
  * Defines all common Noxesium packet serializers.
@@ -136,8 +136,6 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundOpenLinkPacket::url,
                         ClientboundOpenLinkPacket::new));
-        registerSerializer(
-                ClientboundStopGlidePacket.class,
-                StreamCodec.unit(ClientboundStopGlidePacket.INSTANCE));
+        registerSerializer(ClientboundStopGlidePacket.class, StreamCodec.unit(ClientboundStopGlidePacket.INSTANCE));
     }
 }

@@ -18,18 +18,23 @@ public abstract class QibItemMixin {
 
     @Inject(
             method = "startAttack",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;get(Lnet/minecraft/core/component/DataComponentType;)Ljava/lang/Object;", ordinal = 0, shift = At.Shift.BEFORE), cancellable = true)
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/item/ItemStack;get(Lnet/minecraft/core/component/DataComponentType;)Ljava/lang/Object;",
+                            ordinal = 0,
+                            shift = At.Shift.BEFORE),
+            cancellable = true)
     public void triggerAttack(CallbackInfoReturnable<Boolean> cir) {
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
         var itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
         var qibBehavior = itemStack.noxesium$getComponent(CommonItemComponentTypes.QIB_BEHAVIOR);
         if (qibBehavior == null || player.isSpectator()) return;
-        NoxesiumApi.getInstance()
-                .getFeatureOptional(QibBehaviorModule.class)
-                .ifPresent((module) -> {
-                    module.useItemBehavior(player, qibBehavior);
-                });
+        NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent((module) -> {
+            module.useItemBehavior(player, qibBehavior);
+        });
         player.onAttack();
         player.swing(InteractionHand.MAIN_HAND);
         cir.setReturnValue(true);

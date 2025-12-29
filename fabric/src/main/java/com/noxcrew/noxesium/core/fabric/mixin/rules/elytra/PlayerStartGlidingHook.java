@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.Mixin;
 public class PlayerStartGlidingHook {
     @WrapMethod(method = "startFallFlying")
     public void onStartGliding(Operation<Void> original) {
-        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
+            return;
         ((FallFlyingEntityExtension) this).noxesium$startFallFlying();
     }
 }

@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(LocalPlayer.class)
 public class RemoveVanillaElytraSoundHook {
-    @Redirect(method = "onSyncedDataUpdated", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isFallFlying()Z"))
+    @Redirect(
+            method = "onSyncedDataUpdated",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isFallFlying()Z"))
     public boolean onCheckIfGlidingForSound(LocalPlayer instance) {
         if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
             return instance.isFallFlying();

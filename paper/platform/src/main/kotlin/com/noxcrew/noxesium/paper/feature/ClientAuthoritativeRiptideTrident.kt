@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.core.network.CommonPackets
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import io.papermc.paper.event.entity.EntityAttemptSpinAttackEvent
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.level.ServerPlayerGameMode
 import net.minecraft.sounds.SoundEvent
@@ -83,7 +82,9 @@ public class ClientAuthoritativeRiptideTrident : ListeningNoxesiumFeature() {
         if (e.useItemInHand() == Event.Result.DENY) return
         if (!e.player.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS) ||
             !e.player.hasNoxesiumComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING)
-        ) return
+        ) {
+            return
+        }
         if (!e.action.isRightClick) return
         val itemInHand = (e.item as? CraftItemStack)?.handle ?: return
         val player = (e.player as CraftPlayer).handle

@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.mixin.rules.elytra;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.registry.GameComponents;
 import com.noxcrew.noxesium.core.fabric.feature.entity.FallFlyingEntityExtension;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -43,7 +43,9 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     @Override
     public void noxesium$startFallFlying() {
         noxesium$fallFlying = true;
-        noxesium$elytraCoyoteTime = GameComponents.getInstance().noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
+        noxesium$elytraCoyoteTime = GameComponents.getInstance()
+                .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
+        NoxesiumServerboundNetworking.send(new ServerboundGlidePacket(true));
 
         // Play the sound while gliding for the local player!
         if (((Object) this) instanceof LocalPlayer localPlayer) {
@@ -58,15 +60,18 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     public void noxesium$stopFallFlying() {
         noxesium$fallFlying = false;
         noxesium$elytraCoyoteTime = 0;
+        NoxesiumServerboundNetworking.send(new ServerboundGlidePacket(false));
     }
 
     @Inject(method = "updateFallFlying", at = @At("RETURN"))
     public void updateFallFlying(CallbackInfo ci) {
-        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
+            return;
         if (((Object) this) != Minecraft.getInstance().player) return;
 
         if (canGlide()) {
-            noxesium$elytraCoyoteTime = GameComponents.getInstance().noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
+            noxesium$elytraCoyoteTime = GameComponents.getInstance()
+                    .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
         } else if (noxesium$elytraCoyoteTime > 0) {
             noxesium$elytraCoyoteTime--;
         } else {
@@ -76,8 +81,8 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
 
     @Inject(method = "stopFallFlying", at = @At(value = "HEAD"), cancellable = true)
     private void stopFallFlying(CallbackInfo ci) {
-        if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
+            return;
         if (((Object) this) != Minecraft.getInstance().player) return;
         ci.cancel();
         noxesium$stopFallFlying();
@@ -85,8 +90,8 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
 
     @Inject(method = "isFallFlying", at = @At(value = "HEAD"), cancellable = true)
     private void isFallFlying(CallbackInfoReturnable<Boolean> cir) {
-        if (!GameComponents.getInstance()
-                .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
+            return;
         if (((Object) this) != Minecraft.getInstance().player) return;
         cir.setReturnValue(noxesium$fallFlying);
     }

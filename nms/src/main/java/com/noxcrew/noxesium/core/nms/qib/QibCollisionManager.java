@@ -94,7 +94,6 @@ public abstract class QibCollisionManager {
     @Nullable
     protected abstract Key getQibBehavior(Entity entity);
 
-
     /**
      * Triggers when a player uses an item with an attack behavior.
      */

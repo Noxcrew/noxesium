@@ -3,10 +3,8 @@ package com.noxcrew.noxesium.core.nms.serialization;
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
-import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
-import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes;
 
 /**

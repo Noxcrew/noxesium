@@ -7,7 +7,6 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
-
 import java.util.List;
 import java.util.Map;
 
