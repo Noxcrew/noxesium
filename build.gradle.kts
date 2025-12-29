@@ -70,10 +70,17 @@ subprojects {
         }
 
         withType<KotlinCompile> {
-            explicitApiMode.set(ExplicitApiMode.Strict)
-
             compilerOptions {
                 jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+            }
+        }
+    }
+
+    // Explicit API only enables if set in after evaluate, for some reason?
+    afterEvaluate {
+        tasks {
+            withType<KotlinCompile> {
+                explicitApiMode.set(ExplicitApiMode.Strict)
             }
         }
     }

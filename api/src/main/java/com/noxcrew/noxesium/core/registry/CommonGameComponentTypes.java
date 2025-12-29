@@ -1,11 +1,11 @@
 package com.noxcrew.noxesium.core.registry;
 
 import com.noxcrew.noxesium.api.NoxesiumReferences;
-import com.noxcrew.noxesium.api.client.GuiElement;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
-import com.noxcrew.noxesium.api.util.GuiConstraints;
+import com.noxcrew.noxesium.core.feature.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
 import java.util.List;
 import java.util.Map;

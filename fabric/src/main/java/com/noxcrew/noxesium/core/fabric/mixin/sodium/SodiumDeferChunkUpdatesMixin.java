@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.sodium;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.noxcrew.noxesium.api.registry.GameComponents;
+import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.caffeinemc.mods.sodium.client.gui.SodiumOptions;
 import net.caffeinemc.mods.sodium.client.render.chunk.DeferMode;

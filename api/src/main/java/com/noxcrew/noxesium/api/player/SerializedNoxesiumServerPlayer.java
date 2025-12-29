@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.api.player;
 
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
-import com.noxcrew.noxesium.core.client.setting.ClientSettings;
+import com.noxcrew.noxesium.core.feature.ClientSettings;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

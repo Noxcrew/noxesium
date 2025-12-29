@@ -7,9 +7,9 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
-import com.noxcrew.noxesium.core.fabric.feature.entity.QibBehaviorModule;
-import com.noxcrew.noxesium.core.fabric.feature.misc.SyncGuiScale;
-import com.noxcrew.noxesium.core.fabric.feature.sounds.NoxesiumSoundModule;
+import com.noxcrew.noxesium.core.fabric.feature.qib.QibBehaviorModule;
+import com.noxcrew.noxesium.core.fabric.feature.SyncGuiScale;
+import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundModule;
 import com.noxcrew.noxesium.core.fabric.network.CommonComponentChangeListeners;
 import com.noxcrew.noxesium.core.fabric.network.CommonPacketHandling;
 import com.noxcrew.noxesium.core.network.CommonPackets;
@@ -64,7 +64,7 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
 
     @Override
     public Collection<Key> getCapabilities() {
-        return NoxesiumCapabilities.ALL_CAPABILITIES;
+        return List.of(NoxesiumCapabilities.FULL_V3_SUPPORT);
     }
 
     @Override

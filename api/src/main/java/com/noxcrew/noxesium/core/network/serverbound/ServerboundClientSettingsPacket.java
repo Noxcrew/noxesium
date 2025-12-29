@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.network.serverbound;
 
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
-import com.noxcrew.noxesium.core.client.setting.ClientSettings;
+import com.noxcrew.noxesium.core.feature.ClientSettings;
 
 /**
  * Sent to the server to inform it about various settings configured by the client,

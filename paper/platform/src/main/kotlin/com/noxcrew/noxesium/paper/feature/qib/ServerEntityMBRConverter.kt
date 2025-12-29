@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.paper.feature.qib
 
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
-import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
+import com.noxcrew.noxesium.paper.component.getNoxesiumComponent
 import net.minecraft.world.entity.Entity
 import org.khelekore.prtree.MBRConverter
 

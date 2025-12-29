@@ -17,9 +17,16 @@ import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
-import com.noxcrew.noxesium.core.client.setting.ClientSettings;
+import com.noxcrew.noxesium.core.feature.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,12 +39,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 /**
  * Stores information on a player connected to a server running Noxesium's
@@ -48,7 +49,7 @@ public class NoxesiumServerPlayer {
      * The minimum amount of channels that needs to be registered on both sides. This is a threshold to ensure
      * that the server & client have communicated on these channels at least once, which likely means they are all
      * synchronized. We cannot check for specific entrypoints as not all versions may include packets.
-     *
+     * <p>
      * This threshold should always be met by base Noxesium itself!
      */
     public static final int MINIMUM_PLUGIN_CHANNELS = 5;

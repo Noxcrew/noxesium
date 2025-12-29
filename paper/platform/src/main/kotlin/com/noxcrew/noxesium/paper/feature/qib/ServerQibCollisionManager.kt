@@ -1,10 +1,10 @@
 package com.noxcrew.noxesium.paper.feature.qib
 
-import com.noxcrew.noxesium.api.qib.QibEffect
-import com.noxcrew.noxesium.core.nms.qib.QibCollisionManager
-import com.noxcrew.noxesium.core.nms.qib.SpatialTree
+import com.noxcrew.noxesium.api.feature.qib.QibEffect
+import com.noxcrew.noxesium.core.nms.feature.qib.QibCollisionManager
+import com.noxcrew.noxesium.core.nms.feature.qib.SpatialTree
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
-import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
+import com.noxcrew.noxesium.paper.component.getNoxesiumComponent
 import net.kyori.adventure.key.Key
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes

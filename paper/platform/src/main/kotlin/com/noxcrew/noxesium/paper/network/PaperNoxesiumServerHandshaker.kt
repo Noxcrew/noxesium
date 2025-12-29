@@ -17,10 +17,10 @@ import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.api.player.SerializedNoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerAddedToWorldEvent
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerRegisteredEvent
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
-import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
+import com.noxcrew.noxesium.paper.event.NoxesiumPlayerAddedToWorldEvent
+import com.noxcrew.noxesium.paper.event.NoxesiumPlayerRegisteredEvent
+import com.noxcrew.noxesium.paper.event.NoxesiumPlayerUnregisteredEvent
+import com.noxcrew.noxesium.paper.component.noxesiumPlayer
 import com.noxcrew.packet.PacketHandler
 import com.noxcrew.packet.PacketListener
 import io.netty.buffer.Unpooled

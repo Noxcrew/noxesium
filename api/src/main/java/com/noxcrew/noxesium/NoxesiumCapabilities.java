@@ -21,10 +21,12 @@ public class NoxesiumCapabilities {
      */
     public static final Collection<Key> ALL_CAPABILITIES = new HashSet<>();
 
-    // There are no capabilities yet because the API is brand new... But here's some examples!
-    public static final Key V3_API_SUPPORT = register("v3_api_support");
-    public static final Key ANONYMOUS_PLAYER_HEADS = register("anonymous_player_heads");
-    public static final Key FUNCTIONAL_QIB_SYSTEM = register("functional_qib_system");
+    /**
+     * Whether this client has a full implementation of the original v3.0.0
+     * release of Noxesium. Used to distinguish the first full release from
+     * any previous betas.
+     */
+    public static final Key FULL_V3_SUPPORT = register("full_v3_support");
 
     /**
      * Registers a new capability.

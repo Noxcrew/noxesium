@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
-import com.noxcrew.noxesium.core.client.setting.MapLocation;
+import com.noxcrew.noxesium.core.feature.MapLocation;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import java.util.Arrays;
 import net.minecraft.client.OptionInstance;

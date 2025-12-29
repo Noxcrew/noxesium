@@ -4,7 +4,7 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.NoxesiumSide;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
-import com.noxcrew.noxesium.api.qib.QibDefinition;
+import com.noxcrew.noxesium.api.feature.qib.QibDefinition;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

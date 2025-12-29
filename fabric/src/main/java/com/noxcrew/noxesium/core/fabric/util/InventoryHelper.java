@@ -1,6 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.util;
 
-import com.noxcrew.noxesium.core.fabric.mixin.rules.ext.InventoryExt;
+import com.noxcrew.noxesium.core.fabric.mixin.InventoryExt;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 

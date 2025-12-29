@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.sync.filesystem
 import com.noxcrew.noxesium.api.player.NoxesiumPlayerManager
 import com.noxcrew.noxesium.api.player.NoxesiumServerPlayer
 import com.noxcrew.noxesium.paper.NoxesiumPaper
-import com.noxcrew.noxesium.paper.api.event.NoxesiumPlayerUnregisteredEvent
+import com.noxcrew.noxesium.paper.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerPlayer
 import com.noxcrew.noxesium.sync.network.SyncPackets

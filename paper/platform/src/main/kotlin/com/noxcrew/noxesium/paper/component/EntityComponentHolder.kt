@@ -4,9 +4,8 @@ import com.noxcrew.noxesium.api.NoxesiumReferences
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType
 import com.noxcrew.noxesium.api.component.SimpleMutableNoxesiumComponentHolder
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
-import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentChangedEvent
-import com.noxcrew.noxesium.paper.api.event.NoxesiumEntityComponentsClearEvent
-import com.noxcrew.noxesium.paper.feature.setNoxesiumComponent
+import com.noxcrew.noxesium.paper.event.NoxesiumEntityComponentChangedEvent
+import com.noxcrew.noxesium.paper.event.NoxesiumEntityComponentsClearEvent
 import net.minecraft.world.entity.Entity
 
 /** Holds components for entities. */

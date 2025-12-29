@@ -5,7 +5,6 @@ import com.noxcrew.noxesium.api.component.MutableNoxesiumComponentHolder
 import com.noxcrew.noxesium.api.component.NoxesiumEntityManager
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
-import com.noxcrew.noxesium.paper.feature.hasAnyNoxesiumComponent
 import net.kyori.adventure.key.Key
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtOps

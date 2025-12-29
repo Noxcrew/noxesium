@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.api.network.json.JsonSerializerRegistry;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry;
-import com.noxcrew.noxesium.core.fabric.mixin.PayloadTypeRegistryExt;
+import com.noxcrew.noxesium.core.fabric.mixin.network.PayloadTypeRegistryExt;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.kyori.adventure.key.Key;

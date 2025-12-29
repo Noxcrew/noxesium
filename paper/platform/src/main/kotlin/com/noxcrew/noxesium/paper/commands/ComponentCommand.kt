@@ -13,9 +13,9 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
 import com.noxcrew.noxesium.api.util.Unit
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
-import com.noxcrew.noxesium.paper.feature.getNoxesiumComponent
-import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
-import com.noxcrew.noxesium.paper.feature.setNoxesiumComponent
+import com.noxcrew.noxesium.paper.component.getNoxesiumComponent
+import com.noxcrew.noxesium.paper.component.noxesiumPlayer
+import com.noxcrew.noxesium.paper.component.setNoxesiumComponent
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes

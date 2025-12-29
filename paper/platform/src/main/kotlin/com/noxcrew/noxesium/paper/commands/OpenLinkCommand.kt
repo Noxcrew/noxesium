@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.paper.commands
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import com.noxcrew.noxesium.paper.feature.noxesiumPlayer
+import com.noxcrew.noxesium.paper.component.noxesiumPlayer
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes

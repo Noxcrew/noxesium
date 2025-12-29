@@ -1,10 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.noxcrew.noxesium.core.fabric.example.mixin",
+  "package": "com.noxcrew.noxesium.example.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "com.noxcrew.noxesium.example.mixin.BlockEntityRendererMixin"
+    "BlockEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

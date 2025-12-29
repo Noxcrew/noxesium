@@ -15,7 +15,7 @@ import com.noxcrew.noxesium.paper.commands.openLinkCommand
 import com.noxcrew.noxesium.paper.commands.playSoundCommand
 import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
-import com.noxcrew.noxesium.paper.feature.KotlinxJsonSerializer
+import com.noxcrew.noxesium.paper.network.KotlinxJsonSerializer
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumClientboundNetworking
 import com.noxcrew.noxesium.paper.network.PaperNoxesiumServerHandshaker
 import com.noxcrew.packet.PacketApi

@@ -8,7 +8,7 @@ import com.noxcrew.noxesium.api.feature.sprite.CustomSpriteRegistry;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
-import com.noxcrew.noxesium.core.fabric.feature.misc.CustomServerCreativeItems;
+import com.noxcrew.noxesium.core.fabric.feature.CustomServerCreativeItems;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
