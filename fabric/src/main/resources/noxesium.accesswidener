@@ -3,17 +3,9 @@ accessWidener v1 named
 accessible field net/minecraft/world/effect/MobEffectInstance blendState Lnet/minecraft/world/effect/MobEffectInstance$BlendState;
 accessible class net/minecraft/world/effect/MobEffectInstance$BlendState
 
-accessible class net/minecraft/client/resources/SkinManager$TextureCache
 accessible class net/minecraft/client/gui/Font$PreparedTextBuilder
 
 accessible class net/minecraft/client/gui/font/FontManager$CachedFontProvider
-
-accessible method net/minecraft/client/renderer/RenderPipelines register (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
-
-accessible field net/minecraft/client/renderer/RenderPipelines TEXT_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/renderer/RenderPipelines LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-
-accessible method net/minecraft/client/renderer/rendertype/RenderType create (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)Lnet/minecraft/client/renderer/rendertype/RenderType;
 
 accessible field net/minecraft/client/renderer/entity/GuardianRenderer BEAM_RENDER_TYPE Lnet/minecraft/client/renderer/rendertype/RenderType;
 accessible field net/minecraft/client/renderer/entity/EnderDragonRenderer BEAM Lnet/minecraft/client/renderer/rendertype/RenderType;
@@ -29,3 +21,5 @@ accessible method net/minecraft/client/gui/components/AbstractSliderButton setVa
 accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
 
 accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
+
+accessible field com/mojang/blaze3d/pipeline/RenderPipeline$Builder location Ljava/util/Optional;
