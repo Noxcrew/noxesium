@@ -27,7 +27,7 @@
   "noxesium.options.debug_scoreboard_teams.name": "Eredménytábla Csapatok Hibakeresése",
   "noxesium.options.debug_scoreboard_teams.tooltip": "Kinyomtatja a kliensnaplókba az eredménytábla csapatokkal kapcsolatos további hibakeresési információkat. Ez segíthet a szervereknek a protokollhibák hibakeresésében.\n\n§cSzerverfejlesztők hibakeresésében való segítségre szánva.",
   "noxesium.options.show_culling_boxes.name": "Entitások Eltűnését Határoló Téglatesteinek Mutatása",
-  "noxesium.options.show_culling_boxes.tooltip": "Lecseréli az F3+B billentyűkombinációval megjelenített határoló téglatesteket az eltűnést hatátoló téglatestekkel, amelyek azt irányítják, hogy az entitások megjelenítve maradjanak-e. Ez megmutatja a konfigurált szélességét és magasságát a megjelenítő entitásoknak.\n\n§cEntitások eltűnését hibakereső szerverfejlesztőknek szánva.",
+  "noxesium.options.show_culling_boxes.tooltip": "Lecseréli az F3+B billentyűkombinációval megjelenített határoló téglatesteket az eltűnést határoló téglatestekkel, amelyek azt irányítják, hogy az entitások megjelenítve maradjanak-e. Ez megmutatja a konfigurált szélességét és magasságát a megjelenítő entitásoknak.\n\n§cEntitások eltűnését hibakereső szerverfejlesztőknek szánva.",
 
   "noxesium.options.boss_bar_position.name": "Főellenség-Jelzőcsík X Pozíciója",
   "noxesium.options.boss_bar_position.tooltip": "Irányítja a vízszintes pozícióját a főellenség-jelzőcsíknak a képernyő felső közepéhez képest.",
