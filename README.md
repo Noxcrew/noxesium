@@ -48,7 +48,7 @@ Here's a list of things Noxesium lets servers do:
 - Create custom interactables on the client like speed boosters or jump pads
 - Move authority of riptide tridents, elytras, or lunge spears to the client which makes them act identically regardless of ping
 - Move authority of arrow behavior or note block/tripwire block updates to the server only
-- Play custom sounds and control various properties, including a start offset, changing the volume over time, resuming playing the sound and starting anchored to a UNIX timestamp
+- Play custom sounds and control various properties, including a start offset, changing the volume over time, and resuming playing the sound
 - Draw player heads in text messages with an offset to the position or at different scales
 - Draw text with any x/y offset to its position
 - Prevent moving items in GUIs, adding hover sounds to items, changing slot sprites when hovered
