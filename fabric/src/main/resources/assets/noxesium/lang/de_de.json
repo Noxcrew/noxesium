@@ -1,45 +1,73 @@
 {
-    "debug.experimental_patches.disabled": "Noxesium UI Verbesserungen sind nun ausgeschaltet",
-    "debug.experimental_patches.enabled": "Noxesium UI Verbesserungen sind nun angeschaltet",
-    "debug.experimental_patches.help": "F3 + W = Noxesium UI Verbesserungen an-/ausschalten",
-  
-    "debug.fps_overlay.disabled": "FPS Zähler ist nun ausgeschaltet",
-    "debug.fps_overlay.enabled": "FPS Zähler ist nun angeschaltet (ausschalten mit F3 + Y)",
-    "debug.fps_overlay.help": "F3 + Y = FPS Zählen an-/ausschalten",
-    "debug.fps_overlay": "%s fps",
+  "debug.warning.option.disabled": "Diese Debug-Option ist deaktiviert.",
+  "debug.game_time_overlay": "%s st, %s gt",
 
-    "noxesium.options.game_time_overlay.name": "Tageszeit Overlay",
-    "noxesium.options.game_time_overlay.tooltip": "Wenn diese Option aktiviert ist, wird ein kleines Overlay hinzugefügt, welches die aktuelle Tageszeit anzeigt, was für die Shader Entwicklung nützlich ist.",
-    "debug.game_time_overlay": "%s st, %s gt",
-  
-    "debug.noxesium_overlay.on": "Noxesium: §aAn",
-    "debug.noxesium_overlay.off": "Noxesium: §cAus",
-  
-    "noxesium.options.pages.noxesium": "Noxesium",
-    "noxesium.options.fps_overlay.name": "FPS Zähler",
-    "noxesium.options.fps_overlay.tooltip": "Fügt in der oberen linken Ecke des Bildschirms einen FPS Zähler hinzu.",
-    "noxesium.options.experimental_patches.name": "Experimentelle Optimierungen",
-    "noxesium.options.experimental_patches.tooltip": "§4(Achtung: instabil!)\n§fAktiviert experimentelle UI Verbesserungen welche den kompletten UI Rendering Code vollständig ersetzen und so eine deutlich schnellere Ausführung ermöglichen.\n\n§cWarnung: §fFalls während der Benutzung irgendwelche Probleme mit der Anzeige von UI Elementen auftreten, bitte melde diese direkt bei Noxesium und nicht bei anderen Mods.",
-    "noxesium.options.reset_toggle_keys.name": "Umschalttasten beim Tod zurücksetzen",
-    "noxesium.options.reset_toggle_keys.tooltip": "Ob das Umschalten der Tasten zum Schleichen und Sprinten nach einem Tod ausgeschaltet werden soll. Normalerweise in Vanilla aktiviert.",
-    "noxesium.options.render_maps_as_ui.name": "Render Karten in der UI",
-    "noxesium.options.render_maps_as_ui.tooltip": "Wenn diese Option aktiviert ist, werden Karten, die in der Hand gehalten werden, in der oberen linken/rechte Ecke des Bildschirms dargestellt und nicht relativ zur Position der Hand",
-  
-    "itemGroup.noxesium.server_items": "Benutzerdefinierte Blöcke",
+  "noxesium.options.screen.noxesium": "Noxesium-Einstellungen",
+  "noxesium.options.header.gui_options": "GUI-Einstellungen",
+  "noxesium.options.header.developer_options": "Entwickler-Einstellungen",
 
-    "category.noxesium": "Noxesium",
-  
-    "key.noxesium.glow.red": "Rote Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.orange": "Orange Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.yellow": "Gelbe Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.lime": "Hellgrüne Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.green": "Grüne Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.cyan": "Türkise Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.aqua": "Hellblaue Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.blue": "Blaue Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.purple": "Violette Spieler hervorheben (Zuschauer)",
-    "key.noxesium.glow.pink": "Rosa Spieler hervorheben (Zuschauer)",
-  
-    "key.noxesium.glow.all": "Hebe alle Spieler hervor (Zuschauer)",
-    "key.noxesium.glow.none": "Alle Hervorhebungen entfernen (Zuschauer)"
-  }
+  "noxesium.options.game_time_overlay.name": "Tageszeit-Overlay",
+  "noxesium.options.game_time_overlay.tooltip": "Fügt ein kleines Overlay hinzu, das die aktuelle Spielzeit anzeigt.\n\n§cGedacht für die Shader-Entwicklung.",
+  "noxesium.options.reset_toggle_keys.name": "Umschalttasten beim Tod zurücksetzen",
+  "noxesium.options.reset_toggle_keys.tooltip": "Legt fest, ob umgeschaltete Tasten (Sprinten/Schleichen) beim Respawn zurückgesetzt werden sollen. Normalerweise in Vanilla aktiviert.",
+  "noxesium.options.render_maps_as_ui.name": "Karten in der UI rendern",
+  "noxesium.options.render_maps_as_ui.tooltip": "Wenn aktiviert, werden Karten, die in einer Hand gehalten werden, in der oberen linken/rechten Ecke des Bildschirms gerendert statt relativ zur Handposition.\n\nWenn auf \"Server fragen\" gesetzt, kann der Server, auf dem du spielst, dieses Feature aktivieren oder deaktivieren.",
+
+  "noxesium.options.ui_map_location.name": "Karten-UI-Position",
+  "noxesium.options.ui_map_location.tooltip": "Legt die Position der Karte für die Einstellung \"Karten in der UI rendern\" fest – relativ zu der Hand, in der die Karte gehalten wird.",
+
+  "noxesium.options.dump_incoming_packets.name": "Eingehende Pakete protokollieren",
+  "noxesium.options.dump_incoming_packets.tooltip": "Aktiviert das Protokollieren von Noxesium-Paketen, die vom Client verarbeitet werden.\n\n§cGedacht für Server-Entwickler, die an Noxesium-Integrationen arbeiten.",
+  "noxesium.options.dump_outgoing_packets.name": "Ausgehende Pakete protokollieren",
+  "noxesium.options.dump_outgoing_packets.tooltip": "Aktiviert das Protokollieren von Noxesium-Paketen, die an den Server gesendet werden.\n\n§cGedacht für Server-Entwickler, die an Noxesium-Integrationen arbeiten.",
+  "noxesium.options.qib_debug_visuals.name": "Qib-System debuggen",
+  "noxesium.options.qib_debug_visuals.tooltip": "Aktiviert Debug-Visualisierungen für das Qib-System.\n\n§cGedacht für Server-Entwickler, die an Noxesium-Integrationen arbeiten.",
+  "noxesium.options.extended_packet_logging.name": "Erweiterte Fehlerprotokollierung",
+  "noxesium.options.extended_packet_logging.tooltip": "Fügt zusätzliche Fehlerlogs für verschiedene Typen ungültiger Paket-Exceptions hinzu.\n\n§cGedacht für Server-Entwickler.",
+  "noxesium.options.debug_scoreboard_teams.name": "Scoreboard-Teams debuggen",
+  "noxesium.options.debug_scoreboard_teams.tooltip": "Gibt zusätzliche Debug-Informationen zu Scoreboard-Teams in den Client-Logs aus. Das kann Servern helfen, Protokollfehler zu debuggen.\n\n§cGedacht, um Server-Entwicklern beim Debuggen von Fehlern zu helfen.",
+  "noxesium.options.show_culling_boxes.name": "Entity-Culling-Hitboxen anzeigen",
+  "noxesium.options.show_culling_boxes.tooltip": "Ersetzt die mit F3+B angezeigten Hitboxen durch die Culling-Hitbox, welche steuern, ob eine Entity weiter gerendert werden soll. Das zeigt die konfigurierte Breite und Höhe von Display-Entities.\n\n§cGedacht für Server-Entwickler, die Entity-Culling debuggen.",
+
+  "noxesium.options.boss_bar_position.name": "Bossbar-X-Position",
+  "noxesium.options.boss_bar_position.tooltip": "Legt die horizontale Position der Bossbar relativ zur oberen Bildschirmmitte fest.",
+  "noxesium.options.scoreboard_position.name": "Scoreboard-Y-Position",
+  "noxesium.options.scoreboard_position.tooltip": "Legt die vertikale Position des Scoreboards relativ zur rechten Bildschirmmitte fest.",
+  "noxesium.options.map_position.name": "Karten-Y-Position",
+  "noxesium.options.map_position.tooltip": "Legt die vertikale Position der Karte für die Einstellung \"Karten in der UI rendern\" relativ zur Bildschirmmitte fest.",
+
+  "noxesium.options.boss_bar_scale.name": "Bossbar-Skalierung",
+  "noxesium.options.boss_bar_scale.tooltip": "Ändert die Größe der Bossbar relativ zur GUI-Skalierung.",
+  "noxesium.options.scoreboard_scale.name": "Scoreboard-Skalierung",
+  "noxesium.options.scoreboard_scale.tooltip": "Ändert die Größe des Scoreboards relativ zur GUI-Skalierung.",
+  "noxesium.options.tab_list_scale.name": "Tablisten-Skalierung",
+  "noxesium.options.tab_list_scale.tooltip": "Ändert die Größe der Tabliste relativ zur GUI-Skalierung.",
+  "noxesium.options.action_bar_scale.name": "Actionbar-Skalierung",
+  "noxesium.options.action_bar_scale.tooltip": "Ändert die Größe des Actionbar-Texts relativ zur GUI-Skalierung.",
+  "noxesium.options.title_scale.name": "Titel-Skalierung",
+  "noxesium.options.title_scale.tooltip": "Ändert die Größe der Titeltexte relativ zur GUI-Skalierung.",
+  "noxesium.options.chat_scale.name": "Chat-Skalierung",
+  "noxesium.options.chat_scale.tooltip": "Ändert die Größe des Chats relativ zur GUI-Skalierung.",
+  "noxesium.options.subtitles_scale.name": "Untertitel-Skalierung",
+  "noxesium.options.subtitles_scale.tooltip": "Ändert die Größe der Untertitel (CC) relativ zur GUI-Skalierung.",
+  "noxesium.options.active_effects_scale.name": "Trankeffekte-Skalierung",
+  "noxesium.options.active_effects_scale.tooltip": "Ändert die Größe der Trankeffekt-Anzeige oben rechts relativ zur GUI-Skalierung.",
+  "noxesium.options.map_scale.name": "Karten-Skalierung",
+  "noxesium.options.map_scale.tooltip": "Legt die Größe der Karte für die Einstellung \"Karten in der UI rendern\" fest.",
+  "noxesium.options.hotbar_scale.name": "Hotbar-Skalierung",
+  "noxesium.options.hotbar_scale.tooltip": "Ändert die Größe der Hotbar relativ zur GUI-Skalierung.",
+
+  "noxesium.options.reset_scales": "Alle Skalierungen zurücksetzen",
+  "noxesium.options.reset_positions": "Alle Positionen zurücksetzen",
+
+  "noxesium.options.enum.default": "Server fragen",
+  "noxesium.options.enum.true": "Immer",
+  "noxesium.options.enum.false": "Nie",
+
+  "noxesium.options.enum.top": "Normal",
+  "noxesium.options.enum.top_flipped": "Invertiert",
+
+  "noxesium.options.simple_value": "%s: %s",
+
+  "itemGroup.noxesium.server_items": "Benutzerdefinierte Blöcke"
+}
