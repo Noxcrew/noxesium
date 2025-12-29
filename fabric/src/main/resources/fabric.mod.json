@@ -40,7 +40,8 @@
         "com/noxcrew/noxesium/api/component/NoxesiumComponentHolder"
       ],
       "net/minecraft/world/entity/LivingEntity": [
-        "com/noxcrew/noxesium/core/fabric/feature/entity/LivingEntityExtension"
+        "com/noxcrew/noxesium/core/fabric/feature/entity/LivingEntityExtension",
+        "com/noxcrew/noxesium/core/fabric/feature/entity/FallFlyingEntityExtension"
       ],
       "net/minecraft/client/renderer/entity/state/GuardianRenderState": [
         "com/noxcrew/noxesium/core/fabric/feature/entity/BeamColorStateExtension"

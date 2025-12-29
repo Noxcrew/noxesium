@@ -10,4 +10,5 @@ public enum QibCondition {
     IS_ON_GROUND,
     IS_IN_WATER,
     IS_IN_WATER_OR_RAIN,
+    IS_IN_VEHICLE,
 }

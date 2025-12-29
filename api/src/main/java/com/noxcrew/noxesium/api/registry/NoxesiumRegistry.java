@@ -82,7 +82,9 @@ public class NoxesiumRegistry<T> {
      * Registers a new entry into this registry.
      */
     public <V extends T> V register(Key key, V value, @Nullable NoxesiumEntrypoint entrypoint) {
-        byKey.put(key, value);
+        if (byKey.get(key) != value) {
+            byKey.put(key, value);
+        }
         return value;
     }
 

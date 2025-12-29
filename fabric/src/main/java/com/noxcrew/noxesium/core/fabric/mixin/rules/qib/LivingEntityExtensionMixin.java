@@ -47,7 +47,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
     public abstract AttributeMap getAttributes();
 
     @Unique
-    private int noxesium$coyoteTime = 0;
+    private int noxesium$tridentCoyoteTime = 0;
 
     @Unique
     private boolean noxesium$soundQueued = false;
@@ -153,12 +153,17 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
     @Override
     public boolean noxesium$hasTridentCoyoteTime() {
-        return noxesium$coyoteTime > 0;
+        return noxesium$tridentCoyoteTime > 0;
     }
 
     @Override
     public void noxesium$resetTridentCoyoteTime() {
-        noxesium$coyoteTime = 0;
+        noxesium$tridentCoyoteTime = 0;
+    }
+
+    @Override
+    public boolean noxesium$hasAutoSpinAttack() {
+        return this.autoSpinAttackTicks > 0;
     }
 
     /**
@@ -169,7 +174,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
         if (!GameComponents.getInstance()
                 .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
         if (((Object) this) != Minecraft.getInstance().player) return;
-        cir.setReturnValue(this.autoSpinAttackTicks > 0);
+        cir.setReturnValue(noxesium$hasAutoSpinAttack());
     }
 
     /**
@@ -186,10 +191,10 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
 
             // Update coyote time
             if (player.isInWaterOrRain()) {
-                noxesium$coyoteTime = GameComponents.getInstance()
+                noxesium$tridentCoyoteTime = GameComponents.getInstance()
                         .noxesium$getComponentOr(CommonGameComponentTypes.RIPTIDE_COYOTE_TIME, () -> 5);
-            } else if (noxesium$coyoteTime > 0) {
-                noxesium$coyoteTime--;
+            } else if (noxesium$tridentCoyoteTime > 0) {
+                noxesium$tridentCoyoteTime--;
             }
 
             // Determine if you are charging a riptide!

@@ -1,9 +1,5 @@
 {
-  "debug.noxesium_settings.help": "F3 + W = Open Noxesium settings menu",
   "debug.warning.option.disabled": "This debug option is disabled.",
-  "debug.warning.option.disabled_by_server": "The server you are playing on has disabled this debug option.",
-
-  "debug.fps_overlay": "%s fps",
   "debug.game_time_overlay": "%s st, %s gt",
 
   "noxesium.options.screen.noxesium": "Noxesium Settings",
@@ -12,8 +8,6 @@
 
   "noxesium.options.game_time_overlay.name": "Game Time Overlay",
   "noxesium.options.game_time_overlay.tooltip": "Adds a small overlay that shows the current game time.\n\n§cIntended for shader development.",
-  "noxesium.options.fps_overlay.name": "FPS Overlay",
-  "noxesium.options.fps_overlay.tooltip": "Adds a small overlay that shows the current fps in the top left corner of your screen.",
   "noxesium.options.reset_toggle_keys.name": "Reset Toggle Keys on Death",
   "noxesium.options.reset_toggle_keys.tooltip": "Whether to reset toggled keys (sprint/sneak) when you respawn. Normally enabled in vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Render Maps in UI",
@@ -30,8 +24,6 @@
   "noxesium.options.qib_debug_visuals.tooltip": "Enables debug visuals for the qib system.\n\n§cIntended for server developers working on Noxesium integrations.",
   "noxesium.options.extended_packet_logging.name": "Extended Error Logging",
   "noxesium.options.extended_packet_logging.tooltip": "Adds additional error logs to various types of invalid packet exceptions.\n\n§cIntended for server developers.",
-  "noxesium.options.enable_glowing_keybinds.name": "Team Glow Keybinds",
-  "noxesium.options.enable_glowing_keybinds.tooltip": "Adds additional keybinds which make players glow based on their team color. Requires restarting game to apply!\n\n§cKeybinds only work while spectating.",
   "noxesium.options.debug_scoreboard_teams.name": "Debug Scoreboard Teams",
   "noxesium.options.debug_scoreboard_teams.tooltip": "Prints additional debugging information to the client logs concerning scoreboard teams. This can help servers debug protocol errors.\n\n§cIntended for helping server developers debug errors.",
   "noxesium.options.show_culling_boxes.name": "Show Entity Culling Hitboxes",
@@ -77,7 +69,5 @@
 
   "noxesium.options.simple_value": "%s: %s",
 
-  "itemGroup.noxesium.server_items": "Custom Blocks",
-
-  "category.noxesium": "Noxesium"
+  "itemGroup.noxesium.server_items": "Custom Blocks"
 }

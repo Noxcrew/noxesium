@@ -17,6 +17,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.List;
@@ -163,6 +164,14 @@ public class CommonPacketHandling extends NoxesiumFeature {
                     } catch (Exception e) {
                         NoxesiumApi.getLogger().warn("Failed to open link {}", packet.url(), e);
                     }
+                });
+
+        CommonPackets.CLIENT_STOP_GLIDE.addListener(
+                this, ClientboundStopGlidePacket.class, (reference, ignored2, ignored3) -> {
+                    if (!reference.isRegistered()) return;
+                    var player = Minecraft.getInstance().player;
+                    if (player == null) return;
+                    player.noxesium$stopFallFlying();
                 });
     }
 

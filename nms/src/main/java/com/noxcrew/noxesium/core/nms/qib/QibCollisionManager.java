@@ -94,6 +94,19 @@ public abstract class QibCollisionManager {
     @Nullable
     protected abstract Key getQibBehavior(Entity entity);
 
+
+    /**
+     * Triggers when a player uses an item with an attack behavior.
+     */
+    public void onUseItemBehavior(Player player, Key behavior) {
+        var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
+        if (definition == null) return;
+        if (definition.onAttack() != null) {
+            onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.ATTACK, player.getId());
+            executeBehavior(player, definition.onAttack());
+        }
+    }
+
     /**
      * Triggers when a player jumps.
      */
@@ -250,6 +263,7 @@ public abstract class QibCollisionManager {
                             case IS_ON_GROUND -> player.onGround();
                             case IS_IN_WATER -> player.isInWater();
                             case IS_IN_WATER_OR_RAIN -> player.isInWaterOrRain();
+                            case IS_IN_VEHICLE -> player.getVehicle() != null;
                         };
 
                 // Trigger the effect if it matches
@@ -297,15 +311,13 @@ public abstract class QibCollisionManager {
                 player.needsSync = true;
             }
             case QibEffect.ApplyImpulse applyImpulse -> {
-                var current = player.getDeltaMovement();
-                var angle = player.getLookAngle().rotation();
                 var direction = applyImpulse.direction();
-                var modifiedAngle =
-                        Vec3.applyLocalCoordinatesToRotation(angle, new Vec3(direction.x, direction.y, direction.z));
-                player.setDeltaMovement(
-                        current.x + modifiedAngle.x * applyImpulse.scale().x,
-                        current.y + modifiedAngle.y * applyImpulse.scale().y,
-                        current.z + modifiedAngle.z * applyImpulse.scale().z);
+                var scale = applyImpulse.scale();
+                var lookAngle = player.getLookAngle();
+                var impulse = lookAngle
+                        .addLocalCoordinates(new Vec3(direction.x, direction.y, direction.z))
+                        .multiply(new Vec3(scale.x, scale.y, scale.z));
+                player.addDeltaMovement(impulse);
                 player.needsSync = true;
             }
             case QibEffect.StopGliding stopGliding -> {

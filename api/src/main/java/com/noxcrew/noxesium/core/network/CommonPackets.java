@@ -9,9 +9,11 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
@@ -30,6 +32,8 @@ public class CommonPackets {
             server(INSTANCE, "serverbound_riptide").add(ServerboundRiptidePacket.class);
     public static final NoxesiumPayloadGroup SERVER_MOUSE_BUTTON_CLICK =
             server(INSTANCE, "serverbound_mouse_button_click").markLazy().add(ServerboundMouseButtonClickPacket.class);
+    public static final NoxesiumPayloadGroup SERVER_GLIDE =
+            server(INSTANCE, "serverbound_glide").add(ServerboundGlidePacket.class);
 
     public static final NoxesiumPayloadGroup CLIENT_CUSTOM_SOUND_MODIFY =
             client(INSTANCE, "clientbound_modify_sound").add(ClientboundCustomSoundModifyPacket.class);
@@ -43,4 +47,6 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_update_game_components").add(ClientboundUpdateGameComponentsPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_OPEN_LINK =
             client(INSTANCE, "clientbound_open_link").add(ClientboundOpenLinkPacket.class);
+    public static final NoxesiumPayloadGroup CLIENT_STOP_GLIDE =
+            client(INSTANCE, "clientbound_stop_glide").add(ClientboundStopGlidePacket.class);
 }

@@ -39,6 +39,10 @@
     "rules.HandItemOverrideRenderMixin",
     "rules.OptionInstanceMixin",
     "rules.SpinAttackCollisionMixin",
+    "rules.elytra.ElytraClientMixin",
+    "rules.elytra.PlayerStartGlidingHook",
+    "rules.elytra.RemoveVanillaElytraSoundHook",
+    "rules.entity.AttackableMixin",
     "rules.entity.BlockEntityMixin",
     "rules.entity.CustomGlowColorRendererMixin",
     "rules.entity.DebugRendererMixin",
@@ -58,6 +62,7 @@
     "rules.qib.JumpHookMixin",
     "rules.qib.LivingEntityExtensionMixin",
     "rules.qib.QibInteractionMixin",
+    "rules.qib.QibItemMixin",
     "rules.qib.QibPacketHooksMixin",
     "rules.qib.SpatialEntityMixin",
     "rules.trident.TridentHandModelMixin",
@@ -92,6 +97,5 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "rules.entity.AttackableMixin"
   ]
 }

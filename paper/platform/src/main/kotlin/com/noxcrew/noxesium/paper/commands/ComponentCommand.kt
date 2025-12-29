@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType
+import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry
 import com.noxcrew.noxesium.api.util.Unit
@@ -21,6 +22,7 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.resolvers.BlockPositionResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
@@ -220,6 +222,15 @@ public fun componentCommands(): LiteralArgumentBuilder<CommandSourceStack> = Com
                             ctx.source.sender.sendMessage(
                                 Component.text(
                                     "Target is not holding an item",
+                                    NamedTextColor.RED,
+                                ),
+                            )
+                            return 0
+                        }
+                        if (ComponentSerializerRegistry.getSerializers(NoxesiumRegistries.ITEM_COMPONENTS, componentType) == null) {
+                            ctx.source.sender.sendMessage(
+                                Component.text(
+                                    "Cannot set a component that has not been registered with the serializer registry",
                                     NamedTextColor.RED,
                                 ),
                             )
@@ -492,6 +503,17 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                         ctx,
                                         type as NoxesiumComponentType<String>,
                                         ctx.getArgument("value", String::class.java),
+                                    )
+                                }
+
+                        Key::class.java.isAssignableFrom(type.clazz) ->
+                            Commands
+                                .argument("value", StringArgumentType.string())
+                                .executes { ctx ->
+                                    configurer.set(
+                                        ctx,
+                                        type as NoxesiumComponentType<Key>,
+                                        Key.key(ctx.getArgument("value", String::class.java)),
                                     )
                                 }
 

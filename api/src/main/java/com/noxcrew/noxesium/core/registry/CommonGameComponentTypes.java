@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.api.util.GuiConstraints;
 import com.noxcrew.noxesium.api.util.Unit;
+
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,7 @@ public class CommonGameComponentTypes {
      * in the provided Paper implementation.
      */
     public static NoxesiumComponentType<Unit> CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS =
-            register("enable_client_riptide_trident", Unit.class);
+            register("client_authoritative_riptide_trident", Unit.class);
 
     /**
      * Sets the amount of ticks the client authoritative riptide tridents have coyote time for.
@@ -80,9 +81,6 @@ public class CommonGameComponentTypes {
 
     /**
      * If set, enables the ability to pre-charge client authoritative riptide tridents.
-     * <p>
-     * Not supported on the default Paper implementation, requires changing the Minecraft source
-     * code to allow using the trident on the server when outside water!
      */
     public static NoxesiumComponentType<Unit> RIPTIDE_PRE_CHARGING = register("riptide_pre_charging", Unit.class);
 
@@ -112,7 +110,7 @@ public class CommonGameComponentTypes {
      * This will make the server unable to control elytra states.
      */
     public static NoxesiumComponentType<Unit> CLIENT_AUTHORITATIVE_ELYTRA =
-            register("enable_client_elytra", Unit.class);
+            register("client_authoritative_elytra", Unit.class);
 
     /**
      * Sets the amount of ticks the client authoritative elytra has coyote time for.

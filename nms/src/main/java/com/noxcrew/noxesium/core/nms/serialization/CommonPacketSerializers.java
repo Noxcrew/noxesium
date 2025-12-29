@@ -1,7 +1,5 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
-import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
-
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
@@ -11,15 +9,19 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModif
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 import net.kyori.adventure.sound.Sound;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+
+import static com.noxcrew.noxesium.api.nms.serialization.PacketSerializerRegistry.registerSerializer;
 
 /**
  * Defines all common Noxesium packet serializers.
@@ -60,6 +62,10 @@ public class CommonPacketSerializers {
                         NoxesiumStreamCodecs.forEnum(ServerboundMouseButtonClickPacket.Button.class),
                         ServerboundMouseButtonClickPacket::button,
                         ServerboundMouseButtonClickPacket::new));
+        registerSerializer(
+                ServerboundGlidePacket.class,
+                StreamCodec.composite(
+                        ByteBufCodecs.BOOL, ServerboundGlidePacket::gliding, ServerboundGlidePacket::new));
         registerSerializer(
                 ClientboundCustomSoundModifyPacket.class,
                 StreamCodec.composite(
@@ -130,5 +136,8 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundOpenLinkPacket::url,
                         ClientboundOpenLinkPacket::new));
+        registerSerializer(
+                ClientboundStopGlidePacket.class,
+                StreamCodec.unit(ClientboundStopGlidePacket.INSTANCE));
     }
 }

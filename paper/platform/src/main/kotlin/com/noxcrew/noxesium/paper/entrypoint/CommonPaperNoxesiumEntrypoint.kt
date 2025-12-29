@@ -17,6 +17,8 @@ import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes
+import com.noxcrew.noxesium.paper.feature.AttackableComponent
+import com.noxcrew.noxesium.paper.feature.ClientAuthoritativeElytra
 import com.noxcrew.noxesium.paper.feature.PaperBlockEntityModule
 import com.noxcrew.noxesium.paper.feature.PaperEntityModule
 import com.noxcrew.noxesium.paper.feature.RegistryLoader
@@ -57,7 +59,9 @@ public class CommonPaperNoxesiumEntrypoint : NoxesiumEntrypoint {
         PaperBlockEntityModule(),
         RegistryLoader(),
         ClientAuthoritativeRiptideTrident(),
+        ClientAuthoritativeElytra(),
         PaperQibModule(),
+        AttackableComponent(),
     )
 
     override fun getEncryptionKey(): URL? =

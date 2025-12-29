@@ -60,6 +60,9 @@ public class CommonEntityComponentTypes {
      *
      * Players in spectator mode cannot attack at all, and in vanilla only e.g. non-redirectable arrows
      * and item entities are marked as unattackable.
+     *
+     * This only changes whether the client attempts to register an attack immediately, the server
+     * has to work around this and avoid applying or make an attack apply later if it wishes.
      */
     public static NoxesiumComponentType<Boolean> ATTACKABLE = register("attackable", Boolean.class);
 

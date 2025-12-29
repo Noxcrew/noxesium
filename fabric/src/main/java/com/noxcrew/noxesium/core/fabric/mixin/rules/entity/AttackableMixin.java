@@ -18,6 +18,7 @@ public class AttackableMixin {
             method = "cannotAttack",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isAttackable()Z"))
     public boolean redirectRenderHitbox(Entity instance, Operation<Boolean> original) {
+        System.out.println("can we attack " + instance + "? it has " + instance.noxesium$getComponent(CommonEntityComponentTypes.ATTACKABLE));
         return instance.noxesium$getOptionalComponent(CommonEntityComponentTypes.ATTACKABLE)
                 .orElseGet(() -> original.call(instance));
     }

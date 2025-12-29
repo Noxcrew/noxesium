@@ -7,9 +7,11 @@ import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.nms.qib.QibCollisionManager;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.kyori.adventure.key.Key;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Interaction;
+import net.minecraft.world.entity.player.Player;
 
 /**
  * Applies qib behaviors whenever players clip interaction entities.
@@ -111,6 +113,15 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
     public void onPlayerJump() {
         if (qibCollisionManager != null) {
             qibCollisionManager.onPlayerJump();
+        }
+    }
+
+    /**
+     * Uses the given behavior for this player.
+     */
+    public void useItemBehavior(Player player, Key behavior) {
+        if (qibCollisionManager != null) {
+            qibCollisionManager.onUseItemBehavior(player, behavior);
         }
     }
 }

@@ -40,4 +40,11 @@ public interface LivingEntityExtension {
      * Resets coyote time for the riptide trident.
      */
     public default void noxesium$resetTridentCoyoteTime() {}
+
+    /**
+     * Returns whether a player is in the auto spin attack.
+     */
+    public default boolean noxesium$hasAutoSpinAttack() {
+        return false;
+    }
 }

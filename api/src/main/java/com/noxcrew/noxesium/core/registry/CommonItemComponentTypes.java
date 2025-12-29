@@ -36,6 +36,8 @@ public class CommonItemComponentTypes {
      * Allows defining a qib behavior to trigger when interacting with this item.
      * You can find more information about the qib system in the qib package. This has to be
      * an identifier present in the qib behavior registry!
+     *
+     * Use the minimum_attack_charge to manage how often the behavior can be used.
      */
     public static NoxesiumComponentType<Key> QIB_BEHAVIOR = register("qib_behavior", Key.class);
 

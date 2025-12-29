@@ -14,11 +14,15 @@ import org.joml.Vector3f;
  * - A jump pad
  * - A launch pad
  * - A booster ring
+ * <p>
+ * Qibs can also be applied to items to create your own custom items such as the lunge
+ * spear, these use the onAttack effect type.
  *
  * @param onEnter                   An effect triggered when a player enters a qib.
  * @param onLeave                   An effect triggered when a player leaves a qib.
  * @param whileInside               An effect triggered each client tick while inside a qib.
  * @param onJump                    An effect triggered when a player jumps while inside a qib.
+ * @param onAttack                  An effect triggered when an item is used with this qib effect.
  * @param triggerEnterLeaveOnSwitch Whether to trigger the enter & leave effects when moving to a different
  *                                  instance of the same qib definition.
  */
@@ -27,6 +31,7 @@ public record QibDefinition(
         @Nullable QibEffect onLeave,
         @Nullable QibEffect whileInside,
         @Nullable QibEffect onJump,
+        @Nullable QibEffect onAttack,
         boolean triggerEnterLeaveOnSwitch) {
 
     /**
