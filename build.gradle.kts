@@ -1,6 +1,7 @@
 import org.gradle.jvm.tasks.Jar
 import com.diffplug.gradle.spotless.SpotlessExtension
 import com.diffplug.gradle.spotless.SpotlessPlugin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -67,6 +68,14 @@ subprojects {
         withType<AbstractArchiveTask> {
             archiveBaseName.set("noxesium-${project.name}")
         }
+
+        withType<KotlinCompile> {
+            explicitApiMode.set(ExplicitApiMode.Strict)
+
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
+            }
+        }
     }
 
     extensions.configure<SpotlessExtension> {
@@ -94,17 +103,43 @@ subprojects {
         withSourcesJar()
         toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
+}
 
-    // Set this late as the Kotlin plugin may not be applied yet!
-    afterEvaluate {
-        tasks {
-            withType<KotlinCompile> {
-                explicitApiMode.set(ExplicitApiMode.Strict)
+// Create a task to collect all jars
+val projectsToCollect= listOf("fabric", "paper-platform", "sync-fabric", "sync-paper")
+tasks.register<Copy>("collectAllJars") {
+    group = "publishing"
+    description = "Collects all JARs from subprojects into one directory"
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.fromTarget(javaVersion.toString()))
-                }
-            }
+    // Delete files before we copy
+    val outputDir = layout.buildDirectory.dir("artifacts")
+    into(outputDir)
+    doFirst {
+        delete(outputDir)
+    }
+
+    // Ignore sources and dev jars as these are the assets we want in the GitHub releases and
+    // we don't want there to be that many
+    exclude("**/*-dev.jar")
+    exclude("**/*-sources.jar")
+
+    // Rename the paper jar to remove the -all
+    rename("-all\\.jar$", ".jar")
+
+    // Drop the platform as it's unnecessary info
+    rename("paper-platform", "paper")
+
+    // Go through all subprojects and add their jars to the output
+    subprojects.forEach { subProject ->
+        if (subProject.name !in projectsToCollect) return@forEach
+        if (subProject.plugins.hasPlugin("com.gradleup.shadow")) {
+            // If it's a shadow jar project, only include that one!
+            dependsOn(subProject.tasks.withType<ShadowJar>())
+            from(subProject.tasks.withType<ShadowJar>().map { it.archiveFile })
+        } else {
+            dependsOn(subProject.tasks.withType<Jar>())
+            from(subProject.tasks.withType<Jar>().map { it.archiveFile })
         }
     }
 }
