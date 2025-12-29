@@ -2,9 +2,9 @@ package com.noxcrew.noxesium.core.fabric.mixin.feature.scale;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.spongepowered.asm.mixin.Mixin;

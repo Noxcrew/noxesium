@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.feature.qib;
 
-import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.feature.qib.QibEffect;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.core.nms.feature.qib.QibCollisionManager;
 import com.noxcrew.noxesium.core.nms.feature.qib.SpatialTree;

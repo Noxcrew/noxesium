@@ -6,13 +6,13 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import com.noxcrew.noxesium.core.nms.feature.qib.QibCollisionManager
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.paper.NoxesiumPaper
+import com.noxcrew.noxesium.paper.component.hasNoxesiumComponent
+import com.noxcrew.noxesium.paper.component.noxesiumPlayer
 import com.noxcrew.noxesium.paper.event.NoxesiumEntityComponentChangedEvent
 import com.noxcrew.noxesium.paper.event.NoxesiumEntityComponentsClearEvent
 import com.noxcrew.noxesium.paper.event.NoxesiumPlayerAddedToWorldEvent
 import com.noxcrew.noxesium.paper.event.NoxesiumPlayerUnregisteredEvent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
-import com.noxcrew.noxesium.paper.component.hasNoxesiumComponent
-import com.noxcrew.noxesium.paper.component.noxesiumPlayer
 import io.papermc.paper.event.entity.EntityMoveEvent
 import net.minecraft.world.entity.Interaction
 import org.bukkit.Bukkit

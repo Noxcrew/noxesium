@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.feature;
 
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

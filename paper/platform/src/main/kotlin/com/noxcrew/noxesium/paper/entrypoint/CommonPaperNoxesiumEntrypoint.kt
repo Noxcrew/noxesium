@@ -17,12 +17,12 @@ import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.core.registry.CommonItemComponentTypes
-import com.noxcrew.noxesium.paper.feature.game.AttackableComponent
-import com.noxcrew.noxesium.paper.feature.game.ClientAuthoritativeElytra
-import com.noxcrew.noxesium.paper.feature.game.ClientAuthoritativeRiptideTrident
 import com.noxcrew.noxesium.paper.component.PaperBlockEntityModule
 import com.noxcrew.noxesium.paper.component.PaperEntityModule
 import com.noxcrew.noxesium.paper.feature.RegistryLoader
+import com.noxcrew.noxesium.paper.feature.game.AttackableComponent
+import com.noxcrew.noxesium.paper.feature.game.ClientAuthoritativeElytra
+import com.noxcrew.noxesium.paper.feature.game.ClientAuthoritativeRiptideTrident
 import com.noxcrew.noxesium.paper.feature.qib.PaperQibModule
 import java.net.URL
 

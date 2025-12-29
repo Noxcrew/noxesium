@@ -1,15 +1,15 @@
 package com.noxcrew.noxesium.core.nms.serialization;
 
 import com.mojang.serialization.Codec;
-import com.noxcrew.noxesium.core.feature.GuiElement;
+import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
-import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.ArrayList;

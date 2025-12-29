@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.scale;
 
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Matrix3x2fStack;

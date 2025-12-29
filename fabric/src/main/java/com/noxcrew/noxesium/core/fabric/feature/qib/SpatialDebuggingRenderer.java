@@ -3,7 +3,6 @@ package com.noxcrew.noxesium.core.fabric.feature.qib;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import java.awt.Color;
 import java.util.Random;
-
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.gizmos.GizmoStyle;

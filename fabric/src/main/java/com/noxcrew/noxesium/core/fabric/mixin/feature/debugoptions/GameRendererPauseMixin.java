@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.core.fabric.mixin.feature.debugoptions;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.api.component.GameComponents;
+import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Options;
 import net.minecraft.client.renderer.GameRenderer;

@@ -1,12 +1,12 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.component.RemoteNoxesiumComponentHolder;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
-import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.fabric.feature.sound.EntityNoxesiumSoundInstance;

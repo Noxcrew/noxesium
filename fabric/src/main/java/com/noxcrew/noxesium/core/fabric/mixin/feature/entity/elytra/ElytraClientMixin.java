@@ -1,7 +1,7 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.entity.elytra;
 
-import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.api.component.GameComponents;
+import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.feature.entity.FallFlyingEntityExtension;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;

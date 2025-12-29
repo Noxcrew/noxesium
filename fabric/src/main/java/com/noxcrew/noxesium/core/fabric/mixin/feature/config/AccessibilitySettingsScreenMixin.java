@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.config;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumOptions;
 import com.noxcrew.noxesium.core.fabric.config.VanillaOptions;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import java.util.List;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.screens.options.AccessibilityOptionsScreen;

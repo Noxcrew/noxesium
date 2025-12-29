@@ -1,10 +1,14 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.block;
 
+import static net.minecraft.client.renderer.blockentity.BeaconRenderer.MAX_RENDER_Y;
+
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.noxcrew.noxesium.core.registry.CommonBlockEntityComponentTypes;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BeaconRenderer;
 import net.minecraft.client.renderer.blockentity.state.BeaconRenderState;
@@ -13,11 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static net.minecraft.client.renderer.blockentity.BeaconRenderer.MAX_RENDER_Y;
 
 /**
  * Swaps out the beacon beam height with the custom component override.
@@ -28,11 +27,11 @@ public class BeaconRendererMixin<T extends BlockEntity & BeaconBeamOwner> {
     @WrapOperation(
             method = "extract",
             at =
-            @At(
-                    value = "FIELD",
-                    target =
-                            "Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;sections:Ljava/util/List;",
-                    opcode = Opcodes.PUTFIELD))
+                    @At(
+                            value = "FIELD",
+                            target =
+                                    "Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;sections:Ljava/util/List;",
+                            opcode = Opcodes.PUTFIELD))
     private static <T extends BlockEntity & BeaconBeamOwner> void extract(
             BeaconRenderState instance,
             List<BeaconRenderState.Section> value,
@@ -66,13 +65,23 @@ public class BeaconRendererMixin<T extends BlockEntity & BeaconBeamOwner> {
     }
 
     @WrapOperation(
-            method = "submit(Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+            method =
+                    "submit(Lnet/minecraft/client/renderer/blockentity/state/BeaconRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
             at =
-            @At(
-                    value = "INVOKE",
-                    target =
-                            "Lnet/minecraft/client/renderer/blockentity/BeaconRenderer;submitBeaconBeam(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;FFIII)V"))
-    private void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, float beamRadiusScale, float animationTime, int startY, int height, int color, Operation<Void> original, @Local BeaconRenderState.Section section) {
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/renderer/blockentity/BeaconRenderer;submitBeaconBeam(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;FFIII)V"))
+    private void submit(
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            float beamRadiusScale,
+            float animationTime,
+            int startY,
+            int height,
+            int color,
+            Operation<Void> original,
+            @Local BeaconRenderState.Section section) {
         // Ignore the height passed to the submit method and use the section height directly!
         original.call(poseStack, submitNodeCollector, beamRadiusScale, animationTime, startY, section.height(), color);
     }

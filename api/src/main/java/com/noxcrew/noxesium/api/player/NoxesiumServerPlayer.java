@@ -20,13 +20,6 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.feature.ClientSettings;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,6 +32,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 /**
  * Stores information on a player connected to a server running Noxesium's

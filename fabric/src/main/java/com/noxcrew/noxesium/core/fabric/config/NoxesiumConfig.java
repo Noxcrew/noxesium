@@ -2,9 +2,9 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.feature.MapLocation;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.io.FileReader;

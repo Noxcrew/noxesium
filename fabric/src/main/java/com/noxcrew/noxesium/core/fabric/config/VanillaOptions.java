@@ -2,8 +2,8 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import com.mojang.serialization.Codec;
 import com.noxcrew.noxesium.api.util.BooleanOrDefault;
-import com.noxcrew.noxesium.core.feature.MapLocation;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.feature.MapLocation;
 import java.util.Arrays;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.network.chat.Component;

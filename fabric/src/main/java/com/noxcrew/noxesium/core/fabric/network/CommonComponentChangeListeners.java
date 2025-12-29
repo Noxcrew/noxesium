@@ -1,17 +1,17 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
-import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.api.component.ComponentChangeContext;
+import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentListener;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentType;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
-import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.qib.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.mouse.MouseHandlerExt;
+import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;

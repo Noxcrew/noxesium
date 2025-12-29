@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.config;
 
 import com.mojang.serialization.Codec;
-import com.noxcrew.noxesium.core.feature.GuiElement;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.feature.GuiElement;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.client.Minecraft;

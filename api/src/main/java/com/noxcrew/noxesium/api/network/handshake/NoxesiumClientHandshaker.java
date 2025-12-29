@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.network.handshake;
 import com.noxcrew.noxesium.api.ClientNoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
+import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.EntrypointProtocol;
 import com.noxcrew.noxesium.api.network.ModInfo;
@@ -21,7 +22,6 @@ import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundHandsha
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundLazyPacketsPacket;
 import com.noxcrew.noxesium.api.network.handshake.serverbound.ServerboundRegistryUpdateResultPacket;
 import com.noxcrew.noxesium.api.registry.ClientNoxesiumRegistry;
-import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.util.EncryptionUtil;

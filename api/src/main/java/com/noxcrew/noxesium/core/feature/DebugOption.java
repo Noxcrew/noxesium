@@ -34,7 +34,8 @@ public enum DebugOption {
     /**
      * An index of all debug options by their key codes.
      */
-    public static final Index<Integer, DebugOption> KEY_CODE_INDEX = Index.create(DebugOption::getKeyCode, DebugOption.values());
+    public static final Index<Integer, DebugOption> KEY_CODE_INDEX =
+            Index.create(DebugOption::getKeyCode, DebugOption.values());
 
     private final int keyCode;
 
