@@ -45,7 +45,8 @@ public abstract class TridentItemMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isInWaterOrRain()Z"))
     public boolean canStartChargingTrident(Player player, Operation<Boolean> original) {
         // If pre-charging is allowed we always allow you to start charging it.
-        if (GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING))
+        if (GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS) &&
+                GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.RIPTIDE_PRE_CHARGING))
             return true;
         return original.call(player);
     }
