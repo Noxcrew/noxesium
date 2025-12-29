@@ -61,6 +61,11 @@ public class CommonGameComponentSerializers {
                         HashMap::new,
                         NoxesiumStreamCodecs.forEnum(GuiElement.class),
                         NoxesiumStreamCodecs.GUI_CONSTRAINTS));
+        register(
+                CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA,
+                NoxesiumCodecs.UNIT,
+                NoxesiumStreamCodecs.UNIT);
+        register(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, Codec.INT, ByteBufCodecs.VAR_INT);
 
         register(
                 NmsGameComponentTypes.HAND_ITEM_OVERRIDE,
