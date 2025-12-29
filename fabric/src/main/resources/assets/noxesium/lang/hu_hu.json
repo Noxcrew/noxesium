@@ -58,7 +58,7 @@
   "noxesium.options.hotbar_scale.tooltip": "Megváltoztatja a gyorstár méretét a GUI méretéhez képest.",
 
   "noxesium.options.reset_scales": "Minden Méret Visszaállítása",
-  "noxesium.options.reset_positions": "Minden Pozíció Mérete",
+  "noxesium.options.reset_positions": "Minden Pozíció Visszaállítása",
 
   "noxesium.options.enum.default": "Szerver megkérdezése",
   "noxesium.options.enum.true": "Mindig",
