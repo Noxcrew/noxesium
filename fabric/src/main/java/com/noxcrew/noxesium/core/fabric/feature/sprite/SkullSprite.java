@@ -3,8 +3,11 @@ package com.noxcrew.noxesium.core.fabric.feature.sprite;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.blaze3d.font.GlyphInfo;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.textures.GpuTextureView;
@@ -106,10 +109,9 @@ public class SkullSprite implements ObjectInfo {
             Optional<UUID> uuid, Optional<String> texture, int advance, int ascent, float scale, boolean hat) {
         ResolvableProfile profile = null;
         if (texture.isPresent()) {
-            var gameProfile = new GameProfile(UUID.randomUUID(), "");
-            gameProfile
-                    .properties()
-                    .put(PROPERTY_TEXTURES, new Property(PROPERTY_TEXTURES, texture.get(), RANDOM_SIGNATURE));
+            Multimap<String, Property> mutable = LinkedListMultimap.create();
+            mutable.put(PROPERTY_TEXTURES, new Property(PROPERTY_TEXTURES, texture.get(), RANDOM_SIGNATURE));
+            var gameProfile = new GameProfile(UUID.randomUUID(), "", new PropertyMap(mutable));
             profile = ResolvableProfile.createResolved(gameProfile);
         } else if (uuid.isPresent()) {
             profile = ResolvableProfile.createUnresolved(uuid.get());
