@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
  * @param raw     If `true` the value is a raw texture, otherwise it's a uuid.
  * @param value   The data of this skull.
  * @param advance The advance to give to the glyph.
- * @param ascent  T2caae3b6-991f-4c03-baae-ef8df4fae112he ascent to give to the glyph.
+ * @param ascent  The ascent to give to the glyph.
  * @param scale   The scale of the glyph.
  * @param hat     Whether to include a hat.
  */
