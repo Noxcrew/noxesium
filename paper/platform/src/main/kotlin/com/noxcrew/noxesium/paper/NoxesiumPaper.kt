@@ -30,7 +30,7 @@ import org.bukkit.plugin.java.JavaPlugin
 /**
  * Sets up Noxesium for usage on Paper. Noxesium can be either compiled into your jar or it can
  * be put in the plugins folder as separate plugin. Make sure to initialize this file and run
- * setup() if you compile it into your plugin.
+ * prepare() if you compile it into your plugin.
  *
  * Your plugin is required to be a Paper plugin if you are embedding it!
  */
