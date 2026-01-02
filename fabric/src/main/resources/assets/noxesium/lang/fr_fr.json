@@ -1,4 +1,11 @@
 {
+  "debug.warning.option.disabled": "Cette option de débogage est désactivée.",
+  "debug.game_time_overlay": "%s st, %s gt",
+
+  "noxesium.options.screen.noxesium": "Paramètres Noxesium",
+  "noxesium.options.header.gui_options": "Paramètres de l'Interface Utilisateur Graphique",
+  "noxesium.options.header.developer_options": "Paramètres de Développeur",
+
   "debug.experimental_patches.disabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant désactivés.",
   "debug.experimental_patches.enabled": "Les correctifs de performance de l'Inerface Utilisateur de Noxesium sont maintenant activés.",
   "debug.experimental_patches.help": "F3 + W = Basculer les correctifs de performance de l'Interface Utilisateur de Noxesium.",
@@ -11,25 +18,13 @@
 
   "noxesium.options.game_time_overlay.name": "Superposition de Temps en Jeu",
   "noxesium.options.game_time_overlay.tooltip": "Si activé,une petite superposition est ajouté montrant le temps en jeu actuel, utile pour le développement de shader.",
-  "debug.game_time_overlay": "%s st, %s gt",
-
-  "debug.noxesium_overlay.on": "Noxesium: §aActivé",
-  "debug.noxesium_overlay.off": "Noxesium: §cDésactivé",
-
-  "noxesium.options.pages.noxesium": "Noxesium",
-  "noxesium.options.screen.noxesium": "Paramètres Noxesium",
-  "noxesium.options.fps_overlay.name": "Superposition d'IPS",
-  "noxesium.options.fps_overlay.tooltip": "Si activé, une petite superposition montrant les ips actuels dans le coin en haut à gauche de votre écran est ajouté.",
-  "noxesium.options.experimental_patches.name": "Optimisations expérimentales",
-  "noxesium.options.experimental_patches.tooltip": "§4(attention: instable!)\n§fActive les amélioration de performance de l'Interface Utilisateur expérimental remplaçant totalement tout le code d'affichage de l'Interface Utilisateur pour fonctionner plus rapidement.\n\n§cAttention: §fSi vous rencontrez tout problème d'affichage de l'Interface Utilisateur en utilisant ce paramètre, veuillez rapporter ces problèmes à Noxesium, et non pas les autres modifications impliquées.",
   "noxesium.options.reset_toggle_keys.name": "Réinitialiser les Touches de Bascule à la mort",
   "noxesium.options.reset_toggle_keys.tooltip": "Réinitialiser ou non les touches de bascule (courrir/s'accroupir) quand vous réapparaissez. Normalement activé en vanilla.",
   "noxesium.options.render_maps_as_ui.name": "Rendu de la Carte dans l'Interface Utilisateur",
-  "noxesium.options.render_maps_as_ui.tooltip": "Si activé, les cartes tenus en main secondaire seront rendues dans le coin haut gauche / droite de votre écran au lieu de par rapport à l'endroit de votre main.",
-  "noxesium.options.ui_map_size.name": "Tailler de l'Interface Utilisateur de la Carte",
-  "noxesium.options.ui_map_size.tooltip": "Contrôle de la taille de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\".",
+  "noxesium.options.render_maps_as_ui.tooltip": "Si activé, les cartes tenus en main secondaire seront rendues dans le coin haut gauche / droite de votre écran au lieu de par rapport à l'endroit de votre main.\n\nSi mit sur \"Demander au server\", le serveur auquel vous jouez sera capable d'activer et de désactiver cette option.",
+
   "noxesium.options.ui_map_location.name": "Position de l'Inerface Utilisateur de la carte.",
-  "noxesium.options.ui_map_location.tooltip": "Contrôle de la position de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\".",
+  "noxesium.options.ui_map_location.tooltip": "Contrôle de la position de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\", relatif à la main dans laquel la carte est tenue.",
 
   "noxesium.options.dump_incoming_packets.name": "Vider les paquets entrants",
   "noxesium.options.dump_incoming_packets.tooltip": "Active l'enregistrement des paquets Noxesium gérés par le client.\n\n§cPrévu pour les développeurs de serveurs travaillants sur les intégrations de Noxesium.",
@@ -39,31 +34,50 @@
   "noxesium.options.qib_debug_visuals.tooltip": "Active les debuggages visuel pour le systeme Qib.\n\n§cPrévu pour les développeurs de serveurs.",
   "noxesium.options.extended_packet_logging.name": "Enregistrement des Erreurs Étendu",
   "noxesium.options.extended_packet_logging.tooltip": "Ajoute un enregistrement supplémentaire d'erreurs à des types variés d'exceptions de paquets invalides.\n\n§cPrévu pour les développeurs de serveurs.",
-  "noxesium.options.enable_glowing_keybinds.name": "Touches de clavier de surbrillance d'équipe",
-  "noxesium.options.enable_glowing_keybinds.tooltip": "Ajoute des touches de clavier supplémentaire faisant surbriller les joueurs en fonction de leur couleur d'équipe. Redémarage du jeu requis pour l'appliquer!\n\n§cTouches de clavier fonctinnant uniquement en tant que spectateurs.",
+  "noxesium.options.debug_scoreboard_teams.name": "Déboguage des Equpes du Scoreboard",
+  "noxesium.options.debug_scoreboard_teams.tooltip": "Affiche des information supplémentaires de débogage dans les logs du client à propos des équipes du scoreboard. Ceci peut aider les servers a déboguer les erreurs de protocol.\n\n§cPrévu pour les développeurs de serveurs à déboguer des erreurs.",
+  "noxesium.options.show_culling_boxes.name": "Afficher les zones de collision des entités cachés.",
+  "noxesium.options.show_culling_boxes.tooltip": "Remplace les zones de collisions affichés avec F3+B par la zone de détection du champ de vision qui détermine si une entité doit rester affichée ou non. Ceci montre la longueur et la hauteur configurée pour les entités d'affichage.\n\n§cPrévu pour les développeurs de serveurs à déboguer les entités cachés",
+
+  "noxesium.options.boss_bar_position.name": "Position X de la Barre de Boss",
+  "noxesium.options.boss_bar_position.tooltip": "Contrôle la position horizotale de la barre de boss par rapport au milieu de l'écran.",
+  "noxesium.options.scoreboard_position.name": "Position Y du Scoreboard",
+  "noxesium.options.scoreboard_position.tooltip": "Contrôle la position verticale du scoreboard par rapport au centre-droit de l'écran.",
+  "noxesium.options.map_position.name": "Position Y de la Carte",
+  "noxesium.options.map_position.tooltip": "Contrôle de la position de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\" par rapport au centre de l'écran.",
+
+  "noxesium.options.boss_bar_scale.name": "Taille de la Barre de Boss",
+  "noxesium.options.boss_bar_scale.tooltip": "Change la taille de la barre de boss par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.scoreboard_scale.name": "Taille du Scoreboard",
+  "noxesium.options.scoreboard_scale.tooltip": "Change la aille du scoreboard par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.tab_list_scale.name": "Taille de la Liste des Joueurs",
+  "noxesium.options.tab_list_scale.tooltip": "Change la taille de la liste des joueurs par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.action_bar_scale.name": "Taille du Texte d'Information",
+  "noxesium.options.action_bar_scale.tooltip": "Change la taille du texte d'information (au dessus de la barre d'action) par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.title_scale.name": "Taille du Titre",
+  "noxesium.options.title_scale.tooltip": "Change la taille du texte du titre par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.chat_scale.name": "Taille du Tchat",
+  "noxesium.options.chat_scale.tooltip": "Change la taille du tchat par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.subtitles_scale.name": "Taille des Sous-Titres",
+  "noxesium.options.subtitles_scale.tooltip": "Change la taille des Sous-Titres par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.active_effects_scale.name": "Taille des Effets de Potion",
+  "noxesium.options.active_effects_scale.tooltip": "Change la taille des indications des effets de potion dans le coin supérieur droit, par rapport à la taille de l'Interface Utilisateur Graphique.",
+  "noxesium.options.map_scale.name": "Taille de la carte",
+  "noxesium.options.map_scale.tooltip": "Contrôle la taille de la carte pour le paramètre \"Rendu de la Carte dans l'Interface Utilisateur\".",
+  "noxesium.options.hotbar_scale.name": "Taille de la Barre d'Action",
+  "noxesium.options.hotbar_scale.tooltip": "Change la taille de la barre d'action par rapport à la taille de l'Interface Utilisateur Graphique.",
+
+  "noxesium.options.reset_scales": "Réinitialiser Toutes Les Tailles",
+  "noxesium.options.reset_positions": "Réinitialiser Toutes Les Positions",
 
   "noxesium.options.enum.default": "Demander au serveur",
   "noxesium.options.enum.true": "Toujours",
   "noxesium.options.enum.false": "Jamais",
 
-  "noxesium.options.enum.top": "Coin du haut",
-  "noxesium.options.enum.bottom": "Coin du bas",
+  "noxesium.options.enum.top": "Régulier",
+  "noxesium.options.enum.top_flipped": "Inversé",
 
-  "itemGroup.noxesium.server_items": "Blocs Customisés",
+  "noxesium.options.simple_value": "%s: %s",
 
-  "category.noxesium": "Noxesium",
-
-  "key.noxesium.glow.red": "Basculer la mise en lumière rouge (Spectateurs)",
-  "key.noxesium.glow.orange": "Basculer la mise en lumière orange (Spectateurs)",
-  "key.noxesium.glow.yellow": "Basculer la mise en lumière jaune (Spectateurs)",
-  "key.noxesium.glow.lime": "Basculer la mise en lumière vert clair (Spectateurs)",
-  "key.noxesium.glow.green": "Basculer la mise en lumière verte (Spectateurs)",
-  "key.noxesium.glow.cyan": "Basculer la mise en lumière cyan (Spectateurs)",
-  "key.noxesium.glow.aqua": "Basculer la mise en lumière turquoise (Spectateurs)",
-  "key.noxesium.glow.blue": "Basculer la mise en lumière bleue (Spectateurs)",
-  "key.noxesium.glow.purple": "Basculer la mise en lumière violette (Spectateurs)",
-  "key.noxesium.glow.pink": "Basculer la mise en lumière rose (Spectateurs)",
-
-  "key.noxesium.glow.all": "Activer toute les mises en lumière (Spectateurs)",
-  "key.noxesium.glow.none": "Désactiver toute les mises en lumière (Spectateurs)"
+  "itemGroup.noxesium.server_items": "Blocs Customisés"
 }
