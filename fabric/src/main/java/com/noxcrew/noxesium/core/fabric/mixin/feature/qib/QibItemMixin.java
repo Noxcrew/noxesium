@@ -21,9 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class QibItemMixin {
 
-    @Unique
-    private static final Map<UUID, Long> NOXESIUM_LAST_USE_TICK = new HashMap<>();
-
     @Inject(
             method = "startAttack",
             at =
@@ -52,36 +49,12 @@ public abstract class QibItemMixin {
     public void triggerUse(CallbackInfo ci) {
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
-        if (player == null || player.isSpectator()) return;
-
-        var main = player.getItemInHand(InteractionHand.MAIN_HAND);
-        var mainBehavior = main.noxesium$getComponent(CommonItemComponentTypes.QIB_BEHAVIOR);
-        if (mainBehavior != null) {
-            if (player.getCooldowns().isOnCooldown(main)) return;
-            var lastTick = NOXESIUM_LAST_USE_TICK.get(player.getUUID());
-            var currentTick = player.level().getGameTime();
-            if (lastTick != null && lastTick == currentTick) return;
-            NoxesiumApi.getInstance()
-                    .getFeatureOptional(QibBehaviorModule.class)
-                    .ifPresent((module) -> {
-                        module.useItemBehavior(player, mainBehavior);
-                    });
-            player.swing(InteractionHand.MAIN_HAND);
-            NOXESIUM_LAST_USE_TICK.put(player.getUUID(), currentTick);
-            return;
-        }
-
-        var off = player.getItemInHand(InteractionHand.OFF_HAND);
-        var offBehavior = off.noxesium$getComponent(CommonItemComponentTypes.QIB_BEHAVIOR);
-        if (offBehavior == null) return;
-        if (player.getCooldowns().isOnCooldown(off)) return;
-        var lastTick = NOXESIUM_LAST_USE_TICK.get(player.getUUID());
-        var currentTick = player.level().getGameTime();
-        if (lastTick != null && lastTick == currentTick) return;
+        var itemStack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        var qibBehavior = itemStack.noxesium$getComponent(CommonItemComponentTypes.QIB_BEHAVIOR);
+        if (qibBehavior == null || player.isSpectator()) return;
+        if (player.getCooldowns().isOnCooldown(itemStack)) return;
         NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent((module) -> {
-            module.useItemBehavior(player, offBehavior);
+            module.useItemBehavior(player, qibBehavior);
         });
-        player.swing(InteractionHand.OFF_HAND);
-        NOXESIUM_LAST_USE_TICK.put(player.getUUID(), currentTick);
     }
 }
