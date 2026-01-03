@@ -15,6 +15,7 @@ public record ServerboundQibTriggeredPacket(Key behavior, Type qibType, int enti
         INSIDE,
         ENTER,
         LEAVE,
-        ATTACK
+        ATTACK_BEHAVIOR,
+        USE_BEHAVIOR
     }
 }

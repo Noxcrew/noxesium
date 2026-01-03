@@ -124,4 +124,13 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
             qibCollisionManager.onUseItemBehavior(player, behavior);
         }
     }
+
+    /**
+     * Uses the given attack behavior for this player.
+     */
+    public void attackItemBehavior(Player player, Key behavior) {
+        if (qibCollisionManager != null) {
+            qibCollisionManager.onAttackItemBehavior(player, behavior);
+        }
+    }
 }

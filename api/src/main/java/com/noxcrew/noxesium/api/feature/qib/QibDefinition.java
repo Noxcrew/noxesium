@@ -22,7 +22,8 @@ import org.joml.Vector3f;
  * @param onLeave                   An effect triggered when a player leaves a qib.
  * @param whileInside               An effect triggered each client tick while inside a qib.
  * @param onJump                    An effect triggered when a player jumps while inside a qib.
- * @param onAttack                  An effect triggered when an item is used with this qib effect.
+ * @param onAttack                  An effect triggered when an item is used to attack with this qib effect.
+ * @param onUse                     An effect triggered when an item is used with this qib effect.
  * @param triggerEnterLeaveOnSwitch Whether to trigger the enter & leave effects when moving to a different
  *                                  instance of the same qib definition.
  */
@@ -32,7 +33,18 @@ public record QibDefinition(
         @Nullable QibEffect whileInside,
         @Nullable QibEffect onJump,
         @Nullable QibEffect onAttack,
+        @Nullable QibEffect onUse,
         boolean triggerEnterLeaveOnSwitch) {
+
+    public QibDefinition(
+            @Nullable QibEffect onEnter,
+            @Nullable QibEffect onLeave,
+            @Nullable QibEffect whileInside,
+            @Nullable QibEffect onJump,
+            @Nullable QibEffect onAttack,
+            boolean triggerEnterLeaveOnSwitch) {
+        this(onEnter, onLeave, whileInside, onJump, onAttack, null, triggerEnterLeaveOnSwitch);
+    }
 
     /**
      * A GSON implementation that can serialize QibDefinition objects.

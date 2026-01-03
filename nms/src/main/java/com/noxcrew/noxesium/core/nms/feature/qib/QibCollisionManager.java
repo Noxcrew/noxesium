@@ -97,12 +97,24 @@ public abstract class QibCollisionManager {
     /**
      * Triggers when a player uses an item with an attack behavior.
      */
-    public void onUseItemBehavior(Player player, Key behavior) {
+    public void onAttackItemBehavior(Player player, Key behavior) {
         var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
         if (definition == null) return;
         if (definition.onAttack() != null) {
-            onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.ATTACK, player.getId());
+            onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.ATTACK_BEHAVIOR, player.getId());
             executeBehavior(player, definition.onAttack());
+        }
+    }
+
+    /**
+     * Triggers when a player uses an item with use behavior.
+     */
+    public void onUseItemBehavior(Player player, Key behavior) {
+        var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
+        if (definition == null) return;
+        if (definition.onUse() != null) {
+            onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.USE_BEHAVIOR, player.getId());
+            executeBehavior(player, definition.onUse());
         }
     }
 
