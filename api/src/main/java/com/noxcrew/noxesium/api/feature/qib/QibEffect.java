@@ -114,6 +114,11 @@ public sealed interface QibEffect {
             implements QibEffect {}
 
     /**
+     * Makes the player start gliding.
+     */
+    public record StartGliding() implements QibEffect {}
+
+    /**
      * Makes the player exit gliding.
      */
     public record StopGliding() implements QibEffect {}

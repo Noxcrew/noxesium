@@ -97,25 +97,29 @@ public abstract class QibCollisionManager {
     /**
      * Triggers when a player uses an item with an attack behavior.
      */
-    public void onAttackItemBehavior(Player player, Key behavior) {
+    public boolean onAttackItemBehavior(Player player, Key behavior) {
         var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
-        if (definition == null) return;
+        if (definition == null) return false;
         if (definition.onAttack() != null) {
             onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.ATTACK_BEHAVIOR, player.getId());
             executeBehavior(player, definition.onAttack());
+            return true;
         }
+        return false;
     }
 
     /**
      * Triggers when a player uses an item with use behavior.
      */
-    public void onUseItemBehavior(Player player, Key behavior) {
+    public boolean onUseItemBehavior(Player player, Key behavior) {
         var definition = NoxesiumRegistries.QIB_EFFECTS.getByKey(behavior);
-        if (definition == null) return;
+        if (definition == null) return false;
         if (definition.onUse() != null) {
             onQibTriggered(behavior, ServerboundQibTriggeredPacket.Type.USE_BEHAVIOR, player.getId());
             executeBehavior(player, definition.onUse());
+            return true;
         }
+        return false;
     }
 
     /**
@@ -330,6 +334,13 @@ public abstract class QibCollisionManager {
                         .multiply(new Vec3(scale.x, scale.y, scale.z));
                 player.addDeltaMovement(impulse);
                 player.needsSync = true;
+            }
+            case QibEffect.StartGliding startGliding -> {
+                // Start gliding regardless of if you are meant to be able to so
+                // the qib can force you to!
+                if (!player.isFallFlying()) {
+                    player.startFallFlying();
+                }
             }
             case QibEffect.StopGliding stopGliding -> {
                 player.stopFallFlying();

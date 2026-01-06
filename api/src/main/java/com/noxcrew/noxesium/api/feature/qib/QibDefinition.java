@@ -36,16 +36,6 @@ public record QibDefinition(
         @Nullable QibEffect onUse,
         boolean triggerEnterLeaveOnSwitch) {
 
-    public QibDefinition(
-            @Nullable QibEffect onEnter,
-            @Nullable QibEffect onLeave,
-            @Nullable QibEffect whileInside,
-            @Nullable QibEffect onJump,
-            @Nullable QibEffect onAttack,
-            boolean triggerEnterLeaveOnSwitch) {
-        this(onEnter, onLeave, whileInside, onJump, onAttack, null, triggerEnterLeaveOnSwitch);
-    }
-
     /**
      * A GSON implementation that can serialize QibDefinition objects.
      */

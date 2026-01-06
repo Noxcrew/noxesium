@@ -8,8 +8,8 @@ import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -47,6 +47,6 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_update_game_components").add(ClientboundUpdateGameComponentsPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_OPEN_LINK =
             client(INSTANCE, "clientbound_open_link").add(ClientboundOpenLinkPacket.class);
-    public static final NoxesiumPayloadGroup CLIENT_STOP_GLIDE =
-            client(INSTANCE, "clientbound_stop_glide").add(ClientboundStopGlidePacket.class);
+    public static final NoxesiumPayloadGroup CLIENT_GLIDE =
+            client(INSTANCE, "clientbound_glide").add(ClientboundGlidePacket.class);
 }

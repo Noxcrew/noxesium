@@ -16,8 +16,8 @@ import com.noxcrew.noxesium.core.network.CommonPackets;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.List;
@@ -166,13 +166,19 @@ public class CommonPacketHandling extends NoxesiumFeature {
                     }
                 });
 
-        CommonPackets.CLIENT_STOP_GLIDE.addListener(
-                this, ClientboundStopGlidePacket.class, (reference, ignored2, ignored3) -> {
-                    if (!reference.isRegistered()) return;
-                    var player = Minecraft.getInstance().player;
-                    if (player == null) return;
-                    player.noxesium$stopFallFlying();
-                });
+        CommonPackets.CLIENT_GLIDE.addListener(this, ClientboundGlidePacket.class, (reference, packet, ignored3) -> {
+            if (!reference.isRegistered()) return;
+            var player = Minecraft.getInstance().player;
+            if (player == null) return;
+            if (packet.gliding()) {
+                // Always start gliding even if you can't so the server can force you to!
+                if (!player.isFallFlying()) {
+                    player.startFallFlying();
+                }
+            } else {
+                player.stopFallFlying();
+            }
+        });
     }
 
     /**

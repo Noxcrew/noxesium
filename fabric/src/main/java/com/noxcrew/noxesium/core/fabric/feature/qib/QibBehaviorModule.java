@@ -86,7 +86,7 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
             }
         }
 
-        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
+        if (NoxesiumMod.getInstance().getConfig().showQibSystemDebugging()) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance()
                         .getChatListener()
@@ -119,18 +119,20 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
     /**
      * Uses the given behavior for this player.
      */
-    public void useItemBehavior(Player player, Key behavior) {
+    public boolean useItemBehavior(Player player, Key behavior) {
         if (qibCollisionManager != null) {
-            qibCollisionManager.onUseItemBehavior(player, behavior);
+            return qibCollisionManager.onUseItemBehavior(player, behavior);
         }
+        return false;
     }
 
     /**
      * Uses the given attack behavior for this player.
      */
-    public void attackItemBehavior(Player player, Key behavior) {
+    public boolean attackItemBehavior(Player player, Key behavior) {
         if (qibCollisionManager != null) {
-            qibCollisionManager.onAttackItemBehavior(player, behavior);
+            return qibCollisionManager.onAttackItemBehavior(player, behavior);
         }
+        return false;
     }
 }

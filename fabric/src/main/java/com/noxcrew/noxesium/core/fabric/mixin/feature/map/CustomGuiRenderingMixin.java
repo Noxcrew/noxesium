@@ -68,7 +68,7 @@ public abstract class CustomGuiRenderingMixin {
 
         // Add debug overlays if enabled, these are not using translations as they are purely for debugging purposes!
         // Start with qib system debug information
-        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging && minecraft.player != null) {
+        if (NoxesiumMod.getInstance().getConfig().showQibSystemDebugging() && minecraft.player != null) {
             var models = NoxesiumApi.getInstance()
                     .getFeatureOptional(QibBehaviorModule.class)
                     .map(module -> module.getSpatialTree().getModelContents().size())

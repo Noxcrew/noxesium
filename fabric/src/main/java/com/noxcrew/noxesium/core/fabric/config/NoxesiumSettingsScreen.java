@@ -2,6 +2,7 @@ package com.noxcrew.noxesium.core.fabric.config;
 
 import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
 
+import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -176,8 +176,7 @@ public class NoxesiumSettingsScreen extends Screen {
             rowHelper.addChild(createWidget(NoxesiumOptions.DEBUG_SCOREBOARD_TEAMS));
             rowHelper.addChild(createWidget(NoxesiumOptions.EXTENDED_PACKET_LOGGING));
 
-            if (Minecraft.getInstance().player == null
-                    || Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER)) {
+            if (NoxesiumMod.getInstance().getConfig().hasOperatorPermissions()) {
                 rowHelper.addChild(createWidget(NoxesiumOptions.QIB_SYSTEM_VISUAL_DEBUG));
                 rowHelper.addChild(createWidget(NoxesiumOptions.SHOW_CULLING_HITBOXES));
             }

@@ -10,8 +10,8 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundStopGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
@@ -136,6 +136,9 @@ public class CommonPacketSerializers {
                         ByteBufCodecs.STRING_UTF8,
                         ClientboundOpenLinkPacket::url,
                         ClientboundOpenLinkPacket::new));
-        registerSerializer(ClientboundStopGlidePacket.class, StreamCodec.unit(ClientboundStopGlidePacket.INSTANCE));
+        registerSerializer(
+                ClientboundGlidePacket.class,
+                StreamCodec.composite(
+                        ByteBufCodecs.BOOL, ClientboundGlidePacket::gliding, ClientboundGlidePacket::new));
     }
 }

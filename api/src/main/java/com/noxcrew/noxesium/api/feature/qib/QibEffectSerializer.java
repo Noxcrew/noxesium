@@ -33,6 +33,7 @@ public class QibEffectSerializer implements JsonSerializer<QibEffect>, JsonDeser
             case "SetVelocity" -> context.deserialize(data, QibEffect.SetVelocity.class);
             case "SetVelocityYawPitch" -> context.deserialize(data, QibEffect.SetVelocityYawPitch.class);
             case "ModifyVelocity" -> context.deserialize(data, QibEffect.ModifyVelocity.class);
+            case "StartGliding" -> context.deserialize(data, QibEffect.StartGliding.class);
             case "StopGliding" -> context.deserialize(data, QibEffect.StopGliding.class);
             case "ApplyImpulse" -> context.deserialize(data, QibEffect.ApplyImpulse.class);
             default -> throw new JsonParseException(

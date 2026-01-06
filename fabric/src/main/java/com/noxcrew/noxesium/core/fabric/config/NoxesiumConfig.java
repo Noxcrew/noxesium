@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.server.permissions.Permissions;
 
 /**
  * Stores Noxesium's configured values.
@@ -36,6 +38,28 @@ public class NoxesiumConfig {
     public double scoreboardPosition = 0.0;
     public double mapPosition = -1.0;
     private Map<GuiElement, Double> scales;
+
+    /**
+     * Whether to show Qib system debugging visuals.
+     */
+    public boolean showQibSystemDebugging() {
+        return hasOperatorPermissions() && enableQibSystemDebugging;
+    }
+
+    /**
+     * Whether to show culling hitboxes.
+     */
+    public boolean showCullingBoxes() {
+        return hasOperatorPermissions() && showCullingBoxes;
+    }
+
+    /**
+     * Returns whether the player has operator permissions.
+     */
+    public boolean hasOperatorPermissions() {
+        return Minecraft.getInstance().player != null
+                && Minecraft.getInstance().player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
+    }
 
     /**
      * Returns the scales map.

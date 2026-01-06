@@ -49,7 +49,7 @@ public class ClientSpatialInteractionEntityTree extends SpatialTree {
         var oldRemovingEntities = removedEntities.size();
         super.rebuild();
 
-        if (NoxesiumMod.getInstance().getConfig().enableQibSystemDebugging) {
+        if (NoxesiumMod.getInstance().getConfig().showQibSystemDebugging()) {
             if (Minecraft.getInstance().player != null) {
                 var message = Component.literal("§eRebuilt spatial model, before: §f[S" + oldStaticEntities + ", A"
                         + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[S"
