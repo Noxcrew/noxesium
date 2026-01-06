@@ -45,6 +45,7 @@
     "feature.entity.beam.GuardianBubblesRuleMixin",
     "feature.entity.beam.GuardianStateMixin",
     "feature.entity.elytra.ElytraClientMixin",
+    "feature.entity.elytra.JumpInputMixin",
     "feature.entity.elytra.PlayerStartGlidingHook",
     "feature.entity.elytra.RemoveVanillaElytraSoundHook",
     "feature.entity.trident.SpinAttackCollisionMixin",

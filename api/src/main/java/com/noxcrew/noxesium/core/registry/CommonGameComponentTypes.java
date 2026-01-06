@@ -116,7 +116,7 @@ public class CommonGameComponentTypes {
      * This allows players to hop around with the elytra which is possible in vanilla
      * on higher ping.
      */
-    public static NoxesiumComponentType<Integer> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Integer.class);
+    public static NoxesiumComponentType<Double> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Double.class);
 
     /**
      * Registers a new component type to the registry.

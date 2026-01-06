@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -100,12 +101,20 @@ public class NoxesiumMod implements ClientModInitializer {
             public void run() {
                 while (true) {
                     try {
+                        // Run all background features
                         NoxesiumApi.getInstance().getAllFeatures().forEach(feature -> {
                             if (feature instanceof BackgroundTaskFeature backgroundTaskFeature) {
                                 backgroundTaskFeature.runAsync();
                             }
                         });
-                        Thread.sleep(20);
+
+                        // Tick the custom elytra coyote time
+                        var player = Minecraft.getInstance().player;
+                        if (player != null) {
+                            player.noxesium$checkCoyoteTime();
+                        }
+
+                        Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         return;
                     } catch (Exception ex) {

@@ -34,7 +34,7 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     private boolean noxesium$fallFlying = false;
 
     @Unique
-    private int noxesium$elytraCoyoteTime = 0;
+    private Long noxesium$elytraCoyoteMillis = null;
 
     @Unique
     @Nullable
@@ -43,8 +43,6 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     @Override
     public void noxesium$startFallFlying() {
         noxesium$fallFlying = true;
-        noxesium$elytraCoyoteTime = GameComponents.getInstance()
-                .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
         NoxesiumServerboundNetworking.send(new ServerboundGlidePacket(true));
 
         // Play the sound while gliding for the local player!
@@ -59,23 +57,59 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     @Override
     public void noxesium$stopFallFlying() {
         noxesium$fallFlying = false;
-        noxesium$elytraCoyoteTime = 0;
+        noxesium$elytraCoyoteMillis = null;
         NoxesiumServerboundNetworking.send(new ServerboundGlidePacket(false));
     }
 
-    @Inject(method = "updateFallFlying", at = @At("RETURN"))
+    @Override
+    public void noxesium$checkCoyoteTime() {
+        if (noxesium$elytraCoyoteMillis == null) return;
+        if (System.currentTimeMillis() < noxesium$elytraCoyoteMillis) return;
+
+        // If we've reached the elytra timeout we stop gliding!
+        stopFallFlying();
+    }
+
+    @Override
+    public void noxesium$handleJump() {
+        if (noxesium$elytraCoyoteMillis == null) return;
+
+        // If the player jumps within the coyote time we
+        // don't make them stop gliding!
+        noxesium$elytraCoyoteMillis = null;
+    }
+
+    /**
+     * Check custom gliding at the start of push entities which is after travel ticking which means
+     * the on ground state has been updated properly! This avoids a timer starting after we literally
+     * just jumped.
+     */
+    @Inject(method = "pushEntities", at = @At("HEAD"))
     public void updateFallFlying(CallbackInfo ci) {
         if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
             return;
         if (((Object) this) != Minecraft.getInstance().player) return;
 
-        if (canGlide()) {
-            noxesium$elytraCoyoteTime = GameComponents.getInstance()
-                    .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0);
-        } else if (noxesium$elytraCoyoteTime > 0) {
-            noxesium$elytraCoyoteTime--;
+        // Ignore if not fall flying
+        if (!noxesium$fallFlying) return;
+
+        // If you cannot glide anymore we start a timer!
+        if (!canGlide()) {
+            if (noxesium$elytraCoyoteMillis == null) {
+                // Determine when the coyote time will end!
+                var extraTime = (long) Math.floor(GameComponents.getInstance()
+                                .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0.0)
+                        * 50);
+                var elytraCoyoteTime = System.currentTimeMillis() + extraTime;
+                if (extraTime <= 0) {
+                    stopFallFlying();
+                } else {
+                    noxesium$elytraCoyoteMillis = elytraCoyoteTime;
+                }
+            }
         } else {
-            stopFallFlying();
+            // Stop the timer if you are allowed to glide!
+            noxesium$elytraCoyoteMillis = null;
         }
     }
 

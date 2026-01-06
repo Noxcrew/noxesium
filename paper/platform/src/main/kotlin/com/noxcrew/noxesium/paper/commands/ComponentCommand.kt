@@ -1,6 +1,7 @@
 package com.noxcrew.noxesium.paper.commands
 
 import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.FloatArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -525,6 +526,17 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                         ctx,
                                         type as NoxesiumComponentType<Int>,
                                         IntegerArgumentType.getInteger(ctx, "value"),
+                                    )
+                                }
+
+                        java.lang.Double::class.java.isAssignableFrom(type.clazz) ->
+                            Commands
+                                .argument("value", DoubleArgumentType.doubleArg())
+                                .executes { ctx ->
+                                    configurer.set(
+                                        ctx,
+                                        type as NoxesiumComponentType<Double>,
+                                        DoubleArgumentType.getDouble(ctx, "value"),
                                     )
                                 }
 
