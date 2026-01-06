@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
@@ -18,6 +19,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerStartGlidingHook {
     @Shadow
     protected abstract boolean canGlide();
+
+    @Inject(method = "startFallFlying", at = @At("HEAD"), cancellable = true)
+    public void onStartGlidingByForce(CallbackInfo ci) {
+        if (!GameComponents.getInstance().noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA))
+            return;
+        var player = Minecraft.getInstance().player;
+        if (((Object) this) != player) return;
+        ci.cancel();
+        ((FallFlyingEntityExtension) this).noxesium$startFallFlying();
+    }
 
     @Inject(method = "tryToStartFallFlying", at = @At("HEAD"), cancellable = true)
     public void onStartGliding(CallbackInfoReturnable<Boolean> cir) {
