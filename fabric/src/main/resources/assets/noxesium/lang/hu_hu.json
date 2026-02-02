@@ -13,7 +13,7 @@
   "noxesium.options.render_maps_as_ui.name": "Térképek Kezelőfelületen Megjelenítése",
   "noxesium.options.render_maps_as_ui.tooltip": "Ha be van kapcsolva, akkor a kézben tartott térképek a képernyő bal/jobb felső sarkában fognak megjelenni a kéz pozíciója helyett.\n\nHa \"Szerver megkérdezése\" van beállítva, a szerver, amin játszol, engedélyezheti vagy letilthatja ezt a funkciót.",
 
-  "noxesium.options.ui_map_location.name": "Térkép Kezelőfelületi Mérete",
+  "noxesium.options.ui_map_location.name": "Térkép Kezelőfelületi Helye",
   "noxesium.options.ui_map_location.tooltip": "Irányítja a térkép helyét a \"Térképek Kezelőfelületen Megjelenítése\" beállításhoz, a térképet tartó kézhez viszonyítva.",
 
   "noxesium.options.dump_incoming_packets.name": "Bejövő Csomagok Kiírása",
