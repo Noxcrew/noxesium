@@ -89,7 +89,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
 
     @Override
     public void remove(Key key) {
-        if (byKey.containsKey(key)) {
+        if (contains(key)) {
             pendingUpdates.add(key);
         }
         super.remove(key);
@@ -107,7 +107,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
 
     @Override
     public void reset() {
-        pendingUpdates.addAll(byKey.keySet());
+        pendingUpdates.addAll(getKeys());
         super.reset();
     }
 }

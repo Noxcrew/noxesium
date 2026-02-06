@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
@@ -71,7 +70,8 @@ public final class PacketCollection {
      */
     public NoxesiumPayloadGroup register(String namespace, String id, boolean clientToServer) {
         var key = Key.key(namespace, id);
-        Preconditions.checkArgument(!packets.containsKey(key));
+        if (packets.containsKey(key))
+            throw new IllegalArgumentException("Cannot register packet called '" + key + "' twice");
         var group = new NoxesiumPayloadGroup(this, key, clientToServer);
         packets.put(key, group);
         return group;

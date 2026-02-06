@@ -1,10 +1,9 @@
 package com.noxcrew.noxesium.api.feature.sprite;
 
-import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Handles the registry for custom sprite types that can be deserialized.
@@ -24,8 +23,8 @@ public class CustomSpriteRegistry {
      * Registers a new type of custom sprite using the given parser.
      */
     public static void register(String type, Function<Map<String, String>, CustomSpriteType> parser) {
-        Preconditions.checkArgument(
-                !customSpriteTypes.containsKey(type), "Cannot register type '" + type + "' multiple times");
+        if (customSpriteTypes.containsKey(type))
+            throw new IllegalArgumentException("Cannot register type '" + type + "' multiple times");
         customSpriteTypes.put(type, parser);
     }
 

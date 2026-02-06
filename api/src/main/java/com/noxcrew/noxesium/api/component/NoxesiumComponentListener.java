@@ -1,11 +1,11 @@
 package com.noxcrew.noxesium.api.component;
 
 import com.noxcrew.noxesium.api.NoxesiumApi;
+import com.noxcrew.noxesium.api.util.Pair;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * An object that can be listened to when a component updates.
@@ -26,8 +26,8 @@ public class NoxesiumComponentListener<T, R> {
      * will never be properly garbage collected.
      */
     public <F> void addListener(F reference, BiConsumer<F, ComponentChangeContext<T, R>> listener) {
-        listeners.removeIf((it) -> it.getKey().get() == null);
-        listeners.add(Pair.of(new WeakReference<>(reference), listener));
+        listeners.removeIf((it) -> it.first().get() == null);
+        listeners.add(new Pair<>(new WeakReference<>(reference), listener));
     }
 
     /**
@@ -43,15 +43,15 @@ public class NoxesiumComponentListener<T, R> {
     public void trigger(Object receiver, Object oldValue, Object newValue) {
         try {
             var iterator = listeners.iterator();
-            var context = new ComponentChangeContext<T, R>((T) oldValue, (T) newValue, (R) receiver);
+            var context = new ComponentChangeContext<>((T) oldValue, (T) newValue, (R) receiver);
             while (iterator.hasNext()) {
                 var pair = iterator.next();
-                var obj = pair.getKey().get();
+                var obj = pair.first().get();
                 if (obj == null) {
                     iterator.remove();
                     continue;
                 }
-                acceptAny(pair.getValue(), obj, context);
+                acceptAny(pair.second(), obj, context);
             }
         } catch (Throwable x) {
             NoxesiumApi.getLogger().info("Caught exception while emitting component change event", x);

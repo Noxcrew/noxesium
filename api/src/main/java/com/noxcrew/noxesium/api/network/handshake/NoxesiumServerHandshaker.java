@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,7 +58,7 @@ public abstract class NoxesiumServerHandshaker {
     /**
      * Stores universally unique identifiers for registry updates.
      */
-    private final MutableInt registryUpdateIdentifier = new MutableInt();
+    private int registryUpdateIdentifier = 0;
 
     /**
      * Registers the handshaker.
@@ -122,7 +121,7 @@ public abstract class NoxesiumServerHandshaker {
                 player.markRegistryDynamic(registry);
 
                 // Mark down that we're waiting on this registry sync!
-                var id = registryUpdateIdentifier.getAndIncrement();
+                var id = registryUpdateIdentifier++;
                 var added = new HashSet<Integer>();
                 var removed = new HashSet<Integer>();
                 for (var entry : syncContents.getMap().entrySet()) {
@@ -285,7 +284,7 @@ public abstract class NoxesiumServerHandshaker {
                 // Ignore if the client already has this version of the registry!
                 if (player.isRegistrySynchronized(registry, syncContents.hashCode())) continue;
 
-                var id = registryUpdateIdentifier.getAndIncrement();
+                var id = registryUpdateIdentifier++;
                 player.awaitRegistrySync(id, new IdChangeSet(registry, true, syncContents.getIds(), Set.of()));
                 if (!player.sendPacket(new ClientboundRegistryContentUpdatePacket(id, true, syncContents))) {
                     NoxesiumApi.getLogger()
@@ -301,7 +300,7 @@ public abstract class NoxesiumServerHandshaker {
                 // Ignore if the client already has this version of the registry!
                 if (player.isRegistrySynchronized(registry, syncContents.hashCode())) continue;
 
-                var id = registryUpdateIdentifier.getAndIncrement();
+                var id = registryUpdateIdentifier++;
                 player.awaitRegistrySync(id, new IdChangeSet(registry, true, syncContents.values(), Set.of()));
                 if (!player.sendPacket(
                         new ClientboundRegistryIdsUpdatePacket(id, true, serverRegistry.id(), syncContents))) {

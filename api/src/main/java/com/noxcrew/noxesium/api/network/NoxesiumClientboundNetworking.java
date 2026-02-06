@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
@@ -18,7 +17,7 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
      * Returns the singleton instance of this class.
      */
     public static NoxesiumClientboundNetworking getInstance() {
-        Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
+        if (instance == null) throw new IllegalStateException("Cannot get networking instance before it is defined");
         return (NoxesiumClientboundNetworking) instance;
     }
 
@@ -27,8 +26,8 @@ public abstract class NoxesiumClientboundNetworking extends NoxesiumNetworking {
     @Override
     public void register(NoxesiumPayloadGroup group, @Nullable NoxesiumEntrypoint entrypoint) {
         super.register(group, entrypoint);
-        Preconditions.checkState(
-                !entrypoints.containsKey(group), "Cannot register payload group '" + group + "' twice");
+        if (entrypoints.containsKey(group))
+            throw new IllegalStateException("Cannot register payload group '" + group + "' twice");
         entrypoints.put(group, entrypoint);
     }
 

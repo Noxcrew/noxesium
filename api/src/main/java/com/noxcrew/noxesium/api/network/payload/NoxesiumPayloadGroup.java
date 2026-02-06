@@ -4,6 +4,9 @@ import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.network.NoxesiumPacket;
 import com.noxcrew.noxesium.api.network.PacketCollection;
+import com.noxcrew.noxesium.api.util.Pair;
+import com.noxcrew.noxesium.api.util.TriConsumer;
+import com.noxcrew.noxesium.api.util.Triple;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +19,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import net.kyori.adventure.key.Key;
-import org.apache.commons.lang3.function.TriConsumer;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,7 +165,7 @@ public class NoxesiumPayloadGroup {
         while (!condition.apply(currentType)) {
             var pair = newToOld.get(currentType.clazz);
             if (pair == null) return false;
-            currentType = pair.getKey();
+            currentType = pair.first();
         }
         return true;
     }
@@ -237,8 +237,8 @@ public class NoxesiumPayloadGroup {
             NoxesiumPayloadType<T> newType,
             Function<T, P> newToOld,
             Function<P, T> oldToNew) {
-        this.newToOld.put(newClass, Pair.of(newType, newToOld));
-        this.oldToNew.put(oldClass, Pair.of(oldType, oldToNew));
+        this.newToOld.put(newClass, new Pair<>(newType, newToOld));
+        this.oldToNew.put(oldClass, new Pair<>(oldType, oldToNew));
     }
 
     /**
@@ -267,14 +267,14 @@ public class NoxesiumPayloadGroup {
                 var pair = iterator.next();
 
                 // Ignore if the listener was garbage collected
-                var obj = pair.getMiddle().get();
+                var obj = pair.second().get();
                 if (obj == null) {
                     iterator.remove();
                     continue;
                 }
 
                 // Try to cast the payload into the type this handler is attempting to receive
-                var clazz = pair.getLeft();
+                var clazz = pair.first();
                 var relevantPayload = types.computeIfAbsent(clazz, (target) -> {
                     // Try to modernize this packet to any newer types we know about that we might be listening for!
                     var newest = searchForVersion(type, payload, (it) -> it.clazz.equals(target), oldToNew);
@@ -287,7 +287,7 @@ public class NoxesiumPayloadGroup {
                     return Optional.empty();
                 });
                 if (relevantPayload.isEmpty()) continue;
-                acceptAny(pair.getRight(), obj, context, relevantPayload.get());
+                acceptAny(pair.third(), obj, context, relevantPayload.get());
             }
         } catch (Throwable x) {
             NoxesiumApi.getLogger().error("Caught exception while handling packet", x);
@@ -307,8 +307,8 @@ public class NoxesiumPayloadGroup {
     public <R, T extends NoxesiumPacket> void addListener(
             R reference, Class<T> clazz, @NotNull TriConsumer<R, T, UUID> listener) {
         var wasEmpty = !hasListeners();
-        listeners.removeIf((it) -> it.getMiddle().get() == null);
-        listeners.add(Triple.of(clazz, new WeakReference<>(reference), listener));
+        listeners.removeIf((it) -> it.second().get() == null);
+        listeners.add(new Triple<>(clazz, new WeakReference<>(reference), listener));
 
         // If this listener was previously not active, inform the other side!
         if (wasEmpty) {
@@ -349,8 +349,8 @@ public class NoxesiumPayloadGroup {
             }
 
             // Perform this conversion later and update the current type
-            selected.add(pair.getValue());
-            currentType = pair.getKey();
+            selected.add(pair.second());
+            currentType = pair.first();
         }
 
         // Then we apply the found converters

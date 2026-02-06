@@ -44,22 +44,23 @@ public class ServerNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
         super.register(key, value, entrypoint);
 
         // Don't re-register if the value is already included!
-        if (byId.containsValue(value)) return value;
+        if (valueToId.containsKey(value)) return value;
 
         var id = lastId.getAndIncrement();
-        byId.put(id, value);
+        idToValue.put(id, value);
+        valueToId.put(value, id);
         entrypoints.put(key, entrypoint == null ? null : entrypoint.getId());
         return value;
     }
 
     @Override
     public void remove(Key key) {
-        var value = byKey.get(key);
+        var value = keyToValue.get(key);
         if (value == null) return;
         super.remove(key);
         entrypoints.remove(key);
 
-        var id = byId.inverse().get(value);
-        byId.remove(id);
+        var id = valueToId.remove(value);
+        idToValue.remove(id);
     }
 }

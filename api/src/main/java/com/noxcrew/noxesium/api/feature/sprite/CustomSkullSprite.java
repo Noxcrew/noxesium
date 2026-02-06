@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.api.feature.sprite;
 
 import java.util.Map;
 import java.util.UUID;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The data contained in a skull format string.

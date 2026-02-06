@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.network.json;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +35,8 @@ public class JsonSerializerRegistry {
      */
     @NotNull
     public JsonSerializer getSerializer(String id) {
-        if (!serializers.containsKey(id)) {
+        if (!serializers.containsKey(id))
             throw new IllegalArgumentException("Could not find JSON serializer with id '" + id + "'");
-        }
         return serializers.get(id);
     }
 
@@ -52,7 +50,8 @@ public class JsonSerializerRegistry {
      * your own serializer instance.
      */
     public void register(String id, JsonSerializer serializer) {
-        Preconditions.checkState(!serializers.containsKey(id), "Cannot register serializer " + id + " twice");
+        if (serializers.containsKey(id))
+            throw new IllegalArgumentException("Cannot register serializer " + id + " twice");
         serializers.put(id, serializer);
     }
 }

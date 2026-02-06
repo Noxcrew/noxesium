@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
@@ -20,7 +19,7 @@ public abstract class NoxesiumNetworking {
      * Returns the singleton instance of this class.
      */
     public static NoxesiumNetworking getInstance() {
-        Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
+        if (instance == null) throw new IllegalStateException("Cannot get networking instance before it is defined");
         return instance;
     }
 
@@ -28,7 +27,8 @@ public abstract class NoxesiumNetworking {
      * Sets the networking instance.
      */
     public static void setInstance(NoxesiumNetworking instance) {
-        Preconditions.checkState(NoxesiumNetworking.instance == null, "Cannot set the networking instance twice!");
+        if (NoxesiumNetworking.instance != null)
+            throw new IllegalStateException("Cannot set the networking instance twice!");
         NoxesiumNetworking.instance = instance;
     }
 
@@ -47,8 +47,8 @@ public abstract class NoxesiumNetworking {
     public void register(NoxesiumPayloadGroup group, @Nullable NoxesiumEntrypoint entrypoint) {
         for (var type : group.getPayloadTypes()) {
             var clazz = type.typeClass();
-            Preconditions.checkState(
-                    !packetTypes.containsKey(clazz), "Cannot register payload type '" + clazz + "' twice");
+            if (packetTypes.containsKey(clazz))
+                throw new IllegalArgumentException("Cannot register payload type '" + clazz + "' twice");
             packetTypes.put(clazz, type);
         }
     }

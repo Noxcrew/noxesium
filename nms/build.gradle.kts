@@ -18,6 +18,7 @@ neoForge {
 
 dependencies {
     compileOnly(project(":api"))
+    compileOnly(libs.prtree)
 }
 
 configurations {

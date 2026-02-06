@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.network;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
@@ -19,7 +18,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
      * Returns the singleton instance of this class.
      */
     public static NoxesiumServerboundNetworking getInstance() {
-        Preconditions.checkNotNull(instance, "Cannot get networking instance before it is defined");
+        if (instance == null) throw new IllegalStateException("Cannot get networking instance before it is defined");
         return (NoxesiumServerboundNetworking) instance;
     }
 

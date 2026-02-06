@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.player;
 
-import com.google.common.base.Preconditions;
 import com.noxcrew.noxesium.api.network.handshake.HandshakeState;
 import java.util.Collection;
 import java.util.Map;
@@ -18,7 +17,8 @@ public class NoxesiumPlayerManager {
      * Returns the singleton instance of this class.
      */
     public static NoxesiumPlayerManager getInstance() {
-        Preconditions.checkNotNull(instance, "Cannot get player manager instance before it is defined");
+        if (instance == null)
+            throw new IllegalStateException("Cannot get player manager instance before it is defined");
         return instance;
     }
 
@@ -26,8 +26,8 @@ public class NoxesiumPlayerManager {
      * Sets the player manager instance.
      */
     public static void setInstance(NoxesiumPlayerManager instance) {
-        Preconditions.checkState(
-                NoxesiumPlayerManager.instance == null, "Cannot set the player manager instance twice!");
+        if (NoxesiumPlayerManager.instance != null)
+            throw new IllegalStateException("Cannot set the player manager instance twice!");
         NoxesiumPlayerManager.instance = instance;
     }
 
@@ -44,7 +44,8 @@ public class NoxesiumPlayerManager {
      * Registers a new player with the given UUID and starting data.
      */
     public void registerPlayer(UUID uniqueId, NoxesiumServerPlayer player) {
-        Preconditions.checkState(!players.containsKey(uniqueId), "Cannot register player '" + uniqueId + "' twice!");
+        if (players.containsKey(uniqueId))
+            throw new IllegalStateException("Cannot register player '" + uniqueId + "' twice!");
         players.put(uniqueId, player);
     }
 

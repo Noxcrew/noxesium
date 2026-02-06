@@ -1,6 +1,5 @@
 package com.noxcrew.noxesium.api.component;
 
-import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -17,7 +16,8 @@ public abstract class NoxesiumEntityManager<E, C extends MutableNoxesiumComponen
      * Returns the singleton instance of this class.
      */
     public static <E, C extends MutableNoxesiumComponentHolder> NoxesiumEntityManager<E, C> getInstance() {
-        Preconditions.checkNotNull(instance, "Cannot get entity manager instance before it is defined");
+        if (instance == null)
+            throw new IllegalStateException("Cannot get entity manager instance before it is defined");
         return (NoxesiumEntityManager<E, C>) instance;
     }
 
@@ -25,8 +25,8 @@ public abstract class NoxesiumEntityManager<E, C extends MutableNoxesiumComponen
      * Sets the player manager instance.
      */
     public static void setInstance(NoxesiumEntityManager<?, ?> instance) {
-        Preconditions.checkState(
-                NoxesiumEntityManager.instance == null, "Cannot set the entity manager instance twice!");
+        if (NoxesiumEntityManager.instance != null)
+            throw new IllegalStateException("Cannot set the entity manager instance twice!");
         NoxesiumEntityManager.instance = instance;
     }
 

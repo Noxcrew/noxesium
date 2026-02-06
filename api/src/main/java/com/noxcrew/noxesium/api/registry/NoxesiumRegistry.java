@@ -1,9 +1,9 @@
 package com.noxcrew.noxesium.api.registry;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,8 +14,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoxesiumRegistry<T> {
     private final Key id;
-    protected final BiMap<Integer, T> byId = HashBiMap.create();
-    protected final BiMap<Key, T> byKey = HashBiMap.create();
+    protected final Map<Integer, T> idToValue = new HashMap<>();
+    protected final Map<T, Integer> valueToId = new HashMap<>();
+    protected final Map<Key, T> keyToValue = new HashMap<>();
+    protected final Map<T, Key> valueToKey = new HashMap<>();
 
     public NoxesiumRegistry(Key id) {
         this.id = id;
@@ -32,43 +34,45 @@ public class NoxesiumRegistry<T> {
      * Fully clears and resets this registry.
      */
     public void reset() {
-        byId.clear();
-        byKey.clear();
+        idToValue.clear();
+        valueToId.clear();
+        keyToValue.clear();
+        valueToKey.clear();
     }
 
     /**
      * Returns the keys of this registry.
      */
     public Collection<Key> getKeys() {
-        return byKey.keySet();
+        return keyToValue.keySet();
     }
 
     /**
      * Returns all contents of this registry.
      */
     public Collection<T> getContents() {
-        return byKey.values();
+        return valueToKey.keySet();
     }
 
     /**
      * Returns whether this registry contains the given key.
      */
     public boolean contains(Key key) {
-        return byKey.containsKey(key);
+        return keyToValue.containsKey(key);
     }
 
     /**
      * Returns the size of this registry.
      */
     public int size() {
-        return byKey.size();
+        return keyToValue.size();
     }
 
     /**
      * Returns whether the registry is empty.
      */
     public boolean isEmpty() {
-        return byKey.isEmpty();
+        return keyToValue.isEmpty();
     }
 
     /**
@@ -82,8 +86,12 @@ public class NoxesiumRegistry<T> {
      * Registers a new entry into this registry.
      */
     public <V extends T> V register(Key key, V value, @Nullable NoxesiumEntrypoint entrypoint) {
-        if (byKey.get(key) != value) {
-            byKey.put(key, value);
+        if (keyToValue.get(key) != value) {
+            var oldValue = keyToValue.put(key, value);
+            if (oldValue != null) {
+                valueToKey.remove(oldValue);
+            }
+            valueToKey.put(value, key);
         }
         return value;
     }
@@ -92,7 +100,10 @@ public class NoxesiumRegistry<T> {
      * Removes the given key from the registry.
      */
     public void remove(Key key) {
-        byKey.remove(key);
+        var oldValue = keyToValue.remove(key);
+        if (oldValue != null) {
+            valueToKey.remove(oldValue);
+        }
     }
 
     /**
@@ -100,7 +111,7 @@ public class NoxesiumRegistry<T> {
      */
     @Nullable
     public T getById(int id) {
-        return byId.get(id);
+        return idToValue.get(id);
     }
 
     /**
@@ -109,7 +120,7 @@ public class NoxesiumRegistry<T> {
      */
     public int getIdFor(T value) {
         if (value == null) return -1;
-        var boxed = byId.inverse().get(value);
+        var boxed = valueToId.get(value);
         return boxed == null ? -1 : boxed;
     }
 
@@ -129,7 +140,7 @@ public class NoxesiumRegistry<T> {
      */
     @Nullable
     public Key getKeyFor(T value) {
-        return byKey.inverse().get(value);
+        return valueToKey.get(value);
     }
 
     /**
@@ -137,6 +148,6 @@ public class NoxesiumRegistry<T> {
      */
     @Nullable
     public T getByKey(Key key) {
-        return byKey.get(key);
+        return keyToValue.get(key);
     }
 }
