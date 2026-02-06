@@ -57,6 +57,10 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         // Mark down when the protocol changes
         ClientConfigurationConnectionEvents.START.register((ignored1, ignored2) -> {
             NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.CONFIGURATION);
+
+            // When we enter the configuration phase the channel is no longer registered and we need to re-configure
+            // after leaving the config phase.
+            uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
         });
         ClientPlayConnectionEvents.JOIN.register((ignored1, ignored2, ignored3) -> {
             NoxesiumServerboundNetworking.getInstance().setConfiguredProtocol(ConnectionProtocolType.PLAY);
