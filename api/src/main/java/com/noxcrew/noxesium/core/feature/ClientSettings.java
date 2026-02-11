@@ -11,6 +11,7 @@ package com.noxcrew.noxesium.core.feature;
  * @param enforceUnicode          Whether unicode fonts are being enforced.
  * @param touchScreenMode         Whether touch screen mode is enabled.
  * @param notificationDisplayTime What the notification display time is set to.
+ * @param chatWidth               The chat width (this is given on a scale 0-1 with 0 being 40px 1 being 320px), if unknown is -1.
  */
 public record ClientSettings(
         int configuredGuiScale,
@@ -19,4 +20,5 @@ public record ClientSettings(
         int height,
         boolean enforceUnicode,
         boolean touchScreenMode,
-        double notificationDisplayTime) {}
+        double notificationDisplayTime,
+        double chatWidth) {}
