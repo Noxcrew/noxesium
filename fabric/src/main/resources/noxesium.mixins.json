@@ -13,6 +13,7 @@
     "feature.BoatCollisionMixin",
     "feature.CustomCreativeReloadMixin",
     "feature.DisableMusicMixin",
+    "feature.GameRendererZoomMixin",
     "feature.OptionInstanceMixin",
     "feature.TextOffsetMixin",
     "feature.authoritative.ServerAuthoritativeArrowsMixin",
