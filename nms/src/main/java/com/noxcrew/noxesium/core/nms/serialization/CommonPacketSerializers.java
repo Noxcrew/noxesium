@@ -7,6 +7,7 @@ import com.noxcrew.noxesium.api.nms.codec.NoxesiumCodecs;
 import com.noxcrew.noxesium.api.nms.codec.NoxesiumStreamCodecs;
 import com.noxcrew.noxesium.api.nms.serialization.SerializableRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
+import com.noxcrew.noxesium.core.feature.EasingType;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
@@ -14,6 +15,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundZoomPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
@@ -140,5 +142,21 @@ public class CommonPacketSerializers {
                 ClientboundGlidePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.BOOL, ClientboundGlidePacket::gliding, ClientboundGlidePacket::new));
+        registerSerializer(
+                ClientboundZoomPacket.class,
+                StreamCodec.composite(
+                        ByteBufCodecs.FLOAT,
+                        ClientboundZoomPacket::zoom,
+                        ByteBufCodecs.VAR_INT,
+                        ClientboundZoomPacket::transitionTicks,
+                        NoxesiumStreamCodecs.forEnum(EasingType.class),
+                        ClientboundZoomPacket::easingType,
+                        ByteBufCodecs.BOOL,
+                        ClientboundZoomPacket::lockClientFov,
+                        ByteBufCodecs.BOOL,
+                        ClientboundZoomPacket::keepHandStationary,
+                        ByteBufCodecs.BOOL,
+                        ClientboundZoomPacket::reset,
+                        ClientboundZoomPacket::new));
     }
 }

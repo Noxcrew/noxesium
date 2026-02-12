@@ -6,11 +6,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.fabric.feature.SyncGuiScale;
+import com.noxcrew.noxesium.core.fabric.feature.ZoomModule;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
+import net.minecraft.client.gui.components.AbstractWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -24,6 +26,25 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(OptionInstance.class)
 public abstract class OptionInstanceMixin<T> {
 
+    @ModifyReturnValue(
+            method =
+                    "createButton(Lnet/minecraft/client/Options;IIIJ)Lnet/minecraft/client/gui/components/AbstractWidget;",
+            at = @At("RETURN"))
+    private AbstractWidget disableFovSliderWhenZoomLocked(AbstractWidget widget) {
+        var options = Minecraft.getInstance().options;
+        if (options == null) return widget;
+
+        // disable FOV slider while server controlled zoom is active
+        if (((Object) this) == options.fov()) {
+            var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
+            if (zoom != null && zoom.isRegistered() && zoom.isLockClientFov()) {
+                widget.active = false;
+            }
+        }
+
+        return widget;
+    }
+
     @WrapOperation(
             method = "set",
             at =
@@ -36,7 +57,9 @@ public abstract class OptionInstanceMixin<T> {
         if (instance == options.touchscreen() || instance == options.notificationDisplayTime()) {
             NoxesiumApi.getInstance().getFeatureOptional(SyncGuiScale.class).ifPresent(SyncGuiScale::syncGuiScale);
         }
-        return original.call(instance);
+        var consumer = original.call(instance);
+
+        return consumer;
     }
 
     @ModifyReturnValue(method = "get", at = @At("RETURN"))
