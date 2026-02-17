@@ -35,11 +35,4 @@ dependencies {
         api(target)
     }
     includeLibrary(libs.juniversalchardet)
-
-    // Add tiny filled dialogs for the file picker
-    val lwjglVersion = "3.3.2"
-    implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
-    runtimeOnly("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-linux")
-    runtimeOnly("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:natives-macos")
 }
