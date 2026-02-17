@@ -8,6 +8,7 @@ import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.nms.serialization.HandshakePacketSerializers;
 import com.noxcrew.noxesium.api.registry.RegistryCollection;
 import com.noxcrew.noxesium.core.fabric.feature.SyncGuiScale;
+import com.noxcrew.noxesium.core.fabric.feature.ZoomModule;
 import com.noxcrew.noxesium.core.fabric.feature.qib.QibBehaviorModule;
 import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundModule;
 import com.noxcrew.noxesium.core.fabric.network.CommonComponentChangeListeners;
@@ -80,6 +81,7 @@ public class CommonFabricNoxesiumEntrypoint implements ClientNoxesiumEntrypoint 
         var features = new ArrayList<NoxesiumFeature>();
         features.add(new SyncGuiScale());
         features.add(new NoxesiumSoundModule());
+        features.add(new ZoomModule());
         features.add(commonComponentChangeListeners);
         features.add(commonPacketHandling);
         features.add(qibBehaviorModule);
