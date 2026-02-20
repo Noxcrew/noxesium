@@ -33,7 +33,9 @@ public abstract class OptionInstanceMixin<T> {
                                     "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
     private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
         var options = Minecraft.getInstance().options;
-        if (instance == options.touchscreen() || instance == options.notificationDisplayTime()) {
+        if (instance == options.touchscreen()
+                || instance == options.notificationDisplayTime()
+                || instance == options.chatWidth()) {
             NoxesiumApi.getInstance().getFeatureOptional(SyncGuiScale.class).ifPresent(SyncGuiScale::syncGuiScale);
         }
         return original.call(instance);
