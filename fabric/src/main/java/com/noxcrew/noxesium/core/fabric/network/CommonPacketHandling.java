@@ -9,6 +9,7 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
+import com.noxcrew.noxesium.core.fabric.feature.ZoomModule;
 import com.noxcrew.noxesium.core.fabric.feature.sound.EntityNoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundModule;
@@ -20,6 +21,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundZoomPacket;
 import java.util.List;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
@@ -177,6 +179,23 @@ public class CommonPacketHandling extends NoxesiumFeature {
                 }
             } else {
                 player.stopFallFlying();
+            }
+        });
+
+        CommonPackets.CLIENT_ZOOM.addListener(this, ClientboundZoomPacket.class, (reference, packet, ignored3) -> {
+            if (!reference.isRegistered()) return;
+            var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
+            if (zoom == null) return;
+
+            if (packet.reset()) {
+                zoom.reset();
+            } else {
+                zoom.applyZoom(
+                        packet.zoom(),
+                        packet.transitionTicks(),
+                        packet.easingType(),
+                        packet.lockClientFov(),
+                        packet.keepHandStationary());
             }
         });
     }

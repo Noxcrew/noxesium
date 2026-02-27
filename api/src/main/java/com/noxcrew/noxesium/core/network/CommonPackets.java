@@ -12,6 +12,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundZoomPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
@@ -49,4 +50,6 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_open_link").add(ClientboundOpenLinkPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_GLIDE =
             client(INSTANCE, "clientbound_glide").add(ClientboundGlidePacket.class);
+    public static final NoxesiumPayloadGroup CLIENT_ZOOM =
+            client(INSTANCE, "clientbound_zoom").add(ClientboundZoomPacket.class);
 }
