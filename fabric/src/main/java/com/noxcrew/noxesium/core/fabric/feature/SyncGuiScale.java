@@ -35,6 +35,7 @@ public class SyncGuiScale extends NoxesiumFeature {
                 window.getGuiScaledHeight(),
                 Minecraft.getInstance().isEnforceUnicode(),
                 options.touchscreen().get(),
-                options.notificationDisplayTime().get())));
+                options.notificationDisplayTime().get(),
+                options.chatWidth().get())));
     }
 }

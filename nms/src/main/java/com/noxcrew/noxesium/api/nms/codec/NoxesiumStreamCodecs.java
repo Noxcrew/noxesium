@@ -84,23 +84,44 @@ public class NoxesiumStreamCodecs {
     public static final StreamCodec<ByteBuf, QibDefinition> QIB_DEFINITION = ByteBufCodecs.STRING_UTF8.map(
             string -> QibDefinition.QIB_GSON.fromJson(string, QibDefinition.class), QibDefinition.QIB_GSON::toJson);
 
-    public static final StreamCodec<ByteBuf, ClientSettings> CLIENT_SETTINGS =
-            StreamCodec.recursive(codec -> StreamCodec.composite(
-                    ByteBufCodecs.VAR_INT,
-                    ClientSettings::configuredGuiScale,
-                    ByteBufCodecs.DOUBLE,
-                    ClientSettings::trueGuiScale,
-                    ByteBufCodecs.VAR_INT,
-                    ClientSettings::width,
-                    ByteBufCodecs.VAR_INT,
-                    ClientSettings::height,
-                    ByteBufCodecs.BOOL,
-                    ClientSettings::enforceUnicode,
-                    ByteBufCodecs.BOOL,
-                    ClientSettings::touchScreenMode,
-                    ByteBufCodecs.DOUBLE,
-                    ClientSettings::notificationDisplayTime,
-                    ClientSettings::new));
+    // Not really a fan of this but this is the only way I could get it working with backwards compatibility, without
+    // having versioned packets
+    public static final StreamCodec<ByteBuf, ClientSettings> CLIENT_SETTINGS = new StreamCodec<>() {
+        @Override
+        public ClientSettings decode(ByteBuf buffer) {
+            var configuredGuiScale = ByteBufCodecs.VAR_INT.decode(buffer);
+            var trueGuiScale = ByteBufCodecs.DOUBLE.decode(buffer);
+            var width = ByteBufCodecs.VAR_INT.decode(buffer);
+            var height = ByteBufCodecs.VAR_INT.decode(buffer);
+            var enforceUnicode = ByteBufCodecs.BOOL.decode(buffer);
+            var touchScreenMode = ByteBufCodecs.BOOL.decode(buffer);
+            var notificationDisplayTime = ByteBufCodecs.DOUBLE.decode(buffer);
+            var chatWidth = buffer.readableBytes() >= Double.BYTES
+                    ? ByteBufCodecs.DOUBLE.decode(buffer)
+                    : -1.0; // Needed for backwards compatibility
+            return new ClientSettings(
+                    configuredGuiScale,
+                    trueGuiScale,
+                    width,
+                    height,
+                    enforceUnicode,
+                    touchScreenMode,
+                    notificationDisplayTime,
+                    chatWidth);
+        }
+
+        @Override
+        public void encode(ByteBuf buffer, ClientSettings settings) {
+            ByteBufCodecs.VAR_INT.encode(buffer, settings.configuredGuiScale());
+            ByteBufCodecs.DOUBLE.encode(buffer, settings.trueGuiScale());
+            ByteBufCodecs.VAR_INT.encode(buffer, settings.width());
+            ByteBufCodecs.VAR_INT.encode(buffer, settings.height());
+            ByteBufCodecs.BOOL.encode(buffer, settings.enforceUnicode());
+            ByteBufCodecs.BOOL.encode(buffer, settings.touchScreenMode());
+            ByteBufCodecs.DOUBLE.encode(buffer, settings.notificationDisplayTime());
+            ByteBufCodecs.DOUBLE.encode(buffer, settings.chatWidth());
+        }
+    };
 
     public static final StreamCodec<ByteBuf, EntrypointProtocol> ENTRYPOINT_PROTOCOL =
             StreamCodec.recursive(codec -> StreamCodec.composite(
