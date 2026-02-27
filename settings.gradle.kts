@@ -26,6 +26,7 @@ includeGroup(
     "api",
     "packet",
     "platform",
+    "legacy",
 )
 
 includeGroup(
