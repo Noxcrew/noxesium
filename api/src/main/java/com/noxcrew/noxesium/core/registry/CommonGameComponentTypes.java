@@ -119,6 +119,13 @@ public class CommonGameComponentTypes {
     public static NoxesiumComponentType<Double> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Double.class);
 
     /**
+     * If set, enables client authoritative wind charges. Requires server-side code which is available
+     * in the provided Paper implementation.
+     */
+    public static NoxesiumComponentType<Unit> CLIENT_AUTHORITATIVE_WINDCHARGES =
+            register("client_authoritative_windcharges", Unit.class);
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <R, T> NoxesiumComponentType<T> register(String key, Class<R> clazz) {
