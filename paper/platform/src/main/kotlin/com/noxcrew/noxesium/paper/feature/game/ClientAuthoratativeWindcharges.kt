@@ -3,35 +3,27 @@ package com.noxcrew.noxesium.paper.feature.game
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.paper.component.hasNoxesiumComponent
 import com.noxcrew.noxesium.paper.feature.ListeningNoxesiumFeature
-import net.minecraft.world.InteractionHand
-import net.minecraft.world.item.WindChargeItem
-import org.bukkit.craftbukkit.entity.CraftPlayer
-import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.event.Event
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
+import org.bukkit.entity.WindCharge
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
-import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.EquipmentSlot
 
 public class ClientAuthoratativeWindcharges : ListeningNoxesiumFeature() {
 
+    //TODO: Dont send the wind charge entity to the player that shot it
+
+
+    //TODO: Using a deprecated event here because the paper event doesnt provide the source entity only the attacker
     @EventHandler(priority = EventPriority.HIGH)
-    public fun onPlayerInteract(e: PlayerInteractEvent) {
-        if (e.useItemInHand() == Event.Result.DENY) return
-
-        if (!e.player.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_WINDCHARGES)) return
-
-        if (!e.action.isRightClick) return
-        val itemInHand = (e.item as? CraftItemStack)?.handle ?: return
-        val player = (e.player as CraftPlayer).handle
-        val hand = if (e.hand == EquipmentSlot.OFF_HAND) InteractionHand.OFF_HAND else InteractionHand.MAIN_HAND
-
-        if (itemInHand.item !is WindChargeItem) return
-
-        //TODO: Replicate vanilla functionality but dont send the entity to the client player
-
-        // Prevent the default logic from running as we've replaced it!
-        e.setUseItemInHand(Event.Result.DENY)
+    public fun onExplosionKnockback(e: org.bukkit.event.entity.EntityKnockbackByEntityEvent) {
+        if (e.sourceEntity.type == EntityType.WIND_CHARGE) {
+            val owner = (e.sourceEntity as WindCharge).shooter as Player
+            if (owner.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_WINDCHARGES)) {
+                if (owner.uniqueId == e.entity.uniqueId) {
+                    e.isCancelled = true
+                }
+            }
+        }
     }
-
 }
