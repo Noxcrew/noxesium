@@ -72,6 +72,7 @@
     "feature.qib.SpatialEntityMixin",
     "feature.scale.BossBarMixin",
     "feature.scale.ChatMixin",
+    "feature.scale.ChatScreenMixin",
     "feature.scale.GuiGraphicsExt",
     "feature.scale.RescaleGuiMixin",
     "feature.scale.ScoreboardMixin",
