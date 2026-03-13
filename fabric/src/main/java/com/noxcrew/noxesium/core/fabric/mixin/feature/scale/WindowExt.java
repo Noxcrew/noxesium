@@ -13,23 +13,23 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class WindowExt implements ScalingExtension {
 
     @Unique
-    private float noxesium$multiplier = 1;
+    private float noxesium$divisor = 1;
 
     @Override
     public void noxesium$whileRescaled(GuiElement element, Runnable function) {
         var config = NoxesiumMod.getInstance().getConfig();
-        noxesium$multiplier = (float) config.getScale(element);
+        noxesium$divisor = (float) config.getScale(element);
         function.run();
-        noxesium$multiplier = 1;
+        noxesium$divisor = 1;
     }
 
     @ModifyReturnValue(method = "getGuiScaledWidth", at= @At("TAIL"))
     public int wrapGetWidth(int original) {
-        return Math.round(original / noxesium$multiplier);
+        return Math.round(original / noxesium$divisor);
     }
 
     @ModifyReturnValue(method = "getGuiScaledHeight", at= @At("TAIL"))
     public int wrapGetHeight(int original) {
-        return Math.round(original / noxesium$multiplier);
+        return Math.round(original / noxesium$divisor);
     }
 }
