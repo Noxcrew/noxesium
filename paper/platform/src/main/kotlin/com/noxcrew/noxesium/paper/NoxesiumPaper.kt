@@ -13,6 +13,7 @@ import com.noxcrew.noxesium.paper.commands.componentCommands
 import com.noxcrew.noxesium.paper.commands.listCommand
 import com.noxcrew.noxesium.paper.commands.openLinkCommand
 import com.noxcrew.noxesium.paper.commands.playSoundCommand
+import com.noxcrew.noxesium.paper.commands.zoomCommand
 import com.noxcrew.noxesium.paper.component.PaperEntityManager
 import com.noxcrew.noxesium.paper.entrypoint.CommonPaperNoxesiumEntrypoint
 import com.noxcrew.noxesium.paper.network.KotlinxJsonSerializer
@@ -109,6 +110,7 @@ public class NoxesiumPaper : JavaPlugin() {
         registerNoxesiumCommand { openLinkCommand() }
         registerNoxesiumCommand { playSoundCommand() }
         registerNoxesiumCommand { componentCommands() }
+        registerNoxesiumCommand { zoomCommand() }
     }
 
     override fun onEnable() {

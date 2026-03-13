@@ -14,14 +14,15 @@ import com.noxcrew.noxesium.core.fabric.feature.sound.EntityNoxesiumSoundInstanc
 import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundInstance;
 import com.noxcrew.noxesium.core.fabric.feature.sound.NoxesiumSoundModule;
 import com.noxcrew.noxesium.core.network.CommonPackets;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundApplyZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundResetZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundZoomPacket;
 import java.util.List;
 import net.kyori.adventure.platform.modcommon.impl.NonWrappingComponentSerializer;
 import net.kyori.adventure.text.Component;
@@ -182,22 +183,26 @@ public class CommonPacketHandling extends NoxesiumFeature {
             }
         });
 
-        CommonPackets.CLIENT_ZOOM.addListener(this, ClientboundZoomPacket.class, (reference, packet, ignored3) -> {
-            if (!reference.isRegistered()) return;
-            var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
-            if (zoom == null) return;
+        CommonPackets.CLIENT_APPLY_ZOOM.addListener(
+                this, ClientboundApplyZoomPacket.class, (reference, packet, ignored3) -> {
+                    if (!reference.isRegistered()) return;
+                    var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
+                    if (zoom == null) return;
+                    zoom.applyZoom(
+                            packet.zoom(),
+                            packet.transitionTicks(),
+                            packet.easingType(),
+                            packet.keepHandStationary(),
+                            packet.fov().map(Integer::floatValue).orElse(null));
+                });
 
-            if (packet.reset()) {
-                zoom.reset();
-            } else {
-                zoom.applyZoom(
-                        packet.zoom(),
-                        packet.transitionTicks(),
-                        packet.easingType(),
-                        packet.lockClientFov(),
-                        packet.keepHandStationary());
-            }
-        });
+        CommonPackets.CLIENT_RESET_ZOOM.addListener(
+                this, ClientboundResetZoomPacket.class, (reference, packet, ignored3) -> {
+                    if (!reference.isRegistered()) return;
+                    var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
+                    if (zoom == null) return;
+                    zoom.reset(packet.ticks(), packet.easingType());
+                });
     }
 
     /**

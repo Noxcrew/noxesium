@@ -23,3 +23,5 @@ accessible method net/minecraft/client/multiplayer/ClientLevel getEntities ()Lne
 accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
 
 accessible field com/mojang/blaze3d/pipeline/RenderPipeline$Builder location Ljava/util/Optional;
+
+accessible field net/minecraft/client/renderer/GameRenderer fovModifier F

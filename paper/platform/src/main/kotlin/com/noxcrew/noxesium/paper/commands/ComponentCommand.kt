@@ -596,6 +596,12 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                     )
                                 }
 
+                        Enum::class.java.isAssignableFrom(type.clazz) -> {
+                            // Enums use a literal for every value!
+                            forEnum(type.clazz as Class<out Enum<*>>)
+                            continue
+                        }
+
                         Unit::class.java.isAssignableFrom(type.clazz) -> {
                             // Units are special and have no more parameters!
                             branch.then(

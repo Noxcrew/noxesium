@@ -26,8 +26,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Overrides the item shown as being held in the main hand and
  * removes flickering on the charging animation of the trident.
+ * <p>
+ * Applied at low priority so it modifies the main hand item before other mods such as Axiom who
+ * want to clear it.
  */
-@Mixin(ItemInHandRenderer.class)
+@Mixin(value = ItemInHandRenderer.class, priority = -2000)
 public abstract class TridentHandModelMixin {
 
     @Shadow

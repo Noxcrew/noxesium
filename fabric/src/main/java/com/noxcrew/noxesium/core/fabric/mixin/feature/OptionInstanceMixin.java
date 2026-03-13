@@ -27,17 +27,16 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class OptionInstanceMixin<T> {
 
     @ModifyReturnValue(
-            method =
-                    "createButton(Lnet/minecraft/client/Options;IIIJ)Lnet/minecraft/client/gui/components/AbstractWidget;",
+            method = "createButton(Lnet/minecraft/client/Options;)Lnet/minecraft/client/gui/components/AbstractWidget;",
             at = @At("RETURN"))
     private AbstractWidget disableFovSliderWhenZoomLocked(AbstractWidget widget) {
         var options = Minecraft.getInstance().options;
         if (options == null) return widget;
 
-        // disable FOV slider while server controlled zoom is active
+        // Disable FOV slider while server controlled zoom is active
         if (((Object) this) == options.fov()) {
             var zoom = NoxesiumApi.getInstance().getFeatureOrNull(ZoomModule.class);
-            if (zoom != null && zoom.isRegistered() && zoom.isLockClientFov()) {
+            if (zoom != null && zoom.shouldLockClientFov()) {
                 widget.active = false;
             }
         }
@@ -54,12 +53,16 @@ public abstract class OptionInstanceMixin<T> {
                                     "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
     private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
         var options = Minecraft.getInstance().options;
-        if (instance == options.touchscreen() || instance == options.notificationDisplayTime()) {
+        if (instance == options.touchscreen()
+                || instance == options.notificationDisplayTime()
+                || instance == options.chatVisibility()
+                || instance == options.chatWidth()
+                || instance == options.chatHeightUnfocused()
+                || instance == options.fov()
+                || instance == options.fovEffectScale()) {
             NoxesiumApi.getInstance().getFeatureOptional(SyncGuiScale.class).ifPresent(SyncGuiScale::syncGuiScale);
         }
-        var consumer = original.call(instance);
-
-        return consumer;
+        return original.call(instance);
     }
 
     @ModifyReturnValue(method = "get", at = @At("RETURN"))

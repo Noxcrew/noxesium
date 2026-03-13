@@ -5,15 +5,17 @@ import static com.noxcrew.noxesium.api.network.PacketCollection.server;
 
 import com.noxcrew.noxesium.api.network.PacketCollection;
 import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadGroup;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundApplyZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundModifyPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStartPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundCustomSoundStopPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundResetZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateEntityComponentsPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
-import com.noxcrew.noxesium.core.network.clientbound.ClientboundZoomPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacketV2;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
@@ -25,8 +27,13 @@ import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
 public class CommonPackets {
     public static final PacketCollection INSTANCE = new PacketCollection();
 
-    public static final NoxesiumPayloadGroup SERVER_CLIENT_SETTINGS =
-            server(INSTANCE, "serverbound_client_settings").add(ServerboundClientSettingsPacket.class);
+    public static final NoxesiumPayloadGroup SERVER_CLIENT_SETTINGS = server(INSTANCE, "serverbound_client_settings")
+            .chain(ServerboundClientSettingsPacket.class)
+            .add(
+                    ServerboundClientSettingsPacketV2.class,
+                    (newValue) -> new ServerboundClientSettingsPacket(newValue.settings()),
+                    (oldValue) -> new ServerboundClientSettingsPacketV2(oldValue.settings()))
+            .group();
     public static final NoxesiumPayloadGroup SERVER_QIB_TRIGGERED =
             server(INSTANCE, "serverbound_qib_triggered").add(ServerboundQibTriggeredPacket.class);
     public static final NoxesiumPayloadGroup SERVER_RIPTIDE =
@@ -50,6 +57,8 @@ public class CommonPackets {
             client(INSTANCE, "clientbound_open_link").add(ClientboundOpenLinkPacket.class);
     public static final NoxesiumPayloadGroup CLIENT_GLIDE =
             client(INSTANCE, "clientbound_glide").add(ClientboundGlidePacket.class);
-    public static final NoxesiumPayloadGroup CLIENT_ZOOM =
-            client(INSTANCE, "clientbound_zoom").add(ClientboundZoomPacket.class);
+    public static final NoxesiumPayloadGroup CLIENT_APPLY_ZOOM =
+            client(INSTANCE, "clientbound_apply_zoom").add(ClientboundApplyZoomPacket.class);
+    public static final NoxesiumPayloadGroup CLIENT_RESET_ZOOM =
+            client(INSTANCE, "clientbound_reset_zoom").add(ClientboundResetZoomPacket.class);
 }

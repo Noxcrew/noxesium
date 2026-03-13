@@ -18,7 +18,10 @@ import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.core.feature.ClientSettings;
+import com.noxcrew.noxesium.core.feature.EasingType;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundApplyZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundOpenLinkPacket;
+import com.noxcrew.noxesium.core.network.clientbound.ClientboundResetZoomPacket;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameComponentsPacket;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -714,5 +717,39 @@ public class NoxesiumServerPlayer {
                 this, lastSoundId++, sound, source, volume, pitch, offset, looping, attenuation, null, entityId);
         noxesiumSound.play(true);
         return noxesiumSound;
+    }
+
+    /**
+     * Resets the current zoom override for this player.
+     */
+    public void resetZoom() {
+        sendPacket(new ClientboundResetZoomPacket(Optional.empty(), EasingType.LINEAR));
+    }
+
+    /**
+     * Resets the current zoom override for this player over the given
+     * amount of time using the given easing time.
+     *
+     * @param transitionTicks The amount of ticks to take to go back to default values.
+     * @param easingType      The easing function to use for the transition (only used if ticks is set and positive).
+     */
+    public void resetZoom(Integer transitionTicks, EasingType easingType) {
+        sendPacket(new ClientboundResetZoomPacket(Optional.ofNullable(transitionTicks), easingType));
+    }
+
+    /**
+     * Sets the zoom level of this player.
+     *
+     * @param zoom               The target zoom level (multiplier). (1.0 = normal FOV, <1.0 = zoomed in, >1.0 = zoomed out)
+     * @param transitionTicks    Duration of the zoom transition in ticks (20 ticks = 1 second). If `0` the transition is instant.
+     * @param easingType         The easing function to use for the transition.
+     * @param keepHandStationary Whether the hand should follow the zoom level.
+     * @param fov                The FOV to target when zooming, if not given the zoom level is relative to the user's FOV, if it is given
+     *                           the zoom adapts to end at the given zoom level given to this FOV setting.
+     */
+    public void setZoom(
+            float zoom, int transitionTicks, EasingType easingType, boolean keepHandStationary, Integer fov) {
+        sendPacket(new ClientboundApplyZoomPacket(
+                zoom, transitionTicks, easingType, keepHandStationary, Optional.ofNullable(fov)));
     }
 }

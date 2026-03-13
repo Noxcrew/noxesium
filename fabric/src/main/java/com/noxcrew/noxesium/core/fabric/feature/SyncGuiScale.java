@@ -2,8 +2,9 @@ package com.noxcrew.noxesium.core.fabric.feature;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
+import com.noxcrew.noxesium.core.feature.ChatVisibility;
 import com.noxcrew.noxesium.core.feature.ClientSettings;
-import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacketV2;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -28,13 +29,22 @@ public class SyncGuiScale extends NoxesiumFeature {
         var window = Minecraft.getInstance().getWindow();
         var options = Minecraft.getInstance().options;
 
-        NoxesiumServerboundNetworking.send(new ServerboundClientSettingsPacket(new ClientSettings(
+        NoxesiumServerboundNetworking.send(new ServerboundClientSettingsPacketV2(new ClientSettings(
                 options.guiScale().get(),
                 window.getGuiScale(),
                 window.getGuiScaledWidth(),
                 window.getGuiScaledHeight(),
                 Minecraft.getInstance().isEnforceUnicode(),
                 options.touchscreen().get(),
-                options.notificationDisplayTime().get())));
+                options.notificationDisplayTime().get(),
+                switch (options.chatVisibility().get()) {
+                    case FULL -> ChatVisibility.FULL;
+                    case HIDDEN -> ChatVisibility.HIDDEN;
+                    case SYSTEM -> ChatVisibility.SYSTEM;
+                },
+                options.chatWidth().get(),
+                options.chatHeightUnfocused().get(),
+                options.fov().get(),
+                options.fovEffectScale().get())));
     }
 }

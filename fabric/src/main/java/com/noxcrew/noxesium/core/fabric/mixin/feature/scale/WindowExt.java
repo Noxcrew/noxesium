@@ -24,12 +24,12 @@ public abstract class WindowExt implements ScalingExtension {
         noxesium$divisor = old;
     }
 
-    @ModifyReturnValue(method = "getGuiScaledWidth", at= @At("TAIL"))
+    @ModifyReturnValue(method = "getGuiScaledWidth", at = @At("TAIL"))
     public int wrapGetWidth(int original) {
         return (int) (original / noxesium$divisor);
     }
 
-    @ModifyReturnValue(method = "getGuiScaledHeight", at= @At("TAIL"))
+    @ModifyReturnValue(method = "getGuiScaledHeight", at = @At("TAIL"))
     public int wrapGetHeight(int original) {
         return (int) (original / noxesium$divisor);
     }

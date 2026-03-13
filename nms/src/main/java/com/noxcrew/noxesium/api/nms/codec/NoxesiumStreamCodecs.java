@@ -16,6 +16,7 @@ import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistryPatch;
 import com.noxcrew.noxesium.api.util.Unit;
+import com.noxcrew.noxesium.core.feature.ChatVisibility;
 import com.noxcrew.noxesium.core.feature.ClientSettings;
 import com.noxcrew.noxesium.core.feature.GuiConstraints;
 import io.netty.buffer.ByteBuf;
@@ -100,6 +101,34 @@ public class NoxesiumStreamCodecs {
                     ClientSettings::touchScreenMode,
                     ByteBufCodecs.DOUBLE,
                     ClientSettings::notificationDisplayTime,
+                    ClientSettings::new));
+
+    public static final StreamCodec<ByteBuf, ClientSettings> CLIENT_SETTINGS_V2 =
+            StreamCodec.recursive(codec -> StreamCodec.composite(
+                    ByteBufCodecs.VAR_INT,
+                    ClientSettings::configuredGuiScale,
+                    ByteBufCodecs.DOUBLE,
+                    ClientSettings::trueGuiScale,
+                    ByteBufCodecs.VAR_INT,
+                    ClientSettings::width,
+                    ByteBufCodecs.VAR_INT,
+                    ClientSettings::height,
+                    ByteBufCodecs.BOOL,
+                    ClientSettings::enforceUnicode,
+                    ByteBufCodecs.BOOL,
+                    ClientSettings::touchScreenMode,
+                    ByteBufCodecs.DOUBLE,
+                    ClientSettings::notificationDisplayTime,
+                    forEnum(ChatVisibility.class),
+                    ClientSettings::chatVisibility,
+                    ByteBufCodecs.DOUBLE,
+                    ClientSettings::chatWidth,
+                    ByteBufCodecs.DOUBLE,
+                    ClientSettings::chatHeight,
+                    ByteBufCodecs.VAR_INT,
+                    ClientSettings::fov,
+                    ByteBufCodecs.DOUBLE,
+                    ClientSettings::fovEffects,
                     ClientSettings::new));
 
     public static final StreamCodec<ByteBuf, EntrypointProtocol> ENTRYPOINT_PROTOCOL =
