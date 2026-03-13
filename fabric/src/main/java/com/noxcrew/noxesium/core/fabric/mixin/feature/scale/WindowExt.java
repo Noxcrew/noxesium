@@ -18,9 +18,10 @@ public abstract class WindowExt implements ScalingExtension {
     @Override
     public void noxesium$whileRescaled(GuiElement element, Runnable function) {
         var config = NoxesiumMod.getInstance().getConfig();
+        var old = noxesium$divisor;
         noxesium$divisor = (float) config.getScale(element);
         function.run();
-        noxesium$divisor = 1;
+        noxesium$divisor = old;
     }
 
     @ModifyReturnValue(method = "getGuiScaledWidth", at= @At("TAIL"))
