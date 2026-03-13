@@ -25,11 +25,11 @@ public abstract class WindowExt implements ScalingExtension {
 
     @ModifyReturnValue(method = "getGuiScaledWidth", at= @At("TAIL"))
     public int wrapGetWidth(int original) {
-        return Math.round(original / noxesium$divisor);
+        return (int) (original / noxesium$divisor);
     }
 
     @ModifyReturnValue(method = "getGuiScaledHeight", at= @At("TAIL"))
     public int wrapGetHeight(int original) {
-        return Math.round(original / noxesium$divisor);
+        return (int) (original / noxesium$divisor);
     }
 }
