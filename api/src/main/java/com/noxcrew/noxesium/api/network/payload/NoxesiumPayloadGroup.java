@@ -144,7 +144,7 @@ public class NoxesiumPayloadGroup {
      * @return The converted packet of a valid type.
      */
     @Nullable
-    public NoxesiumPacket convertIntoSupported(
+    public Pair<NoxesiumPayloadType<?>, NoxesiumPacket> convertIntoSupported(
             NoxesiumPayloadType<?> type, NoxesiumPacket packet, Function<NoxesiumPayloadType<?>, Boolean> condition) {
         // Send packets across as the oldest version the client supports! Don't make packets more modern on the
         // server-side,
@@ -237,8 +237,8 @@ public class NoxesiumPayloadGroup {
             NoxesiumPayloadType<T> newType,
             Function<T, P> newToOld,
             Function<P, T> oldToNew) {
-        this.newToOld.put(newClass, new Pair<>(newType, newToOld));
-        this.oldToNew.put(oldClass, new Pair<>(oldType, oldToNew));
+        this.newToOld.put(newClass, new Pair<>(oldType, newToOld));
+        this.oldToNew.put(oldClass, new Pair<>(newType, oldToNew));
     }
 
     /**
@@ -278,11 +278,11 @@ public class NoxesiumPayloadGroup {
                 var relevantPayload = types.computeIfAbsent(clazz, (target) -> {
                     // Try to modernize this packet to any newer types we know about that we might be listening for!
                     var newest = searchForVersion(type, payload, (it) -> it.clazz.equals(target), oldToNew);
-                    if (newest != null) return Optional.of(newest);
+                    if (newest != null) return Optional.of(newest.second());
 
                     // Failing that, try to make it older to see if we are still listening to outdated packets?
                     var oldest = searchForVersion(type, payload, (it) -> it.clazz.equals(target), newToOld);
-                    if (oldest != null) return Optional.of(oldest);
+                    if (oldest != null) return Optional.of(oldest.second());
 
                     return Optional.empty();
                 });
@@ -332,7 +332,7 @@ public class NoxesiumPayloadGroup {
      * Converts the given packet into its last form in the given map.
      */
     @Nullable
-    private NoxesiumPacket searchForVersion(
+    private Pair<NoxesiumPayloadType<?>, NoxesiumPacket> searchForVersion(
             NoxesiumPayloadType<?> type,
             Object packet,
             Function<NoxesiumPayloadType<?>, Boolean> condition,
@@ -358,6 +358,7 @@ public class NoxesiumPayloadGroup {
         for (var converter : selected) {
             currentPacket = applyConverter(converter, currentPacket);
         }
-        return (NoxesiumPacket) currentPacket;
+        if (currentPacket == null) return null;
+        return new Pair<>(currentType, (NoxesiumPacket) currentPacket);
     }
 }

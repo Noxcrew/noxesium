@@ -17,6 +17,7 @@ import com.noxcrew.noxesium.api.network.payload.NoxesiumPayloadType;
 import com.noxcrew.noxesium.api.player.sound.NoxesiumSound;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistry;
+import com.noxcrew.noxesium.api.util.Pair;
 import com.noxcrew.noxesium.core.feature.ClientSettings;
 import com.noxcrew.noxesium.core.feature.EasingType;
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundApplyZoomPacket;
@@ -542,7 +543,8 @@ public class NoxesiumServerPlayer {
      * Transforms the given packet into a valid type if possible.
      */
     @Nullable
-    private NoxesiumPacket transformPacket(@Nullable NoxesiumPayloadType<?> type, @NotNull NoxesiumPacket packet) {
+    private Pair<NoxesiumPayloadType<?>, NoxesiumPacket> transformPacket(
+            @Nullable NoxesiumPayloadType<?> type, @NotNull NoxesiumPacket packet) {
         // Do not send packets if there is no handshake!
         if (getHandshakeState() == HandshakeState.NONE) return null;
 
@@ -564,7 +566,7 @@ public class NoxesiumServerPlayer {
         var type = NoxesiumClientboundNetworking.getInstance().getPacketTypes().get(packet.getClass());
         var transformedPacket = transformPacket(type, packet);
         if (transformedPacket == null) return null;
-        return type.createClientboundAny(this, transformedPacket);
+        return transformedPacket.first().createClientboundAny(this, transformedPacket.second());
     }
 
     /**
@@ -577,12 +579,12 @@ public class NoxesiumServerPlayer {
 
         // If this packet updates some registry we halt it until we're done updating registries!
         if (isAwaitingRegistries() && packet instanceof NoxesiumRegistryDependentPacket) {
-            pendingPackets.add(transformedPacket);
+            pendingPackets.add(transformedPacket.second());
             return true;
         }
 
         // Create the platform specific object and immediately send it
-        var platformPayload = type.createClientboundAny(this, transformedPacket);
+        var platformPayload = transformedPacket.first().createClientboundAny(this, transformedPacket.second());
         if (platformPayload == null) return false;
         NoxesiumClientboundNetworking.getInstance().send(this, type, platformPayload);
         return true;

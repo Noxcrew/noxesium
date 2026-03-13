@@ -31,7 +31,7 @@ public abstract class NoxesiumServerboundNetworking extends NoxesiumNetworking {
         var instance = NoxesiumServerboundNetworking.getInstance();
         var transformedPacket = type.getGroup().convertIntoSupported(type, packet, instance::canSend);
         if (transformedPacket == null) return false;
-        type.sendServerboundAny(transformedPacket);
+        transformedPacket.first().sendServerboundAny(transformedPacket.second());
         return true;
     }
 
