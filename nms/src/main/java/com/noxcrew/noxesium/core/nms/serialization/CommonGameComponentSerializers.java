@@ -70,7 +70,9 @@ public class CommonGameComponentSerializers {
                 NoxesiumPlatform.getInstance().getItemStackStreamCodec());
         register(
                 NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS,
-                Codec.list(ItemStack.OPTIONAL_CODEC),
+                Codec.list(
+                        ItemStack.OPTIONAL_CODEC), // TODO: If component versioning is added this should be changed to
+                // non-optional!
                 ByteBufCodecs.collection(
                         ArrayList::new, NoxesiumPlatform.getInstance().getItemStackStreamCodec()));
     }

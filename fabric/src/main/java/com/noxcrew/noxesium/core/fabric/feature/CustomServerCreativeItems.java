@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.feature;
 import com.noxcrew.noxesium.api.NoxesiumReferences;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.core.Registry;
@@ -33,8 +34,16 @@ public class CustomServerCreativeItems {
                 CREATIVE_TAB,
                 FabricItemGroup.builder()
                         .title(Component.translatable("itemGroup.noxesium.server_items"))
-                        .displayItems((parameters, output) -> output.acceptAll(GameComponents.getInstance()
-                                .noxesium$getComponentOr(NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS, List::of)))
+                        .displayItems((parameters, output) -> {
+                            // Filter out any empty items as it crashes the client!
+                            var list = new ArrayList<ItemStack>();
+                            for (var item : GameComponents.getInstance()
+                                    .noxesium$getComponentOr(NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS, List::of)) {
+                                if (item.isEmpty()) continue;
+                                list.add(item);
+                            }
+                            output.acceptAll(list);
+                        })
                         .icon(() -> {
                             var item = new ItemStack(Items.STRUCTURE_BLOCK);
                             item.set(
