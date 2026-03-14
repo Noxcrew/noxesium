@@ -102,7 +102,7 @@ public class ZoomModule extends NoxesiumFeature {
                 // Determine the current FOV that is actually being rendered!
                 var gameRenderer = Minecraft.getInstance().gameRenderer;
                 this.startFov = Minecraft.getInstance().options.fov().get();
-                this.startFov *= gameRenderer.fovModifier;
+                this.startFov *= gameRenderer.getMainCamera().fovModifier;
                 this.previousFov = this.startFov;
                 this.currentFov = this.startFov;
             } else {
@@ -114,7 +114,7 @@ public class ZoomModule extends NoxesiumFeature {
             // Determine the intended fov and go back to it!
             var gameRenderer = Minecraft.getInstance().gameRenderer;
             float fov = Minecraft.getInstance().options.fov().get();
-            fov *= gameRenderer.fovModifier;
+            fov *= gameRenderer.getMainCamera().fovModifier;
             this.startFov = this.currentFov;
             this.targetFov = fov;
             this.lockClientFov = true;
@@ -137,7 +137,7 @@ public class ZoomModule extends NoxesiumFeature {
             // Determine the intended fov and go back to it!
             var gameRenderer = Minecraft.getInstance().gameRenderer;
             float fov = Minecraft.getInstance().options.fov().get();
-            fov *= gameRenderer.fovModifier;
+            fov *= gameRenderer.getMainCamera().fovModifier;
 
             // Start zooming towards the default values
             applyZoom(1.0f, resetTicks.get(), easingType, this.keepHandStationary, fov);

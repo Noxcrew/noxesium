@@ -53,7 +53,7 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
         try {
             return getMinecraftProtocol() == ConnectionProtocolType.PLAY
                     && ClientPlayNetworking.canSend(identifier)
-                    && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.playC2S())
+                    && ((PayloadTypeRegistryImpl<RegistryFriendlyByteBuf>) PayloadTypeRegistry.serverboundPlay())
                                     .get(identifier)
                             != null;
         } catch (Exception e) {
@@ -67,22 +67,15 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
         if (NoxesiumMod.getInstance().getConfig().dumpOutgoingPackets && Minecraft.getInstance().player != null) {
             NoxesiumMod.getInstance().ensureMain(() -> {
                 Minecraft.getInstance()
-                        .player
-                        .displayClientMessage(
-                                Component.empty()
-                                        .append(Component.literal("[NOXESIUM] ")
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(true)
-                                                        .withColor(ChatFormatting.RED)))
-                                        .append(Component.literal("[OUTGOING] ")
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(true)
-                                                        .withColor(ChatFormatting.AQUA)))
-                                        .append(Component.literal(payload.toString())
-                                                .withStyle(Style.EMPTY
-                                                        .withBold(false)
-                                                        .withColor(ChatFormatting.WHITE))),
-                                false);
+                        .gui
+                        .getChat()
+                        .addClientSystemMessage(Component.empty()
+                                .append(Component.literal("[NOXESIUM] ")
+                                        .withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
+                                .append(Component.literal("[OUTGOING] ")
+                                        .withStyle(Style.EMPTY.withBold(true).withColor(ChatFormatting.AQUA)))
+                                .append(Component.literal(payload.toString())
+                                        .withStyle(Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))));
             });
         }
         if (type instanceof FabricPayloadType) {

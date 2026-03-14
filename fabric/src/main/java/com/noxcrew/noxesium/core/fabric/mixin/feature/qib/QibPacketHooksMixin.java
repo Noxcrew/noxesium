@@ -66,8 +66,9 @@ public abstract class QibPacketHooksMixin {
      */
     @Unique
     private void noxesium$resetEntities() {
-        NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent(it -> it.getSpatialTree()
-                .clear());
+        NoxesiumApi.getInstance()
+                .getFeatureOptional(QibBehaviorModule.class)
+                .ifPresent(it -> it.getSpatialTree().clear());
 
         if (Minecraft.getInstance().player == null) return;
         Minecraft.getInstance().player.noxesium$clearClientsidePotionEffects();

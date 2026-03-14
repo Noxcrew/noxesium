@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
 import com.noxcrew.noxesium.core.feature.GuiElement;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(PlayerTabOverlay.class)
 public class TabListMixin {
-    @WrapMethod(method = "render")
+    @WrapMethod(method = "extractRenderState")
     public void wrapTabListRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int guiWidth,
             Scoreboard scoreboard,
             Objective objective,

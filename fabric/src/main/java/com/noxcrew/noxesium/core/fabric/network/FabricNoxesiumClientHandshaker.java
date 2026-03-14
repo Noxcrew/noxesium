@@ -13,10 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.C2SPlayChannelEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.networking.v1.ServerboundPlayChannelEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -43,12 +43,12 @@ public class FabricNoxesiumClientHandshaker extends NoxesiumClientHandshaker {
         // We initialize and uninitialize the handshake whenever the handshake channel is registered or unregistered by
         // the server, we use this to detect when it starts and stops being available. This should work regardless of
         // how the server has its proxy configured.
-        C2SPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
+        ServerboundPlayChannelEvents.REGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             if (channels.contains(HANDSHAKE_CHANNEL)) {
                 initialize();
             }
         });
-        C2SPlayChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
+        ServerboundPlayChannelEvents.UNREGISTER.register((ignored1, ignored2, ignored3, channels) -> {
             if (channels.contains(HANDSHAKE_CHANNEL)) {
                 uninitialize(NoxesiumErrorReason.CHANNEL_UNREGISTERED);
             }

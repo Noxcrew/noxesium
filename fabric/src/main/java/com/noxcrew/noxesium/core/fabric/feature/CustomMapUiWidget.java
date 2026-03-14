@@ -3,9 +3,8 @@ package com.noxcrew.noxesium.core.fabric.feature;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.feature.GuiElement;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.state.MapRenderState;
@@ -32,7 +31,7 @@ public class CustomMapUiWidget {
     /**
      * Renders the map UI widget.
      */
-    public static void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public static void extract(GuiGraphicsExtractor guiGraphics) {
         var minecraft = Minecraft.getInstance();
 
         // Check that the main GUI is not hidden
@@ -81,7 +80,7 @@ public class CustomMapUiWidget {
      */
     private static void renderMap(
             Minecraft minecraft,
-            GuiGraphics graphics,
+            GuiGraphicsExtractor graphics,
             Matrix3x2fStack pose,
             HumanoidArm arm,
             ItemStack item,
@@ -121,7 +120,7 @@ public class CustomMapUiWidget {
             var mapRenderer = minecraft.getMapRenderer();
             mapRenderer.extractRenderState(mapId, mapitemsaveddata, mapRenderState);
             mapRenderState.decorations.forEach(it -> it.renderOnFrame = true);
-            graphics.submitMapRenderState(mapRenderState);
+            graphics.map(mapRenderState);
         }
     }
 }

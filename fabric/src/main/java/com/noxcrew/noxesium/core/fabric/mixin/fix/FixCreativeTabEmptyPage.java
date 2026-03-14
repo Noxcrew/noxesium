@@ -2,7 +2,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.fix;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.fabricmc.fabric.api.client.itemgroup.v1.FabricCreativeInventoryScreen;
+import net.fabricmc.fabric.api.client.creativetab.v1.FabricCreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.item.CreativeModeTab;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,10 +13,10 @@ import org.spongepowered.asm.mixin.Mixin;
  */
 @Mixin(CreativeModeInventoryScreen.class)
 public class FixCreativeTabEmptyPage {
-    // This targets a method on FabricCreativeInventoryScreen!
+    // This targets a method on FabricCreativeModeInventoryScreen!
     @WrapMethod(method = "getPage", remap = false)
     public int getPage(CreativeModeTab itemGroup, Operation<Integer> original) {
-        var fabricScreen = (FabricCreativeInventoryScreen) (Object) this;
+        var fabricScreen = (FabricCreativeModeInventoryScreen) (Object) this;
         return Math.clamp(original.call(itemGroup), 0, fabricScreen.getPageCount() - 1);
     }
 }

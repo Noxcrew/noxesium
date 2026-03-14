@@ -86,7 +86,7 @@ subprojects {
 
     extensions.configure<SpotlessExtension> {
         java {
-            palantirJavaFormat("2.50.0")
+            palantirJavaFormat("2.89.0")
         }
         kotlin {
             ktlint("1.5.0")

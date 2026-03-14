@@ -6,15 +6,15 @@ import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public class GuiGraphicsTooltipMixin {
 
     @WrapOperation(
-            method = "renderComponentHoverEffect",
+            method = "componentHoverEffect",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;advancedItemTooltips:Z"))
     private boolean restrictAdvancedItemTooltips(Options instance, Operation<Boolean> original) {
         var restrictedOptions =

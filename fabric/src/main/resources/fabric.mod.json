@@ -52,7 +52,7 @@
       "com/mojang/blaze3d/platform/Window": [
         "com/noxcrew/noxesium/core/fabric/feature/ScalingExtension"
       ],
-      "net/minecraft/client/gui/GuiGraphics": [
+      "net/minecraft/client/gui/GuiGraphicsExtractor": [
         "com/noxcrew/noxesium/core/fabric/feature/ScalingExtension"
       ]
     }
@@ -63,9 +63,9 @@
   ],
   "depends": {
     "fabric": "*",
-    "fabricloader": ">=0.18.1",
-    "fabric-api": ">=0.140.0",
-    "minecraft": ">=1.21.11"
+    "fabricloader": ">=0.18.4",
+    "fabric-api": ">=0.143.13",
+    "minecraft": ">=26.1"
   },
   "suggests": {
     "sodium": ">=0.8.0"

@@ -2,8 +2,9 @@ package com.noxcrew.noxesium.core.fabric.mixin.fix;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.platform.CompareOp;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,8 +28,7 @@ public abstract class FixTextDisplayTransparencyMixin {
                  * text displays render the background as non-see-through. We fix this by just always rendering the backgrounds as see-through
                  * which fixes issues with its transparency. We modify the vanilla type so Iris doesn't break.
                  */
-                instance.withDepthWrite(false);
-                instance.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST);
+                instance.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false));
             }
         }
         return original.call(instance);

@@ -57,7 +57,7 @@ public abstract class RestrictDebugHotkeysMixin {
                 minecraft
                         .gui
                         .getChat()
-                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                        .addClientSystemMessage(Component.translatable("debug.warning.option.disabled")
                                 .withStyle(ChatFormatting.RED));
             }
             cir.setReturnValue(true);
@@ -73,7 +73,7 @@ public abstract class RestrictDebugHotkeysMixin {
                 minecraft
                         .gui
                         .getChat()
-                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                        .addClientSystemMessage(Component.translatable("debug.warning.option.disabled")
                                 .withStyle(ChatFormatting.RED));
             }
             cir.setReturnValue(true);
@@ -91,7 +91,7 @@ public abstract class RestrictDebugHotkeysMixin {
                 minecraft
                         .gui
                         .getChat()
-                        .addMessage(Component.translatable("debug.warning.option.disabled")
+                        .addClientSystemMessage(Component.translatable("debug.warning.option.disabled")
                                 .withStyle(ChatFormatting.RED));
             }
             return;

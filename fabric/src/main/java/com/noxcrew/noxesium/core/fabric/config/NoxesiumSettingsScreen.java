@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.tabs.GridLayoutTab;
@@ -61,7 +61,7 @@ public class NoxesiumSettingsScreen extends Screen {
     @Override
     public void repositionElements() {
         if (this.tabNavigationBar != null) {
-            this.tabNavigationBar.setWidth(this.width);
+            this.tabNavigationBar.updateWidth(this.width);
             this.tabNavigationBar.arrangeElements();
             var bottom = this.tabNavigationBar.getRectangle().bottom();
             var screenrectangle =
@@ -73,9 +73,9 @@ public class NoxesiumSettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int p_283640_, int p_281243_, float p_282743_) {
-        super.render(guiGraphics, p_283640_, p_281243_, p_282743_);
-        guiGraphics.blit(
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractRenderState(graphics, mouseX, mouseY, a);
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 Screen.FOOTER_SEPARATOR,
                 0,
@@ -89,8 +89,8 @@ public class NoxesiumSettingsScreen extends Screen {
     }
 
     @Override
-    protected void renderMenuBackground(GuiGraphics guiGraphics) {
-        guiGraphics.blit(
+    protected void extractMenuBackground(GuiGraphicsExtractor graphics) {
+        graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 TAB_HEADER_BACKGROUND,
                 0,
@@ -101,7 +101,7 @@ public class NoxesiumSettingsScreen extends Screen {
                 this.layout.getHeaderHeight(),
                 16,
                 16);
-        this.renderMenuBackground(guiGraphics, 0, this.layout.getHeaderHeight(), this.width, this.height);
+        this.extractMenuBackground(graphics, 0, this.layout.getHeaderHeight(), this.width, this.height);
     }
 
     @Override

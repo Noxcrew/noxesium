@@ -38,9 +38,9 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         // Create a custom payload that uses the payload object as a wrapper so we can
         // provide a custom stream codec to use for this packet.
         if (clientToServer) {
-            PayloadTypeRegistry.playC2S().register(type, getStreamCodec());
+            PayloadTypeRegistry.serverboundPlay().register(type, getStreamCodec());
         } else {
-            PayloadTypeRegistry.playS2C().register(type, getStreamCodec());
+            PayloadTypeRegistry.clientboundPlay().register(type, getStreamCodec());
         }
 
         // Register and bind after adding to the registry!
@@ -53,9 +53,9 @@ public class FabricPayloadType<T extends NoxesiumPacket> extends NoxesiumPayload
         super.unregister();
 
         if (clientToServer) {
-            unregisterPacket(PayloadTypeRegistry.playC2S(), type.id());
+            unregisterPacket(PayloadTypeRegistry.serverboundPlay(), type.id());
         } else {
-            unregisterPacket(PayloadTypeRegistry.playS2C(), type.id());
+            unregisterPacket(PayloadTypeRegistry.clientboundPlay(), type.id());
         }
     }
 

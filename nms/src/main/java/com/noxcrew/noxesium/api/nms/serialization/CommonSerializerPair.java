@@ -8,4 +8,5 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Stores the two types of codecs that works in the config or play phases.
  */
-public record CommonSerializerPair<T>(Codec<T> codec, @Nullable StreamCodec<? super FriendlyByteBuf, T> streamCodec) {}
+public record CommonSerializerPair<T>(
+        Codec<T> codec, @Nullable StreamCodec<? super FriendlyByteBuf, T> streamCodec) {}

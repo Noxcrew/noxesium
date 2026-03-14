@@ -3,7 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.fix.mouse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +26,7 @@ public abstract class FixMouseInventoryKeys {
     protected Slot hoveredSlot;
 
     @Shadow
-    protected abstract void slotClicked(Slot p_97778_, int p_97779_, int p_97780_, ClickType p_97781_);
+    protected abstract void slotClicked(Slot p_97778_, int p_97779_, int p_97780_, ContainerInput p_97781_);
 
     @Inject(
             method = "mouseClicked",
@@ -45,7 +45,8 @@ public abstract class FixMouseInventoryKeys {
         } else if (hoveredSlot != null
                 && hoveredSlot.hasItem()
                 && minecraft.options.keyDrop.matchesMouse(mouseButtonEvent)) {
-            slotClicked(hoveredSlot, hoveredSlot.index, mouseButtonEvent.hasControlDown() ? 1 : 0, ClickType.THROW);
+            slotClicked(
+                    hoveredSlot, hoveredSlot.index, mouseButtonEvent.hasControlDown() ? 1 : 0, ContainerInput.THROW);
             cir.setReturnValue(false);
         }
     }

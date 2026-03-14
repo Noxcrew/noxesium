@@ -5,24 +5,26 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
 import com.noxcrew.noxesium.core.feature.GuiElement;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(ChatComponent.class)
 public class ChatMixin {
-    @WrapMethod(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V")
+    @WrapMethod(
+            method =
+                    "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;Z)V")
     public void wrapChatRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor graphics,
             Font font,
-            int i,
-            int j,
-            int k,
-            boolean bl,
-            boolean bl2,
+            int ticks,
+            int mouseX,
+            int mouseY,
+            ChatComponent.DisplayMode displayMode,
+            boolean changeCursorOnInsertions,
             Operation<Void> original) {
-        ((ScalingExtension) guiGraphics).noxesium$whileRescaled(GuiElement.CHAT, () -> {
-            original.call(guiGraphics, font, i, j, k, bl, bl2);
+        ((ScalingExtension) graphics).noxesium$whileRescaled(GuiElement.CHAT, () -> {
+            original.call(graphics, font, ticks, mouseX, mouseY, displayMode, changeCursorOnInsertions);
         });
     }
 }

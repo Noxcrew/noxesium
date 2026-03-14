@@ -7,7 +7,7 @@ import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
 import com.noxcrew.noxesium.core.feature.GuiElement;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(Gui.class)
 public class ScoreboardMixin {
     @WrapMethod(method = "displayScoreboardSidebar")
-    public void wrapScoreboardRender(GuiGraphics guiGraphics, Objective objective, Operation<Void> original) {
+    public void wrapScoreboardRender(GuiGraphicsExtractor guiGraphics, Objective objective, Operation<Void> original) {
         var config = NoxesiumMod.getInstance().getConfig();
         ((ScalingExtension) guiGraphics).noxesium$whileRescaled(GuiElement.SCOREBOARD, () -> {
             // Determine the position based on the height so it always fits on-screen!
@@ -40,8 +40,8 @@ public class ScoreboardMixin {
 
     @WrapOperation(
             method = "displayScoreboardSidebar",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;guiHeight()I"))
-    public int wrapGetHeight(GuiGraphics instance, Operation<Integer> original) {
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;guiHeight()I"))
+    public int wrapGetHeight(GuiGraphicsExtractor instance, Operation<Integer> original) {
         // Increase the height by 9 to account for the header which vanilla does not otherwise account for.
         return original.call(instance) + 9;
     }

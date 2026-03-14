@@ -20,24 +20,19 @@ public class FabricPacketHandler<T extends CustomPacketPayload> implements Clien
             if (NoxesiumMod.getInstance().getConfig().dumpIncomingPackets) {
                 NoxesiumMod.getInstance().ensureMain(() -> {
                     Minecraft.getInstance()
-                            .player
-                            .displayClientMessage(
-                                    Component.empty()
-                                            .append(Component.literal("[NOXESIUM] ")
-                                                    .withStyle(Style.EMPTY
-                                                            .withBold(true)
-                                                            .withColor(ChatFormatting.RED)))
-                                            .append(Component.literal("[INCOMING] ")
-                                                    .withStyle(Style.EMPTY
-                                                            .withBold(true)
-                                                            .withColor(ChatFormatting.YELLOW)))
-                                            .append(Component.literal(noxesiumPayload
-                                                            .value()
-                                                            .toString())
-                                                    .withStyle(Style.EMPTY
-                                                            .withBold(false)
-                                                            .withColor(ChatFormatting.WHITE))),
-                                    false);
+                            .gui
+                            .getChat()
+                            .addClientSystemMessage(Component.empty()
+                                    .append(Component.literal("[NOXESIUM] ")
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.RED)))
+                                    .append(Component.literal("[INCOMING] ")
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(true).withColor(ChatFormatting.YELLOW)))
+                                    .append(Component.literal(
+                                                    noxesiumPayload.value().toString())
+                                            .withStyle(
+                                                    Style.EMPTY.withBold(false).withColor(ChatFormatting.WHITE))));
                 });
             }
             if (noxesiumPayload.noxesiumType().getGroup().hasListeners()) {

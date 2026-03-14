@@ -2,14 +2,12 @@ package com.noxcrew.noxesium.core.fabric.feature.sprite;
 
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.ResolutionContext;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.chat.contents.objects.ObjectInfo;
-import net.minecraft.world.entity.Entity;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Hides a fake object sprite under a translation contents.
@@ -26,7 +24,7 @@ public class DisguisedSpriteTranslationContents extends TranslatableContents {
 
     @Override
     public <T> Optional<T> visit(FormattedText.ContentConsumer<T> contentConsumer) {
-        return contentConsumer.accept(sprite.description());
+        return contentConsumer.accept(sprite.defaultFallback());
     }
 
     @Override
@@ -35,7 +33,7 @@ public class DisguisedSpriteTranslationContents extends TranslatableContents {
     }
 
     @Override
-    public MutableComponent resolve(@Nullable CommandSourceStack p_237512_, @Nullable Entity p_237513_, int p_237514_) {
+    public MutableComponent resolve(ResolutionContext context, int recursionDepth) {
         // Don't change the component at all when resolving!
         return MutableComponent.create(this);
     }

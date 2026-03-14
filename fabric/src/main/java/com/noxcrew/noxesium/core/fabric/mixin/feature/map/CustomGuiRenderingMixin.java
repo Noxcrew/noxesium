@@ -11,7 +11,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.ARGB;
@@ -44,7 +44,7 @@ public abstract class CustomGuiRenderingMixin {
      * Renders the text overlay with Noxesium's debugging various text overlays.
      */
     @Unique
-    private void noxesium$renderTextOverlay(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    private void noxesium$renderTextOverlay(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         var minecraft = Minecraft.getInstance();
 
         // Check that we have something to show
@@ -89,14 +89,14 @@ public abstract class CustomGuiRenderingMixin {
             var line = text.get(index);
             var offset = baseOffset + (lineOffset * index);
             graphics.fill(3, offset - 2, 6 + font.width(line), offset + 1 + font.lineHeight, -1873784752);
-            graphics.drawString(font, line, 5, offset, ARGB.color(255, 0xE0E0E0), false);
+            graphics.text(font, line, 5, offset, ARGB.color(255, 0xE0E0E0), false);
         }
     }
 
-    @Inject(method = "renderDemoOverlay", at = @At("HEAD"))
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "extractDemoOverlay", at = @At("HEAD"))
+    public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         // Render extra overlays around the demo overlay
-        CustomMapUiWidget.render(graphics, deltaTracker);
+        CustomMapUiWidget.extract(graphics);
         noxesium$renderTextOverlay(graphics, deltaTracker);
     }
 }
