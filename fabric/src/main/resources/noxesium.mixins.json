@@ -9,7 +9,6 @@
     "component.BlockEntityComponentMixin",
     "component.EntityComponentMixin",
     "component.ItemStackComponentMixin",
-    "feature.AlwaysShowDownloadToastsMixin",
     "feature.BoatCollisionMixin",
     "feature.CustomCreativeReloadMixin",
     "feature.DisableMusicMixin",
