@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.noxcrew.noxesium.api.component.GameComponents;
+import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumSettingsScreen;
 import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
@@ -41,7 +42,7 @@ public abstract class RestrictDebugHotkeysMixin {
         if (this.debugCrashKeyTime > 0L && this.debugCrashKeyTime < Util.getMillis() - 100L) {
             return original;
         }
-        if (event.key() == InputConstants.KEY_W) {
+        if (NoxesiumMod.getInstance().getKeybinds().keyDebugNoxesium.matches(event)) {
             Minecraft.getInstance().setScreen(new NoxesiumSettingsScreen(null));
             return true;
         }

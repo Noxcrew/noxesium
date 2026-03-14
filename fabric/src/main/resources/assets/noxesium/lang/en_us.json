@@ -2,6 +2,8 @@
   "debug.warning.option.disabled": "This debug option is disabled.",
   "debug.game_time_overlay": "%s st, %s gt",
 
+  "key.debug.noxesium": "Noxesium Options",
+
   "noxesium.options.screen.noxesium": "Noxesium Settings",
   "noxesium.options.header.gui_options": "GUI Settings",
   "noxesium.options.header.developer_options": "Developer Settings",

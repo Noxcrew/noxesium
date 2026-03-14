@@ -30,12 +30,12 @@ allprojects {
     version = "${property("mod_version")}+${gitCommitId}"
 
     repositories {
+        maven("https://maven.covers1624.net/")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://maven.enginehub.org/repo/")
         maven("https://maven.fabricmc.net/")
         maven("https://maven.terraformersmc.com/")
         maven("https://maven.shedaniel.me/")
-        maven("https://maven.covers1624.net/")
         maven("https://repo.viaversion.com")
         mavenCentral()
         maven {

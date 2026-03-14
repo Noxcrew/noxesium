@@ -9,6 +9,7 @@ import com.noxcrew.noxesium.api.network.NoxesiumNetworking;
 import com.noxcrew.noxesium.api.nms.NoxesiumPlatform;
 import com.noxcrew.noxesium.core.fabric.config.NoxesiumConfig;
 import com.noxcrew.noxesium.core.fabric.feature.CustomServerCreativeItems;
+import com.noxcrew.noxesium.core.fabric.feature.NoxesiumKeybinds;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumClientHandshaker;
 import com.noxcrew.noxesium.core.fabric.network.FabricNoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
@@ -38,6 +39,7 @@ public class NoxesiumMod implements ClientModInitializer {
 
     private final NoxesiumConfig config;
     private CustomServerCreativeItems customCreativeItems;
+    private NoxesiumKeybinds keybinds;
 
     /**
      * Whether the creative tab has changed.
@@ -75,6 +77,7 @@ public class NoxesiumMod implements ClientModInitializer {
     public void onInitializeClient() {
         // Initialize creative tab when the client is ready
         customCreativeItems = new CustomServerCreativeItems();
+        keybinds = new NoxesiumKeybinds();
 
         // Go through all entrypoints and register them
         var logger = NoxesiumApi.getLogger();
@@ -160,6 +163,13 @@ public class NoxesiumMod implements ClientModInitializer {
      */
     public CustomServerCreativeItems getCustomCreativeItems() {
         return customCreativeItems;
+    }
+
+    /**
+     * Returns the custom keybinds.
+     */
+    public NoxesiumKeybinds getKeybinds() {
+        return keybinds;
     }
 
     /**
