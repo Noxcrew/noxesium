@@ -1,12 +1,11 @@
 plugins {
-    id("net.neoforged.moddev")
-}
-
-neoForge {
-    setNeoFormVersion("${property("neoform_version")}")
+    id("net.fabricmc.fabric-loom")
 }
 
 dependencies {
+    // Rely on the Minecraft sources themselves, but without Fabric's loader/API
+    minecraft(libs.minecraft)
+
     // Replace this with a dependency on the Noxesium repository
     api(project(":api"))
 
@@ -18,8 +17,8 @@ dependencies {
 
 // Define the sources of this repository as a new configuration which can be replied upon
 // using `id("noxesium.example")` as a plugin (see buildSrc)
-// This does mean this repository builds against neoform but it's the only available platform
-// that does not cause any issues. Paperweight and Loom both do not work as a shared platform.
+// This does mean this repository builds against Loom but if you don't use AW the source code
+// will work fine on Paper.
 configurations {
     register("commonJava") {
         isCanBeResolved = false

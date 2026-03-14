@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
     id("noxesium.fabric")
     id("noxesium.sync")
 }
@@ -17,12 +17,11 @@ loom {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
-    implementation(project(path = ":fabric", configuration = "namedElements"))
+    implementation(libs.fabric.loader)
+    implementation(libs.fabric.api)
+    implementation(project(":fabric"))
 
-    modImplementation(libs.modmenu) {
+    implementation(libs.modmenu) {
         isTransitive = false
     }
 

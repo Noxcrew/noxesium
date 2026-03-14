@@ -1,12 +1,9 @@
 plugins {
-    id("net.neoforged.moddev")
-}
-
-neoForge {
-    setNeoFormVersion("${property("neoform_version")}")
+    id("net.fabricmc.fabric-loom")
 }
 
 dependencies {
+    minecraft(libs.minecraft)
     api(project(":api"))
     api(project(":nms"))
     api(libs.juniversalchardet)

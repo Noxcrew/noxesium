@@ -1,22 +1,10 @@
 plugins {
-    id("net.neoforged.moddev")
+    id("net.fabricmc.fabric-loom")
     id("noxesium.publishing")
 }
 
-/*
-    Preferably, this would use Loom over NeoForm but Loom does not support not
-    remapping outputs without using the `namedElements` configuration, a detail
-    that is not kept by Maven so any external dependencies wouldn't be able to
-    properly load the NMS sources.
-
-    Paperweight is also not an option because it ignores client-only classes.
- */
-
-neoForge {
-    setNeoFormVersion("${property("neoform_version")}")
-}
-
 dependencies {
+    minecraft(libs.minecraft)
     compileOnly(project(":api"))
     compileOnly(libs.prtree)
 }

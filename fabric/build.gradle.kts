@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
     id("noxesium.fabric")
     id("noxesium.nms")
     id("noxesium.publishing")
@@ -20,16 +20,15 @@ loom {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
-    modApi(libs.fabric.loader)
-    modApi(libs.fabric.api)
+    api(libs.fabric.loader)
+    api(libs.fabric.api)
 
     // Compatibility with other mods
     if (property("enableSodium") == "true") {
-        modImplementation(libs.sodium)
+        implementation(libs.sodium)
     }
     if (property("enableModMenu") == "true") {
-        modImplementation(libs.modmenu) {
+        implementation(libs.modmenu) {
             isTransitive = false
         }
     }
@@ -42,11 +41,7 @@ dependencies {
         include(target)
         api(target)
     }
-    fun includeMod(target: Any) {
-        include(target)
-        modApi(target)
-    }
     includeLibrary(project(":api"))
     includeLibrary(libs.prtree)
-    includeMod(libs.adventure.fabric)
+    includeLibrary(libs.adventure.fabric)
 }

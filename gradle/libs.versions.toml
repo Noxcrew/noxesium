@@ -2,8 +2,7 @@
 # Plugins
 shadow = "9.2.2"
 spotless = "8.1.0"
-loom = "1.14-SNAPSHOT"
-moddev = "2.0.134"
+loom = "1.15-SNAPSHOT"
 paperweight = "2.0.0-beta.19"
 run-paper = "3.0.2"
 
@@ -25,9 +24,9 @@ joml = "1.10.8"
 juniversalchardet = "2.5.0"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "1.21.11"
-fabric-loader = "0.18.1"
-fabric-api = "0.140.0+1.21.11"
+minecraft = "26.1-pre-2"
+fabric-loader = "0.18.4"
+fabric-api = "0.143.13+26.1"
 
 # Mods
 sodium = "mc1.21.11-0.8.2-fabric"
@@ -40,8 +39,7 @@ viaversion = "5.4.2"
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-loom = { id = "fabric-loom", version.ref = "loom" }
-moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
 
