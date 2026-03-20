@@ -57,7 +57,7 @@ public class GuardianBeamColorRendererMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entityCutoutNoCull(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
+                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entityCutout(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
     private static RenderType determineRenderType(Identifier Identifier) {
         return RenderTypes.entityTranslucent(Identifier);
     }
@@ -67,7 +67,7 @@ public class GuardianBeamColorRendererMixin {
      */
     @Redirect(
             method =
-                    "submit(Lnet/minecraft/client/renderer/entity/state/GuardianRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+                    "submit(Lnet/minecraft/client/renderer/entity/state/GuardianRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             at =
                     @At(
                             value = "INVOKE",
@@ -97,7 +97,7 @@ public class GuardianBeamColorRendererMixin {
         int red = beamColor == null ? 64 + (int) (colorScale * 191.0F) : ARGB.red(beamColor);
         int green = beamColor == null ? 32 + (int) (colorScale * 191.0F) : ARGB.green(beamColor);
         int blue = beamColor == null ? 128 - (int) (colorScale * 64.0F) : ARGB.blue(beamColor);
-        int alpha = beamColor == null ? 256 : ARGB.alpha(beamColor);
+        int alpha = beamColor == null ? 255 : ARGB.alpha(beamColor);
         float rr1 = 0.2F;
         float rr2 = 0.282F;
         float wnx = Mth.cos((rot + 2.3561945F)) * rr2;
