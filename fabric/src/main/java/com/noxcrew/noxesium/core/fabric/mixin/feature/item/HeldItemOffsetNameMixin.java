@@ -22,9 +22,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(Gui.class)
 public abstract class HeldItemOffsetNameMixin {
 
-    @ModifyConstant(
-            method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;)V",
-            constant = @Constant(intValue = 59))
+    @ModifyConstant(method = "extractSelectedItemName", constant = @Constant(intValue = 59))
     public int raiseHeldItemHeight(int constant) {
         return constant
                 + GameComponents.getInstance()

@@ -18,19 +18,19 @@ gson = "2.10"
 prtree = "1.5.0"
 caffeine = "3.1.8"
 adventure = "4.26.1"
-adventure-fabric = "6.8.0"
+adventure-fabric = "6.9.0-SNAPSHOT"
 apache-commons = "3.17.0"
 joml = "1.10.8"
 juniversalchardet = "2.5.0"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "26.1-pre-2"
+minecraft = "26.1"
 fabric-loader = "0.18.4"
-fabric-api = "0.143.13+26.1"
+fabric-api = "0.144.0+26.1"
 
 # Mods
-sodium = "mc1.21.11-0.8.2-fabric"
-modmenu = "17.0.0-beta.1"
+sodium = "mc26.1-0.8.7-fabric"
+modmenu = "18.0.0-alpha.6"
 devlogin = "0.1.0.5"
 
 # Paper

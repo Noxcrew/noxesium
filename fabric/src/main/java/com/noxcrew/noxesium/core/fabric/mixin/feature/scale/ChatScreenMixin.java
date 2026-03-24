@@ -40,7 +40,7 @@ public class ChatScreenMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/gui/components/ChatComponent;captureClickableText(Lnet/minecraft/client/gui/ActiveTextCollector;IIZ)V"),
+                                    "Lnet/minecraft/client/gui/components/ChatComponent;captureClickableText(Lnet/minecraft/client/gui/ActiveTextCollector;IILnet/minecraft/client/gui/components/ChatComponent$DisplayMode;)V"),
             index = 1)
     public int onScreenHeight(int original) {
         return (int) (original / NoxesiumMod.getInstance().getConfig().getScale(GuiElement.CHAT));

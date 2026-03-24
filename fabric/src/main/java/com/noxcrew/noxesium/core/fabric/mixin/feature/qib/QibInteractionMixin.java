@@ -31,7 +31,7 @@ public abstract class QibInteractionMixin {
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(
-            Player player, InteractionHand interactionHand, CallbackInfoReturnable<InteractionResult> cir) {
+            Player player, InteractionHand hand, Vec3 location, CallbackInfoReturnable<InteractionResult> cir) {
         var interaction = (Interaction) ((Object) this);
         if (interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
             cir.setReturnValue(InteractionResult.PASS);

@@ -23,7 +23,7 @@ public class EndCrystalBeamRendererMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;entitySmoothCutout(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
+                                    "Lnet/minecraft/client/renderer/rendertype/RenderTypes;endCrystalBeam(Lnet/minecraft/resources/Identifier;)Lnet/minecraft/client/renderer/rendertype/RenderType;"))
     private static RenderType determineRenderType(Identifier Identifier) {
         return RenderTypes.entityTranslucent(Identifier);
     }

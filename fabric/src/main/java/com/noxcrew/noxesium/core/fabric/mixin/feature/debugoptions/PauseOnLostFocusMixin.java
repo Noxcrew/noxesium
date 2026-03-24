@@ -5,17 +5,17 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(GameRenderer.class)
-public class GameRendererPauseMixin {
+@Mixin(Minecraft.class)
+public class PauseOnLostFocusMixin {
 
     // Uses WrapOperation because Axiom already redirects the base field!
     @WrapOperation(
-            method = "render",
+            method = "pauseIfInactive",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;pauseOnLostFocus:Z"))
     private boolean restrictPauseOnLostFocus(Options instance, Operation<Boolean> original) {
         var restrictedOptions =

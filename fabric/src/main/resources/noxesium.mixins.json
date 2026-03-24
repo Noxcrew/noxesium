@@ -12,7 +12,7 @@
     "feature.BoatCollisionMixin",
     "feature.CustomCreativeReloadMixin",
     "feature.DisableMusicMixin",
-    "feature.GameRendererZoomMixin",
+    "feature.CameraZoomMixin",
     "feature.OptionInstanceMixin",
     "feature.TextOffsetMixin",
     "feature.authoritative.ServerAuthoritativeArrowsMixin",
@@ -31,7 +31,7 @@
     "feature.config.ResetToggleKeyMixin",
     "feature.debugoptions.CreativeModeInventoryScreenMixin",
     "feature.debugoptions.DebugRendererMixin",
-    "feature.debugoptions.GameRendererPauseMixin",
+    "feature.debugoptions.PauseOnLostFocusMixin",
     "feature.debugoptions.GuiGraphicsTooltipMixin",
     "feature.debugoptions.RestrictDebugHotkeysMixin",
     "feature.debugoptions.ScreenTooltipMixin",
@@ -99,5 +99,6 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "feature.debugoptions.RestrictMoreDebugHotkeysMixin"
   ]
 }
