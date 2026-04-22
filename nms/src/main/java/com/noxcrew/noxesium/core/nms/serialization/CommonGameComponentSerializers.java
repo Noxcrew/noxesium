@@ -63,6 +63,7 @@ public class CommonGameComponentSerializers {
                         NoxesiumStreamCodecs.GUI_CONSTRAINTS));
         register(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, Codec.DOUBLE, ByteBufCodecs.DOUBLE);
+        register(CommonGameComponentTypes.DISABLE_ALL_DEBUG_RENDERERS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
 
         register(
                 NmsGameComponentTypes.HAND_ITEM_OVERRIDE,

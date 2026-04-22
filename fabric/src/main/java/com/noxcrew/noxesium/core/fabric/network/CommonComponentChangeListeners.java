@@ -82,6 +82,10 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             // Mark that the creative tab has changed so it is updated.
             NoxesiumMod.getInstance().hasCreativeTabChanged = true;
         });
+        listenGame(CommonGameComponentTypes.DISABLE_ALL_DEBUG_RENDERERS, (ignored, context) -> {
+            // Refresh debug renderers whenever the server changes whether you can use them
+            Minecraft.getInstance().debugEntries.rebuildCurrentList();
+        });
     }
 
     /**

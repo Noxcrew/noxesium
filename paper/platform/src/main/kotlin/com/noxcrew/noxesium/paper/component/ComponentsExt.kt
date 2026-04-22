@@ -131,7 +131,7 @@ internal fun ServerLevel.broadcastBlockEntity(blockPos: BlockPos) {
     val chunk = getChunk(blockPos)
     val blockEntity = chunk.blockEntities[blockPos] ?: return
     val packet = blockEntity.updatePacket ?: return
-    val chunkPos = ChunkPos(blockPos)
+    val chunkPos = ChunkPos.containing(blockPos)
     val viewers = chunkSource.chunkMap.getPlayers(chunkPos, false)
     viewers.forEach { it.connection.send(packet) }
 }

@@ -3,7 +3,7 @@
 shadow = "9.2.2"
 spotless = "8.1.0"
 loom = "1.15-SNAPSHOT"
-paperweight = "2.0.0-beta.19"
+paperweight = "2.0.0-beta.21"
 run-paper = "3.0.2"
 
 # Tooling
