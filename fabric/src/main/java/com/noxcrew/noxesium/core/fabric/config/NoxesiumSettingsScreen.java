@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.config;
 import static net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.TAB_HEADER_BACKGROUND;
 
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.fabric.mixin.feature.config.AbstractSliderButtonExt;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
@@ -152,13 +153,14 @@ public class NoxesiumSettingsScreen extends Screen {
 
             rowHelper.addChild(Button.builder(
                             Component.translatable("noxesium.options.reset_scales"),
-                            button -> widgets.forEach(it -> it.setValue(0.495)))
+                            button -> widgets.forEach(
+                                    it -> ((AbstractSliderButtonExt) (Object) it).invokeSetValue(0.495)))
                     .bounds(0, 0, 150, 20)
                     .build());
 
             rowHelper.addChild(Button.builder(Component.translatable("noxesium.options.reset_positions"), button -> {
-                        positionWidgets.forEach(it -> it.setValue(0.5));
-                        zeroPositionWidgets.forEach(it -> it.setValue(0.0));
+                        positionWidgets.forEach(it -> ((AbstractSliderButtonExt) (Object) it).invokeSetValue(0.5));
+                        zeroPositionWidgets.forEach(it -> ((AbstractSliderButtonExt) (Object) it).invokeSetValue(0.0));
                     })
                     .bounds(0, 0, 150, 20)
                     .build());

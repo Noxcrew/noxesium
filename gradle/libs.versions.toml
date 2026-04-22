@@ -23,12 +23,12 @@ apache-commons = "3.17.0"
 joml = "1.10.8"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "26.1"
-fabric-loader = "0.18.4"
-fabric-api = "0.144.0+26.1"
+minecraft = "26.1.2"
+fabric-loader = "0.19.2"
+fabric-api = "0.146.1+26.1.2"
 
 # Mods
-sodium = "mc26.1-0.8.7-fabric"
+sodium = "mc26.1.1-0.8.9-fabric"
 modmenu = "18.0.0-alpha.6"
 devlogin = "0.1.0.5"
 

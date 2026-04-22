@@ -33,8 +33,9 @@ public abstract class FixMouseDownAfterScreenClose {
     private static void onScreenClosed(CallbackInfo ci) {
         var window = Minecraft.getInstance().getWindow();
         for (var keymapping : ALL.values()) {
-            if (keymapping.key.getType() != InputConstants.Type.MOUSE) continue;
-            keymapping.setDown(GLFW.glfwGetMouseButton(window.handle(), keymapping.key.getValue()) == 1);
+            var key = ((KeyMappingExt) keymapping).getKey();
+            if (key.getType() != InputConstants.Type.MOUSE) continue;
+            keymapping.setDown(GLFW.glfwGetMouseButton(window.handle(), key.getValue()) == 1);
         }
     }
 }

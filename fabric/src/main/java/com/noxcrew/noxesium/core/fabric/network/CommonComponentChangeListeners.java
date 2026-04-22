@@ -10,6 +10,7 @@ import com.noxcrew.noxesium.api.nms.serialization.ComponentSerializerRegistry;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.qib.QibBehaviorModule;
+import com.noxcrew.noxesium.core.fabric.mixin.component.EntityExt;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.mouse.MouseHandlerExt;
 import com.noxcrew.noxesium.core.feature.DebugOption;
 import com.noxcrew.noxesium.core.nms.registry.NmsGameComponentTypes;
@@ -28,7 +29,7 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
         listenEntity(CommonEntityComponentTypes.HITBOX_OVERRIDE, (ignored, context) -> {
             // Update the bounding box of the entity whenever a new override is received
             var entity = context.receiver();
-            entity.setBoundingBox(entity.makeBoundingBox());
+            entity.setBoundingBox(((EntityExt) entity).invokeMakeBoundingBox());
         });
         listenEntity(CommonEntityComponentTypes.QIB_BEHAVIOR, (ignored, context) -> {
             // Update an entity's membership in the spatial container when changing their qib behavior

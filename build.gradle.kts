@@ -112,7 +112,7 @@ subprojects {
 }
 
 // Create a task to collect all jars
-val projectsToCollect= listOf("fabric", "paper-platform", "sync-fabric", "sync-paper")
+val projectsToCollect= listOf("fabric", "paper-platform")
 tasks.register<Copy>("collectAllJars") {
     group = "publishing"
     description = "Collects all JARs from subprojects into one directory"

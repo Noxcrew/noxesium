@@ -1,4 +1,4 @@
-package com.noxcrew.noxesium.core.fabric.mixin.feature;
+package com.noxcrew.noxesium.core.fabric.mixin.feature.zoom;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

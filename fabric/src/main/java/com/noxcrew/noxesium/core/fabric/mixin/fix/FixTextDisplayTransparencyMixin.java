@@ -19,8 +19,9 @@ public abstract class FixTextDisplayTransparencyMixin {
                             target =
                                     "Lcom/mojang/blaze3d/pipeline/RenderPipeline$Builder;build()Lcom/mojang/blaze3d/pipeline/RenderPipeline;"))
     private static RenderPipeline onBuildPipeline(RenderPipeline.Builder instance, Operation<RenderPipeline> original) {
-        if (instance.location.isPresent()) {
-            var path = instance.location.get().getPath();
+        var location = ((RenderPipelineBuilderExt) instance).getLocation();
+        if (location.isPresent()) {
+            var path = location.get().getPath();
             if (path.equals("pipeline/text_background")) {
                 /*
                  * MC-259812:

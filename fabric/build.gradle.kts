@@ -6,7 +6,7 @@ plugins {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/noxesium.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/noxesium.classtweaker"))
 
     runs {
         create("clientAuth") {

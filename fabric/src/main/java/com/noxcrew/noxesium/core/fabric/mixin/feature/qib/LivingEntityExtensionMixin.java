@@ -116,7 +116,7 @@ public abstract class LivingEntityExtensionMixin implements LivingEntityExtensio
             var mobeffectinstance = noxesium$activeEffects.get(holder);
 
             // Perform client ticking
-            mobeffectinstance.blendState.tick(mobeffectinstance);
+            ((MobEffectInstanceExt) mobeffectinstance).getBlendState().tick(mobeffectinstance);
 
             // Perform server ticking (effects need to be client-only anyway)
             if (!mobeffectinstance.tickServer(

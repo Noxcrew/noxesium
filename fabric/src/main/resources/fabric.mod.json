@@ -27,36 +27,7 @@
       "com.noxcrew.noxesium.core.fabric.integration.modmenu.ModMenuIntegration"
     ]
   },
-  "accessWidener": "noxesium.accesswidener",
-  "custom": {
-    "loom:injected_interfaces": {
-      "net/minecraft/world/entity/Entity": [
-        "com/noxcrew/noxesium/api/component/RemoteNoxesiumComponentHolder"
-      ],
-      "net/minecraft/world/item/ItemStack": [
-        "com/noxcrew/noxesium/api/component/NoxesiumComponentHolder"
-      ],
-      "net/minecraft/world/level/block/entity/BlockEntity": [
-        "com/noxcrew/noxesium/api/component/NoxesiumComponentHolder"
-      ],
-      "net/minecraft/world/entity/LivingEntity": [
-        "com/noxcrew/noxesium/core/fabric/feature/entity/LivingEntityExtension",
-        "com/noxcrew/noxesium/core/fabric/feature/entity/FallFlyingEntityExtension"
-      ],
-      "net/minecraft/client/renderer/entity/state/GuardianRenderState": [
-        "com/noxcrew/noxesium/core/fabric/feature/entity/BeamColorStateExtension"
-      ],
-      "net/minecraft/client/renderer/entity/state/EndCrystalRenderState": [
-        "com/noxcrew/noxesium/core/fabric/feature/entity/BeamColorStateExtension"
-      ],
-      "com/mojang/blaze3d/platform/Window": [
-        "com/noxcrew/noxesium/core/fabric/feature/ScalingExtension"
-      ],
-      "net/minecraft/client/gui/GuiGraphicsExtractor": [
-        "com/noxcrew/noxesium/core/fabric/feature/ScalingExtension"
-      ]
-    }
-  },
+  "accessWidener": "noxesium.classtweaker",
   "mixins": [
     "noxesium.mixins.json",
     "noxesium-sodium.mixins.json"

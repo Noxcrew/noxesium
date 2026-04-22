@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.core.fabric.feature.qib;
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
+import com.noxcrew.noxesium.core.fabric.mixin.feature.qib.ClientLevelExt;
 import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.nms.feature.qib.QibCollisionManager;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
@@ -79,7 +80,7 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
         // Go through the level and detect all entities that already have qib data somehow!
         var level = Minecraft.getInstance().level;
         if (level == null) return;
-        for (var entity : level.getEntities().getAll()) {
+        for (var entity : ((ClientLevelExt) level).invokeGetEntities().getAll()) {
             if (entity instanceof Interaction interaction
                     && interaction.noxesium$hasComponent(CommonEntityComponentTypes.QIB_BEHAVIOR)) {
                 spatialTree.update(interaction);
