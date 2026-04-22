@@ -119,6 +119,12 @@ public class CommonGameComponentTypes {
     public static NoxesiumComponentType<Double> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Double.class);
 
     /**
+     * Fully disables all debug renderers that the client may have enabled.
+     */
+    public static NoxesiumComponentType<Unit> DISABLE_ALL_DEBUG_RENDERERS =
+            register("disable_all_debug_renderers", Unit.class);
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <R, T> NoxesiumComponentType<T> register(String key, Class<R> clazz) {
