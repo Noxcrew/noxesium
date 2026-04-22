@@ -35,9 +35,3 @@ includeGroup(
     "fabric",
     "paper",
 )
-includeGroup(
-    "sync",
-    "common",
-    "fabric",
-    "paper",
-)

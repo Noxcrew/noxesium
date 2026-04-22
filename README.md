@@ -65,10 +65,3 @@ These features are all available through the publicly available Noxesium Paper p
 
 Noxesium has extra features to integrate with MCC Island directly! MCC Island detects any user running Noxesium and sends the client extra information on your current location and game state. This allows other mods like [Island Utils](https://github.com/AsoDesu/IslandUtils) to use this information for its custom features.
 </details>
-
-<details>
-<summary>📂 Folder Synchronization</summary>
-
-As an optional feature for server developers, Noxesium comes with an extension called Noxesium Sync. This can be separately installed on both the client and server to let you synchronize folders in the server directory with clients. This can be used to simplify development by modifying configurations from your client instead of having to use an FTP connection. It also speeds up testing significantly if servers are ran inside Docker containers as it allows modifying configs of running servers. This module should **never** be enabled on production servers.
-
-</details>
