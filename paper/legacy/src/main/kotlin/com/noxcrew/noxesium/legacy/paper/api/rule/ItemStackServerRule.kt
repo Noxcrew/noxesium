@@ -24,7 +24,7 @@ public class ItemStackServerRule(
                 val nms = CraftItemStack.unwrap(item)
                 buffer.writeVarInt(item.amount)
                 buffer.writeUtf(
-                    nms.itemHolder
+                    nms.item.builtInRegistryHolder()
                         .unwrapKey()
                         .getOrNull()
                         ?.identifier()
