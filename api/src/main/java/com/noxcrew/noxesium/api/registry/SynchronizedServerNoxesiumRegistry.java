@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.api.registry;
 import com.noxcrew.noxesium.api.NoxesiumEntrypoint;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -20,6 +21,12 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
      * All fields which have to be synchronized with all clients.
      */
     private final Set<Key> pendingUpdates = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Tracks removed keys and their old indices so that removal updates can be sent
+     * even after the key is gone from {@link #entrypoints}.
+     */
+    private final Map<Key, Integer> pendingRemovals = new HashMap<>();
 
     public SynchronizedServerNoxesiumRegistry(Key id) {
         super(id);
@@ -47,21 +54,23 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
     /**
      * Returns all data of this registry that has changed.
      */
-    public NoxesiumRegistryPatch determineAllChangedContent(List<String> entrypoints) {
+    public NoxesiumRegistryPatch determineAllChangedContent(List<String> playerEntrypoints) {
         var data = new HashMap<Key, Optional<?>>();
         var keys = new HashMap<Key, Integer>();
-        for (var entry : this.entrypoints.entrySet()) {
-            // Ignore keys that are not dirty
-            if (!pendingUpdates.contains(entry.getKey())) continue;
+        for (var dirtyKey : pendingUpdates) {
+            // Ignore keys for entrypoints this player does not know about
+            var entrypointId = this.entrypoints.get(dirtyKey);
+            if (entrypointId != null && !playerEntrypoints.contains(entrypointId)) continue;
 
-            // Ignore keys for entrypoints this player does not have know about!
-            if (entry.getValue() != null && !entrypoints.contains(entry.getValue())) continue;
-
-            // Determine the id of this key
-            var value = getByKey(entry.getKey());
-            var index = getIdFor(value);
-            data.put(entry.getKey(), Optional.ofNullable(value));
-            keys.put(entry.getKey(), index);
+            if (entrypointId == null) {
+                // Key was removed from entrypoints — use the captured old index
+                data.put(dirtyKey, Optional.empty());
+                keys.put(dirtyKey, pendingRemovals.get(dirtyKey));
+            } else {
+                var value = getByKey(dirtyKey);
+                data.put(dirtyKey, Optional.ofNullable(value));
+                keys.put(dirtyKey, getIdFor(value));
+            }
         }
         return new NoxesiumRegistryPatch(id(), data, keys);
     }
@@ -78,6 +87,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
      */
     public void clearPendingUpdates() {
         pendingUpdates.clear();
+        pendingRemovals.clear();
     }
 
     /**
@@ -91,8 +101,9 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
     public void remove(Key key) {
         if (contains(key)) {
             pendingUpdates.add(key);
+            pendingRemovals.put(key, getIdFor(getByKey(key)));
+            super.remove(key);
         }
-        super.remove(key);
     }
 
     @Override
@@ -102,12 +113,15 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
         if (!Objects.equals(oldValue, value)) {
             pendingUpdates.add(key);
         }
+        // If this key was marked for removal, it's now back — no longer a pending removal
+        pendingRemovals.remove(key);
         return result;
     }
 
     @Override
     public void reset() {
         pendingUpdates.addAll(getKeys());
+        pendingRemovals.clear();
         super.reset();
     }
 }
