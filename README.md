@@ -1,50 +1,33 @@
-![Noxesium Header Image](https://cdn.modrinth.com/data/Kw7Sm3Xf/09bf3e8a2e3e671272e5e8b1e34ca47cf7598e84_96.webp)
+![Banner](https://assets.mcchampionship.com/launchy/03e3556d-0460-49eb-8ed1-fdf72929da50-images/noxesium_banner2.png)
 
-Noxesium
----
-A Minecraft mod available on Fabric which improves your experience when playing on large multiplayer servers. Here's some of the main things Noxesium does:
+Noxesium is mod for Fabric which improves your experience when playing on multiplayer servers by giving the server more control over the client and fixing bugs that affect multiplayer gameplay.
 
-- Fixes various vanilla bugs such as [MC-263293](https://bugs.mojang.com/browse/MC-263293) (Dying resets toggle sprint) and [MC-259812](https://bugs.mojang.com/browse/MC-259812) (Transparent objects are invisible behind text displays).
-- Adds extra systems which lets servers add more content, including a custom sound system, creating custom speed boosters or jump pads, or making tridents, elytra and spears client-side authoritative.
-
-Noxesium is directly developed by [Noxcrew](https://noxcrew.com/), creators of MC Championship and MCC Island, as a result most features of Noxesium originate directly from issues encountered by players of those projects.
-
-Noxesium is also automatically included on some versions of [Lunar Client](https://www.lunarclient.com/).
-
-# Usage
+# Usage 👤
 Public builds of Noxesium are available on [Modrinth](https://modrinth.com/mod/noxesium) and [CurseForge](https://www.curseforge.com/minecraft/mc-mods/noxesium). Upcoming releases can be found on the [Releases](https://github.com/Noxcrew/noxesium/releases) page here on GitHub. Developers interested in using Noxesium as an API can find more information on the [Wiki page](https://github.com/Noxcrew/noxesium/wiki).
 
-# Features
+# Features 💎
+Noxesium contains a variety of different features for different users, most are configurable or controlled by the server.
 
-Noxesium has a lot of different features, so they are split into various small groups below:
+## General 📜
+- Modify the scale and position of various UI elements.
+![Image showing Noxesium's settings](https://cdn.modrinth.com/data/Kw7Sm3Xf/images/d0b126378896a1eb71c0b9e915344693bb4caf09.png)
+- Render off-hand maps in the HUD instead in your hand, so it doesn't move around while walking and can act like a mini-map (optional setting).
+![Image showing an off-hand map rendered in the HUD](https://cdn.modrinth.com/data/Kw7Sm3Xf/images/8ca930777c541a564b33617fe00c1c26581c17e4.png)
 
-<details>
-<summary>📜 General Features</summary>
 
-- Settings to rescale different GUI elements, accessible in the Noxesium settings menu openable through Mod Menu or by pressing F3+W.
-- A new accessibility setting that can be used to render maps held in the off-hand as a UI element instead. This makes it easier to read the map especially when using View Bobbing. Servers can also remotely enable this feature if they want to enforce it.
-- Extra settings for debugging usable by server developers to see entity culling hitboxes, game time (for shaders) or scoreboard team exceptions which can cause protocol errors.
-</details>
-
-<details>
-<summary>🐛 Vanilla Bugfixes</summary>
-
-- [MC-256850](https://bugs.mojang.com/browse/MC-256850): Moving piston walls don't flicker as much while moving.
-- [MC-259812](https://bugs.mojang.com/browse/MC-259812): Transparent entity models are now properly visible behind text displays.
+## Bugfixes 🐛
 - [MC-263293](https://bugs.mojang.com/browse/MC-263293): Adds a new accessibility setting to disable toggle sprint resetting on death (enabled by default).
+- [MC-259812](https://bugs.mojang.com/browse/MC-259812): Transparent entity models are now properly visible behind text displays.
 - [MC-577](https://bugs.mojang.com/browse/MC-577): Inventory closing and drop item keys now work when bound to mouse buttons.
 - [MC-301281](https://bugs.mojang.com/browse/MC-301281): Mouse buttons on toggle mode are now re-enabled when closing a menu.
-- Mouse buttons on hold mode now re-trigger when closing a menu.
+- [MC-256850](https://bugs.mojang.com/browse/MC-256850): Moving piston walls don't flicker as much while moving.
 - Passenger entities being teleported no longer jitter.
-</details>
+- Mouse buttons on hold mode now re-trigger when closing a menu.
 
-<details>
-<summary>💻 Server Features</summary>
+## Server Features 💻
+Noxesium adds a number of extra features to the client which server developers can use in their experiences. This lets them bypass some vanilla restrictions and make better content.
 
-Noxesium adds a number of extra features only accessible for server developers. This lets them bypass some vanilla restrictions and make better content.
-
-Here's a list of things Noxesium lets servers do:
-
+Here's a list of things Noxesium currently lets servers do:
 - Create custom interactables on the client like speed boosters or jump pads
 - Move authority of riptide tridents, elytras, or lunge spears to the client which makes them act identically regardless of ping
 - Move authority of arrow behavior or note block/tripwire block updates to the server only
@@ -52,16 +35,26 @@ Here's a list of things Noxesium lets servers do:
 - Draw player heads in text messages with an offset to the position or at different scales
 - Draw text with any x/y offset to its position
 - Prevent moving items in GUIs, adding hover sounds to items, changing slot sprites when hovered
-- Locking camera movements, restrict GUI rescaling, restrict using various debug features or hiding the UI
+- Locking camera movements, restrict GUI rescaling, restrict using various debug features such as hitboxes or debug renderers, or hiding the UI through F1
 - Tweaking the hitbox size of entities (including non-square hitboxes) or making entities unattackable
 - Change the heights of beacon beams
 - Detect mouse clicks directly regardless of which interactions occurred after
+- Receive additional information on the client's GUI scale and window size to better align custom UIs
+- Change the FOV or current zoom of the client
+- Open a pop-up to visit a URL in their browser
+- Add a custom creative item tab with custom items/blocks from your server
 
-These features are all available through the publicly available Noxesium Paper plugin which lets you configure and use most with in-game commands and everything with its API.
-</details>
+Server developers can use the server API plugin for Paper to interact with these features either through code or through in-game commands!
 
-<details>
-<summary>🏝️ MCC Island Integration</summary>
+### Extensions 🧩
+Noxesium can be easily extended by other mods and plugins. This lets developers implement their own features for their projects, and contribute these back to the main mod so it works on all clients. For server developers, there's also a lightweight bundled packet injection API.
 
-Noxesium has extra features to integrate with MCC Island directly! MCC Island detects any user running Noxesium and sends the client extra information on your current location and game state. This allows other mods like [Island Utils](https://github.com/AsoDesu/IslandUtils) to use this information for its custom features.
-</details>
+## MCC Island Integration 🏝️ 
+
+Noxesium has extra features to integrate with MCC Island directly! MCC Island detects any user running Noxesium and sends the client extra information on your current location and game state. This allows other mods like [Island Utils](https://github.com/AsoDesu/IslandUtils) and  [Trident](https://github.com/pe3ep/Trident) to use this information for its custom features.
+
+
+# Development 🖥️
+Noxesium is directly developed by [Noxcrew](https://noxcrew.com/), creators of MC Championship and MCC Island, as a result Noxesium focusses on improving the experience for users of those projects.
+
+Noxesium is also automatically included on some versions of [Lunar Client](https://www.lunarclient.com/).
