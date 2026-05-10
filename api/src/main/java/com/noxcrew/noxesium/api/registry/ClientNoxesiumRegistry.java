@@ -23,8 +23,10 @@ public class ClientNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
      * Resets only the mappings provided by the server.
      */
     public void resetMappings() {
-        idToValue.clear();
-        valueToId.clear();
+        idToEntry.clear();
+        for (var entry : keyToEntry.values()) {
+            entry.setId(-1);
+        }
     }
 
     /**
@@ -32,10 +34,10 @@ public class ClientNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
      * Silently fails if the key is not known.
      */
     public boolean registerMapping(Key key, int id) {
-        var value = getByKey(key);
-        if (value != null) {
-            idToValue.put(id, value);
-            valueToId.put(value, id);
+        var entry = keyToEntry.get(key);
+        if (entry != null) {
+            entry.setId(id);
+            idToEntry.put(id, entry);
             return true;
         }
         return false;
@@ -43,11 +45,6 @@ public class ClientNoxesiumRegistry<T> extends NoxesiumRegistry<T> {
 
     @Override
     public void remove(Key key) {
-        var value = keyToValue.get(key);
-        if (value == null) return;
         super.remove(key);
-
-        var id = valueToId.remove(value);
-        idToValue.remove(id);
     }
 }

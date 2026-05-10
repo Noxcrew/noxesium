@@ -176,8 +176,7 @@ public class NoxesiumStreamCodecs {
                 var id = buffer.readVarInt();
                 if (id == -1) return null;
 
-                var value = registry.getById(id);
-                return registry.getKeyFor(value);
+                return registry.getKeyForId(id);
             }
 
             @Override

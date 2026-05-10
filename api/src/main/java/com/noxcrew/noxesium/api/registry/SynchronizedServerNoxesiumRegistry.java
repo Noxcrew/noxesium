@@ -44,7 +44,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
 
             // Determine the id of this key
             var value = getByKey(entry.getKey());
-            var index = getIdFor(value);
+            var index = getIdForKey(entry.getKey());
             data.put(entry.getKey(), Optional.ofNullable(value));
             keys.put(entry.getKey(), index);
         }
@@ -69,7 +69,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
             } else {
                 var value = getByKey(dirtyKey);
                 data.put(dirtyKey, Optional.ofNullable(value));
-                keys.put(dirtyKey, getIdFor(value));
+                keys.put(dirtyKey, getIdForKey(dirtyKey));
             }
         }
         return new NoxesiumRegistryPatch(id(), data, keys);
@@ -101,7 +101,7 @@ public class SynchronizedServerNoxesiumRegistry<T> extends ServerNoxesiumRegistr
     public void remove(Key key) {
         if (contains(key)) {
             pendingUpdates.add(key);
-            pendingRemovals.put(key, getIdFor(getByKey(key)));
+            pendingRemovals.put(key, getIdForKey(key));
             super.remove(key);
         }
     }
