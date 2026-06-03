@@ -98,18 +98,18 @@ public class PaperPlatform : NoxesiumPlatform() {
                         )
 
                         // Process the temporary buffer using ViaVersion
-                        var item = Types.ITEM1_20_2.read(tempBuffer)
+                        var item = Types.HASHED_ITEM.read(tempBuffer)
 
                         // Parse the item to the intended destination format
                         val connection = Via.getAPI().getConnection(target.uuid)
                         steps.forEach { protocol ->
-                            protocol.protocol().itemRewriter?.handleItemToClient(connection, item)?.let {
+                            protocol.protocol().itemRewriter?.handleHashedItem(connection, item)?.let {
                                 item = it
                             }
                         }
 
                         // Write the destination item to the buffer
-                        Types.ITEM1_20_2.write(buffer, item)
+                        Types.HASHED_ITEM.write(buffer, item)
                         return
                     }
                 }
