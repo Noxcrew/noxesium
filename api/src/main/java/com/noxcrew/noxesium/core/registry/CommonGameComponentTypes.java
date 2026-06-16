@@ -125,6 +125,38 @@ public class CommonGameComponentTypes {
             register("disable_all_debug_renderers", Unit.class);
 
     /**
+     * A list of debug entries to allow if they are otherwise denied by vanilla.
+     */
+    public static NoxesiumComponentType<List<String>> DEBUG_ENTRIES_ALLOWED =
+            register("debug_entries_allowed", List.class);
+
+    /**
+     * A list of debug entries to deny if they are otherwise allowed by vanilla.
+     */
+    public static NoxesiumComponentType<List<String>> DEBUG_ENTRIES_DENIED =
+            register("debug_entries_denied", List.class);
+
+    /**
+     * A list of debug entries to allow. If set, this completely overrides the
+     * vanilla logic for allowing or denying entries.
+     */
+    public static NoxesiumComponentType<List<String>> DEBUG_ENTRIES_OVERRIDE =
+            register("debug_entries_override", List.class);
+
+    /**
+     * Hides the yaw from the minecraft:position debug screen entry. Can be used to avoid
+     * players from using specific practiced angles if undesired.
+     */
+    public static NoxesiumComponentType<Unit> DEBUG_POSITION_HIDE_YAW = register("debug_position_hide_yaw", Unit.class);
+
+    /**
+     * Hides the pitch from the minecraft:position debug screen entry. Can be used to avoid
+     * players from using specific practiced angles if undesired.
+     */
+    public static NoxesiumComponentType<Unit> DEBUG_POSITION_HIDE_PITCH =
+            register("debug_position_hide_pitch", Unit.class);
+
+    /**
      * Registers a new component type to the registry.
      */
     private static <R, T> NoxesiumComponentType<T> register(String key, Class<R> clazz) {

@@ -496,6 +496,19 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                     )
                                 }
 
+                        type == CommonGameComponentTypes.DEBUG_ENTRIES_ALLOWED ||
+                            type == CommonGameComponentTypes.DEBUG_ENTRIES_DENIED ||
+                            type == CommonGameComponentTypes.DEBUG_ENTRIES_OVERRIDE ->
+                            Commands
+                                .argument("value", StringArgumentType.string())
+                                .executes { ctx ->
+                                    configurer.set(
+                                        ctx,
+                                        type as NoxesiumComponentType<List<String>>,
+                                        ctx.getArgument("value", String::class.java).split(","),
+                                    )
+                                }
+
                         String::class.java.isAssignableFrom(type.clazz) ->
                             Commands
                                 .argument("value", StringArgumentType.string())

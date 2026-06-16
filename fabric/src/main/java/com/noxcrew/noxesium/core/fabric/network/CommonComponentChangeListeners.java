@@ -88,6 +88,15 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             // Refresh debug renderers whenever the server changes whether you can use them
             Minecraft.getInstance().debugEntries.rebuildCurrentList();
         });
+        listenGame(CommonGameComponentTypes.DEBUG_ENTRIES_ALLOWED, (ignored, context) -> {
+            Minecraft.getInstance().debugEntries.rebuildCurrentList();
+        });
+        listenGame(CommonGameComponentTypes.DEBUG_ENTRIES_DENIED, (ignored, context) -> {
+            Minecraft.getInstance().debugEntries.rebuildCurrentList();
+        });
+        listenGame(CommonGameComponentTypes.DEBUG_ENTRIES_OVERRIDE, (ignored, context) -> {
+            Minecraft.getInstance().debugEntries.rebuildCurrentList();
+        });
     }
 
     /**

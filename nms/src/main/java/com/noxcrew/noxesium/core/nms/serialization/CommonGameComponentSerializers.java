@@ -64,6 +64,20 @@ public class CommonGameComponentSerializers {
         register(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
         register(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, Codec.DOUBLE, ByteBufCodecs.DOUBLE);
         register(CommonGameComponentTypes.DISABLE_ALL_DEBUG_RENDERERS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
+        register(
+                CommonGameComponentTypes.DEBUG_ENTRIES_ALLOWED,
+                Codec.list(Codec.STRING),
+                ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8));
+        register(
+                CommonGameComponentTypes.DEBUG_ENTRIES_DENIED,
+                Codec.list(Codec.STRING),
+                ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8));
+        register(
+                CommonGameComponentTypes.DEBUG_ENTRIES_OVERRIDE,
+                Codec.list(Codec.STRING),
+                ByteBufCodecs.collection(ArrayList::new, ByteBufCodecs.STRING_UTF8));
+        register(CommonGameComponentTypes.DEBUG_POSITION_HIDE_YAW, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
+        register(CommonGameComponentTypes.DEBUG_POSITION_HIDE_PITCH, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
 
         register(
                 NmsGameComponentTypes.HAND_ITEM_OVERRIDE,
