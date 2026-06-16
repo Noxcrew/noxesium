@@ -35,7 +35,7 @@ public class CustomMapUiWidget {
         var minecraft = Minecraft.getInstance();
 
         // Check that the main GUI is not hidden
-        if (minecraft.options.hideGui) return;
+        if (minecraft.gui.hud.isHidden()) return;
 
         // Check that the player exists
         if (minecraft.player == null) return;

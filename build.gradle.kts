@@ -10,7 +10,7 @@ import noxesium.GitCommitIdValueSource
 plugins {
     id("noxesium.publishing") apply false
 
-    kotlin("jvm") version "2.3.0" apply false
+    kotlin("jvm") version "2.3.21" apply false
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless) apply false
     alias(libs.plugins.paperweight) apply false

@@ -69,13 +69,15 @@ public class CommonComponentChangeListeners extends NoxesiumFeature {
             }
 
             // We need to call this when hitboxes & chunk boundaries are updated.
-            if (Minecraft.getInstance().levelRenderer != null) {
-                Minecraft.getInstance().levelRenderer.allChanged();
+            if (Minecraft.getInstance().levelExtractor != null) {
+                Minecraft.getInstance().levelExtractor.allChanged();
             }
 
             // Turn off GUI hiding if it's disabled
-            if (context.newValue() != null && context.newValue().contains(DebugOption.HIDE_UI.getKeyCode())) {
-                Minecraft.getInstance().options.hideGui = false;
+            if (context.newValue() != null
+                    && context.newValue().contains(DebugOption.HIDE_UI.getKeyCode())
+                    && Minecraft.getInstance().gui.hud.isHidden()) {
+                Minecraft.getInstance().gui.hud.toggle();
             }
         });
         listenGame(NmsGameComponentTypes.CUSTOM_CREATIVE_ITEMS, (ignored, context) -> {

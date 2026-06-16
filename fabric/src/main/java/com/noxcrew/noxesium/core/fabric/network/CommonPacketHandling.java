@@ -156,14 +156,14 @@ public class CommonPacketHandling extends NoxesiumFeature {
                         var screen = new ConfirmLinkScreen(
                                 (result) -> {
                                     if (result) Util.getPlatform().openUri(uri);
-                                    minecraft.setScreen(null);
+                                    minecraft.gui.setScreen(null);
                                 },
                                 net.minecraft.network.chat.Component.empty(),
                                 NonWrappingComponentSerializer.INSTANCE.serialize(text),
                                 uri,
                                 CommonComponents.GUI_CANCEL,
                                 true);
-                        minecraft.setScreen(screen);
+                        minecraft.gui.setScreen(screen);
                     } catch (Exception e) {
                         NoxesiumApi.getLogger().warn("Failed to open link {}", packet.url(), e);
                     }

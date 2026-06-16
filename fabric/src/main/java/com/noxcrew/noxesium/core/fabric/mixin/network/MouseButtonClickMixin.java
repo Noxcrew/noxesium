@@ -63,7 +63,7 @@ public class MouseButtonClickMixin {
                 };
 
         if (action == 1) {
-            if (!client.gui.getChat().isChatFocused() && client.screen == null) {
+            if (!client.gui.hud.getChat().isChatFocused() && client.gui.screen() == null) {
                 // Only check for one press per tick to avoid spam!
                 if (NoxesiumMod.getInstance().sentButtonClicks.contains(button)) return;
                 NoxesiumMod.getInstance().sentButtonClicks.add(button);

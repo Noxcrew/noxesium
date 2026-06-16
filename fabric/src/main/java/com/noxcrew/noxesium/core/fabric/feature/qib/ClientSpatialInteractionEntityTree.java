@@ -56,7 +56,7 @@ public class ClientSpatialInteractionEntityTree extends SpatialTree {
                         + staticEntities.size() + ", A" + pendingEntities.size() + ", R"
                         + removedEntities.size() + "]");
                 NoxesiumMod.getInstance().ensureMain(() -> {
-                    Minecraft.getInstance().getChatListener().handleSystemMessage(message, false);
+                    Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(message);
                 });
             }
 

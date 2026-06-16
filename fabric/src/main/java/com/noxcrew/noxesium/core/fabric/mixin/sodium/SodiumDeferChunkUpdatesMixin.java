@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class SodiumDeferChunkUpdatesMixin {
 
     @WrapOperation(
-            method = "createTerrainRenderList",
+            method = "getDeferModeForPendingUpdate",
             at =
                     @At(
                             value = "FIELD",

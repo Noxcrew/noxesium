@@ -8,7 +8,6 @@ import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.fabric.feature.SyncGuiScale;
 import com.noxcrew.noxesium.core.fabric.feature.ZoomModule;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.PrioritizeChunkUpdates;
@@ -50,11 +49,11 @@ public abstract class OptionInstanceMixin<T> {
                     @At(
                             value = "FIELD",
                             target =
-                                    "Lnet/minecraft/client/OptionInstance;onValueUpdate:Ljava/util/function/Consumer;"))
-    private Consumer<T> updateNoxesiumOptions(OptionInstance<T> instance, Operation<Consumer<T>> original) {
+                                    "Lnet/minecraft/client/OptionInstance;onValueUpdate:Lnet/minecraft/client/OptionInstance$ValueUpdateListener;"))
+    private OptionInstance.ValueUpdateListener<? super T> updateNoxesiumOptions(
+            OptionInstance<T> instance, Operation<OptionInstance.ValueUpdateListener<? super T>> original) {
         var options = Minecraft.getInstance().options;
-        if (instance == options.touchscreen()
-                || instance == options.notificationDisplayTime()
+        if (instance == options.notificationDisplayTime()
                 || instance == options.chatVisibility()
                 || instance == options.chatWidth()
                 || instance == options.chatHeightUnfocused()

@@ -1,14 +1,14 @@
 [versions]
 # Plugins
-shadow = "9.2.2"
+shadow = "9.4.2"
 spotless = "8.1.0"
-loom = "1.15-SNAPSHOT"
+loom = "1.17-SNAPSHOT"
 paperweight = "2.0.0-beta.21"
 run-paper = "3.0.2"
 
 # Tooling
-kotlin-coroutines = "1.10.2"
-kotlin-serialization = "1.9.0"
+kotlin-coroutines = "1.11.0"
+kotlin-serialization = "1.11.0"
 guava = "33.3.1-jre"
 slf4j = "2.0.16"
 
@@ -18,22 +18,22 @@ gson = "2.10"
 prtree = "1.5.0"
 caffeine = "3.1.8"
 adventure = "4.26.1"
-adventure-fabric = "6.9.0-SNAPSHOT"
+adventure-fabric = "7.0.0-SNAPSHOT"
 apache-commons = "3.17.0"
 joml = "1.10.8"
 
 # Fabric - https://modmuss50.me/fabric.html
-minecraft = "26.1.2"
-fabric-loader = "0.19.2"
-fabric-api = "0.146.1+26.1.2"
+minecraft = "26.2"
+fabric-loader = "0.19.3"
+fabric-api = "0.152.1+26.2"
 
 # Mods
-sodium = "mc26.1.1-0.8.9-fabric"
-modmenu = "18.0.0-alpha.6"
+sodium = "mc26.2-0.9.0-fabric"
+modmenu = "20.0.0-beta.2"
 devlogin = "0.1.0.5"
 
 # Paper
-viaversion = "5.4.2"
+viaversion = "5.9.1"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

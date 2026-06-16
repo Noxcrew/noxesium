@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.core.fabric.util.InventoryHelper;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
  * <p>
  * Also overrides the selected item for hover to ignore the rule override.
  */
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class HeldItemOffsetNameMixin {
 
     @ModifyConstant(method = "extractSelectedItemName", constant = @Constant(intValue = 59))

@@ -6,15 +6,15 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.feature.ScalingExtension;
 import com.noxcrew.noxesium.core.feature.GuiElement;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.world.scores.Objective;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class ScoreboardMixin {
     @WrapMethod(method = "displayScoreboardSidebar")
     public void wrapScoreboardRender(GuiGraphicsExtractor guiGraphics, Objective objective, Operation<Void> original) {

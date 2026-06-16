@@ -21,6 +21,7 @@ public class FabricPacketHandler<T extends CustomPacketPayload> implements Clien
                 NoxesiumMod.getInstance().ensureMain(() -> {
                     Minecraft.getInstance()
                             .gui
+                            .hud
                             .getChat()
                             .addClientSystemMessage(Component.empty()
                                     .append(Component.literal("[NOXESIUM] ")

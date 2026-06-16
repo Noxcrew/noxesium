@@ -56,57 +56,55 @@ public abstract class TridentHandModelMixin {
         return InventoryHelper.getRealSelected(instance.getInventory());
     }
 
-    @Inject(method = "renderArmWithItem", at = @At(value = "HEAD"), cancellable = true)
-    public void renderArmWithItem(
-            AbstractClientPlayer p_109372_,
-            float p_109373_,
-            float p_109374_,
-            InteractionHand p_109375_,
-            float p_109376_,
-            ItemStack p_109377_,
-            float p_109378_,
-            PoseStack p_109379_,
-            SubmitNodeCollector p_109380_,
-            int p_109381_,
+    @Inject(method = "submitArmWithItem", at = @At(value = "HEAD"), cancellable = true)
+    public void submitArmWithItem(
+            AbstractClientPlayer player,
+            float frameInterp,
+            float xRot,
+            InteractionHand hand,
+            float attack,
+            ItemStack itemStack,
+            float inverseArmHeight,
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            int lightCoords,
             CallbackInfo ci) {
         if (!GameComponents.getInstance()
                 .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)) return;
 
         // We specifically want to prioritise the spin attack animation over the first 50% of the charging animation of
         // the trident because during that time the hand height rapidly changes.
-        if (p_109372_.isScoping()) return;
-        if (!p_109372_.isAutoSpinAttack()) return;
+        if (player.isScoping()) return;
+        if (!player.isAutoSpinAttack()) return;
 
         // Ignore if charging an item beyond the first 50%
-        if (p_109372_.isUsingItem()
-                && p_109372_.getUseItemRemainingTicks() > 0
-                && p_109372_.getUsedItemHand() == p_109375_) {
-            if (p_109377_.getUseAnimation() != ItemUseAnimation.SPEAR) return;
+        if (player.isUsingItem() && player.getUseItemRemainingTicks() > 0 && player.getUsedItemHand() == hand) {
+            if (itemStack.getUseAnimation() != ItemUseAnimation.SPEAR) return;
 
-            float f7 = (float) p_109377_.getUseDuration(p_109372_)
-                    - ((float) p_109372_.getUseItemRemainingTicks() - p_109373_ + 1.0F);
+            float f7 = (float) itemStack.getUseDuration(player)
+                    - ((float) player.getUseItemRemainingTicks() - frameInterp + 1.0F);
             float f11 = f7 / 10.0F;
             if (f11 >= 0.5F) return;
         }
 
         // Render the auto spin attack animation
-        boolean flag = p_109375_ == InteractionHand.MAIN_HAND;
+        boolean flag = hand == InteractionHand.MAIN_HAND;
         HumanoidArm humanoidarm =
-                flag ? p_109372_.getMainArm() : p_109372_.getMainArm().getOpposite();
+                flag ? player.getMainArm() : player.getMainArm().getOpposite();
         boolean flag3 = humanoidarm == HumanoidArm.RIGHT;
         this.applyItemArmTransform(
-                p_109379_, humanoidarm, 0f); // Always render at the top so the attack speed doesn't interfere!
+                poseStack, humanoidarm, 0f); // Always render at the top so the attack speed doesn't interfere!
         int j = flag3 ? 1 : -1;
-        p_109379_.translate((float) j * -0.4F, 0.8F, 0.3F);
-        p_109379_.mulPose(Axis.YP.rotationDegrees((float) j * 65.0F));
-        p_109379_.mulPose(Axis.ZP.rotationDegrees((float) j * -85.0F));
+        poseStack.translate((float) j * -0.4F, 0.8F, 0.3F);
+        poseStack.mulPose(Axis.YP.rotationDegrees((float) j * 65.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees((float) j * -85.0F));
         this.renderItem(
-                p_109372_,
-                p_109377_,
+                player,
+                itemStack,
                 flag3 ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
-                p_109379_,
-                p_109380_,
-                p_109381_);
+                poseStack,
+                submitNodeCollector,
+                lightCoords);
         ci.cancel();
     }
 }

@@ -35,7 +35,7 @@ public abstract class HoverSoundMixin {
     @Inject(method = "onStopHovering", at = @At("HEAD"))
     private void noxesium$onStopHovering(Slot oldSlot, CallbackInfo ci) {
         // Ignore if the inventory was closed!
-        if (Minecraft.getInstance().screen == null) return;
+        if (Minecraft.getInstance().gui.screen() == null) return;
 
         ItemStack previousStack = oldSlot.getItem();
         ItemStack currentStack = this.hoveredSlot != null ? this.hoveredSlot.getItem() : ItemStack.EMPTY;

@@ -38,7 +38,7 @@ public abstract class RestrictDebugHotkeysMixin {
             return original;
         }
         if (NoxesiumMod.getInstance().getKeybinds().keyDebugNoxesium.matches(event)) {
-            Minecraft.getInstance().setScreen(new NoxesiumSettingsScreen(null));
+            Minecraft.getInstance().gui.setScreen(new NoxesiumSettingsScreen(null));
             return true;
         }
         return original;
@@ -52,6 +52,7 @@ public abstract class RestrictDebugHotkeysMixin {
             if (minecraft != null) {
                 minecraft
                         .gui
+                        .hud
                         .getChat()
                         .addClientSystemMessage(Component.translatable("debug.warning.option.disabled")
                                 .withStyle(ChatFormatting.RED));
@@ -68,6 +69,7 @@ public abstract class RestrictDebugHotkeysMixin {
             if (minecraft != null) {
                 minecraft
                         .gui
+                        .hud
                         .getChat()
                         .addClientSystemMessage(Component.translatable("debug.warning.option.disabled")
                                 .withStyle(ChatFormatting.RED));

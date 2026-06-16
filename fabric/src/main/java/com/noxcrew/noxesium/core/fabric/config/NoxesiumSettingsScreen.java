@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.tabs.GridLayoutTab;
+import net.minecraft.client.gui.components.tabs.MenuTabBar;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -42,8 +43,11 @@ public class NoxesiumSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, this.width)
-                .addTabs(new GuiTab(), new DeveloperTab())
+        var gui = new GuiTab();
+        var developer = new DeveloperTab();
+        this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, 0, 0, this.width, this.height)
+                .addTab(new MenuTabBar.MenuTabButton(this.tabManager, gui, 0, 24), gui)
+                .addTab(new MenuTabBar.MenuTabButton(this.tabManager, developer, 0, 24), developer)
                 .build();
         this.addRenderableWidget(this.tabNavigationBar);
 
@@ -62,8 +66,7 @@ public class NoxesiumSettingsScreen extends Screen {
     @Override
     public void repositionElements() {
         if (this.tabNavigationBar != null) {
-            this.tabNavigationBar.updateWidth(this.width);
-            this.tabNavigationBar.arrangeElements();
+            this.tabNavigationBar.arrangeElements(this.width);
             var bottom = this.tabNavigationBar.getRectangle().bottom();
             var screenrectangle =
                     new ScreenRectangle(0, bottom, this.width, this.height - this.layout.getFooterHeight() - bottom);
@@ -107,7 +110,7 @@ public class NoxesiumSettingsScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.lastScreen);
+        this.minecraft.gui.setScreen(this.lastScreen);
     }
 
     /**

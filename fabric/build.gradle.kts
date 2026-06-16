@@ -11,8 +11,7 @@ loom {
     runs {
         create("clientAuth") {
             client()
-            ideConfigGenerated(true)
-            programArgs.addAll(listOf("--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"))
+            programArguments.addAll(listOf("--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"))
             mainClass.set("net.covers1624.devlogin.DevLogin")
         }
     }

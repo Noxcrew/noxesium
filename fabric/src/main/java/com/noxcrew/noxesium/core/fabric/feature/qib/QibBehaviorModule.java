@@ -90,13 +90,13 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
         if (NoxesiumMod.getInstance().getConfig().showQibSystemDebugging()) {
             if (Minecraft.getInstance().player != null) {
                 Minecraft.getInstance()
-                        .getChatListener()
-                        .handleSystemMessage(
-                                Component.literal("§eRefreshed spatial model, before: §f[A"
-                                        + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[A"
-                                        + spatialTree.getPendingEntities().size() + ", R"
-                                        + spatialTree.getRemovedEntities().size() + "]"),
-                                false);
+                        .gui
+                        .hud
+                        .getChat()
+                        .addClientSystemMessage(Component.literal("§eRefreshed spatial model, before: §f[A"
+                                + oldAddedEntities + ", R" + oldRemovingEntities + "]§e, after: §f[A"
+                                + spatialTree.getPendingEntities().size() + ", R"
+                                + spatialTree.getRemovedEntities().size() + "]"));
             }
         }
     }

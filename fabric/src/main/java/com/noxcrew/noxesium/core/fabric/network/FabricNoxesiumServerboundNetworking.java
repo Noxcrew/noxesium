@@ -68,6 +68,7 @@ public class FabricNoxesiumServerboundNetworking extends NoxesiumServerboundNetw
             NoxesiumMod.getInstance().ensureMain(() -> {
                 Minecraft.getInstance()
                         .gui
+                        .hud
                         .getChat()
                         .addClientSystemMessage(Component.empty()
                                 .append(Component.literal("[NOXESIUM] ")
