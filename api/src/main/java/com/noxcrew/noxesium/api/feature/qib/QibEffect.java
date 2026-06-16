@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.api.feature.qib;
 
+import com.noxcrew.noxesium.api.util.VectorAxis;
 import java.util.List;
 import org.joml.Vector3f;
 
@@ -128,4 +129,10 @@ public sealed interface QibEffect {
      * to the enchantment effect for this.
      */
     public record ApplyImpulse(Vector3f direction, Vector3f scale) implements QibEffect {}
+
+    /**
+     * Continues based on some condition.
+     */
+    public record ConditionalMomentum(VectorAxis axis, QibRelative relative, float value, QibEffect effect)
+            implements QibEffect {}
 }

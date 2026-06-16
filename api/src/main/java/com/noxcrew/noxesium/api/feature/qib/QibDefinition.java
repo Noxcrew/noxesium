@@ -43,4 +43,88 @@ public record QibDefinition(
             .registerTypeAdapter(Vector3f.class, new VectorSerializer())
             .registerTypeAdapter(QibEffect.class, new QibEffectSerializer())
             .create();
+
+    /**
+     * Creates a new qib definition builder.
+     */
+    public static QibDefinition.Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * Assists in creating qib definitions.
+     */
+    public static class Builder {
+        private QibEffect onEnter = null;
+        private QibEffect onLeave = null;
+        private QibEffect whileInside = null;
+        private QibEffect onJump = null;
+        private QibEffect onAttack = null;
+        private QibEffect onUse = null;
+        private boolean triggerEnterLeaveOnSwitch = true;
+
+        /**
+         * Defines the effect to trigger when entering this qib.
+         */
+        public Builder onEnter(QibEffect effect) {
+            this.onEnter = effect;
+            return this;
+        }
+
+        /**
+         * Defines the effect to trigger when leaving this qib.
+         */
+        public Builder onLeave(QibEffect effect) {
+            this.onLeave = effect;
+            return this;
+        }
+
+        /**
+         * Defines the effect to trigger every tick while inside this qib.
+         */
+        public Builder whileInside(QibEffect effect) {
+            this.whileInside = effect;
+            return this;
+        }
+
+        /**
+         * Defines the effect to trigger when jumping in this qib.
+         */
+        public Builder onJump(QibEffect effect) {
+            this.onJump = effect;
+            return this;
+        }
+
+        /**
+         * Defines the effect to trigger when attacking with an item with this qib attached.
+         */
+        public Builder onAttack(QibEffect effect) {
+            this.onAttack = effect;
+            return this;
+        }
+
+        /**
+         * Defines the effect to trigger when using an item with this qib attached.
+         */
+        public Builder onUse(QibEffect effect) {
+            this.onUse = effect;
+            return this;
+        }
+
+        /**
+         * Defines whether the qib should trigger enter and leave effects when
+         * switching between instances.
+         */
+        public Builder setTriggerEnterLeaveOnSwitch(boolean value) {
+            this.triggerEnterLeaveOnSwitch = value;
+            return this;
+        }
+
+        /**
+         * Assembles the qib definition.
+         */
+        public QibDefinition build() {
+            return new QibDefinition(onEnter, onLeave, whileInside, onJump, onAttack, onUse, triggerEnterLeaveOnSwitch);
+        }
+    }
 }

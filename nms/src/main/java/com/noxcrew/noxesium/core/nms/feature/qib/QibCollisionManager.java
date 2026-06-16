@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kyori.adventure.key.Key;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
@@ -278,7 +279,8 @@ public abstract class QibCollisionManager {
                             case IS_ON_GROUND -> player.onGround();
                             case IS_IN_WATER -> player.isInWater();
                             case IS_IN_WATER_OR_RAIN -> player.isInWaterOrRain();
-                            case IS_IN_VEHICLE -> player.getVehicle() != null;
+                            case IS_IN_VEHICLE -> player.isPassenger();
+                            case IS_FLYING -> player.getAbilities().flying;
                         };
 
                 // Trigger the effect if it matches
@@ -344,6 +346,28 @@ public abstract class QibCollisionManager {
             }
             case QibEffect.StopGliding stopGliding -> {
                 player.stopFallFlying();
+            }
+            case QibEffect.ConditionalMomentum conditionalMomentum -> {
+                var playerValue = conditionalMomentum
+                        .axis()
+                        .select(player.getDeltaMovement().toVector3f());
+                switch (conditionalMomentum.relative()) {
+                    case LESSER -> {
+                        if (playerValue < conditionalMomentum.value()) {
+                            executeBehavior(entity, conditionalMomentum.effect());
+                        }
+                    }
+                    case EQUAL -> {
+                        if (Mth.equal(playerValue, conditionalMomentum.value())) {
+                            executeBehavior(entity, conditionalMomentum.effect());
+                        }
+                    }
+                    case GREATER -> {
+                        if (playerValue > conditionalMomentum.value()) {
+                            executeBehavior(entity, conditionalMomentum.effect());
+                        }
+                    }
+                }
             }
             default -> throw new IllegalStateException("Unexpected value: " + effect);
         }
