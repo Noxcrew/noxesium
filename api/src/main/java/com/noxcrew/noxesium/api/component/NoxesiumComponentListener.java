@@ -65,6 +65,11 @@ public class NoxesiumComponentListener<T, R> {
             BiConsumer<F, ComponentChangeContext<T, R>> consumer,
             Object reference,
             ComponentChangeContext<T, R> context) {
-        consumer.accept((F) reference, context);
+        try {
+            consumer.accept((F) reference, context);
+        } catch (Throwable x) {
+            NoxesiumApi.getLogger()
+                    .error("Caught exception while {} was handling component change event", reference.getClass(), x);
+        }
     }
 }

@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {

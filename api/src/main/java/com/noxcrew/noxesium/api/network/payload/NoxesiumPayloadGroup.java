@@ -320,7 +320,11 @@ public class NoxesiumPayloadGroup {
      * Casts [reference] to type [R] of [consumer].
      */
     private <R, T> void acceptAny(TriConsumer<R, T, UUID> consumer, Object reference, UUID context, Object payload) {
-        consumer.accept((R) reference, (T) payload, context);
+        try {
+            consumer.accept((R) reference, (T) payload, context);
+        } catch (Throwable x) {
+            NoxesiumApi.getLogger().error("Caught exception while {} was handling packet", reference.getClass(), x);
+        }
     }
 
     @Override
