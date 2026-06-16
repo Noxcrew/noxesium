@@ -29,7 +29,7 @@ public abstract class FixTextDisplayTransparencyMixin {
                  * text displays render the background as non-see-through. We fix this by just always rendering the backgrounds as see-through
                  * which fixes issues with its transparency. We modify the vanilla type so Iris doesn't break.
                  */
-                instance.withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false));
+                instance.withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false));
             }
         }
         return original.call(instance);
