@@ -43,11 +43,9 @@ public class NoxesiumSettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        var gui = new GuiTab();
-        var developer = new DeveloperTab();
-        this.tabNavigationBar = TabNavigationBar.builder(this.tabManager, 0, 0, this.width, this.height)
-                .addTab(new MenuTabBar.MenuTabButton(this.tabManager, gui, 0, 24), gui)
-                .addTab(new MenuTabBar.MenuTabButton(this.tabManager, developer, 0, 24), developer)
+        this.tabNavigationBar = MenuTabBar.builder(this.tabManager, this.width)
+                .addTab(new GuiTab())
+                .addTab(new DeveloperTab())
                 .build();
         this.addRenderableWidget(this.tabNavigationBar);
 
