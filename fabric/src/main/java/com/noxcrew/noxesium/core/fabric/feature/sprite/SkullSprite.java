@@ -15,6 +15,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -26,7 +27,9 @@ import net.minecraft.client.gui.font.SingleSpriteSource;
 import net.minecraft.client.gui.font.TextRenderable;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.minecraft.client.renderer.PlayerSkinRenderCache;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.FontDescription;
@@ -65,6 +68,8 @@ public class SkullSprite implements ObjectInfo {
                                 Style style,
                                 float f,
                                 float shadowOffset) {
+                            // Don't render anything if the sprite is broken!
+                            if (sprite.skin == null) return null;
                             return new SpriteInstance(sprite, x, y, color, shadowColor, shadowOffset, style);
                         }
                     });
@@ -116,13 +121,15 @@ public class SkullSprite implements ObjectInfo {
         } else if (uuid.isPresent()) {
             profile = ResolvableProfile.createUnresolved(uuid.get());
         }
-        if (profile != null) {
-            this.skin = Minecraft.getInstance().playerSkinRenderCache().createLookup(profile);
+        var cache = Minecraft.getInstance().playerSkinRenderCache();
+        if (cache == null) {
+            this.skin = null;
+        } else if (profile != null) {
+            this.skin = cache.createLookup(profile);
         } else {
             var gameProfile = new GameProfile(UUID.randomUUID(), "");
             var defaultSkin = DefaultPlayerSkin.getDefaultSkin();
-            var renderInfo = Minecraft.getInstance().playerSkinRenderCache()
-            .new RenderInfo(gameProfile, defaultSkin, PlayerSkin.Patch.EMPTY);
+            var renderInfo = cache.new RenderInfo(gameProfile, defaultSkin, PlayerSkin.Patch.EMPTY);
             this.skin = () -> renderInfo;
         }
 
@@ -241,17 +248,22 @@ public class SkullSprite implements ObjectInfo {
         }
 
         @Override
-        public RenderType renderType(Font.DisplayMode p_442599_) {
-            return sprite.skin.get().glyphRenderTypes().select(p_442599_);
+        public RenderType renderType(Font.DisplayMode displayMode) {
+            if (sprite.skin == null) return RenderTypes.textBackground();
+            return sprite.skin.get().glyphRenderTypes().select(displayMode);
         }
 
         @Override
         public RenderPipeline guiPipeline() {
+            if (sprite.skin == null) return RenderPipelines.TEXT_BACKGROUND;
             return sprite.skin.get().glyphRenderTypes().guiPipeline();
         }
 
         @Override
         public GpuTextureView textureView() {
+            Objects.requireNonNull(
+                    sprite.skin,
+                    "Tried to render a skull sprite that was fetched during start-up, this is NOT an issue in Noxesium!");
             return sprite.skin.get().textureView();
         }
 
