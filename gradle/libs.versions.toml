@@ -28,7 +28,7 @@ fabric-loader = "0.19.2"
 fabric-api = "0.146.1+26.1.2"
 
 # Mods
-sodium = "mc26.1.1-0.8.9-fabric"
+sodium = "mc26.1.2-0.9.1-fabric"
 modmenu = "18.0.0-alpha.6"
 devlogin = "0.1.0.5"
 

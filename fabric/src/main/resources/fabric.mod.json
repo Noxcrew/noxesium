@@ -38,6 +38,9 @@
     "minecraft": ">=26.1"
   },
   "suggests": {
-    "sodium": ">=0.8.7"
+    "sodium": ">=0.9.0"
+  },
+  "breaks": {
+    "sodium": "<0.9"
   }
 }
