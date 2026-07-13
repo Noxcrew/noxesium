@@ -4,9 +4,9 @@ plugins {
 
 tasks {
     named<ProcessResources>("processResources") {
-        inputs.property("version", project.version)
+        inputs.property("version", project.property("mod_version"))
         filesMatching(setOf("fabric.mod.json")) {
-            expand("version" to project.version)
+            expand("version" to project.property("mod_version").toString())
         }
     }
 
