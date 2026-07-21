@@ -1,4 +1,4 @@
-![Banner](https://assets.mcchampionship.com/launchy/03e3556d-0460-49eb-8ed1-fdf72929da50-images/noxesium_banner2.png)
+![Banner](https://assets.mcchampionship.com/launchy/images-03e3556d-0460-49eb-8ed1-fdf72929da50/noxesium_banner.png)
 
 Noxesium is mod for Fabric which improves your experience when playing on multiplayer servers by giving the server more control over the client and fixing bugs that affect multiplayer gameplay.
 
