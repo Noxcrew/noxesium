@@ -112,11 +112,6 @@ public class NoxesiumSettingsScreen extends Screen {
     }
 
     /**
-     * Hook for extending the developer tab.
-     */
-    public void addToDeveloperTab(GridLayout.RowHelper rowHelper) {}
-
-    /**
      * Creates a new widget for the given option.
      */
     public static AbstractWidget createWidget(OptionInstance<?> option) {
@@ -183,8 +178,6 @@ public class NoxesiumSettingsScreen extends Screen {
                 rowHelper.addChild(createWidget(NoxesiumOptions.QIB_SYSTEM_VISUAL_DEBUG));
                 rowHelper.addChild(createWidget(NoxesiumOptions.SHOW_CULLING_HITBOXES));
             }
-
-            addToDeveloperTab(rowHelper);
         }
     }
 }
