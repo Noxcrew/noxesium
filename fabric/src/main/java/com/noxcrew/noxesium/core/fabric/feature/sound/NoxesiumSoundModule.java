@@ -1,8 +1,8 @@
 package com.noxcrew.noxesium.core.fabric.feature.sound;
 
 import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NoxesiumSoundModule extends NoxesiumFeature {
 
-    private final Map<Integer, NoxesiumSoundInstance> sounds = new WeakHashMap<>();
+    private final Map<Integer, NoxesiumSoundInstance> sounds = new HashMap<>();
 
     /**
      * Plays a given sound instance and stores it by its id so it
@@ -31,6 +31,9 @@ public class NoxesiumSoundModule extends NoxesiumFeature {
             soundManager.stop(currentSound);
             sounds.remove(id);
         }
+
+        // Remove any finished sounds so the map doesn't grow for the lifetime of the connection
+        removeFinishedSounds();
 
         // Play the new sound
         sounds.put(id, instance);
@@ -53,7 +56,8 @@ public class NoxesiumSoundModule extends NoxesiumFeature {
     @Nullable
     public NoxesiumSoundInstance getSound(int id) {
         NoxesiumSoundInstance soundInstance = sounds.get(id);
-        if (soundInstance != null && soundInstance.isStopped()) {
+        if (soundInstance == null) return null;
+        if (hasFinished(soundInstance)) {
             sounds.remove(id);
             return null;
         }
@@ -72,5 +76,14 @@ public class NoxesiumSoundModule extends NoxesiumFeature {
             soundManager.stop(sound);
             sounds.remove(id);
         }
+    }
+
+    private void removeFinishedSounds() {
+        sounds.values().removeIf(NoxesiumSoundModule::hasFinished);
+    }
+
+    private static boolean hasFinished(NoxesiumSoundInstance instance) {
+        if (instance.isStopped()) return true;
+        return !Minecraft.getInstance().getSoundManager().isActive(instance);
     }
 }
