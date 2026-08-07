@@ -72,7 +72,6 @@ public abstract class CustomNoxesiumSoundsMixin {
         var sound = soundInstance.getSound();
         if (sound == null) return;
 
-
         var bufferedSeconds = !sound.shouldStream() ? 0 : (int) Math.floor(noxesiumSoundInstance.getStartOffset());
         noxesiumSoundInstance.applyStartOffset(channelHandle, bufferedSeconds);
     }

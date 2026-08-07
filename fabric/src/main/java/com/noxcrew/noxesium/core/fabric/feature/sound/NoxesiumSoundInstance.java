@@ -61,7 +61,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     public boolean canStartSilent() {
         return true;
     }
-    
+
     @Override
     public final void tick() {
         if (volumeInterpolation != null) {
