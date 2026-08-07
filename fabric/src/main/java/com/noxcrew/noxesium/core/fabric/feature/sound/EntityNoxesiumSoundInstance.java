@@ -49,7 +49,7 @@ public class EntityNoxesiumSoundInstance extends NoxesiumSoundInstance {
      * Updates the current position of the sound based on the movement of the entity.
      */
     @Override
-    public void tick() {
+    protected void tickSound() {
         if (!local && this.entity.isRemoved()) {
             this.stop();
         } else {
