@@ -58,7 +58,7 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     }
 
     @Override
-    public void tick() {
+    public final void tick() {
         if (volumeInterpolation != null) {
             var newVolume = volumeInterpolation.tick();
             if (newVolume == null) {
@@ -67,7 +67,11 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
                 this.volume = newVolume;
             }
         }
+        tickSound();
     }
+
+    /** Called every tick after volume interpolation has been applied. */
+    protected void tickSound() {}
 
     /**
      * Sets the volume over a specified time
