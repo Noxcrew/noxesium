@@ -58,6 +58,11 @@ public class NoxesiumSoundInstance extends AbstractTickableSoundInstance {
     }
 
     @Override
+    public boolean canStartSilent() {
+        return true;
+    }
+    
+    @Override
     public final void tick() {
         if (volumeInterpolation != null) {
             var newVolume = volumeInterpolation.tick();
