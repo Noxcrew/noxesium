@@ -62,7 +62,7 @@ public class CommonGameComponentSerializers {
                         NoxesiumStreamCodecs.forEnum(GuiElement.class),
                         NoxesiumStreamCodecs.GUI_CONSTRAINTS));
         register(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
-        register(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, Codec.DOUBLE, ByteBufCodecs.DOUBLE);
+        register(CommonGameComponentTypes.ELYTRA_COYOTE_TIME_MS, Codec.LONG, ByteBufCodecs.LONG);
         register(CommonGameComponentTypes.DISABLE_ALL_DEBUG_RENDERERS, NoxesiumCodecs.UNIT, NoxesiumStreamCodecs.UNIT);
         register(
                 CommonGameComponentTypes.DEBUG_ENTRIES_ALLOWED,

@@ -1,10 +1,14 @@
 package com.noxcrew.noxesium.core.fabric.mixin.feature.entity.elytra;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.network.NoxesiumServerboundNetworking;
 import com.noxcrew.noxesium.core.fabric.feature.entity.FallFlyingEntityExtension;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundLandPacket;
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.ElytraOnPlayerSoundInstance;
@@ -34,7 +38,7 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     private boolean noxesium$fallFlying = false;
 
     @Unique
-    private Long noxesium$elytraCoyoteMillis = null;
+    private Future<?> noxesium$elytraCoyoteTask = null;
 
     @Unique
     @Nullable
@@ -57,26 +61,11 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
     @Override
     public void noxesium$stopFallFlying() {
         noxesium$fallFlying = false;
-        noxesium$elytraCoyoteMillis = null;
+        if (noxesium$elytraCoyoteTask != null) {
+            noxesium$elytraCoyoteTask.cancel(true);
+        }
+        noxesium$elytraCoyoteTask = null;
         NoxesiumServerboundNetworking.send(new ServerboundGlidePacket(false));
-    }
-
-    @Override
-    public void noxesium$checkCoyoteTime() {
-        if (noxesium$elytraCoyoteMillis == null) return;
-        if (System.currentTimeMillis() < noxesium$elytraCoyoteMillis) return;
-
-        // If we've reached the elytra timeout we stop gliding!
-        stopFallFlying();
-    }
-
-    @Override
-    public void noxesium$handleJump() {
-        if (noxesium$elytraCoyoteMillis == null) return;
-
-        // If the player jumps within the coyote time we
-        // don't make them stop gliding!
-        noxesium$elytraCoyoteMillis = null;
     }
 
     /**
@@ -93,23 +82,32 @@ public abstract class ElytraClientMixin implements FallFlyingEntityExtension {
         // Ignore if not fall flying
         if (!noxesium$fallFlying) return;
 
-        // If you cannot glide anymore we start a timer!
+        // If you cannot glide anymore we cancel the gliding, possibly with a custom delay.
+        // Gliding will always be interrupted, you cannot never stop gliding.
         if (!canGlide()) {
-            if (noxesium$elytraCoyoteMillis == null) {
+            if (noxesium$elytraCoyoteTask == null) {
                 // Determine when the coyote time will end!
-                var extraTime = (long) Math.floor(GameComponents.getInstance()
-                                .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME, () -> 0.0)
-                        * 50);
-                var elytraCoyoteTime = System.currentTimeMillis() + extraTime;
+                var extraTime = GameComponents.getInstance()
+                        .noxesium$getComponentOr(CommonGameComponentTypes.ELYTRA_COYOTE_TIME_MS, () -> 0L);
                 if (extraTime <= 0) {
                     stopFallFlying();
                 } else {
-                    noxesium$elytraCoyoteMillis = elytraCoyoteTime;
+                    // Ask the server for permission to do a landing and
+                    // temporary rebound if applicable. We schedule a stop
+                    // flying command to come on in and get processed on
+                    // the packet thread as if the server sends it after the
+                    // exact coyote time.
+                    NoxesiumServerboundNetworking.send(new ServerboundLandPacket());
+                    noxesium$elytraCoyoteTask = NoxesiumApi.getInstance()
+                            .getThreadPool()
+                            .schedule(
+                                    () -> {
+                                        Minecraft.getInstance().schedule(this::stopFallFlying);
+                                    },
+                                    extraTime,
+                                    TimeUnit.MILLISECONDS);
                 }
             }
-        } else {
-            // Stop the timer if you are allowed to glide!
-            noxesium$elytraCoyoteMillis = null;
         }
     }
 

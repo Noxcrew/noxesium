@@ -17,6 +17,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameCompon
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacketV2;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundLandPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
@@ -42,6 +43,8 @@ public class CommonPackets {
             server(INSTANCE, "serverbound_mouse_button_click").markLazy().add(ServerboundMouseButtonClickPacket.class);
     public static final NoxesiumPayloadGroup SERVER_GLIDE =
             server(INSTANCE, "serverbound_glide").add(ServerboundGlidePacket.class);
+    public static final NoxesiumPayloadGroup SERVER_LAND =
+            server(INSTANCE, "serverbound_land").add(ServerboundLandPacket.class);
 
     public static final NoxesiumPayloadGroup CLIENT_CUSTOM_SOUND_MODIFY =
             client(INSTANCE, "clientbound_modify_sound").add(ClientboundCustomSoundModifyPacket.class);

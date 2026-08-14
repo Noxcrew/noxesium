@@ -4,7 +4,6 @@ import com.noxcrew.noxesium.api.feature.NoxesiumFeature;
 import com.noxcrew.noxesium.api.registry.NoxesiumRegistries;
 import com.noxcrew.noxesium.core.fabric.NoxesiumMod;
 import com.noxcrew.noxesium.core.fabric.mixin.feature.qib.ClientLevelExt;
-import com.noxcrew.noxesium.core.fabric.util.BackgroundTaskFeature;
 import com.noxcrew.noxesium.core.nms.feature.qib.QibCollisionManager;
 import com.noxcrew.noxesium.core.registry.CommonEntityComponentTypes;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,7 +16,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * Applies qib behaviors whenever players clip interaction entities.
  */
-public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTaskFeature {
+public class QibBehaviorModule extends NoxesiumFeature {
 
     private final ClientSpatialInteractionEntityTree spatialTree = new ClientSpatialInteractionEntityTree();
     private QibCollisionManager qibCollisionManager;
@@ -50,11 +49,6 @@ public class QibBehaviorModule extends NoxesiumFeature implements BackgroundTask
             }
             qibCollisionManager.tick();
         });
-    }
-
-    @Override
-    public void runAsync() {
-        spatialTree.rebuild();
     }
 
     @Override

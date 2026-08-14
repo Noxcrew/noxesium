@@ -179,7 +179,9 @@ public class CommonPacketHandling extends NoxesiumFeature {
                     player.startFallFlying();
                 }
             } else {
-                player.stopFallFlying();
+                if (player.isFallFlying()) {
+                    player.stopFallFlying();
+                }
             }
         });
 

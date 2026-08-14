@@ -1,10 +1,14 @@
 package com.noxcrew.noxesium.core.nms.feature.qib;
 
+import com.noxcrew.noxesium.api.NoxesiumApi;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.phys.AABB;
@@ -22,7 +26,8 @@ public abstract class SpatialTree {
     protected final Map<Integer, AABB> pendingEntities = new ConcurrentHashMap<>();
     protected final Set<Integer> removedEntities = ConcurrentHashMap.newKeySet();
     protected final AtomicBoolean rebuilding = new AtomicBoolean();
-    protected final AtomicBoolean needsRebuilding = new AtomicBoolean();
+    protected final AtomicBoolean pendingRebuild = new AtomicBoolean();
+    protected final AtomicReference<Future<?>> rebuildTask = new AtomicReference<>();
     protected final MBRConverter<Entity> converter;
 
     protected HashSet<Integer> staticEntities = new HashSet<>();
@@ -62,19 +67,28 @@ public abstract class SpatialTree {
     public abstract Entity getEntity(int entityId);
 
     /**
+     * Marks this tree as dirty, requiring a rebuild.
+     */
+    private void mark() {
+        pendingRebuild.set(true);
+        if (rebuildTask.get() != null) return;
+        rebuildTask.set(NoxesiumApi.getInstance().getThreadPool().schedule(this::rebuild, 100, TimeUnit.MILLISECONDS));
+    }
+
+    /**
      * Rebuilds the model if applicable.
      */
-    public void rebuild() {
-        if (!needsRebuilding.get()) return;
+    protected void rebuild() {
         if (!rebuilding.compareAndSet(false, true)) return;
         try {
+            if (!pendingRebuild.get()) return;
             var newModel = new PRTree<>(converter, DEFAULT_BRANCHING_FACTOR);
             var newStaticEntities = new HashSet<>(staticEntities);
             var addedEntities = new HashSet<>(pendingEntities.keySet());
             var removingEntities = new HashSet<>(removedEntities);
 
             // Unset rebuilding as we are currently performing it
-            needsRebuilding.set(false);
+            pendingRebuild.set(false);
 
             newStaticEntities.addAll(addedEntities);
             newStaticEntities.removeAll(removingEntities);
@@ -99,6 +113,10 @@ public abstract class SpatialTree {
             removedEntities.removeAll(removingEntities);
         } finally {
             rebuilding.set(false);
+            rebuildTask.set(null);
+            if (pendingRebuild.get()) {
+                mark();
+            }
         }
     }
 
@@ -163,7 +181,7 @@ public abstract class SpatialTree {
 
         // Always queue up a change regardless if we edited the model as the
         // entity moving needs to trigger a rebuild!
-        needsRebuilding.set(true);
+        mark();
     }
 
     /**
@@ -174,7 +192,7 @@ public abstract class SpatialTree {
         // of being added to the model) or in the model and needs removal
         if (pendingEntities.remove(entity.getId()) != null || staticEntities.contains(entity.getId())) {
             removedEntities.add(entity.getId());
-            needsRebuilding.set(true);
+            mark();
         }
     }
 
@@ -184,6 +202,6 @@ public abstract class SpatialTree {
     public void clear() {
         pendingEntities.clear();
         removedEntities.addAll(staticEntities);
-        needsRebuilding.set(true);
+        mark();
     }
 }

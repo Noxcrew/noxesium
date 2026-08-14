@@ -3,6 +3,7 @@ package com.noxcrew.noxesium.paper.feature.game
 import com.noxcrew.noxesium.core.network.CommonPackets
 import com.noxcrew.noxesium.core.network.clientbound.ClientboundGlidePacket
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundLandPacket
 import com.noxcrew.noxesium.core.registry.CommonGameComponentTypes
 import com.noxcrew.noxesium.paper.component.hasNoxesiumComponent
 import com.noxcrew.noxesium.paper.component.noxesiumPlayer
@@ -48,6 +49,32 @@ public class ClientAuthoritativeElytra : ListeningNoxesiumFeature() {
             } else {
                 nmsPlayer.setSharedFlag(7, true)
                 nmsPlayer.setSharedFlag(7, false)
+            }
+        }
+        CommonPackets.SERVER_LAND.addListener(this, ServerboundLandPacket::class.java) { reference, packet, playerId ->
+            if (!reference.isRegistered) return@addListener
+            val player = Bukkit.getPlayer(playerId) ?: return@addListener
+
+            // Ignore non-client authoritative elytra users from lying about it!
+            if (!player.hasNoxesiumComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_ELYTRA)) return@addListener
+
+            // Try to emit an event to toggle gliding, if we are stopping from doing so the player is
+            // not allowed to elytra hop here and should be interrupted!
+            val nmsPlayer = (player as CraftPlayer).handle
+            reference.ignoreEvent = true
+            try {
+                val event = CraftEventFactory.callToggleGlideEvent(nmsPlayer, false)
+                if (event.isCancelled) {
+                    player.noxesiumPlayer?.sendPacket(ClientboundGlidePacket(true))
+                    return@addListener
+                }
+
+                val event2 = CraftEventFactory.callToggleGlideEvent(nmsPlayer, true)
+                if (event2.isCancelled) {
+                    player.noxesiumPlayer?.sendPacket(ClientboundGlidePacket(false))
+                }
+            } finally {
+                reference.ignoreEvent = false
             }
         }
     }

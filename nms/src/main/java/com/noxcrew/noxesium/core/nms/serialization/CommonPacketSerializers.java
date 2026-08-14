@@ -20,6 +20,7 @@ import com.noxcrew.noxesium.core.network.clientbound.ClientboundUpdateGameCompon
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundClientSettingsPacketV2;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundGlidePacket;
+import com.noxcrew.noxesium.core.network.serverbound.ServerboundLandPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundMouseButtonClickPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundQibTriggeredPacket;
 import com.noxcrew.noxesium.core.network.serverbound.ServerboundRiptidePacket;
@@ -76,6 +77,7 @@ public class CommonPacketSerializers {
                 ServerboundGlidePacket.class,
                 StreamCodec.composite(
                         ByteBufCodecs.BOOL, ServerboundGlidePacket::gliding, ServerboundGlidePacket::new));
+        registerSerializer(ServerboundLandPacket.class, StreamCodec.unit(ServerboundLandPacket.INSTANCE));
         registerSerializer(
                 ClientboundCustomSoundModifyPacket.class,
                 StreamCodec.composite(

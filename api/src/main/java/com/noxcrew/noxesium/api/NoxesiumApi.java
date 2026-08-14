@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -30,6 +32,7 @@ public class NoxesiumApi {
     private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
     private final Set<PacketCollection> packets = new HashSet<>();
     private final List<NoxesiumEntrypoint> activeEntrypoints = new ArrayList<>();
+    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(3);
     private NoxesiumSide side = NoxesiumSide.SERVER;
 
     /**
@@ -165,5 +168,12 @@ public class NoxesiumApi {
      */
     public Collection<NoxesiumEntrypoint> getAllEntrypoints() {
         return entrypoints.values();
+    }
+
+    /**
+     * Returns a thread pool to use for task execution.
+     */
+    public ScheduledExecutorService getThreadPool() {
+        return threadPool;
     }
 }

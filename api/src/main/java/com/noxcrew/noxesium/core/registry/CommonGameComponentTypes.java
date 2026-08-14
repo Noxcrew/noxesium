@@ -112,11 +112,10 @@ public class CommonGameComponentTypes {
             register("client_authoritative_elytra", Unit.class);
 
     /**
-     * Sets the amount of ticks the client authoritative elytra has coyote time for.
-     * This allows players to hop around with the elytra which is possible in vanilla
-     * on higher ping.
+     * Sets the amount of ticks the client authoritative elytra has coyote time for
+     * in milliseconds.
      */
-    public static NoxesiumComponentType<Double> ELYTRA_COYOTE_TIME = register("elytra_coyote_time", Double.class);
+    public static NoxesiumComponentType<Long> ELYTRA_COYOTE_TIME_MS = register("elytra_coyote_time_ms", Long.class);
 
     /**
      * Fully disables all debug renderers that the client may have enabled.
