@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.FloatArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
+import com.mojang.brigadier.arguments.LongArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -550,6 +551,17 @@ private fun <T : ArgumentBuilder<CommandSourceStack, *>> T.configureComponentCom
                                         ctx,
                                         type as NoxesiumComponentType<Double>,
                                         DoubleArgumentType.getDouble(ctx, "value"),
+                                    )
+                                }
+
+                        java.lang.Long::class.java.isAssignableFrom(type.clazz) ->
+                            Commands
+                                .argument("value", LongArgumentType.longArg())
+                                .executes { ctx ->
+                                    configurer.set(
+                                        ctx,
+                                        type as NoxesiumComponentType<Long>,
+                                        LongArgumentType.getLong(ctx, "value"),
                                     )
                                 }
 
