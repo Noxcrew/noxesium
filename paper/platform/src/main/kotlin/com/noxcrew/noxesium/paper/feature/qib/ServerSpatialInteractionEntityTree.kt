@@ -17,6 +17,19 @@ public class ServerSpatialInteractionEntityTree(
         staticModel.load(emptyList())
     }
 
+    /** Rebuilds this model if necessary. */
+    public fun rebuildIfNeeded() {
+        if (needsRebuild()) {
+            rebuild()
+        }
+    }
+
+    override fun mark() {
+        // On the server we have Paper's async catcher so we have to run
+        // all rebuilds on the main thread.
+        pendingRebuild.set(true)
+    }
+
     override fun getEntity(entityId: Int): Entity? = level.entities.get(entityId)
 
     override fun getHitbox(entity: Entity): AABB {

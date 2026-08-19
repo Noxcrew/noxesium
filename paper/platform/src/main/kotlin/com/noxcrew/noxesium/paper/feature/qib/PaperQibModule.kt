@@ -43,6 +43,18 @@ public class PaperQibModule : ListeningNoxesiumFeature() {
     override fun onRegister() {
         super.onRegister()
 
+        // Rebuild containers that need rebuilding
+        Bukkit.getScheduler().runTaskTimer(
+            NoxesiumPaper.plugin,
+            Runnable {
+                for (container in containers.values) {
+                    container.rebuildIfNeeded()
+                }
+            },
+            100,
+            100,
+        )
+
         // Test for player locations every tick, checking against their previous position and
         // interpolating in between. This is not perfect, if there's lag we can miss a packet, but good enough!
         Bukkit.getScheduler().runTaskTimer(

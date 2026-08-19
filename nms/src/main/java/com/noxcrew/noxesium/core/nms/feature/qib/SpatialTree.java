@@ -67,9 +67,16 @@ public abstract class SpatialTree {
     public abstract Entity getEntity(int entityId);
 
     /**
+     * Returns whether this model needs to be rebuilt.
+     */
+    public boolean needsRebuild() {
+        return pendingRebuild.get();
+    }
+
+    /**
      * Marks this tree as dirty, requiring a rebuild.
      */
-    private void mark() {
+    protected void mark() {
         pendingRebuild.set(true);
         if (rebuildTask.get() != null) return;
         rebuildTask.set(NoxesiumApi.getInstance().getThreadPool().schedule(this::rebuild, 100, TimeUnit.MILLISECONDS));
