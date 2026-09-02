@@ -32,7 +32,11 @@ public class NoxesiumApi {
     private final Map<String, NoxesiumEntrypoint> entrypoints = new HashMap<>();
     private final Set<PacketCollection> packets = new HashSet<>();
     private final List<NoxesiumEntrypoint> activeEntrypoints = new ArrayList<>();
-    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(3);
+    private final ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(3, r -> {
+        Thread thread = new Thread(r, "Noxesium-ThreadPool");
+        thread.setDaemon(true);
+        return thread;
+    });
     private NoxesiumSide side = NoxesiumSide.SERVER;
 
     /**

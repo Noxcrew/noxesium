@@ -293,6 +293,7 @@ public abstract class QibCollisionManager {
             }
             case QibEffect.SetVelocity setVelocity -> {
                 player.setDeltaMovement(setVelocity.x(), setVelocity.y(), setVelocity.z());
+                player.hurtMarked = true;
                 player.needsSync = true;
             }
             case QibEffect.SetVelocityYawPitch setVelocityYawPitch -> {
@@ -318,6 +319,7 @@ public abstract class QibCollisionManager {
                                 -setVelocityYawPitch.limit(),
                                 setVelocityYawPitch.limit()));
                 player.needsSync = true;
+                player.hurtMarked = true;
             }
             case QibEffect.ModifyVelocity modifyVelocity -> {
                 var current = player.getDeltaMovement();
@@ -325,6 +327,7 @@ public abstract class QibCollisionManager {
                         modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
                         modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
                         modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
+                player.hurtMarked = true;
                 player.needsSync = true;
             }
             case QibEffect.ApplyImpulse applyImpulse -> {
@@ -335,6 +338,7 @@ public abstract class QibCollisionManager {
                         .addLocalCoordinates(new Vec3(direction.x, direction.y, direction.z))
                         .multiply(new Vec3(scale.x, scale.y, scale.z));
                 player.addDeltaMovement(impulse);
+                player.hurtMarked = true;
                 player.needsSync = true;
             }
             case QibEffect.StartGliding startGliding -> {
