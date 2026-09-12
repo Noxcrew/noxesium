@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
  * Overrides the item shown as being held in the main hand on the 3d player model.
  */
 @Mixin(ArmedEntityRenderState.class)
-public abstract class HandItemOverrideRenderMixin {
+public abstract class HandItemOverrideThirdPersonMixin {
 
     @WrapOperation(
             method = "extractArmedEntityRenderState",

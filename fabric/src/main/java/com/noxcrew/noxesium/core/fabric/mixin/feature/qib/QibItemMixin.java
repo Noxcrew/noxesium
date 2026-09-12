@@ -39,8 +39,9 @@ public abstract class QibItemMixin {
         if (player.getCooldowns().isOnCooldown(itemStack)) return;
         NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent((module) -> {
             if (module.attackItemBehavior(player, qibBehavior)) {
+                var swingAnimation = itemStack.getAttackAnimation();
                 player.onAttack();
-                player.swing(InteractionHand.MAIN_HAND);
+                player.swing(InteractionHand.MAIN_HAND, swingAnimation, false);
                 cir.setReturnValue(true);
             }
         });
@@ -64,12 +65,13 @@ public abstract class QibItemMixin {
         if (player.getCooldowns().isOnCooldown(itemStack)) return;
         NoxesiumApi.getInstance().getFeatureOptional(QibBehaviorModule.class).ifPresent((module) -> {
             if (module.useItemBehavior(player, qibBehavior)) {
+                var swingAnimation = itemStack.getAttackAnimation();
                 var useCooldown = itemStack.get(DataComponents.USE_COOLDOWN);
                 if (useCooldown != null) {
                     useCooldown.apply(itemStack, player);
                 }
-                player.swing(hand);
-                minecraft.gameRenderer.itemInHandRenderer.itemUsed(hand);
+                player.swing(hand, swingAnimation, false);
+                player.itemUsed(hand);
                 ci.cancel();
             }
         });

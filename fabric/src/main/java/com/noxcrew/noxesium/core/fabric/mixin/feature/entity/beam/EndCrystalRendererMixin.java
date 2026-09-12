@@ -43,7 +43,7 @@ public class EndCrystalRendererMixin {
             PoseStack poseStack,
             SubmitNodeCollector submitNodeCollector,
             int lightCoords,
-            @Local(argsOnly = true) EndCrystalRenderState endCrystalRenderState) {
+            @Local(argsOnly = true, name = "state") EndCrystalRenderState state) {
         /*
          * Unfortunately because this uses a custom geometry we have to override the entire
          * method and redo all of this logic to change the colors. :/
@@ -52,16 +52,12 @@ public class EndCrystalRendererMixin {
         float length = Mth.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
         poseStack.pushPose();
         poseStack.translate(0.0F, 2.0F, 0.0F);
-        poseStack.mulPose(Axis.YP.rotation((float) -Math.atan2(deltaZ, deltaX) - 1.5707964F));
-        poseStack.mulPose(Axis.XP.rotation((float) -Math.atan2(horizontalLength, deltaY) - 1.5707964F));
+        poseStack.rotate(Axis.YP, (float) (-Math.atan2(deltaZ, deltaX)) - ((float) Math.PI / 2F));
+        poseStack.rotate(Axis.XP, (float) (-Math.atan2(horizontalLength, deltaY)) - ((float) Math.PI / 2F));
         float v0 = 0.0F - timeInTicks * 0.01F;
         float v1 = length / 32.0F - timeInTicks * 0.01F;
-        var beamColor = endCrystalRenderState.noxesium$getBeamColor() == null
-                ? -1
-                : endCrystalRenderState.noxesium$getBeamColor();
-        var beamColorFade = endCrystalRenderState.noxesium$getBeamColorFade() == null
-                ? -16777216
-                : endCrystalRenderState.noxesium$getBeamColorFade();
+        var beamColor = state.noxesium$getBeamColor() == null ? -1 : state.noxesium$getBeamColor();
+        var beamColorFade = state.noxesium$getBeamColorFade() == null ? -16777216 : state.noxesium$getBeamColorFade();
         submitNodeCollector.submitCustomGeometry(poseStack, EnderDragonRenderer.BEAM, (pose, buffer) -> {
             int steps = 8;
             float lastSin = 0.0F;
@@ -111,15 +107,13 @@ public class EndCrystalRendererMixin {
                     "extractRenderState(Lnet/minecraft/world/entity/boss/enderdragon/EndCrystal;Lnet/minecraft/client/renderer/entity/state/EndCrystalRenderState;F)V",
             at = @At("RETURN"))
     public void includeBeamInformation(
-            EndCrystal endCrystal, EndCrystalRenderState endCrystalRenderState, float f, CallbackInfo ci) {
-        var color = endCrystal
-                .noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR)
+            EndCrystal entity, EndCrystalRenderState state, float partialTicks, CallbackInfo ci) {
+        var color = entity.noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR)
                 .map(Color::getRGB)
                 .orElse(null);
-        var fade = endCrystal
-                .noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR_FADE)
+        var fade = entity.noxesium$getOptionalComponent(CommonEntityComponentTypes.BEAM_COLOR_FADE)
                 .map(Color::getRGB)
                 .orElse(null);
-        endCrystalRenderState.noxesium$setBeamColor(color, fade);
+        state.noxesium$setBeamColor(color, fade);
     }
 }

@@ -22,6 +22,6 @@ public abstract class FixMouseToggleKeys {
                             target =
                                     "Lcom/mojang/blaze3d/platform/InputConstants$Key;getType()Lcom/mojang/blaze3d/platform/InputConstants$Type;"))
     public InputConstants.Type onResetToggleKeys(InputConstants.Key instance, Operation<InputConstants.Type> original) {
-        return InputConstants.Type.KEYSYM;
+        return InputConstants.Type.KEYBOARD;
     }
 }

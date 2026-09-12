@@ -1,5 +1,6 @@
 package com.noxcrew.noxesium.core.fabric.network;
 
+import com.mojang.blaze3d.Blaze3D;
 import com.noxcrew.noxesium.api.NoxesiumApi;
 import com.noxcrew.noxesium.api.component.GameComponents;
 import com.noxcrew.noxesium.api.component.NoxesiumComponentPatch;
@@ -155,7 +156,7 @@ public class CommonPacketHandling extends NoxesiumFeature {
                         // for multiple lines
                         var screen = new ConfirmLinkScreen(
                                 (result) -> {
-                                    if (result) Util.getPlatform().openUri(uri);
+                                    if (result) Blaze3D.openUri(uri);
                                     minecraft.gui.setScreen(null);
                                 },
                                 net.minecraft.network.chat.Component.empty(),

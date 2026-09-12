@@ -80,7 +80,7 @@ public class GuardianBeamColorRendererMixin {
             float timeInTicks,
             float scale,
             float texVOff,
-            @Local(argsOnly = true) GuardianRenderState guardianRenderState) {
+            @Local(argsOnly = true, name = "state") GuardianRenderState state) {
         /*
          * Unfortunately because this uses a custom geometry we have to override the entire
          * method and redo all of this logic to change the colors. :/
@@ -89,59 +89,60 @@ public class GuardianBeamColorRendererMixin {
         beamVector = beamVector.normalize();
         float xRot = (float) Math.acos(beamVector.y);
         float yRot = 1.5707964F - (float) Math.atan2(beamVector.z, beamVector.x);
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRot * 57.295776F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(xRot * 57.295776F));
+        poseStack.rotateDegrees(Axis.YP, yRot * (180F / (float) Math.PI));
+        poseStack.rotateDegrees(Axis.XP, xRot * (180F / (float) Math.PI));
         float rot = timeInTicks * 0.05F * -1.5F;
         float colorScale = scale * scale;
-        var beamColor = guardianRenderState.noxesium$getBeamColor();
+        var beamColor = state.noxesium$getBeamColor();
         int red = beamColor == null ? 64 + (int) (colorScale * 191.0F) : ARGB.red(beamColor);
         int green = beamColor == null ? 32 + (int) (colorScale * 191.0F) : ARGB.green(beamColor);
         int blue = beamColor == null ? 128 - (int) (colorScale * 64.0F) : ARGB.blue(beamColor);
         int alpha = beamColor == null ? 255 : ARGB.alpha(beamColor);
         float rr1 = 0.2F;
         float rr2 = 0.282F;
-        float wnx = Mth.cos((rot + 2.3561945F)) * rr2;
-        float wnz = Mth.sin((rot + 2.3561945F)) * rr2;
-        float enx = Mth.cos((rot + 0.7853982F)) * rr2;
-        float enz = Mth.sin((rot + 0.7853982F)) * rr2;
+        float wnx = Mth.cos(rot + 2.3561945F) * rr2;
+        float wnz = Mth.sin(rot + 2.3561945F) * rr2;
+        float enx = Mth.cos((rot + ((float) Math.PI / 4F))) * rr2;
+        float enz = Mth.sin((rot + ((float) Math.PI / 4F))) * rr2;
         float wsx = Mth.cos((rot + 3.926991F)) * rr2;
         float wsz = Mth.sin((rot + 3.926991F)) * rr2;
         float esx = Mth.cos((rot + 5.4977875F)) * rr2;
         float esz = Mth.sin((rot + 5.4977875F)) * rr2;
-        float wx = Mth.cos((rot + 3.1415927F)) * rr1;
-        float wz = Mth.sin((rot + 3.1415927F)) * rr1;
+        float wx = Mth.cos((rot + (float) Math.PI)) * rr1;
+        float wz = Mth.sin((rot + (float) Math.PI)) * rr1;
         float ex = Mth.cos((rot + 0.0F)) * rr1;
         float ez = Mth.sin((rot + 0.0F)) * rr1;
-        float nx = Mth.cos((rot + 1.5707964F)) * rr1;
-        float nz = Mth.sin((rot + 1.5707964F)) * rr1;
-        float sx = Mth.cos((rot + 4.712389F)) * rr1;
-        float sz = Mth.sin((rot + 4.712389F)) * rr1;
-        float top = length;
+        float nx = Mth.cos((rot + ((float) Math.PI / 2F))) * rr1;
+        float nz = Mth.sin((rot + ((float) Math.PI / 2F))) * rr1;
+        float sx = Mth.cos((rot + ((float) Math.PI * 1.5F))) * rr1;
+        float sz = Mth.sin((rot + ((float) Math.PI * 1.5F))) * rr1;
         float minU = 0.0F;
         float maxU = 0.4999F;
         float minV = -1.0F + texVOff;
         float maxV = minV + length * 2.5F;
-        var beamColorFade = guardianRenderState.noxesium$getBeamColorFade();
+        var beamColorFade = state.noxesium$getBeamColorFade();
         int redFade = beamColorFade == null ? red : ARGB.red(beamColorFade);
         int greenFade = beamColorFade == null ? green : ARGB.green(beamColorFade);
         int blueFade = beamColorFade == null ? blue : ARGB.blue(beamColorFade);
         int alphaFade = beamColorFade == null ? alpha : ARGB.alpha(beamColorFade);
 
         submitNodeCollector.submitCustomGeometry(poseStack, GuardianRenderer.BEAM_RENDER_TYPE, (pose, buffer) -> {
-            noxesium$vertex(buffer, pose, wx, top, wz, redFade, greenFade, blueFade, alphaFade, maxU, maxV);
+            noxesium$vertex(buffer, pose, wx, length, wz, redFade, greenFade, blueFade, alphaFade, maxU, maxV);
             noxesium$vertex(buffer, pose, wx, 0.0F, wz, red, green, blue, alpha, maxU, minV);
             noxesium$vertex(buffer, pose, ex, 0.0F, ez, red, green, blue, alpha, minU, minV);
-            noxesium$vertex(buffer, pose, ex, top, ez, redFade, greenFade, blueFade, alphaFade, minU, maxV);
-            noxesium$vertex(buffer, pose, nx, top, nz, redFade, greenFade, blueFade, alphaFade, maxU, maxV);
+            noxesium$vertex(buffer, pose, ex, length, ez, redFade, greenFade, blueFade, alphaFade, minU, maxV);
+            noxesium$vertex(buffer, pose, nx, length, nz, redFade, greenFade, blueFade, alphaFade, maxU, maxV);
             noxesium$vertex(buffer, pose, nx, 0.0F, nz, red, green, blue, alpha, maxU, minV);
             noxesium$vertex(buffer, pose, sx, 0.0F, sz, red, green, blue, alpha, minU, minV);
-            noxesium$vertex(buffer, pose, sx, top, sz, redFade, greenFade, blueFade, alphaFade, minU, maxV);
+            noxesium$vertex(buffer, pose, sx, length, sz, redFade, greenFade, blueFade, alphaFade, minU, maxV);
 
             float vBase = (Mth.floor(timeInTicks) % 2 == 0) ? 0.5F : 0.0F;
-            noxesium$vertex(buffer, pose, wnx, top, wnz, redFade, greenFade, blueFade, alphaFade, 0.5F, vBase + 0.5F);
-            noxesium$vertex(buffer, pose, enx, top, enz, redFade, greenFade, blueFade, alphaFade, 1.0F, vBase + 0.5F);
-            noxesium$vertex(buffer, pose, esx, top, esz, redFade, greenFade, blueFade, alphaFade, 1.0F, vBase);
-            noxesium$vertex(buffer, pose, wsx, top, wsz, redFade, greenFade, blueFade, alphaFade, 0.5F, vBase);
+            noxesium$vertex(
+                    buffer, pose, wnx, length, wnz, redFade, greenFade, blueFade, alphaFade, 0.5F, vBase + 0.5F);
+            noxesium$vertex(
+                    buffer, pose, enx, length, enz, redFade, greenFade, blueFade, alphaFade, 1.0F, vBase + 0.5F);
+            noxesium$vertex(buffer, pose, esx, length, esz, redFade, greenFade, blueFade, alphaFade, 1.0F, vBase);
+            noxesium$vertex(buffer, pose, wsx, length, wsz, redFade, greenFade, blueFade, alphaFade, 0.5F, vBase);
         });
     }
 

@@ -9,9 +9,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.blaze3d.font.GlyphInfo;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.FontDescription;
@@ -249,13 +250,13 @@ public class SkullSprite implements ObjectInfo {
 
         @Override
         public RenderType renderType(Font.DisplayMode displayMode) {
-            if (sprite.skin == null) return RenderTypes.textBackground();
+            if (sprite.skin == null) return RenderTypes.text(MissingTextureAtlasSprite.getLocation());
             return sprite.skin.get().glyphRenderTypes().select(displayMode);
         }
 
         @Override
         public RenderPipeline guiPipeline() {
-            if (sprite.skin == null) return RenderPipelines.TEXT_BACKGROUND;
+            if (sprite.skin == null) return RenderPipelines.GUI_TEXT;
             return sprite.skin.get().glyphRenderTypes().guiPipeline();
         }
 

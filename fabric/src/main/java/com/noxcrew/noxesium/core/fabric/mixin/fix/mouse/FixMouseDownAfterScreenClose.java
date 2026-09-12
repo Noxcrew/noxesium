@@ -3,8 +3,7 @@ package com.noxcrew.noxesium.core.fabric.mixin.fix.mouse;
 import com.mojang.blaze3d.platform.InputConstants;
 import java.util.Map;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import org.lwjgl.sdl.SDLMouse;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -31,11 +30,12 @@ public abstract class FixMouseDownAfterScreenClose {
 
     @Inject(method = "restoreToggleStatesOnScreenClosed", at = @At("HEAD"))
     private static void onScreenClosed(CallbackInfo ci) {
-        var window = Minecraft.getInstance().getWindow();
         for (var keymapping : ALL.values()) {
             var key = ((KeyMappingExt) keymapping).getKey();
             if (key.getType() != InputConstants.Type.MOUSE) continue;
-            keymapping.setDown(GLFW.glfwGetMouseButton(window.handle(), key.getValue()) == 1);
+            var buttons = SDLMouse.SDL_GetMouseState(null, null);
+            var mask = 1 << (key.getValue() - 1);
+            keymapping.setDown((buttons & mask) != 0);
         }
     }
 }

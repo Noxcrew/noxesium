@@ -15,7 +15,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -61,31 +60,28 @@ public abstract class TridentItemMixin {
                                     "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
     public void playSound(
             Level instance,
-            Entity ignored,
-            Entity entity,
-            SoundEvent soundEvent,
-            SoundSource soundSource,
+            Entity except,
+            Entity sourceEntity,
+            SoundEvent sound,
+            SoundSource source,
             float volume,
             float pitch,
             Operation<Void> original,
-            @Local(argsOnly = true) ItemStack itemStack,
-            @Local(argsOnly = true) Level level,
-            @Local(argsOnly = true) LivingEntity livingEntity,
-            @Local(argsOnly = true) int i) {
+            @Local(argsOnly = true, name = "entity") LivingEntity entity) {
         var player = Minecraft.getInstance().player;
         if (!GameComponents.getInstance()
                         .noxesium$hasComponent(CommonGameComponentTypes.CLIENT_AUTHORITATIVE_RIPTIDE_TRIDENTS)
-                || entity != player
+                || sourceEntity != player
                 || player == null) {
-            original.call(instance, ignored, entity, soundEvent, soundSource, volume, pitch);
+            original.call(instance, except, sourceEntity, sound, source, volume, pitch);
             return;
         }
 
         // Play a sound locally to replace the remote sound
-        instance.playLocalSound(entity, soundEvent, soundSource, volume, pitch);
+        instance.playLocalSound(sourceEntity, sound, source, volume, pitch);
 
         // Reset the coyote time as we've just activated the riptide.
-        livingEntity.noxesium$resetTridentCoyoteTime();
+        entity.noxesium$resetTridentCoyoteTime();
 
         // Send the server a packet to inform it about the riptide as we may have used coyote time to trigger it!
         NoxesiumServerboundNetworking.send(new ServerboundRiptidePacket(

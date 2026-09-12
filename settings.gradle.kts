@@ -21,7 +21,7 @@ include("api")
 include("nms")
 include("fabric")
 
-includeGroup(
+/*includeGroup(
     "paper",
     "api",
     "packet",
@@ -34,4 +34,4 @@ includeGroup(
     "common",
     "fabric",
     "paper",
-)
+)*/

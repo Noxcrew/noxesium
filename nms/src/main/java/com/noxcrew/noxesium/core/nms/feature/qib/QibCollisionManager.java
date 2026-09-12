@@ -19,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3d;
 
 /**
  * Assists in executing the behaviors for qibs for a specific entity.
@@ -293,7 +294,7 @@ public abstract class QibCollisionManager {
             }
             case QibEffect.SetVelocity setVelocity -> {
                 player.setDeltaMovement(setVelocity.x(), setVelocity.y(), setVelocity.z());
-                player.hurtMarked = true;
+                player.syncVelocity = true;
                 player.needsSync = true;
             }
             case QibEffect.SetVelocityYawPitch setVelocityYawPitch -> {
@@ -319,7 +320,7 @@ public abstract class QibCollisionManager {
                                 -setVelocityYawPitch.limit(),
                                 setVelocityYawPitch.limit()));
                 player.needsSync = true;
-                player.hurtMarked = true;
+                player.syncVelocity = true;
             }
             case QibEffect.ModifyVelocity modifyVelocity -> {
                 var current = player.getDeltaMovement();
@@ -327,18 +328,18 @@ public abstract class QibCollisionManager {
                         modifyVelocity.xOp().apply(current.x, modifyVelocity.x()),
                         modifyVelocity.yOp().apply(current.y, modifyVelocity.y()),
                         modifyVelocity.zOp().apply(current.z, modifyVelocity.z()));
-                player.hurtMarked = true;
+                player.syncVelocity = true;
                 player.needsSync = true;
             }
             case QibEffect.ApplyImpulse applyImpulse -> {
                 var direction = applyImpulse.direction();
                 var scale = applyImpulse.scale();
-                var lookAngle = player.getLookAngle();
+                var lookAngle = player.getLookQuaternion();
                 var impulse = lookAngle
-                        .addLocalCoordinates(new Vec3(direction.x, direction.y, direction.z))
-                        .multiply(new Vec3(scale.x, scale.y, scale.z));
-                player.addDeltaMovement(impulse);
-                player.hurtMarked = true;
+                        .transform(direction.x, direction.y, direction.z, new Vector3d())
+                        .mul(scale.x, scale.y, scale.z);
+                player.addDeltaMovement(new Vec3(impulse.x, impulse.y, impulse.z));
+                player.syncVelocity = true;
                 player.needsSync = true;
             }
             case QibEffect.StartGliding startGliding -> {

@@ -11,8 +11,8 @@ public class NoxesiumKeybinds {
     /**
      * Opens the Noxesium debug menu when combined with F3.
      */
-    public final KeyMapping keyDebugNoxesium =
-            register("key.debug.noxesium", InputConstants.Type.KEYSYM, InputConstants.KEY_W, KeyMapping.Category.DEBUG);
+    public final KeyMapping keyDebugNoxesium = register(
+            "key.debug.noxesium", InputConstants.Type.KEYBOARD, InputConstants.KEY_W, KeyMapping.Category.DEBUG);
 
     /**
      * Registers a new key binding with the given handler.
