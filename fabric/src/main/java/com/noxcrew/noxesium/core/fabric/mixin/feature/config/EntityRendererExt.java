@@ -10,5 +10,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(EntityRenderer.class)
 public interface EntityRendererExt<T extends Entity, S extends EntityRenderState> {
     @Invoker("getBoundingBoxForCulling")
-    AABB invokeGetBoundingBoxForCulling(T entity);
+    AABB invokeGetBoundingBoxForCulling(final T entity, final float partialTicks);
 }

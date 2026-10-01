@@ -33,7 +33,7 @@ public abstract class DebugEntityHitboxMixin {
         if (NoxesiumMod.getInstance().getConfig().showCullingBoxes()) {
             return ((EntityRendererExt<T, ?>)
                             Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(instance))
-                    .invokeGetBoundingBoxForCulling(instance);
+                    .invokeGetBoundingBoxForCulling(instance, 0f);
         }
         return instance.getBoundingBox();
     }

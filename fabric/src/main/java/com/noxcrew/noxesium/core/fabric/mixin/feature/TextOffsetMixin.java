@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class TextOffsetMixin {
 
     @Shadow
-    float x;
+    private float x;
 
     @WrapOperation(
             method = "accept(ILnet/minecraft/network/chat/Style;Lnet/minecraft/client/gui/font/glyphs/BakedGlyph;)Z",
@@ -32,7 +32,9 @@ public class TextOffsetMixin {
                             target = "Lnet/minecraft/client/gui/Font$PreparedTextBuilder;x:F",
                             opcode = Opcodes.GETFIELD))
     public float redirectGetX(
-            Font.PreparedTextBuilder instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            Font.PreparedTextBuilder instance,
+            Operation<Float> original,
+            @Local(argsOnly = true, name = "style") Style style) {
         var offset = OffsetStringFormatter.parseX(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;
@@ -60,7 +62,9 @@ public class TextOffsetMixin {
                             target = "Lnet/minecraft/client/gui/Font$PreparedTextBuilder;y:F",
                             opcode = Opcodes.GETFIELD))
     public float redirectGetY(
-            Font.PreparedTextBuilder instance, Operation<Float> original, @Local(argsOnly = true) Style style) {
+            Font.PreparedTextBuilder instance,
+            Operation<Float> original,
+            @Local(argsOnly = true, name = "style") Style style) {
         var offset = OffsetStringFormatter.parseY(style.getInsertion());
         if (offset != null) {
             return original.call(instance) + offset;

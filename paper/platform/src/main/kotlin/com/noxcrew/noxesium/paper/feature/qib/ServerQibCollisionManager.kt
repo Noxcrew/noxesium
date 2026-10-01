@@ -86,6 +86,7 @@ public class ServerQibCollisionManager(player: Player, spatialTree: SpatialTree)
                         ParticleTypes.EXPLOSION,
                         SoundEvents.GENERIC_EXPLODE,
                         WeightedList.of(),
+                        false,
                     ),
                 )
             }

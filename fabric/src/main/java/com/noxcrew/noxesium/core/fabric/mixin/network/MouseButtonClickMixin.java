@@ -27,7 +27,7 @@ public class MouseButtonClickMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lcom/mojang/blaze3d/platform/InputConstants;grabOrReleaseMouse(Lcom/mojang/blaze3d/platform/Window;IDD)V"))
+                                    "Lcom/mojang/blaze3d/platform/InputConstants;releaseMouse(Lcom/mojang/blaze3d/platform/Window;DD)V"))
     private void onReleaseMouse(CallbackInfo ci) {
         if (!NoxesiumServerboundNetworking.getInstance().shouldSendLazy(CommonPackets.SERVER_MOUSE_BUTTON_CLICK))
             return;
